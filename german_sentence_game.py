@@ -5,6 +5,7 @@ import random
 import difflib
 import signal
 import warnings
+import readline
 warnings.filterwarnings("ignore", message="Recommended: pip install sacremoses.")
 
 # Auto-install required packages
@@ -14,7 +15,7 @@ def ensure_packages():
 		"torch": None,
 		"sentencepiece": None,
 		"colorama": None,
-		"numpy": "<2"  # enforce compatible numpy version
+		"numpy": "<2"
 	}
 	for pkg, version in required.items():
 		try:
@@ -68,27 +69,42 @@ def get_feedback(student_version, correct_version):
 	# Special case: same words, wrong order (case-insensitive)
 	if sorted([w.lower() for w in student_words]) == sorted([w.lower() for w in correct_words]) \
 			and [w.lower() for w in student_words] != [w.lower() for w in correct_words]:
+
+		output_colored = []
+		for idx, word in enumerate(student_words):
+			correct_word = correct_words[idx] if idx < len(correct_words) else ""
+			if word.lower() == correct_word.lower():
+				output_colored.append(Fore.GREEN + word + Style.RESET_ALL)
+			elif word.lower() in [w.lower() for w in correct_words]:
+				output_colored.append(Fore.RED + word + Style.RESET_ALL)
+			else:
+				output_colored.append(Fore.YELLOW + word + Style.RESET_ALL)
+
 		if is_w_question:
 			feedback_text = (
 				"⚠️ Your words are correct, but the **word order is incorrect for a W-question**.\n"
 				"📘 Rule: **W-word – Verb – Subject – ...**\n"
 				"📌 Example: *Wie ist das Wetter heute?*\n"
-				"🛠️ Make sure the conjugated verb comes right after the W-word."
+				"🛠️ Make sure the conjugated verb comes right after the W-word.\n"
+				f"\n🧩 Your version: {' '.join(output_colored)}"
 			)
 		elif is_yesno_question:
 			feedback_text = (
 				"⚠️ Your words are correct, but the **word order is incorrect for a yes/no question**.\n"
 				"📘 Rule: **Verb – Subject – Object – ...**\n"
 				"📌 Example: *Geht er heute zur Schule?*\n"
-				"🛠️ In yes/no questions, the conjugated verb must be at the beginning."
+				"🛠️ In yes/no questions, the conjugated verb must be at the beginning.\n"
+				f"\n🧩 Your version: {' '.join(output_colored)}"
 			)
 		else:
 			feedback_text = (
 				"⚠️ Your words are correct, but the **word order is incorrect for a main clause**.\n"
 				"📘 Rule: **Subject – Verb – Time – Manner – Place – Object – Infinitive**\n"
 				"📌 Example: *Ich gehe heute mit meinem Hund spazieren.*\n"
-				"👀 Pay attention to time/place blocks and that the **conjugated verb is always in second position**."
+				"👀 Pay attention to time/place blocks and that the **conjugated verb is always in second position**.\n"
+				f"\n🧩 Your version: {' '.join(output_colored)}"
 			)
+
 		return False, feedback_text
 
 	# Else: full comparison (still colorized and case-sensitive for learner clarity)
@@ -121,37 +137,6 @@ def get_feedback(student_version, correct_version):
 		feedback_text = " ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
 
 	return all_correct, feedback_text
-
-	# Else: full token comparison
-	sm = difflib.SequenceMatcher(None, correct_words, student_words)
-	opcodes = sm.get_opcodes()
-
-	for tag, i1, i2, j1, j2 in opcodes:
-		if tag == 'equal':
-			for w in correct_words[i1:i2]:
-				output.append(Fore.GREEN + w + Style.RESET_ALL)
-		elif tag == 'replace':
-			for w1, w2 in zip(correct_words[i1:i2], student_words[j1:j2]):
-				output.append(Fore.RED + w2 + Style.RESET_ALL)
-				explanation.append(f"❌ '{w2}' sollte '{w1}' sein.")
-		elif tag == 'delete':
-			for w in correct_words[i1:i2]:
-				output.append(Fore.RED + "___" + Style.RESET_ALL)
-				explanation.append(f"❌ Es fehlt das Wort '{w}'.")
-		elif tag == 'insert':
-			for w in student_words[j1:j2]:
-				output.append(Fore.YELLOW + w + Style.RESET_ALL)
-				explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
-
-	all_correct = len(explanation) == 0
-
-	if all_correct:
-		feedback_text = "✅ Deine Übersetzung ist korrekt!"
-	else:
-		feedback_text = " ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
-
-	return all_correct, feedback_text
-
 
 # Level 1 game
 LEVELS = [
@@ -221,23 +206,35 @@ def mode_two(name):
 			print("⏳ Translating locally with transformer model...")
 			correct_german = translate_to_german(english)
 
-			student_input = input("\n📙 Your German translation:\n> ").strip()
+			while True:
+				student_input = input("\n📙 Your German translation (or '3' to reveal solution):\n> ").strip()
 
-			print(f"\n🤖 Model translation:\n➡️ {correct_german}")
+				if student_input == '3':
+					print(f"\n🤖 Model translation:\n➡️ {correct_german}")
+					print("ℹ️ Feedback skipped.\n")
+					break
 
-			correct, feedback = get_feedback(student_input, correct_german)
-			print(f"\n📝 Feedback:\n{feedback}")
+				print(f"\n🤖 Model translation:\n➡️ {correct_german}")
 
-			# Save clean version only (without color codes)
-			clean_feedback = feedback.replace(Fore.GREEN, "").replace(Fore.RED, "").replace(Fore.YELLOW, "").replace(Style.RESET_ALL, "")
-			result_line = f"{name} - EN: {english} | DE: {student_input} => {clean_feedback}\n"
-			encrypted = simple_encrypt(result_line)
+				correct, feedback = get_feedback(student_input, correct_german)
+				print(f"\n📝 Feedback:\n{feedback}")
 
-			with open(ENC_FILE, "a") as f:
-				f.write(encrypted + "\n")
+				# Save clean version only (without color codes)
+				clean_feedback = feedback.replace(Fore.GREEN, "").replace(Fore.RED, "").replace(Fore.YELLOW, "").replace(Style.RESET_ALL, "")
+				result_line = f"{name} - EN: {english} | DE: {student_input} => {clean_feedback}\n"
+				encrypted = simple_encrypt(result_line)
+
+				with open(ENC_FILE, "a") as f:
+					f.write(encrypted + "\n")
+
+				if correct:
+					break
+				else:
+					print("🔁 Try again or type '3' to reveal the solution.")
 
 		except Exception as e:
 			print("⚠️ Error during processing:", e)
+
 
 def main():
 	print("🧠 Willkommen zum Satz-Bau-Spiel!")
