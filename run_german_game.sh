@@ -17,9 +17,26 @@ source "$HOME/german_env/bin/activate"
 echo "📦 Upgrading pip..."
 pip install --upgrade pip --quiet
 
-# Step 4: Install dependencies silently
-echo "📦 Installing dependencies..."
-pip install --quiet "numpy<2" torch transformers sentencepiece colorama
+# Step 4: Install dependencies with clean inline feedback
+packages=("numpy<2" "torch" "transformers" "sentencepiece" "colorama")
+spinner="/|\\-/|\\-"
+echo -n "📦 Installing dependencies... "
+
+installed=""
+for pkg in "${packages[@]}"; do
+    pip install --quiet "$pkg" &
+    PID=$!
+    i=0
+    while kill -0 $PID 2>/dev/null; do
+        i=$(( (i+1) % 8 ))
+        printf "\r📦 Installing dependencies... %s${spinner:$i:1}" "$installed"
+        sleep 0.1
+    done
+    wait $PID
+    installed="${installed}✅"
+done
+
+echo -e "\r📦 Installing dependencies... ${installed} ✅ Done!"
 
 # Step 5: Run the German sentence game
 echo "🚀 Launching the German Sentence Game..."
