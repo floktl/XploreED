@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Bytecode cache in virtual environments
+*.pyc
+*.pyo
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.enc
+
+# Virtual environment (optional, adjust if named differently)
+venv/
+env/
+.german_env/
+german_env/
