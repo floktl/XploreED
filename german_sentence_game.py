@@ -40,12 +40,52 @@ def translate_to_german(english_sentence):
 	return german
 
 def get_feedback(student_version, correct_version):
+	from german_sentence_game import Fore, Style  # if needed from separate module
+
 	student_words = student_version.strip().split()
 	correct_words = correct_version.strip().split()
 
 	output = []
 	explanation = []
 
+	# Detect sentence type (case-insensitive)
+	w_question_words = [
+		"wie", "was", "wann", "wo", "warum", "wer", "wieso", "woher", "wohin", "welche", "welcher", "welches"
+	]
+
+	first_word = correct_words[0].lower() if correct_words else ""
+	is_question = correct_version.strip().endswith("?")
+	is_w_question = is_question and first_word in w_question_words
+	is_yesno_question = is_question and not is_w_question and first_word not in w_question_words and first_word.isalpha()
+
+	# Special case: same words, wrong order (case-insensitive)
+	if sorted([w.lower() for w in student_words]) == sorted([w.lower() for w in correct_words]) \
+			and [w.lower() for w in student_words] != [w.lower() for w in correct_words]:
+		if is_w_question:
+			feedback_text = (
+				"⚠️ Your words are correct, but the **word order is incorrect for a W-question**.\n"
+				"📘 Rule: **W-word – Verb – Subject – ...**\n"
+				"📌 Example: *Wie ist das Wetter heute?*\n"
+				"🛠️ Make sure the conjugated verb comes right after the W-word."
+			)
+		elif is_yesno_question:
+			feedback_text = (
+				"⚠️ Your words are correct, but the **word order is incorrect for a yes/no question**.\n"
+				"📘 Rule: **Verb – Subject – Object – ...**\n"
+				"📌 Example: *Geht er heute zur Schule?*\n"
+				"🛠️ In yes/no questions, the conjugated verb must be at the beginning."
+			)
+		else:
+			feedback_text = (
+				"⚠️ Your words are correct, but the **word order is incorrect for a main clause**.\n"
+				"📘 Rule: **Subject – Verb – Time – Manner – Place – Object – Infinitive**\n"
+				"📌 Example: *Ich gehe heute mit meinem Hund spazieren.*\n"
+				"👀 Pay attention to time/place blocks and that the **conjugated verb is always in second position**."
+			)
+		return False, feedback_text
+
+	# Else: full comparison (still colorized and case-sensitive for learner clarity)
+	import difflib
 	sm = difflib.SequenceMatcher(None, correct_words, student_words)
 	opcodes = sm.get_opcodes()
 
@@ -66,11 +106,45 @@ def get_feedback(student_version, correct_version):
 				output.append(Fore.YELLOW + w + Style.RESET_ALL)
 				explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
 
-	all_correct = (len(explanation) == 0)
-	feedback_text = "✅ Deine Übersetzung ist korrekt!" if all_correct else (
-		" ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
-	)
+	all_correct = len(explanation) == 0
+
+	if all_correct:
+		feedback_text = "✅ Deine Übersetzung ist korrekt!"
+	else:
+		feedback_text = " ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
+
 	return all_correct, feedback_text
+
+	# Else: full token comparison
+	sm = difflib.SequenceMatcher(None, correct_words, student_words)
+	opcodes = sm.get_opcodes()
+
+	for tag, i1, i2, j1, j2 in opcodes:
+		if tag == 'equal':
+			for w in correct_words[i1:i2]:
+				output.append(Fore.GREEN + w + Style.RESET_ALL)
+		elif tag == 'replace':
+			for w1, w2 in zip(correct_words[i1:i2], student_words[j1:j2]):
+				output.append(Fore.RED + w2 + Style.RESET_ALL)
+				explanation.append(f"❌ '{w2}' sollte '{w1}' sein.")
+		elif tag == 'delete':
+			for w in correct_words[i1:i2]:
+				output.append(Fore.RED + "___" + Style.RESET_ALL)
+				explanation.append(f"❌ Es fehlt das Wort '{w}'.")
+		elif tag == 'insert':
+			for w in student_words[j1:j2]:
+				output.append(Fore.YELLOW + w + Style.RESET_ALL)
+				explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
+
+	all_correct = len(explanation) == 0
+
+	if all_correct:
+		feedback_text = "✅ Deine Übersetzung ist korrekt!"
+	else:
+		feedback_text = " ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
+
+	return all_correct, feedback_text
+
 
 # Level 1 game
 LEVELS = [
