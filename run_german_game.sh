@@ -19,7 +19,7 @@ pip install --upgrade pip --quiet
 
 # Step 4: Install dependencies silently
 echo "📦 Installing dependencies..."
-pip install --quiet torch transformers sentencepiece colorama
+pip install --quiet "numpy<2" torch transformers sentencepiece colorama
 
 # Step 5: Run the German sentence game
 echo "🚀 Launching the German Sentence Game..."

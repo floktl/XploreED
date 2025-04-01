@@ -9,13 +9,20 @@ warnings.filterwarnings("ignore", message="Recommended: pip install sacremoses."
 
 # Auto-install required packages
 def ensure_packages():
-	required = ["transformers", "torch", "sentencepiece", "colorama"]
-	for pkg in required:
+	required = {
+		"transformers": None,
+		"torch": None,
+		"sentencepiece": None,
+		"colorama": None,
+		"numpy": "<2"  # enforce compatible numpy version
+	}
+	for pkg, version in required.items():
 		try:
 			__import__(pkg)
 		except ImportError:
-			print(f"📦 Installing missing package: {pkg}")
-			subprocess.check_call([sys.executable, "-m", "pip", "install", pkg])
+			version_str = f"{pkg}{version}" if version else pkg
+			print(f"📦 Installing missing package: {version_str}")
+			subprocess.check_call([sys.executable, "-m", "pip", "install", version_str])
 
 ensure_packages()
 
