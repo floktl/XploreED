@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>German Sentence Trainer</title>
+</head>
+<body>
+    <h1>German Sentence Builder</h1>
+    <form method="post">
+        <label>📝 English sentence:</label><br>
+        <input type="text" name="english" style="width: 80%;" required><br><br>
+
+        <label>✏️ Your German translation:</label><br>
+        <input type="text" name="student_input" style="width: 80%;"><br><br>
+
+        <button type="submit">Get Feedback</button>
+    </form>
+
+    {% if correct_translation %}
+        <h3>🤖 Model Translation:</h3>
+        <p>{{ correct_translation }}</p>
+    {% endif %}
+
+    {% if feedback %}
+        <h3>📝 Feedback:</h3>
+        <pre style="white-space: pre-wrap;">{{ feedback|safe }}</pre>
+    {% endif %}
+</body>
+</html>
