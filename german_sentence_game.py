@@ -7,6 +7,8 @@ import signal
 import warnings
 import readline
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 warnings.filterwarnings("ignore", message="Recommended: pip install sacremoses.")
 
