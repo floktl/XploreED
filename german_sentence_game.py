@@ -41,7 +41,7 @@ def simple_encrypt(text, shift=3):
 
 def translate_to_german(english_sentence):
 	try:
-		with open("/etc/secrets/DEEPL_API_KEY") as f:
+		with open("DEEPL_API_KEY") as f:
 			api_key = f.read().strip()
 	except Exception:
 		return "❌ Could not read DeepL secret file."
