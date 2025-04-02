@@ -55,6 +55,8 @@ def translate_to_german(english_sentence):
 
 	try:
 		json_data = response.json()
+		print("🔁 DeepL response:", response.status_code, response.text)  # ✅ print for Render logs
+
 		if "translations" in json_data:
 			return json_data["translations"][0]["text"]
 		elif "message" in json_data:
