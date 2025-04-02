@@ -38,7 +38,11 @@ def simple_encrypt(text, shift=3):
 	return ''.join(chr((ord(c) + shift) % 256) for c in text)
 
 def translate_to_german(english_sentence):
-	api_key = os.environ.get("DEEPL_API_KEY")  # set this in your env variables
+	api_key = os.environ.get("DEEPL_API_KEY")
+
+	if not api_key:
+		return "❌ Error: DEEPL_API_KEY not set."
+
 	url = "https://api-free.deepl.com/v2/translate"
 	data = {
 		"auth_key": api_key,
@@ -46,7 +50,18 @@ def translate_to_german(english_sentence):
 		"target_lang": "DE"
 	}
 	response = requests.post(url, data=data)
-	return response.json()["translations"][0]["text"]
+
+	try:
+		json_data = response.json()
+		if "translations" in json_data:
+			return json_data["translations"][0]["text"]
+		elif "message" in json_data:
+			return f"❌ DeepL API Error: {json_data['message']}"
+		else:
+			return "❌ Unknown translation error."
+	except Exception as e:
+		return f"❌ API failure: {str(e)}"
+
 
 def get_feedback(student_version, correct_version):
 	from german_sentence_game import Fore, Style  # if needed from separate module
