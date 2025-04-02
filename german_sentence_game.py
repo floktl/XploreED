@@ -40,10 +40,14 @@ def simple_encrypt(text, shift=3):
 	return ''.join(chr((ord(c) + shift) % 256) for c in text)
 
 def translate_to_german(english_sentence):
-	api_key = os.environ.get("DEEPL_API_KEY")
+	try:
+		with open("/etc/secrets/DEEPL_API_KEY") as f:
+			api_key = f.read().strip()
+	except Exception:
+		return "❌ Could not read DeepL secret file."
 
 	if not api_key:
-		return "❌ Error: DEEPL_API_KEY not set."
+		return "❌ DeepL key is empty."
 
 	url = "https://api-free.deepl.com/v2/translate"
 	data = {
