@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import re
 from german_sentence_game import translate_to_german, get_feedback
+from dotenv import load_dotenv
+load_dotenv()
 
 def ansi_to_html(text):
     ansi_codes = {

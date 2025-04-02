@@ -1,6 +1,5 @@
 flask
-transformers
-torch
-sentencepiece
+requests
 colorama
+python-dotenv
 numpy<2

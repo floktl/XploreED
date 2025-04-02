@@ -6,16 +6,16 @@ import difflib
 import signal
 import warnings
 import readline
+import requests
+
 warnings.filterwarnings("ignore", message="Recommended: pip install sacremoses.")
 
 # Auto-install required packages
 def ensure_packages():
 	required = {
-		"transformers": None,
-		"torch": None,
-		"sentencepiece": None,
 		"colorama": None,
-		"numpy": "<2"
+		"numpy": "<2",
+		"requests": None
 	}
 	for pkg, version in required.items():
 		try:
@@ -27,14 +27,10 @@ def ensure_packages():
 
 ensure_packages()
 
-from transformers import MarianMTModel, MarianTokenizer
 from colorama import Fore, Style, init as colorama_init
 colorama_init()
 
 # Load model
-model_name = "Helsinki-NLP/opus-mt-en-de"
-tokenizer = MarianTokenizer.from_pretrained(model_name)
-model = MarianMTModel.from_pretrained(model_name)
 
 ENC_FILE = "results.enc"
 
@@ -42,10 +38,15 @@ def simple_encrypt(text, shift=3):
 	return ''.join(chr((ord(c) + shift) % 256) for c in text)
 
 def translate_to_german(english_sentence):
-	inputs = tokenizer([english_sentence], return_tensors="pt", padding=True)
-	translated = model.generate(**inputs)
-	german = tokenizer.decode(translated[0], skip_special_tokens=True)
-	return german
+	api_key = os.environ.get("DEEPL_API_KEY")  # set this in your env variables
+	url = "https://api-free.deepl.com/v2/translate"
+	data = {
+		"auth_key": api_key,
+		"text": english_sentence,
+		"target_lang": "DE"
+	}
+	response = requests.post(url, data=data)
+	return response.json()["translations"][0]["text"]
 
 def get_feedback(student_version, correct_version):
 	from german_sentence_game import Fore, Style  # if needed from separate module

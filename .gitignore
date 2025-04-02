@@ -11,7 +11,7 @@ build/
 dist/
 *.egg-info/
 *.enc
-
+.env
 # Virtual environment (optional, adjust if named differently)
 venv/
 env/
