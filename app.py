@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import re
+import os
 from german_sentence_game import translate_to_german, get_feedback
 from dotenv import load_dotenv
 load_dotenv()
