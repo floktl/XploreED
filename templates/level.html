@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level {{ level+1 }}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Level {{ level + 1 }} - {{ name }}</h1>
+  <p>🧩 Unscramble the sentence:</p>
+  <div class="scrambled">
+    {{ scrambled | join(" ") }}
+  </div>
+
+  <form method="post" action="/level-game">
+    <input type="hidden" name="level" value="{{ level }}">
+    <input type="hidden" name="name" value="{{ name }}">
+    <input type="text" name="user_answer" placeholder="Type the correct sentence...">
+    <button type="submit">Submit</button>
+  </form>
+
+  {% if feedback %}
+    <h3>📃 Feedback:</h3>
+    <p>{{ feedback|safe }}</p>
+    {% if not correct_sentence in feedback %}
+      <form method="post" action="/level-game">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="level" value="{{ level + 1 }}">
+        <button type="submit">➡️ Next Level</button>
+      </form>
+    {% endif %}
+  {% endif %}
+  <a href="/">⬅️ Back to Menu</a>
+</body>
+<!-- ✅ Global Profile Button -->
+<div class="profile-button">
+  <form action="/profile" method="get">
+    <button type="submit">👤 Settings</button>
+  </form>
+</html>

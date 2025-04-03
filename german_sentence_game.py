@@ -1,287 +1,226 @@
-import os
-import sys
-import subprocess
+# german_sentence_game.py
 import random
-import difflib
-import signal
-import warnings
-import readline
 import requests
-from dotenv import load_dotenv
-load_dotenv()
+from colorama import Fore, Style
+import sqlite3
+from datetime import datetime
+import os
+import re
 
-warnings.filterwarnings("ignore", message="Recommended: pip install sacremoses.")
+DB_FILE = "game_results.db"
 
-# Auto-install required packages
-def ensure_packages():
-	required = {
-		"colorama": None,
-		"numpy": "<2",
-		"requests": None
-	}
-	for pkg, version in required.items():
-		try:
-			__import__(pkg)
-		except ImportError:
-			version_str = f"{pkg}{version}" if version else pkg
-			print(f"📦 Installing missing package: {version_str}")
-			subprocess.check_call([sys.executable, "-m", "pip", "install", version_str])
+try:
+    with open("DEEPL_API_KEY") as f:
+        API_KEY = f.read().strip()
+except Exception:
+    API_KEY = None
 
-ensure_packages()
-
-from colorama import Fore, Style, init as colorama_init
-colorama_init()
-
-# Load model
-
-ENC_FILE = "results.enc"
-
-def simple_encrypt(text, shift=3):
-	return ''.join(chr((ord(c) + shift) % 256) for c in text)
-
-def translate_to_german(english_sentence):
-	try:
-		with open("DEEPL_API_KEY") as f:
-			api_key = f.read().strip()
-	except Exception:
-		return "❌ Could not read DeepL secret file."
-
-	if not api_key:
-		return "❌ DeepL key is empty."
-
-	url = "https://api-free.deepl.com/v2/translate"
-	data = {
-		"auth_key": api_key,
-		"text": english_sentence,
-		"target_lang": "DE"
-	}
-	response = requests.post(url, data=data)
-
-	try:
-		json_data = response.json()
-		print("🔁 DeepL response:", response.status_code, response.text)  # ✅ print for Render logs
-
-		if "translations" in json_data:
-			return json_data["translations"][0]["text"]
-		elif "message" in json_data:
-			return f"❌ DeepL API Error: {json_data['message']}"
-		else:
-			return "❌ Unknown translation error."
-	except Exception as e:
-		return f"❌ API failure: {str(e)}"
-
-
-def get_feedback(student_version, correct_version):
-	from german_sentence_game import Fore, Style  # if needed from separate module
-
-	student_words = student_version.strip().split()
-	correct_words = correct_version.strip().split()
-
-	output = []
-	explanation = []
-
-	# Detect sentence type (case-insensitive)
-	w_question_words = [
-		"wie", "was", "wann", "wo", "warum", "wer", "wieso", "woher", "wohin", "welche", "welcher", "welches"
-	]
-
-	first_word = correct_words[0].lower() if correct_words else ""
-	is_question = correct_version.strip().endswith("?")
-	is_w_question = is_question and first_word in w_question_words
-	is_yesno_question = is_question and not is_w_question and first_word not in w_question_words and first_word.isalpha()
-
-	# Special case: same words, wrong order (case-insensitive)
-	if sorted([w.lower() for w in student_words]) == sorted([w.lower() for w in correct_words]) \
-			and [w.lower() for w in student_words] != [w.lower() for w in correct_words]:
-
-		output_colored = []
-		for idx, word in enumerate(student_words):
-			correct_word = correct_words[idx] if idx < len(correct_words) else ""
-			if word.lower() == correct_word.lower():
-				output_colored.append(Fore.GREEN + word + Style.RESET_ALL)
-			elif word.lower() in [w.lower() for w in correct_words]:
-				output_colored.append(Fore.RED + word + Style.RESET_ALL)
-			else:
-				output_colored.append(Fore.YELLOW + word + Style.RESET_ALL)
-
-		if is_w_question:
-			feedback_text = (
-				"⚠️ Your words are correct, but the **word order is incorrect for a W-question**.\n"
-				"📘 Rule: **W-word – Verb – Subject – ...**\n"
-				"📌 Example: *Wie ist das Wetter heute?*\n"
-				"🛠️ Make sure the conjugated verb comes right after the W-word.\n"
-				f"\n🧩 Your version: {' '.join(output_colored)}"
-			)
-		elif is_yesno_question:
-			feedback_text = (
-				"⚠️ Your words are correct, but the **word order is incorrect for a yes/no question**.\n"
-				"📘 Rule: **Verb – Subject – Object – ...**\n"
-				"📌 Example: *Geht er heute zur Schule?*\n"
-				"🛠️ In yes/no questions, the conjugated verb must be at the beginning.\n"
-				f"\n🧩 Your version: {' '.join(output_colored)}"
-			)
-		else:
-			feedback_text = (
-				"⚠️ Your words are correct, but the **word order is incorrect for a main clause**.\n"
-				"📘 Rule: **Subject – Verb – Time – Manner – Place – Object – Infinitive**\n"
-				"📌 Example: *Ich gehe heute mit meinem Hund spazieren.*\n"
-				"👀 Pay attention to time/place blocks and that the **conjugated verb is always in second position**.\n"
-				f"\n🧩 Your version: {' '.join(output_colored)}"
-			)
-
-		return False, feedback_text
-
-	# Else: full comparison (still colorized and case-sensitive for learner clarity)
-	import difflib
-	sm = difflib.SequenceMatcher(None, correct_words, student_words)
-	opcodes = sm.get_opcodes()
-
-	for tag, i1, i2, j1, j2 in opcodes:
-		if tag == 'equal':
-			for w in correct_words[i1:i2]:
-				output.append(Fore.GREEN + w + Style.RESET_ALL)
-		elif tag == 'replace':
-			for w1, w2 in zip(correct_words[i1:i2], student_words[j1:j2]):
-				output.append(Fore.RED + w2 + Style.RESET_ALL)
-				explanation.append(f"❌ '{w2}' sollte '{w1}' sein.")
-		elif tag == 'delete':
-			for w in correct_words[i1:i2]:
-				output.append(Fore.RED + "___" + Style.RESET_ALL)
-				explanation.append(f"❌ Es fehlt das Wort '{w}'.")
-		elif tag == 'insert':
-			for w in student_words[j1:j2]:
-				output.append(Fore.YELLOW + w + Style.RESET_ALL)
-				explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
-
-	all_correct = len(explanation) == 0
-
-	if all_correct:
-		feedback_text = "✅ Deine Übersetzung ist korrekt!"
-	else:
-		feedback_text = " ".join(output) + "\n\n📘 Erklärungen:\n" + "\n".join(explanation)
-
-	return all_correct, feedback_text
-
-# Level 1 game
 LEVELS = [
-	"Ich heiße Anna",
-	"Wir wohnen in Berlin",
-	"Er trinkt jeden Morgen Kaffee",
-	"Morgen fahre ich mit dem Bus zur Schule",
-	"Am Wochenende spiele ich gern Fußball",
-	"Sie möchte ein neues Auto kaufen",
-	"Kannst du mir bitte helfen",
-	"Ich habe gestern einen interessanten Film gesehen",
-	"Wenn ich Zeit habe, besuche ich meine Großeltern",
-	"Obwohl es regnet, gehen wir spazieren"
+    "Ich heiße Anna",
+    "Wir wohnen in Berlin",
+    "Er trinkt jeden Morgen Kaffee",
+    "Morgen fahre ich mit dem Bus zur Schule",
+    "Am Wochenende spiele ich gern Fußball",
+    "Sie möchte ein neues Auto kaufen",
+    "Kannst du mir bitte helfen",
+    "Ich habe gestern einen interessanten Film gesehen",
+    "Wenn ich Zeit habe, besuche ich meine Großeltern",
+    "Obwohl es regnet, gehen wir spazieren"
 ]
 
-def play_level(level, sentence):
-	words = sentence.split()
-	scrambled = words[:]
-	random.shuffle(scrambled)
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.progress = []  # store (level, correct, answer, timestamp)
 
-	print(f"\n🧩 Level {level+1}:\n👉 Ordne die Wörter richtig:")
-	print(" ".join(scrambled))
+    def add_result(self, level, correct, answer, timestamp):
+        self.progress.append({
+            "level": level,
+            "correct": correct,
+            "answer": answer,
+            "timestamp": timestamp
+        })
 
-	answer = input("\n✍️ Deine Antwort:\n> ").strip()
-	correct = (answer == sentence)
-	status = "Richtig" if correct else "Falsch"
-	return correct, status, answer
+def init_db():
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute('''CREATE TABLE IF NOT EXISTS results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            level INTEGER,
+            correct INTEGER,
+            answer TEXT,
+            timestamp TEXT
+        );''')
 
-def explain_word_order(correct_sentence):
-	print("\n📚 Erklärung zur Wortstellung:")
-	print("➡️ Subjekt – Verb – (Zeit) – (Art und Weise) – (Ort) – Objekt – [Infinitiv am Ende]\n")
-	print("👉 Korrekte Reihenfolge:")
-	print(f"➡️ {correct_sentence}")
-	print("🔁 Achte darauf, dass das konjugierte Verb immer an zweiter Stelle steht!")
+        conn.execute('''CREATE TABLE IF NOT EXISTS vocab_log (
+            username TEXT,
+            vocab TEXT,
+            translation TEXT
+        );''')
 
-def mode_one(name):
-	score = 0
-	for i, sentence in enumerate(LEVELS):
-		correct, status, user_answer = play_level(i, sentence)
+init_db()
 
-		if correct:
-			print("✅ Richtig! Weiter so!")
-			score += 1
-		else:
-			print("❌ Das war nicht korrekt.")
-			explain_word_order(sentence)
+def vocab_exists(username, word):
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.execute("SELECT 1 FROM vocab_log WHERE username = ? AND vocab = ?", (username, word.lower()))
+        return cursor.fetchone() is not None
 
-		result_line = f"Level {i+1} - {name}: {status} ({user_answer})\n"
-		encrypted = simple_encrypt(result_line)
+def save_vocab(username, german_word):
+    if german_word in ["?", "!", ",", "."] or not API_KEY:
+        return
 
-		with open(ENC_FILE, "a") as f:
-			f.write(encrypted + "\n")
+    if vocab_exists(username, german_word):
+        return
 
-	print("\n🏁 Spiel beendet!")
-	print(f"🎯 {name}, dein Ergebnis: {score}/10")
+    url = "https://api-free.deepl.com/v2/translate"
+    data = {
+        "auth_key": API_KEY,
+        "text": german_word,
+        "source_lang": "DE",
+        "target_lang": "EN"
+    }
+    try:
+        response = requests.post(url, data=data)
+        english_word = response.json()["translations"][0]["text"]
+    except Exception:
+        english_word = "(error)"
 
-def mode_two(name):
-	print("\n✏️ Enter an English sentence. The system will translate it automatically into German.")
-	print("Then you'll type your own translation and get feedback.\n")
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute(
+            "INSERT INTO vocab_log (username, vocab, translation) VALUES (?, ?, ?)",
+            (username, german_word.lower(), english_word)
+        )
 
-	while True:
-		english = input("📘 English (or 'q' to quit):\n> ").strip()
-		if english.lower() == 'q':
-			break
+def split_and_clean(text):
+    return re.findall(r"\b\w+\b", text)
 
-		try:
-			print("⏳ Translating locally with transformer model...")
-			correct_german = translate_to_german(english)
+def translate_to_german(english_sentence, username=None):
+    if not API_KEY:
+        return "❌ DeepL key is empty."
 
-			while True:
-				student_input = input("\n📙 Your German translation (or '3' to reveal solution):\n> ").strip()
+    url = "https://api-free.deepl.com/v2/translate"
+    data = {
+        "auth_key": API_KEY,
+        "text": english_sentence,
+        "target_lang": "DE"
+    }
+    response = requests.post(url, data=data)
 
-				if student_input == '3':
-					print(f"\n🤖 Model translation:\n➡️ {correct_german}")
-					print("ℹ️ Feedback skipped.\n")
-					break
+    try:
+        json_data = response.json()
+        german_text = json_data["translations"][0]["text"]
 
-				print(f"\n🤖 Model translation:\n➡️ {correct_german}")
+        if username:
+            words_to_check = split_and_clean(german_text)
+            for word in words_to_check:
+                save_vocab(username, word)
 
-				correct, feedback = get_feedback(student_input, correct_german)
-				print(f"\n📝 Feedback:\n{feedback}")
+        return german_text
+    except Exception:
+        return "❌ API failure"
 
-				# Save clean version only (without color codes)
-				clean_feedback = feedback.replace(Fore.GREEN, "").replace(Fore.RED, "").replace(Fore.YELLOW, "").replace(Style.RESET_ALL, "")
-				result_line = f"{name} - EN: {english} | DE: {student_input} => {clean_feedback}\n"
-				encrypted = simple_encrypt(result_line)
+def get_scrambled_sentence(sentence):
+    words = sentence.split()
+    random.shuffle(words)
+    return words
 
-				with open(ENC_FILE, "a") as f:
-					f.write(encrypted + "\n")
+def evaluate_order(user_answer, correct_sentence):
+    user_words = user_answer.strip().split()
+    correct_words = correct_sentence.strip().split()
 
-				if correct:
-					break
-				else:
-					print("🔁 Try again or type '3' to reveal the solution.")
+    if user_words == correct_words:
+        return True, "✅ Deine Reihenfolge ist korrekt!"
 
-		except Exception as e:
-			print("⚠️ Error during processing:", e)
+    feedback = []
+    for i, word in enumerate(user_words):
+        if i < len(correct_words) and word == correct_words[i]:
+            feedback.append(Fore.GREEN + word + Style.RESET_ALL)
+        else:
+            feedback.append(Fore.RED + word + Style.RESET_ALL)
+    return False, "📝 Feedback: " + " ".join(feedback)
 
+def get_feedback(student_version, correct_version):
+    student_words = student_version.strip().split()
+    correct_words = correct_version.strip().split()
 
-def main():
-	print("🧠 Willkommen zum Satz-Bau-Spiel!")
-	name = input("Wie heißt du? > ")
-	global ENC_FILE
-	ENC_FILE = f"{name}_result.enc"
+    output = []
+    explanation = []
 
-	print("\nWähle den Modus:")
-	print("1️⃣ Satz-Reihenfolge-Spiel (A1–B1)")
-	print("2️⃣ Freie Übersetzung + Offline-Feedback (Transformers)")
+    w_question_words = [
+        "wie", "was", "wann", "wo", "warum", "wer", "wieso", "woher", "wohin", "welche", "welcher", "welches"
+    ]
+    first_word = correct_words[0].lower() if correct_words else ""
+    is_question = correct_version.strip().endswith("?")
+    is_w_question = is_question and first_word in w_question_words
+    is_yesno_question = is_question and not is_w_question and first_word.isalpha()
 
-	choice = input("\nModus wählen (1 oder 2): ").strip()
+    if sorted([w.lower() for w in student_words]) == sorted([w.lower() for w in correct_words]) \
+            and [w.lower() for w in student_words] != [w.lower() for w in correct_words]:
 
-	if choice == "1":
-		mode_one(name)
-	elif choice == "2":
-		mode_two(name)
-	else:
-		print("❌ Ungültige Auswahl.")
+        for idx, word in enumerate(student_words):
+            correct_word = correct_words[idx] if idx < len(correct_words) else ""
+            if word.lower() == correct_word.lower():
+                output.append(Fore.GREEN + word + Style.RESET_ALL)
+            elif word.lower() in [w.lower() for w in correct_words]:
+                output.append(Fore.RED + word + Style.RESET_ALL)
+            else:
+                output.append(Fore.YELLOW + word + Style.RESET_ALL)
 
-if __name__ == "__main__":
-	try:
-		main()
-	except KeyboardInterrupt:
-		print("\n👋 Auf Wiedersehen!")
-		sys.exit(0)
+        user_version_html = "<p><strong>🧩 Deine Version:</strong><br><span style='font-family: monospace;'>" + " ".join(output) + "</span></p>"
+
+        if is_w_question:
+            return False, (
+                "⚠️ Deine Wörter sind korrekt, aber die Wortstellung ist falsch für eine W-Frage.<br>"
+                "📘 Regel: W-Wort – Verb – Subjekt – ...<br>"
+                + user_version_html
+            )
+        elif is_yesno_question:
+            return False, (
+                "⚠️ Deine Wörter sind korrekt, aber die Wortstellung ist falsch für eine Ja/Nein-Frage.<br>"
+                "📘 Regel: Verb – Subjekt – Objekt – ...<br>"
+                + user_version_html
+            )
+        else:
+            return False, (
+                "⚠️ Deine Wörter sind korrekt, aber die Wortstellung ist nicht ideal.<br>"
+                "📘 Regel: Subjekt – Verb – Zeit – Art – Ort – Objekt – Infinitiv<br>"
+                + user_version_html
+            )
+
+    from difflib import SequenceMatcher
+    sm = SequenceMatcher(None, correct_words, student_words)
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == 'equal':
+            for w in correct_words[i1:i2]:
+                output.append(Fore.GREEN + w + Style.RESET_ALL)
+        elif tag == 'replace':
+            for w1, w2 in zip(correct_words[i1:i2], student_words[j1:j2]):
+                output.append(Fore.RED + w2 + Style.RESET_ALL)
+                explanation.append(f"❌ '{w2}' sollte '{w1}' sein.")
+        elif tag == 'delete':
+            for w in correct_words[i1:i2]:
+                output.append(Fore.RED + "___" + Style.RESET_ALL)
+                explanation.append(f"❌ Es fehlt das Wort '{w}'.")
+        elif tag == 'insert':
+            for w in student_words[j1:j2]:
+                output.append(Fore.YELLOW + w + Style.RESET_ALL)
+                explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
+
+    if not explanation:
+        return True, "✅ Deine Übersetzung ist korrekt!"
+
+    feedback_text = "<p><strong>🧩 Deine Version:</strong><br><span style='font-family: monospace;'>" + " ".join(output) + "</span></p>"
+    feedback_text += "<p>📘 Erklärungen:<br>" + "<br>".join(explanation) + "</p>"
+    return False, feedback_text
+
+def save_result(username, level, correct, answer):
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute(
+            "INSERT INTO results (username, level, correct, answer, timestamp) VALUES (?, ?, ?, ?, ?)",
+            (username, level, int(correct), answer, datetime.now().isoformat())
+        )
+
+def get_all_results():
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.execute("SELECT username, level, correct, answer, timestamp FROM results ORDER BY timestamp DESC")
+        return cursor.fetchall()
