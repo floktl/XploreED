@@ -1,29 +1,48 @@
+<!-- templates/index.html (now for logged-in user) -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>German Sentence Trainer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Menu</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .menu {
+      max-width: 500px;
+      text-align: center;
+      margin: auto;
+    }
+    .menu p {
+      font-size: 1.2em;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-    <h1>German Sentence Builder</h1>
-    <form method="post">
-        <label>📝 English sentence:</label><br>
-        <input type="text" name="english" style="width: 80%;" required><br><br>
+  <div class="menu">
+    <h1>👋 Welcome, {{ name }}</h1>
+    <p>Choose one of the modes below to begin your practice:</p>
 
-        <label>✏️ Your German translation:</label><br>
-        <input type="text" name="student_input" style="width: 80%;"><br><br>
-
-        <button type="submit">Get Feedback</button>
+    <form action="/translate" method="get">
+      <button type="submit">📝 Translation Practice</button>
     </form>
 
-    {% if correct_translation %}
-        <h3>🤖 Model Translation:</h3>
-        <p>{{ correct_translation }}</p>
-    {% endif %}
+    <form action="/level-game" method="post">
+      <input type="hidden" name="level" value="0">
+      <button type="submit">🎯 Sentence Order Game</button>
+    </form>
+    
+    <form action="/vocabulary" method="get">
+      <button type="submit">📖 My Vocabulary</button>
+    </form>
+    
 
-    {% if feedback %}
-        <h3>📝 Feedback:</h3>
-        <pre style="white-space: pre-wrap;">{{ feedback|safe }}</pre>
-    {% endif %}
+    <a href="/admin">🔐 Admin View</a>
+  </div>
 </body>
+<!-- ✅ Global Profile Button -->
+<div class="profile-button">
+  <form action="/profile" method="get">
+    <button type="submit">👤 Settings</button>
+  </form>
 </html>

@@ -1,0 +1,69 @@
+<!-- templates/vocabulary.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📖 My Vocabulary</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    table {
+      width: 100%;
+      max-width: 700px;
+      border-collapse: collapse;
+      margin: 20px auto;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .profile-button {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-button">
+    <form action="/profile" method="get">
+      <button type="submit">👤 Profile</button>
+    </form>
+  </div>
+
+  <h1 style="text-align:center;">📖 Your Vocabulary – {{ name }}</h1>
+
+  {% if vocab_list %}
+    <table>
+      <thead>
+        <tr>
+          <th>German Word</th>
+          <th>English Translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vocab in vocab_list %}
+        <tr>
+          <td>{{ vocab[0] }}</td>
+          <td>{{ vocab[1] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p style="text-align:center;">🧐 No vocabulary saved yet. Try completing a few translations or levels!</p>
+  {% endif %}
+
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="/menu">⬅️ Back to Menu</a>
+  </div>
+</body>
+</html>
