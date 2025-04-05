@@ -221,6 +221,34 @@ def save_result(username, level, correct, answer):
         )
 
 def get_all_results():
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect("game_results.db") as conn:
         cursor = conn.execute("SELECT username, level, correct, answer, timestamp FROM results ORDER BY timestamp DESC")
-        return cursor.fetchall()
+        rows = cursor.fetchall()
+        return [
+            {"username": u, "level": l, "correct": c, "answer": a, "timestamp": t}
+            for u, l, c, a, t in rows
+        ]
+
+def fetch_lessons_for_user(username):
+    print(f"[DEBUG] Fetching lessons for user: {username}", flush=True)
+    lessons = []
+
+    with sqlite3.connect("game_results.db") as conn:
+        cursor = conn.execute("""
+            SELECT DISTINCT level, MAX(timestamp), correct
+            FROM results
+            WHERE username = ?
+            GROUP BY level
+            ORDER BY MAX(timestamp) DESC
+        """, (username,))
+        rows = cursor.fetchall()
+
+        for level, last_attempt, correct in rows:
+            lessons.append({
+                "id": level,
+                "title": f"Lesson {level + 1}",
+                "completed": bool(correct),
+                "last_attempt": last_attempt
+            })
+
+    return lessons

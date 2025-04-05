@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app           # 🟢 Needed for hot reload
+    environment:
+      - FLASK_ENV=development    # 🟢 Tells Flask to use auto-reload
+    depends_on:
+      - frontend
+
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app          # 🟢 Needed for hot reload
+      - /app/node_modules        # 🧹 Prevents overwriting node_modules
+    ports:
+      - "5173:5173"

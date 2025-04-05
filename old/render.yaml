@@ -1,9 +1,9 @@
 services:
   - type: web
     name: german-class-tool
-    env: python
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
     envVars:
       - key: DEEPL_API_KEY
         fromFile: /etc/secrets/DEEPL_API_KEY
-    buildCommand: pip install -r requirements.txt
-    startCommand: python app.py

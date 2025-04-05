@@ -17,3 +17,4 @@ venv/
 env/
 .german_env/
 german_env/
+DEEPL_API_KEY

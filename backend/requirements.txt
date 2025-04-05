@@ -1,5 +1,6 @@
 flask
+flask_cors
+python-dotenv
 requests
 colorama
-python-dotenv
 numpy<2
