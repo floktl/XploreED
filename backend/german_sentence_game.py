@@ -4,16 +4,10 @@ import requests
 from colorama import Fore, Style
 import sqlite3
 from datetime import datetime
-import os
 import re
+from env_load import DEEPL_API_KEY, OPENAI_API_KEY
 
 DB_FILE = "game_results.db"
-
-try:
-    with open("DEEPL_API_KEY") as f:
-        API_KEY = f.read().strip()
-except Exception:
-    API_KEY = None
 
 LEVELS = [
     "Ich heiße Anna",
@@ -66,7 +60,7 @@ def vocab_exists(username, word):
         return cursor.fetchone() is not None
 
 def save_vocab(username, german_word):
-    if german_word in ["?", "!", ",", "."] or not API_KEY:
+    if german_word in ["?", "!", ",", "."] or not DEEPL_API_KEY:
         return
 
     if vocab_exists(username, german_word):
@@ -74,7 +68,7 @@ def save_vocab(username, german_word):
 
     url = "https://api-free.deepl.com/v2/translate"
     data = {
-        "auth_key": API_KEY,
+        "auth_key": DEEPL_API_KEY,
         "text": german_word,
         "source_lang": "DE",
         "target_lang": "EN"
@@ -95,12 +89,12 @@ def split_and_clean(text):
     return re.findall(r"\b\w+\b", text)
 
 def translate_to_german(english_sentence, username=None):
-    if not API_KEY:
+    if not DEEPL_API_KEY:
         return "❌ DeepL key is empty."
 
     url = "https://api-free.deepl.com/v2/translate"
     data = {
-        "auth_key": API_KEY,
+        "auth_key": DEEPL_API_KEY,
         "text": english_sentence,
         "target_lang": "DE"
     }

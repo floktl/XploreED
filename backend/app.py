@@ -5,20 +5,8 @@ import re
 import os
 import sqlite3
 import sys
+from env_load import ADMIN_PASSWORD
 sys.stdout.flush()
-
-def require_env(var_name):
-    value = os.getenv(var_name)
-    if value is None or value == '':
-        print(f"[ERROR] Missing required environment variable: {var_name}", file=sys.stderr)
-        sys.exit(1)
-    return value
-
-DEEPL_API_KEY = require_env("DEEPL_API_KEY")
-print(f"[DEBUG] DeepL Key Loaded: {'***' if DEEPL_API_KEY else 'NOT SET'}", flush=True)
-
-ADMIN_PASSWORD = require_env("ADMIN_PASSWORD")
-print(f"[DEBUG] Admin password loaded: {'***' if ADMIN_PASSWORD else 'NOT SET'}", flush=True)
 
 from german_sentence_game import (
     translate_to_german, get_feedback, get_scrambled_sentence,
