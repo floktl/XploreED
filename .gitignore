@@ -12,9 +12,17 @@ dist/
 *.egg-info/
 *.enc
 .env
+node_modules/
 # Virtual environment (optional, adjust if named differently)
 venv/
 env/
 .german_env/
 german_env/
 DEEPL_API_KEY
+
+# System files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/

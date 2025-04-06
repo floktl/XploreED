@@ -1,6 +1,6 @@
 // src/api.js
 
-const BASE_URL = "http://localhost:5000"; // Change if needed
+const BASE_URL = "http://backend:5000"; // Change if needed
 
 export async function getVocabulary(username) {
   const res = await fetch(`${BASE_URL}/api/vocabulary/${username}`);
@@ -46,7 +46,7 @@ export async function getAdminResults(password) {
 
 export async function verifyAdminPassword(password) {
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/results?password=${password}`);
+      const res = await fetch(`${BASE_URL}/api/admin/results?password=${password}`);
       if (!res.ok) throw new Error("Invalid password");
       return true;
     } catch (err) {
@@ -56,7 +56,7 @@ export async function verifyAdminPassword(password) {
   }
 
   export async function fetchLevelData(level) {
-    const res = await fetch("http://localhost:5000/api/level", {
+    const res = await fetch("${BASE_URL}/api/level", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level }),
@@ -65,7 +65,7 @@ export async function verifyAdminPassword(password) {
   }
   
   export async function submitLevelAnswer(level, answer, username) {
-    const res = await fetch("http://localhost:5000/api/level/submit", {
+    const res = await fetch("${BASE_URL}/api/level/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level, answer, username }),
@@ -74,7 +74,7 @@ export async function verifyAdminPassword(password) {
   }
 
   export async function fetchProfileResults(username) {
-    const res = await fetch(`http://localhost:5000/api/profile/${username}`);
+    const res = await fetch(`${BASE_URL}/api/profile/${username}`);
     return await res.json();
   }
   
