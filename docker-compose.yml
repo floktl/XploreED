@@ -7,9 +7,9 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/app           # 🟢 Needed for hot reload
+      - ./backend:/app
     environment:
-      - FLASK_ENV=development    # 🟢 Tells Flask to use auto-reload
+      - FLASK_ENV=development
     depends_on:
       - frontend
 
@@ -17,7 +17,10 @@ services:
     build:
       context: ./frontend
     volumes:
-      - ./frontend:/app          # 🟢 Needed for hot reload
-      - /app/node_modules        # 🧹 Prevents overwriting node_modules
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "5173:5173"
+    stop_grace_period: 2s
+    stop_signal: SIGINT
+

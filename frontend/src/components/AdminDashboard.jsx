@@ -1,3 +1,4 @@
+// AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
@@ -15,13 +16,18 @@ export default function AdminDashboard() {
   const darkMode = useAppStore((state) => state.darkMode);
 
   const passwordFromStore = useAppStore((state) => state.adminPassword);
+  const isAdmin = useAppStore((state) => state.isAdmin);
 
   useEffect(() => {
-    const pwd = state?.password || passwordFromStore;
-    if (!pwd) return;
+    if (!isAdmin) {
+      alert("❌ You must login as admin.");
+      navigate("/admin-login");
+      return;
+    }
+
     const fetchData = async () => {
       try {
-        const res = await getAdminResults(pwd);
+        const res = await getAdminResults(passwordFromStore);
         if (res.ok) {
           const data = await res.json();
           setResults(data);
@@ -32,11 +38,10 @@ export default function AdminDashboard() {
         console.error("Error loading admin data:", err);
       }
     };
-    fetchData();
-  }, [state]);
-  
 
-  // ✅ Summarize user profiles by last level and activity
+    fetchData();
+  }, [isAdmin, navigate, passwordFromStore]);
+
   const userSummary = results.reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
     if (!acc[username]) {
@@ -91,11 +96,6 @@ export default function AdminDashboard() {
           </Card>
         )}
 
-        <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/menu")} type="link">
-            ⬅️ Back to Menu
-          </Button>
-        </div>
       </Container>
       <Footer />
     </div>

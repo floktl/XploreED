@@ -1,5 +1,6 @@
 flask
 flask_cors
+flask-limiter
 python-dotenv
 requests
 colorama

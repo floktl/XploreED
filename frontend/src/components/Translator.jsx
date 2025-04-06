@@ -19,14 +19,20 @@ export default function Translator() {
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
+  const isAdmin = useAppStore((state) => state.isAdmin);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (isAdmin) {
+      alert("❌ Admins cannot use student translation practice.");
+      navigate("/admin-panel");
+    }
+
     const storedUsername = localStorage.getItem("username");
     if (storedUsername && !username) {
       setUsername(storedUsername);
     }
-  }, [username, setUsername]);
+  }, [isAdmin, username, setUsername, navigate]);
 
   const handleTranslate = async () => {
     setError("");

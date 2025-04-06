@@ -8,12 +8,12 @@ export default function Footer() {
   const location = useLocation();
   const darkMode = useAppStore((state) => state.darkMode);
   const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
-  const setUsername = useAppStore((state) => state.setUsername);
   const username = useAppStore((state) => state.username);
+  const isAdmin = useAppStore((state) => state.isAdmin);
 
   const handleLogout = () => {
     localStorage.removeItem("username");
-    setUsername(null);
+    useAppStore.getState().resetStore();
     navigate("/");
   };
 
@@ -27,7 +27,7 @@ export default function Footer() {
     >
       {!isNameInputPage && (
         <>
-          {username !== "admin" && (
+          {!isAdmin && (
             <>
               <Button onClick={() => navigate("/profile")} type="link">
                 👤 Profile
@@ -38,7 +38,7 @@ export default function Footer() {
             </>
           )}
 
-          {username === "admin" && (
+          {isAdmin && (
             <Button onClick={() => navigate("/admin-panel")} type="link">
               🛠️ Admin Panel
             </Button>
