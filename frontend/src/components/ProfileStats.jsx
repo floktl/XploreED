@@ -13,7 +13,7 @@ export default function ProfileStats() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://backend:5000/api/profile/${username}`)
+    fetch(`http://localhost:5000/api/profile/${username}`)
       .then((res) => res.json())
       .then(setData)
       .catch(() => setError("❌ Failed to load profile data."));

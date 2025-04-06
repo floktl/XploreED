@@ -3,19 +3,19 @@ services:
     build:
       context: ./backend
     volumes:
-      - ./backend:/app           # 🟢 Needed for hot reload
+      - ./backend:/app # 🟢 Needed for hot reload
     depends_on:
       - frontend
-    env_file:
-      .env
+    ports:
+      - '5000:5000'
+    env_file: .env
 
   frontend:
     build:
       context: ./frontend
     volumes:
-      - ./frontend:/app          # 🟢 Needed for hot reload
-      - /app/node_modules        # 🧹 Prevents overwriting node_modules
+      - ./frontend:/app # 🟢 Needed for hot reload
+      - /app/node_modules # 🧹 Prevents overwriting node_modules
     ports:
-      - "5173:5173"
-    env_file:
-      .env
+      - '5173:5173'
+    env_file: .env
