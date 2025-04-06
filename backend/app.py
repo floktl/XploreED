@@ -4,18 +4,20 @@ from flask_cors import cross_origin
 import re
 import os
 import sqlite3
-from dotenv import load_dotenv
 import sys
 sys.stdout.flush()
 
-# ✅ Load environment variables from .env
-print("[DEBUG] Loading environment variables...")
-load_dotenv()
+def require_env(var_name):
+    value = os.getenv(var_name)
+    if value is None or value == '':
+        print(f"[ERROR] Missing required environment variable: {var_name}", file=sys.stderr)
+        sys.exit(1)
+    return value
 
-DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
+DEEPL_API_KEY = require_env("DEEPL_API_KEY")
 print(f"[DEBUG] DeepL Key Loaded: {'***' if DEEPL_API_KEY else 'NOT SET'}", flush=True)
 
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1")
+ADMIN_PASSWORD = require_env("ADMIN_PASSWORD")
 print(f"[DEBUG] Admin password loaded: {'***' if ADMIN_PASSWORD else 'NOT SET'}", flush=True)
 
 from german_sentence_game import (
