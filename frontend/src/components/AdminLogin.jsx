@@ -15,17 +15,26 @@ export default function AdminLogin() {
 
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
-
+  const setIsAdmin = useAppStore((state) => state.setIsAdmin);
   const setAdminPassword = useAppStore((state) => state.setAdminPassword);
+  
 
   const handleLogin = async () => {
+    console.log("[DEBUG] handleLogin called");
+    console.log("[DEBUG] setAdminPassword:", setAdminPassword);
+  
     const isValid = await verifyAdminPassword(password);
     if (isValid) {
-      setUsername("admin");
-      setAdminPassword(password); // ✅ store it globally
+      console.log("[DEBUG] Password valid");
+      setIsAdmin(true);
+      setAdminPassword(password);
       navigate("/admin-panel");
+    } else {
+      console.log("[DEBUG] Password incorrect");
+      setError("❌ Incorrect password.");
     }
   };
+  
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
@@ -47,8 +56,8 @@ export default function AdminLogin() {
               🔓 Login
             </Button>
 
-            <Button onClick={() => navigate("/menu")} type="link" className="w-full">
-              ⬅️ Back to Menu
+            <Button onClick={() => navigate("/")} type="link" className="w-full">
+              ⬅️ Back to Student Login
             </Button>
           </div>
         </Card>

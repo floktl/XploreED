@@ -16,7 +16,7 @@ except Exception:
     API_KEY = None
 
 LEVELS = [
-    "Ich heiße Anna",
+    "Ich bin Anna",
     "Wir wohnen in Berlin",
     "Er trinkt jeden Morgen Kaffee",
     "Morgen fahre ich mit dem Bus zur Schule",

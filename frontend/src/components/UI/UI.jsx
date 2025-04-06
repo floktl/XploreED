@@ -2,7 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import useAppStore from "../../store/useAppStore";
 
-// Input Component with Dark Mode
 export const Input = ({ className, ...props }) => {
   const darkMode = useAppStore((state) => state.darkMode);
 
@@ -20,7 +19,6 @@ export const Input = ({ className, ...props }) => {
   );
 };
 
-// Title Component with Dark Mode
 export const Title = ({ children, className }) => {
   const darkMode = useAppStore((state) => state.darkMode);
 
@@ -37,7 +35,6 @@ export const Title = ({ children, className }) => {
   );
 };
 
-// Container Component with Dark Mode
 export const Container = ({ children, className }) => {
   const darkMode = useAppStore((state) => state.darkMode);
 

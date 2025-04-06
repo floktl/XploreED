@@ -40,20 +40,41 @@ export async function translateSentence(payload) {
 }
 
 export async function getAdminResults(password) {
-  const res = await fetch(`${BASE_URL}/api/admin/results?password=${password}`);
+  const res = await fetch(`${BASE_URL}/api/admin/results`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
   return res;
 }
 
 export async function verifyAdminPassword(password) {
-    try {
-      const res = await fetch(`http://localhost:5000/api/admin/results?password=${password}`);
-      if (!res.ok) throw new Error("Invalid password");
-      return true;
-    } catch (err) {
-      console.error("[API] Admin login failed:", err);
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/results", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+
+    if (!res.ok) {
+      console.warn("[API] Invalid response status:", res.status);
       return false;
     }
+
+    const data = await res.json();
+
+    // ✅ check if it's actually a list of results
+    if (Array.isArray(data)) {
+      return true;
+    }
+
+    console.warn("[API] Unexpected response:", data);
+    return false;
+  } catch (err) {
+    console.error("[API] Admin login failed:", err);
+    return false;
   }
+}
 
   export async function fetchLevelData(level) {
     const res = await fetch("http://localhost:5000/api/level", {
@@ -75,6 +96,22 @@ export async function verifyAdminPassword(password) {
 
   export async function fetchProfileResults(username) {
     const res = await fetch(`http://localhost:5000/api/profile/${username}`);
+    return await res.json();
+  }
+  
+  export async function fetchProfileStats(username, password) {
+    const res = await fetch(`http://localhost:5000/api/profile-stats/${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password }),
+    });
+  
+    if (!res.ok) {
+      throw new Error("❌ Failed to load user stats");
+    }
+  
     return await res.json();
   }
   

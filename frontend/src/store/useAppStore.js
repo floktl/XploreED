@@ -1,20 +1,26 @@
+// useAppStore.js
 import { create } from "zustand";
 
 const useAppStore = create((set) => ({
-  username: localStorage.getItem("username") || "anonymous",
-  setUsername: (name) => {
-    localStorage.setItem("username", name);
-    set({ username: name });
-  },
-
-  adminPassword: null, // 👈 initialize admin password state
-  setAdminPassword: (password) => set({ adminPassword: password }), // ✅ comma was missing here
-
+  username: null,
+  isAdmin: false,
+  adminPassword: null,
   darkMode: false,
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
   currentLevel: 0,
-  setCurrentLevel: (level) => set({ currentLevel: level }),
 
+  setUsername: (username) => set({ username }),
+  setIsAdmin: (isAdmin) => set({ isAdmin }),
+  setAdminPassword: (adminPassword) => set({ adminPassword }),
+  setCurrentLevel: (level) => set({ currentLevel: level }),
+  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+
+  resetStore: () =>
+    set({
+      username: null,
+      isAdmin: false,
+      adminPassword: null,
+      currentLevel: 0,
+    }),
 }));
 
 export default useAppStore;

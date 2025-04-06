@@ -14,27 +14,33 @@ export default function Profile() {
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
+  const isAdmin = useAppStore((state) => state.isAdmin);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (isAdmin) {
+      navigate("/admin-panel");
+      return;
+    }
+
     const storedUsername = localStorage.getItem("username");
     if (storedUsername && !username) {
       setUsername(storedUsername);
     }
-  }, [username, setUsername]);
+  }, [isAdmin, username, setUsername, navigate]);
 
   useEffect(() => {
-    fetchProfileResults(username || "anonymous").then(setResults);
-  }, [username]);
+    if (!isAdmin && username) {
+      fetchProfileResults(username).then(setResults);
+    }
+  }, [username, isAdmin]);
 
-  const isAdmin = username === "admin";
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>👤 Profile: {username || "anonymous"}
-          <Badge type={isAdmin ? "success" : "default"}>
-                      {isAdmin ? "Admin" : "Student"}
-          </Badge>
+        <Title>
+          👤 Profile: {username || "anonymous"}
+          <Badge type="default">Student</Badge>
         </Title>
         <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
           📚 Your game results are listed below:

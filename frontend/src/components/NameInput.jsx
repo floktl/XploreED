@@ -27,6 +27,10 @@ export default function NameInput() {
     navigate("/menu");
   };
 
+  const handleAdminRedirect = () => {
+    navigate("/admin"); // 👉 Go to the dedicated AdminLogin page
+  };
+
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
@@ -47,9 +51,14 @@ export default function NameInput() {
 
             {error && <Alert type="warning">{error}</Alert>}
 
-            <Button type="primary" onClick={handleContinue}>
-              🚀 Continue
-            </Button>
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+              <Button type="primary" onClick={handleContinue} className="w-full sm:w-auto">
+                🚀 Continue
+              </Button>
+              <Button type="secondary" onClick={handleAdminRedirect} className="w-full sm:w-auto">
+                🔐 Admin Login
+              </Button>
+            </div>
           </div>
         </Card>
       </Container>
