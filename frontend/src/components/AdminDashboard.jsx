@@ -1,4 +1,3 @@
-// AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
@@ -14,7 +13,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const darkMode = useAppStore((state) => state.darkMode);
-
   const passwordFromStore = useAppStore((state) => state.adminPassword);
   const isAdmin = useAppStore((state) => state.isAdmin);
 
@@ -82,10 +80,7 @@ export default function AdminDashboard() {
                     <td className="px-4 py-2">{u.lastLevel}</td>
                     <td className="px-4 py-2">{new Date(u.lastTime).toLocaleString()}</td>
                     <td className="px-4 py-2">
-                      <Link
-                        to={`/profile-stats/${u.username}`}
-                        className="text-blue-600 hover:underline"
-                      >
+                      <Link to={`/profile-stats/${u.username}`} className="text-blue-600 hover:underline">
                         View Stats →
                       </Link>
                     </td>
@@ -96,7 +91,98 @@ export default function AdminDashboard() {
           </Card>
         )}
 
+        {/* ✅ Admin Lesson Creation Form */}
+        <Card className="mt-10">
+          <h2 className="text-xl font-bold mb-4">📘 Add Lesson Content</h2>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const lesson_id = e.target.lesson_id.value;
+              const title = e.target.title.value;
+              const content = e.target.content.value;
+              const target_user = e.target.target_user.value;
+              const is_public = e.target.public.checked;
+
+              try {
+                const res = await fetch("http://localhost:5050/api/admin/lesson-content", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    password: passwordFromStore,
+                    lesson_id: parseInt(lesson_id),
+                    title,
+                    content,
+                    target_user: is_public ? null : target_user,
+                  }),
+                });
+
+                if (res.ok) {
+                  alert("✅ Lesson content added successfully!");
+                  e.target.reset();
+                } else {
+                  const err = await res.json();
+                  alert("❌ Failed to add lesson content: " + (err.error || "Unknown error"));
+                }
+              } catch (err) {
+                alert("❌ Error while sending data.");
+                console.error(err);
+              }
+            }}
+          >
+            <div>
+              <label className="block font-medium mb-1">Lesson Number</label>
+              <input
+                type="number"
+                name="lesson_id"
+                min="0"
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Title</label>
+              <input
+                type="text"
+                name="title"
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Lesson Content</label>
+              <textarea
+                name="content"
+                rows="5"
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1">Target User (optional)</label>
+              <input
+                type="text"
+                name="target_user"
+                className="w-full px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
+                placeholder="Leave empty to publish for everyone"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input type="checkbox" name="public" id="public" className="h-4 w-4" />
+              <label htmlFor="public">Publish for all users</label>
+            </div>
+
+            <Button type="success" className="self-start">
+              ➕ Add Content
+            </Button>
+          </form>
+        </Card>
       </Container>
+
       <Footer />
     </div>
   );

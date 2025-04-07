@@ -17,7 +17,7 @@ export default function Lessons() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/lessons?username=${username}`);
+        const res = await fetch(`http://localhost:5050/api/lessons?username=${username}`);
         if (!res.ok) throw new Error("Failed to fetch lessons");
         const data = await res.json();
         setLessons(data);

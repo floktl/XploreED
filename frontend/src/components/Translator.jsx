@@ -50,7 +50,7 @@ export default function Translator() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/translate", {
+      const res = await fetch("http://localhost:5050/api/translate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
