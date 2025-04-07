@@ -10,22 +10,24 @@ import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import Lessons from "./components/Lessons";
 import ProfileStats from "./components/ProfileStats";
+import LessonView from "./components/LessonView";
 
 export default function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<NameInput />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/translate" element={<Translator />} />
-        <Route path="/level-game" element={<LevelGame />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/vocabulary" element={<Vocabulary />} />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin-panel" element={<AdminDashboard />} />
-        <Route path="/Lessons" element={<Lessons />} />
-        <Route path="/profile-stats/:username" element={<ProfileStats />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+	return (
+	  <BrowserRouter>
+		<Routes>
+		  <Route path="/" element={<NameInput />} />
+		  <Route path="/menu" element={<Menu />} />
+		  <Route path="/translate" element={<Translator />} />
+		  <Route path="/level-game" element={<LevelGame />} />
+		  <Route path="/profile" element={<Profile />} />
+		  <Route path="/vocabulary" element={<Vocabulary />} />
+		  <Route path="/admin" element={<AdminLogin />} />
+		  <Route path="/admin-panel" element={<AdminDashboard />} />
+		  <Route path="/lessons" element={<Lessons />} />
+		  <Route path="/lesson/:lessonId" element={<LessonView />} /> {/* ✅ New Route */}
+		  <Route path="/profile-stats/:username" element={<ProfileStats />} />
+		</Routes>
+	  </BrowserRouter>
+	);
+  }

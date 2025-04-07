@@ -9,10 +9,13 @@ import sqlite3
 from dotenv import load_dotenv
 import sys
 sys.stdout.flush()
+from pathlib import Path
 
-# ✅ Load environment variables
+
 print("[DEBUG] Loading environment variables...")
-load_dotenv()
+env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
+load_dotenv(dotenv_path=env_path)
+# ✅ Load environment variables
 
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 print(f"[DEBUG] DeepL Key Loaded: {'***' if DEEPL_API_KEY else 'NOT SET'}", flush=True)
@@ -163,11 +166,50 @@ def translate_api():
         print(f"[ERROR] {e}", flush=True)
         return jsonify({"error": "Translation failed", "details": str(e)}), 500
 
-# ✅ Lessons
+# ✅ Backend route: fetch lessons based on target_user
 @app.route("/api/lessons")
 def get_lessons():
     username = request.args.get("username", "anonymous")
-    lessons = fetch_lessons_for_user(username)
+    lessons = []
+
+    with sqlite3.connect("game_results.db") as conn:
+        cursor = conn.execute("""
+            SELECT DISTINCT level, MAX(timestamp), correct
+            FROM results
+            WHERE username = ?
+            GROUP BY level
+            ORDER BY MAX(timestamp) DESC
+        """, (username,))
+        rows = cursor.fetchall()
+
+        for level, last_attempt, correct in rows:
+            lessons.append({
+                "id": level,
+                "title": f"Lesson {level + 1}",
+                "completed": bool(correct),
+                "last_attempt": last_attempt
+            })
+
+        # Public and targeted lesson content (even if user has no prior result)
+        content_cursor = conn.execute("""
+            SELECT DISTINCT lesson_id, title, created_at, target_user
+            FROM lesson_content
+            WHERE target_user IS NULL OR target_user = ?
+            ORDER BY created_at DESC
+        """, (username,))
+        content_rows = content_cursor.fetchall()
+
+        # Inject lesson from content table if not already in lessons[]
+        existing_ids = set(l["id"] for l in lessons)
+        for lesson_id, title, created_at, target_user in content_rows:
+            if lesson_id not in existing_ids:
+                lessons.append({
+                    "id": lesson_id,
+                    "title": title or f"Lesson {lesson_id + 1}",
+                    "completed": False,
+                    "last_attempt": None
+                })
+
     return jsonify(lessons)
 
 # ✅ Profile stats
@@ -191,9 +233,43 @@ def profile_stats(username):
         for l, c, a, t in rows
     ])
 
+@app.route("/api/admin/lesson-content", methods=["POST"])
+def insert_lesson_content():
+    data = request.get_json()
+    if data.get("password") != ADMIN_PASSWORD:
+        return jsonify({"error": "unauthorized"}), 401
+
+    lesson_id = data.get("lesson_id")
+    title = data.get("title", "")
+    content = data.get("content", "")
+    target_user = data.get("target_user")  # optional
+
+    with sqlite3.connect("game_results.db") as conn:
+        conn.execute(
+            "INSERT INTO lesson_content (lesson_id, title, content, target_user) VALUES (?, ?, ?, ?)",
+            (lesson_id, title, content, target_user)
+        )
+    return jsonify({"status": "ok"})
+
+
+
+@app.route("/api/lesson/<int:lesson_id>")
+def get_lesson_content(lesson_id):
+    with sqlite3.connect("game_results.db") as conn:
+        cursor = conn.execute(
+            "SELECT title, content, created_at FROM lesson_content WHERE lesson_id = ? ORDER BY created_at DESC",
+            (lesson_id,)
+        )
+        rows = cursor.fetchall()
+    return jsonify([
+        {"title": title, "content": content, "created_at": created_at}
+        for title, content, created_at in rows
+    ])
+
 
 # ✅ Start server
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5050))
     print(f"[INIT] Starting Flask app on port {port}...")
     app.run(host="0.0.0.0", port=port, debug=True)
+

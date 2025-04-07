@@ -1,6 +1,6 @@
 // src/api.js
 
-const BASE_URL = "http://localhost:5000"; // Change if needed
+const BASE_URL = "http://localhost:5050"; // Change if needed
 
 export async function getVocabulary(username) {
   const res = await fetch(`${BASE_URL}/api/vocabulary/${username}`);
@@ -50,7 +50,7 @@ export async function getAdminResults(password) {
 
 export async function verifyAdminPassword(password) {
   try {
-    const res = await fetch("http://localhost:5000/api/admin/results", {
+    const res = await fetch("http://localhost:5050/api/admin/results", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
@@ -77,16 +77,16 @@ export async function verifyAdminPassword(password) {
 }
 
   export async function fetchLevelData(level) {
-    const res = await fetch("http://localhost:5000/api/level", {
+    const res = await fetch("http://localhost:5050/api/level", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level }),
     });
     return await res.json();
   }
-  
+
   export async function submitLevelAnswer(level, answer, username) {
-    const res = await fetch("http://localhost:5000/api/level/submit", {
+    const res = await fetch("http://localhost:5050/api/level/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ level, answer, username }),
@@ -95,23 +95,22 @@ export async function verifyAdminPassword(password) {
   }
 
   export async function fetchProfileResults(username) {
-    const res = await fetch(`http://localhost:5000/api/profile/${username}`);
+    const res = await fetch(`http://localhost:5050/api/profile/${username}`);
     return await res.json();
   }
-  
+
   export async function fetchProfileStats(username, password) {
-    const res = await fetch(`http://localhost:5000/api/profile-stats/${username}`, {
+    const res = await fetch(`http://localhost:5050/api/profile-stats/${username}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ password }),
     });
-  
+
     if (!res.ok) {
       throw new Error("❌ Failed to load user stats");
     }
-  
+
     return await res.json();
   }
-  

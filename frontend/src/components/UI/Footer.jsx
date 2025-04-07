@@ -1,6 +1,13 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Button from "./Button";
+import {
+  User,
+  Settings,
+  LogOut,
+  Moon,
+  Sun,
+  PanelTop,
+} from "lucide-react";
 import useAppStore from "../../store/useAppStore";
 
 export default function Footer() {
@@ -19,40 +26,52 @@ export default function Footer() {
 
   const isNameInputPage = location.pathname === "/" || location.pathname === "/nameinput";
 
+  const buttonBase =
+    "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition hover:bg-gray-200 dark:hover:bg-gray-700";
+
+  const iconStyle = "w-4 h-4";
+
   return (
     <footer
-      className={`fixed bottom-0 w-full py-2 px-4 flex flex-wrap justify-center gap-4 border-t ${
-        darkMode ? "bg-gray-900 border-gray-700" : "bg-gray-50 border-gray-200"
+      className={`fixed bottom-0 w-full z-50 border-t ${
+        darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
       }`}
     >
-      {!isNameInputPage && (
-        <>
-          {!isAdmin && (
-            <>
-              <Button onClick={() => navigate("/profile")} type="link">
-                👤 Profile
-              </Button>
-              <Button onClick={() => navigate("/profile")} type="link">
-                ⚙️ Settings
-              </Button>
-            </>
-          )}
+      <div className="max-w-5xl mx-auto flex flex-wrap justify-center sm:justify-between items-center px-4 py-3 gap-3">
+        {!isNameInputPage && (
+          <div className="flex flex-wrap gap-3 items-center">
+            {!isAdmin && (
+              <>
+                <button onClick={() => navigate("/profile")} className={buttonBase}>
+                  <User className={iconStyle} />
+                  Profile
+                </button>
+                <button onClick={() => navigate("/profile")} className={buttonBase}>
+                  <Settings className={iconStyle} />
+                  Settings
+                </button>
+              </>
+            )}
+            {isAdmin && (
+              <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
+                <PanelTop className={iconStyle} />
+                Admin Panel
+              </button>
+            )}
+            <button onClick={handleLogout} className={buttonBase}>
+              <LogOut className={iconStyle} />
+              Logout
+            </button>
+          </div>
+        )}
 
-          {isAdmin && (
-            <Button onClick={() => navigate("/admin-panel")} type="link">
-              🛠️ Admin Panel
-            </Button>
-          )}
-
-          <Button onClick={handleLogout} type="link">
-            🚪 Logout
-          </Button>
-        </>
-      )}
-
-      <Button onClick={toggleDarkMode} type="link">
-        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      </Button>
+        <div>
+          <button onClick={toggleDarkMode} className={buttonBase}>
+            {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
+            {darkMode ? "Light Mode" : "Dark Mode"}
+          </button>
+        </div>
+      </div>
     </footer>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Menu, CheckCircle2, ArrowRightCircle } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -54,14 +55,18 @@ export default function LevelGame() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>🧩 Sentence Order Game</Title>
-        <p className={`text-center mb-4 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-          🧠 Click a word, then move it left or right.
+        <Title className="text-3xl font-bold mb-4">Sentence Order Game</Title>
+        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+          Click a word, then move it left or right.
         </p>
 
-        <div className="flex justify-center mb-4 gap-3">
-          <Button type="secondary" onClick={() => moveWord("left")}>⬅️</Button>
-          <Button type="secondary" onClick={() => moveWord("right")}>➡️</Button>
+        <div className="flex justify-center mb-6 gap-4">
+          <Button type="secondary" onClick={() => moveWord("left")}>
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <Button type="secondary" onClick={() => moveWord("right")}>
+            <ArrowRight className="w-5 h-5" />
+          </Button>
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-4">
@@ -69,7 +74,11 @@ export default function LevelGame() {
             <button
               key={i}
               onClick={() => setSelectedIndex(i)}
-              className={`btn ${selectedIndex === i ? "bg-blue-600 text-white" : "btn-secondary"}`}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                selectedIndex === i
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-white"
+              }`}
             >
               {word}
             </button>
@@ -80,23 +89,29 @@ export default function LevelGame() {
           placeholder="Or type your solution here"
           value={typedAnswer}
           onChange={(e) => setTypedAnswer(e.target.value)}
-          className="mb-4"
+          className="mb-6"
         />
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
-          <Button type="primary" onClick={handleSubmit}>✅ Submit</Button>
-          <Button type="success" onClick={() => setLevel((prev) => (prev + 1) % 10)}>➡️ Next</Button>
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+          <Button type="primary" onClick={handleSubmit}>
+            <CheckCircle2 className="w-4 h-4 mr-2" />
+            Submit
+          </Button>
+          <Button type="success" onClick={() => setLevel((prev) => (prev + 1) % 10)}>
+            <ArrowRightCircle className="w-4 h-4 mr-2" />
+            Next
+          </Button>
         </div>
 
         {feedback && (
           <Card className="mt-6 max-w-xl mx-auto">
             <p className={`text-lg font-semibold mb-2 ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
-              ✅ Correct:{" "}
+              Correct:{" "}
               <span className="font-normal">{feedback.correct ? "Yes" : "No"}</span>
             </p>
 
             <div className="mb-2">
-              <strong>📚 Feedback:</strong>
+              <strong>Feedback:</strong>
               <Alert type={feedback.correct ? "success" : "error"} className="mt-1">
                 <div
                   className="text-sm"
@@ -106,14 +121,15 @@ export default function LevelGame() {
             </div>
 
             <p className={`mt-2 text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-              <strong>✅ Correct Sentence:</strong> {feedback.correct_sentence}
+              <strong>Correct Sentence:</strong> {feedback.correct_sentence}
             </p>
           </Card>
         )}
 
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <Button type="link" onClick={() => navigate("/menu")}>
-            ⬅️ Back to Menu
+            <Menu className="w-4 h-4 mr-2" />
+            Back to Menu
           </Button>
         </div>
       </Container>

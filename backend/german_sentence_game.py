@@ -9,11 +9,13 @@ import re
 
 DB_FILE = "game_results.db"
 
-try:
-    with open("DEEPL_API_KEY") as f:
-        API_KEY = f.read().strip()
-except Exception:
-    API_KEY = None
+API_KEY = os.getenv("DEEPL_API_KEY")
+if not API_KEY:
+    try:
+        with open("DEEPL_API_KEY") as f:
+            API_KEY = f.read().strip()
+    except Exception:
+        API_KEY = None
 
 LEVELS = [
     "Ich bin Anna",
@@ -56,6 +58,14 @@ def init_db():
             username TEXT,
             vocab TEXT,
             translation TEXT
+        );''')
+
+        conn.execute('''CREATE TABLE IF NOT EXISTS lesson_content (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lesson_id INTEGER NOT NULL,
+            title TEXT,
+            content TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );''')
 
 init_db()
