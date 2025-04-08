@@ -21,6 +21,7 @@ export default function Menu() {
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
+  const isLoading = useAppStore((state) => state.isLoading);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
@@ -28,10 +29,14 @@ export default function Menu() {
       setUsername(storedUsername);
     }
 
+    if (!isLoading && !username) {
+      navigate("/");
+    }
+
     if (isAdmin) {
       navigate("/admin-panel");
     }
-  }, [username, setUsername, isAdmin, navigate]);
+  }, [username, setUsername, isAdmin, isLoading, navigate]);
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
@@ -50,27 +55,27 @@ export default function Menu() {
 
         <Card className="shadow-xl">
           <div className="flex flex-col gap-4">
-            <Button onClick={() => navigate("/translate")} className="justify-start gap-3">
+            <Button type="button" variant="primary" onClick={() => navigate("/translate")} className="justify-start gap-3">
               <FileText className="w-5 h-5" />
               Translation Practice
             </Button>
 
-            <Button onClick={() => navigate("/level-game")} className="justify-start gap-3">
+            <Button type="button" variant="primary" onClick={() => navigate("/level-game")} className="justify-start gap-3">
               <Target className="w-5 h-5" />
               Sentence Order Game
             </Button>
 
-            <Button onClick={() => navigate("/vocabulary")} className="justify-start gap-3">
+            <Button type="button" variant="primary" onClick={() => navigate("/vocabulary")} className="justify-start gap-3">
               <Book className="w-5 h-5" />
               My Vocabulary
             </Button>
 
-            <Button onClick={() => navigate("/lessons")} type="secondary" className="justify-start gap-3">
+            <Button type="button" variant="secondary" onClick={() => navigate("/lessons")} className="justify-start gap-3">
               <Library className="w-5 h-5" />
-              Flo's Lessons
+              {username ? `${username}'s Lessons` : "Your Lessons"}
             </Button>
 
-            <Button onClick={() => navigate("/profile")} type="secondary" className="justify-start gap-3">
+            <Button type="button" variant="secondary" onClick={() => navigate("/profile")} className="justify-start gap-3">
               <BarChart3 className="w-5 h-5" />
               My Progress
             </Button>

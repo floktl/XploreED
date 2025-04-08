@@ -1,6 +1,7 @@
 flask
 flask_cors
 flask-limiter
+flask-jwt-extended==4.6.0
 python-dotenv
 requests
 colorama

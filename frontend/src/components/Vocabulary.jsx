@@ -16,23 +16,27 @@ export default function Vocabulary() {
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
   const navigate = useNavigate();
+  const isLoading = useAppStore((state) => state.isLoading);
 
   useEffect(() => {
-    if (isAdmin) {
-      alert("❌ Admins cannot access student vocabulary.");
-      navigate("/admin-panel");
-      return;
-    }
 
     const storedUsername = localStorage.getItem("username");
-    if (storedUsername && !username) {
+    if (!username && storedUsername) {
       setUsername(storedUsername);
+    }
+
+    if (!isLoading && (!username || isAdmin)) {
+      navigate(isAdmin ? "/admin-panel" : "/");
     }
   }, [isAdmin, username, setUsername, navigate]);
 
   useEffect(() => {
     if (!isAdmin) {
-      getVocabulary(username || "anonymous").then(setVocab);
+      getVocabulary()
+        .then(setVocab)
+        .catch((err) => {
+          console.error("Failed to load vocabulary:", err);
+        });
     }
   }, [username, isAdmin]);
 
@@ -54,7 +58,11 @@ export default function Vocabulary() {
           </Alert>
         ) : (
           <Card className="overflow-x-auto">
-            <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+            <table
+              className={`min-w-full border rounded-lg overflow-hidden ${
+                darkMode ? "border-gray-600" : "border-gray-200"
+              }`}
+            >
               <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
                 <tr>
                   <th className="px-4 py-2 text-left">German Word</th>
@@ -74,12 +82,11 @@ export default function Vocabulary() {
         )}
 
         <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/menu")} type="link">
+          <Button onClick={() => navigate("/menu")} variant="link">
             ⬅️ Back to Menu
           </Button>
         </div>
       </Container>
-
       <Footer />
     </div>
   );

@@ -1,57 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
-import { getAdminResults } from "../api";
+import useRequireAdmin from "../hooks/useRequireAdmin"; // ✅ Admin protection hook
 
 export default function AdminDashboard() {
+  useRequireAdmin(); // ✅ Block access until verified
+
   const [results, setResults] = useState([]);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { state } = useLocation();
+
   const darkMode = useAppStore((state) => state.darkMode);
-  const passwordFromStore = useAppStore((state) => state.adminPassword);
   const isAdmin = useAppStore((state) => state.isAdmin);
+  const isLoading = useAppStore((state) => state.isLoading);
 
   useEffect(() => {
-    if (!isAdmin) {
-      alert("❌ You must login as admin.");
+    if (isLoading || !isAdmin) {
       navigate("/admin-login");
-      return;
     }
 
     const fetchData = async () => {
       try {
-        const res = await getAdminResults(passwordFromStore);
+        const res = await fetch("http://localhost:5050/api/admin/results", {
+          method: "GET",
+          credentials: "include",
+        });
+
         if (res.ok) {
           const data = await res.json();
           setResults(data);
+        } else if (res.status === 401) {
+          navigate("/admin-login");
         } else {
-          alert("❌ Unauthorized or failed to load data.");
+          setError("❌ Failed to load admin results.");
         }
       } catch (err) {
         console.error("Error loading admin data:", err);
+        setError("❌ Could not connect to the server.");
       }
     };
 
     fetchData();
-  }, [isAdmin, navigate, passwordFromStore]);
+  }, [isAdmin, isLoading, navigate]);
 
   const userSummary = results.reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
+
     if (!acc[username]) {
-      acc[username] = { username, lastLevel: level, lastTime: timestamp };
-    } else {
-      const prevTime = new Date(acc[username].lastTime);
-      const currTime = new Date(timestamp);
-      if (currTime > prevTime) {
-        acc[username].lastTime = timestamp;
-        acc[username].lastLevel = level;
-      }
+      acc[username] = {
+        username,
+        lastLevel: level ?? "—",
+        lastTime: timestamp ?? null,
+      };
+    } else if (timestamp && new Date(timestamp) > new Date(acc[username].lastTime || 0)) {
+      acc[username].lastLevel = level;
+      acc[username].lastTime = timestamp;
     }
+
     return acc;
   }, {});
 
@@ -60,7 +70,9 @@ export default function AdminDashboard() {
       <Container>
         <Title>📊 Admin Dashboard</Title>
 
-        {results.length === 0 ? (
+        {error && <Alert type="danger">{error}</Alert>}
+
+        {!error && results.length === 0 ? (
           <Alert type="info">No results found.</Alert>
         ) : (
           <Card className="overflow-x-auto">
@@ -77,12 +89,16 @@ export default function AdminDashboard() {
                 {Object.values(userSummary).map((u) => (
                   <tr key={u.username} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
                     <td className="px-4 py-2 font-semibold">{u.username}</td>
-                    <td className="px-4 py-2">{u.lastLevel}</td>
-                    <td className="px-4 py-2">{new Date(u.lastTime).toLocaleString()}</td>
+                    <td className="px-4 py-2">{u.lastLevel ?? "—"}</td>
+                    <td className="px-4 py-2">{u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}</td>
                     <td className="px-4 py-2">
-                      <Link to={`/profile-stats/${u.username}`} className="text-blue-600 hover:underline">
+                    <Link
+                        to="/profile-stats"
+                        state={{ username: u.username }}
+                        className="text-blue-600 hover:underline"
+                        >
                         View Stats →
-                      </Link>
+                    </Link>
                     </td>
                   </tr>
                 ))}
@@ -108,8 +124,8 @@ export default function AdminDashboard() {
                 const res = await fetch("http://localhost:5050/api/admin/lesson-content", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
+                  credentials: "include",
                   body: JSON.stringify({
-                    password: passwordFromStore,
                     lesson_id: parseInt(lesson_id),
                     title,
                     content,
@@ -122,10 +138,8 @@ export default function AdminDashboard() {
                   e.target.reset();
                 } else {
                   const err = await res.json();
-                  alert("❌ Failed to add lesson content: " + (err.error || "Unknown error"));
                 }
               } catch (err) {
-                alert("❌ Error while sending data.");
                 console.error(err);
               }
             }}
@@ -176,7 +190,7 @@ export default function AdminDashboard() {
               <label htmlFor="public">Publish for all users</label>
             </div>
 
-            <Button type="success" className="self-start">
+            <Button variant="success" type="submit" className="self-start">
               ➕ Add Content
             </Button>
           </form>
