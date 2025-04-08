@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { fetchProfileStats } from "../api";
+import { useNavigate, useLocation } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -9,35 +8,57 @@ import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 
 export default function ProfileStats() {
-  const { username } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const darkMode = useAppStore((s) => s.darkMode);
+  const isAdmin = useAppStore((s) => s.isAdmin);
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
-
-  const darkMode = useAppStore((s) => s.darkMode);
-  const adminPassword = useAppStore((s) => s.adminPassword);
-  const navigate = useNavigate();
+  const username = location.state?.username;
 
   useEffect(() => {
-    const load = async () => {
+    if (!isAdmin) {
+      console.warn("Access denied: not admin");
+      navigate("/admin-login");
+      return;
+    }
+
+    if (!username) {
+      setError("No username provided.");
+      return;
+    }
+
+    const loadStats = async () => {
       try {
-        const data = await fetchProfileStats(username, adminPassword);
+        const res = await fetch("http://localhost:5050/api/admin/profile-stats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ username }),
+        });
+
+        if (!res.ok) throw new Error("❌ Failed to fetch stats");
+
+        const data = await res.json();
         setResults(data);
       } catch (err) {
-        setError(err.message || "Could not load profile stats.");
+        console.error("[CLIENT] Failed to load stats:", err);
+        setError("❌ Could not load profile stats.");
+        navigate("/admin-login");
       }
     };
 
-    load();
-  }, [username, adminPassword]);
+    loadStats();
+  }, [username, isAdmin, navigate]);
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📊 Stats for: {username}</Title>
+        <Title>📊 Stats for: {username || "—"}</Title>
 
         {error && <Alert type="error">{error}</Alert>}
 
-        {results.length === 0 ? (
+        {!error && results.length === 0 ? (
           <Alert type="info">No data found.</Alert>
         ) : (
           <Card className="overflow-x-auto">
@@ -65,12 +86,11 @@ export default function ProfileStats() {
         )}
 
         <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/admin-panel")} type="link">
+          <Button onClick={() => navigate("/admin-panel")} variant="link">
             ⬅️ Back to Admin Panel
           </Button>
         </div>
       </Container>
-
       <Footer />
     </div>
   );

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Menu, CheckCircle2, ArrowRightCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Menu,
+  CheckCircle2,
+  ArrowRightCircle,
+} from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -17,19 +23,32 @@ export default function LevelGame() {
   const [typedAnswer, setTypedAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
 
-  const username = useAppStore((state) => state.username) || "anonymous";
+  const username = useAppStore((state) => state.username);
   const darkMode = useAppStore((state) => state.darkMode);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchLevelData(level).then((data) => {
-      setScrambled(data.scrambled);
-      setUserOrder(data.scrambled);
-      setFeedback(null);
-      setTypedAnswer("");
-      setSelectedIndex(null);
-    });
+    const loadData = async () => {
+      try {
+        const data = await fetchLevelData(level);
+        if (!data || !Array.isArray(data.scrambled)) {
+          throw new Error("Invalid data format");
+        }
+        setScrambled(data.scrambled);
+        setUserOrder(data.scrambled);
+        setFeedback(null);
+        setTypedAnswer("");
+        setSelectedIndex(null);
+      } catch (err) {
+        console.error("[LevelGame] Failed to load level data:", err);
+        setScrambled([]);
+        setUserOrder([]);
+      }
+    };
+  
+    loadData();
   }, [level]);
+  
 
   const moveWord = (direction) => {
     if (selectedIndex === null) return;
@@ -48,29 +67,41 @@ export default function LevelGame() {
 
   const handleSubmit = async () => {
     const answer = typedAnswer.trim() || userOrder.join(" ");
-    const result = await submitLevelAnswer(level, answer, username);
+    const result = await submitLevelAnswer(level, answer);
     setFeedback(result);
   };
 
   return (
-    <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+    <div
+      className={`relative min-h-screen pb-20 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
+      }`}
+    >
       <Container>
-        <Title className="text-3xl font-bold mb-4">Sentence Order Game</Title>
-        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+        <Title className="text-3xl font-bold mb-4">
+          {username ? `${username}'s` : "Your"} Sentence Order Game
+        </Title>
+
+        <p
+          className={`text-center mb-6 ${
+            darkMode ? "text-gray-300" : "text-gray-600"
+          }`}
+        >
           Click a word, then move it left or right.
         </p>
 
         <div className="flex justify-center mb-6 gap-4">
-          <Button type="secondary" onClick={() => moveWord("left")}>
+          <Button variant="secondary" type="button" onClick={() => moveWord("left")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <Button type="secondary" onClick={() => moveWord("right")}>
+          <Button variant="secondary" type="button" onClick={() => moveWord("right")}>
             <ArrowRight className="w-5 h-5" />
           </Button>
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-4">
-          {userOrder.map((word, i) => (
+        {Array.isArray(userOrder) && userOrder.map((word, i) => (
+
             <button
               key={i}
               onClick={() => setSelectedIndex(i)}
@@ -93,11 +124,11 @@ export default function LevelGame() {
         />
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <Button type="primary" onClick={handleSubmit}>
+          <Button variant="primary" type="button" onClick={handleSubmit}>
             <CheckCircle2 className="w-4 h-4 mr-2" />
             Submit
           </Button>
-          <Button type="success" onClick={() => setLevel((prev) => (prev + 1) % 10)}>
+          <Button variant="success" type="button" onClick={() => setLevel((prev) => (prev + 1) % 10)}>
             <ArrowRightCircle className="w-4 h-4 mr-2" />
             Next
           </Button>
@@ -105,7 +136,11 @@ export default function LevelGame() {
 
         {feedback && (
           <Card className="mt-6 max-w-xl mx-auto">
-            <p className={`text-lg font-semibold mb-2 ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
+            <p
+              className={`text-lg font-semibold mb-2 ${
+                darkMode ? "text-gray-100" : "text-blue-800"
+              }`}
+            >
               Correct:{" "}
               <span className="font-normal">{feedback.correct ? "Yes" : "No"}</span>
             </p>
@@ -115,19 +150,25 @@ export default function LevelGame() {
               <Alert type={feedback.correct ? "success" : "error"} className="mt-1">
                 <div
                   className="text-sm"
-                  dangerouslySetInnerHTML={{ __html: feedback.feedback || "No feedback" }}
+                  dangerouslySetInnerHTML={{
+                    __html: feedback.feedback || "No feedback",
+                  }}
                 />
               </Alert>
             </div>
 
-            <p className={`mt-2 text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+            <p
+              className={`mt-2 text-sm ${
+                darkMode ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
               <strong>Correct Sentence:</strong> {feedback.correct_sentence}
             </p>
           </Card>
         )}
 
         <div className="text-center mt-8">
-          <Button type="link" onClick={() => navigate("/menu")}>
+          <Button variant="link" type="button" onClick={() => navigate("/menu")}>
             <Menu className="w-4 h-4 mr-2" />
             Back to Menu
           </Button>

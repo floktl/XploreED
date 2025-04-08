@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 import re
 
-DB_FILE = "game_results.db"
+DB_FILE = "user_data.db"
 
 API_KEY = os.getenv("DEEPL_API_KEY")
 if not API_KEY:
@@ -67,6 +67,13 @@ def init_db():
             content TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );''')
+
+        conn.execute('''CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );''')
+
 
 init_db()
 
@@ -231,19 +238,32 @@ def save_result(username, level, correct, answer):
         )
 
 def get_all_results():
-    with sqlite3.connect("game_results.db") as conn:
-        cursor = conn.execute("SELECT username, level, correct, answer, timestamp FROM results ORDER BY timestamp DESC")
+    with sqlite3.connect("user_data.db") as conn:
+        cursor = conn.execute("""
+            SELECT u.username, r.level, r.correct, r.answer, r.timestamp
+            FROM users u
+            LEFT JOIN results r ON u.username = r.username
+            ORDER BY r.timestamp DESC
+        """)
         rows = cursor.fetchall()
+
         return [
-            {"username": u, "level": l, "correct": c, "answer": a, "timestamp": t}
+            {
+                "username": u,
+                "level": l,
+                "correct": c,
+                "answer": a,
+                "timestamp": t
+            }
             for u, l, c, a, t in rows
         ]
+
 
 def fetch_lessons_for_user(username):
     print(f"[DEBUG] Fetching lessons for user: {username}", flush=True)
     lessons = []
 
-    with sqlite3.connect("game_results.db") as conn:
+    with sqlite3.connect("user_data.db") as conn:
         cursor = conn.execute("""
             SELECT DISTINCT level, MAX(timestamp), correct
             FROM results

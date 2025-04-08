@@ -7,20 +7,26 @@ const useAppStore = create((set) => ({
   adminPassword: null,
   darkMode: false,
   currentLevel: 0,
-
+  isLoading: true,
+  
   setUsername: (username) => set({ username }),
   setIsAdmin: (isAdmin) => set({ isAdmin }),
   setAdminPassword: (adminPassword) => set({ adminPassword }),
   setCurrentLevel: (level) => set({ currentLevel: level }),
   toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  setIsLoading: (val) => set({ isLoading: val }),
 
-  resetStore: () =>
+  resetStore: () => {
+    localStorage.removeItem("username");
     set({
       username: null,
       isAdmin: false,
+      isLoading: false,
       adminPassword: null,
       currentLevel: 0,
-    }),
+    });
+  },
+  
 }));
 
 export default useAppStore;

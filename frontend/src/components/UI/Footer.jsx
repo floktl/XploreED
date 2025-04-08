@@ -18,12 +18,21 @@ export default function Footer() {
   const username = useAppStore((state) => state.username);
   const isAdmin = useAppStore((state) => state.isAdmin);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5050/api/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.warn("[CLIENT] Logout request failed:", err);
+    }
+  
     localStorage.removeItem("username");
     useAppStore.getState().resetStore();
     navigate("/");
   };
-
+  
   const isNameInputPage = location.pathname === "/" || location.pathname === "/nameinput";
 
   const buttonBase =

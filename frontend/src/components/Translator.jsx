@@ -24,13 +24,18 @@ export default function Translator() {
 
   useEffect(() => {
     if (isAdmin) {
-      alert("❌ Admins cannot use student translation practice.");
       navigate("/admin-panel");
+      return;
     }
 
     const storedUsername = localStorage.getItem("username");
-    if (storedUsername && !username) {
+    if (!username && storedUsername) {
       setUsername(storedUsername);
+    }
+
+    // Redirect if no session or stored username
+    if (!username && !storedUsername) {
+      navigate("/");
     }
   }, [isAdmin, username, setUsername, navigate]);
 
@@ -45,13 +50,13 @@ export default function Translator() {
     const payload = {
       english: String(english),
       student_input: String(studentInput),
-      username: String(username || "anonymous"),
     };
 
     try {
       setLoading(true);
       const res = await fetch("http://localhost:5050/api/translate", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -86,7 +91,7 @@ export default function Translator() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📝 Translation Practice</Title>
+        <Title>📝 {username ? `${username}'s` : "Your"} Translation Practice</Title>
 
         <form
           className="space-y-4"
@@ -112,10 +117,10 @@ export default function Translator() {
           {loading && <Spinner />}
 
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <Button type="primary" className="w-full" onClick={handleTranslate} disabled={loading}>
+            <Button variant="primary" className="w-full" onClick={handleTranslate} disabled={loading}>
               🚀 {loading ? "Translating..." : "Get Feedback"}
             </Button>
-            <Button type="link" className="w-full" onClick={() => navigate("/menu")}>
+            <Button variant="link" className="w-full" onClick={() => navigate("/menu")}>
               ⬅️ Back to Menu
             </Button>
           </div>
@@ -135,7 +140,7 @@ export default function Translator() {
             </Card>
 
             <div className="mt-6 text-center">
-              <Button type="secondary" onClick={handleReset}>
+              <Button variant="secondary" onClick={handleReset}>
                 🆕 New Sentence
               </Button>
             </div>

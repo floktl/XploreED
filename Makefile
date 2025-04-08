@@ -1,7 +1,11 @@
-.PHONY: up cytest clean stop
+.PHONY: up cytest clean stop prune rebuild logs migrate reset
 
 up:
-	@./scripts/dev-up.sh || true
+	@echo "⚙️ Running DB migration inside backend container..."
+	@docker compose up -d --wait
+	@docker compose exec backend python3 migration_script.py
+	@docker compose logs -f
+
 
 cytest:
 	@docker build -t cypress-only ./cypress-tests
@@ -18,17 +22,21 @@ clean:
 stop:
 	@docker-compose stop
 
+# Run migration script manually (inside container)
+migrate:
+	@docker compose exec backend python3 migration_script.py || true
 
-
-# Prune unused Docker resources
 prune:
 	docker system prune -f --volumes
 
-# Rebuild everything
 rebuild:
 	docker-compose down --volumes --remove-orphans
 	docker-compose build --no-cache
 
-# View logs from all services
 logs:
 	docker-compose logs -f --tail=100
+
+reset:
+	@echo "💣 Removing all containers, images, volumes, and networks..."
+	@docker-compose down --volumes --remove-orphans
+	@docker system prune -af --volumes

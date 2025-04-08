@@ -12,12 +12,27 @@ export default function Lessons() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const darkMode = useAppStore((state) => state.darkMode);
-  const username = useAppStore((state) => state.username) || "anonymous";
+  const username = useAppStore((state) => state.username);
+  const isLoading = useAppStore((state) => state.isLoading);
+  const isAdmin = useAppStore((state) => state.isAdmin);
 
   useEffect(() => {
+    if (!isLoading && (!username || isAdmin)) {
+      navigate(isAdmin ? "/admin-panel" : "/"); // redirect to admin or student login
+    }
+  }, [username, isLoading, isAdmin, navigate]);
+  
+
+  useEffect(() => {
+
+    if (!username) return;
+
     const fetchLessons = async () => {
       try {
-        const res = await fetch(`http://localhost:5050/api/lessons?username=${username}`);
+        const res = await fetch("http://localhost:5050/api/lessons", {
+          method: "GET",
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Failed to fetch lessons");
         const data = await res.json();
         setLessons(data);
@@ -33,19 +48,15 @@ export default function Lessons() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📚 Your Lessons</Title>
+        <Title>📚 {username}'s Lessons</Title>
         <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
           Overview of your past and upcoming lessons
         </p>
 
-        {error && (
-          <Alert type="danger">{error}</Alert>
-        )}
+        {error && <Alert type="danger">{error}</Alert>}
 
         {lessons.length === 0 && !error ? (
-          <Alert type="info">
-            🤓 No lessons yet. Start practicing to track your progress!
-          </Alert>
+          <Alert type="info">🤓 No lessons yet. Start practicing to track your progress!</Alert>
         ) : (
           <div className="flex flex-col gap-4">
             {lessons.map((lesson) => (
@@ -63,7 +74,8 @@ export default function Lessons() {
                     )}
                   </div>
                   <Button
-                    type={lesson.completed ? "secondary" : "primary"}
+                    variant={lesson.completed ? "secondary" : "primary"}
+                    type="button"
                     onClick={() => navigate(`/lesson/${lesson.id}`)}
                   >
                     {lesson.completed ? "🔁 Review" : "▶️ Continue"}
@@ -75,12 +87,11 @@ export default function Lessons() {
         )}
 
         <div className="mt-6 text-center">
-          <Button type="link" onClick={() => navigate("/menu")}>
+          <Button variant="link" type="button" onClick={() => navigate("/menu")}>
             ⬅️ Back to Menu
           </Button>
         </div>
       </Container>
-
       <Footer />
     </div>
   );
