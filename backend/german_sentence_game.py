@@ -65,7 +65,8 @@ def init_db():
             lesson_id INTEGER NOT NULL,
             title TEXT,
             content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            published INTEGER DEFAULT 0
         );''')
 
         conn.execute('''CREATE TABLE IF NOT EXISTS users (

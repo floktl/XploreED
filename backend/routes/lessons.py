@@ -16,11 +16,12 @@ def get_lessons():
     with sqlite3.connect("user_data.db") as conn:
         conn.row_factory = sqlite3.Row
 
-        # fetch all lessons visible to this user
+        # ✅ fetch only published lessons visible to this user
         lessons = conn.execute("""
             SELECT lesson_id, title, created_at, target_user
             FROM lesson_content
-            WHERE target_user IS NULL OR target_user = ?
+            WHERE (target_user IS NULL OR target_user = ?)
+                AND published = 1
             ORDER BY created_at DESC
         """, (user,)).fetchall()
 
@@ -54,6 +55,7 @@ def get_lessons():
 
 
 
+
 @lessons_bp.route("/lesson/<int:lesson_id>", methods=["GET"])
 def get_lesson_content(lesson_id):
     session_id = request.cookies.get("session_id")
@@ -64,9 +66,16 @@ def get_lesson_content(lesson_id):
     with sqlite3.connect("user_data.db") as conn:
         rows = conn.execute("""
             SELECT title, content, created_at FROM lesson_content
-            WHERE lesson_id = ? AND (target_user IS NULL OR target_user = ?)
+            WHERE lesson_id = ?
+              AND (target_user IS NULL OR target_user = ?)
+              AND published = 1
         """, (lesson_id, user)).fetchall()
+
+    if not rows:
+        return jsonify({"msg": "Lesson not found"}), 404
+
     return jsonify([{"title": t, "content": c, "created_at": d} for t, c, d in rows])
+
 
 @lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):

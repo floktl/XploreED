@@ -12,13 +12,21 @@ export const TaskBlock = Node.create({
     return {
       checked: {
         default: false,
-        parseHTML: (el) => el.getAttribute("data-checked") === "true",
-        renderHTML: (attrs) => ({
+        parseHTML: el => el.getAttribute("data-checked") === "true",
+        renderHTML: attrs => ({
           "data-checked": attrs.checked,
+        }),
+      },
+      block_id: {
+        default: null,
+        parseHTML: el => el.getAttribute("data-block-id"),
+        renderHTML: attrs => ({
+          "data-block-id": attrs.block_id,
         }),
       },
     };
   },
+
 
   parseHTML() {
     return [{ tag: "div[data-task-block]" }];

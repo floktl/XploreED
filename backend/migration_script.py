@@ -55,6 +55,13 @@ with sqlite3.connect("user_data.db") as conn:
     else:
         print("ℹ️ 'target_user' column already exists.")
 
+    # ✅ Add published column if missing
+    if "published" not in columns:
+        cursor.execute("ALTER TABLE lesson_content ADD COLUMN published INTEGER DEFAULT 0;")
+        print("✅ 'published' column added.")
+    else:
+        print("ℹ️ 'published' column already exists.")
+
     # ✅ Add missing user columns
     cursor.execute("PRAGMA table_info(users);")
     user_columns = [col[1] for col in cursor.fetchall()]
@@ -77,7 +84,7 @@ with sqlite3.connect("user_data.db") as conn:
             user_id TEXT NOT NULL,
             lesson_id INTEGER NOT NULL,
             block_id TEXT NOT NULL,
-            completed BOOLEAN NOT NULL DEFAULT 0,
+            completed INTEGER NOT NULL DEFAULT 0,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE(user_id, lesson_id, block_id),
             FOREIGN KEY (lesson_id) REFERENCES lesson_content(lesson_id)

@@ -11,6 +11,9 @@ import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
 import Image from "@tiptap/extension-image";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
 import { TaskBlock } from "../extensions/TaskBlock";
 
 import Modal from "./UI/Modal";
@@ -21,7 +24,15 @@ export default function LessonEditor({ content, onContentChange }) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ codeBlock: false }),
+      StarterKit.configure({
+        codeBlock: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+      }),
+      BulletList,
+      OrderedList,
+      ListItem,
       Underline,
       Highlight,
       Placeholder.configure({
@@ -53,8 +64,31 @@ export default function LessonEditor({ content, onContentChange }) {
 
   const insertInteractiveBlock = () => {
     const blockId = generateBlockId();
-    console.log("[LessonEditor] Inserting interactive block with ID:", blockId);
-    editor.chain().focus().insertTaskBlock().run();
+    editor
+      .chain()
+      .focus()
+      .insertContent([
+        {
+          type: "taskBlock",
+          attrs: {
+            checked: false,
+            block_id: blockId,
+          },
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "✍️ Describe your task here...",
+                },
+              ],
+            },
+          ],
+        },
+        { type: "paragraph" },
+      ])
+      .run();
   };
 
   return (
@@ -123,7 +157,11 @@ export default function LessonEditor({ content, onContentChange }) {
         </EditorButton>
         <EditorButton
           onClick={() =>
-            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+            editor
+              .chain()
+              .focus()
+              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+              .run()
           }
         >
           📊 Table
@@ -133,9 +171,10 @@ export default function LessonEditor({ content, onContentChange }) {
       </div>
 
       {/* Editor */}
-      <div className="border rounded-md p-4 dark:bg-gray-800 dark:text-white">
-        <EditorContent editor={editor} />
-      </div>
+      <EditorContent
+        editor={editor}
+        className="border rounded-md p-4 dark:bg-gray-800 dark:text-white"
+      />
 
       {/* Preview Modal */}
       {showPreview && (
@@ -151,8 +190,9 @@ export default function LessonEditor({ content, onContentChange }) {
 function EditorButton({ onClick, children, active }) {
   return (
     <button
-      onClick={onClick}
       type="button"
+      onMouseDown={(e) => e.preventDefault()} // prevents focus loss in editor
+      onClick={onClick}
       className={`px-2 py-1 rounded border text-sm font-medium ${
         active
           ? "bg-blue-600 text-white"

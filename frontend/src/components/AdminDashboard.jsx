@@ -24,6 +24,8 @@ export default function AdminDashboard() {
   const [lessonProgress, setLessonProgress] = useState({});
   const [showLessonModal, setShowLessonModal] = useState(null);
   const [lessonProgressDetails, setLessonProgressDetails] = useState([]);
+  const [formError, setFormError] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
   const darkMode = useAppStore((state) => state.darkMode);
@@ -63,31 +65,79 @@ export default function AdminDashboard() {
     return acc;
   }, {});
 
-  const handleCreateLesson = async () => {
-    if (!newTitle || !newContent || !newLessonId) return;
+  const handleEditLesson = (lesson) => {
+    setNewLessonId(lesson.lesson_id);
+    setNewTitle(lesson.title);
+    setNewContent(lesson.content);
+    setIsEditing(true);
+    setShowEditorModal(true);
+    setFormError("");
+  };
+
+  const handleSaveLesson = async (publish = false) => {
+    setFormError("");
+
+    if (!newTitle || !newContent || !newLessonId) {
+      setFormError("❗ Please fill out all fields.");
+      return;
+    }
+
+    const duplicateId = lessons.find(
+      (l) => l.lesson_id === parseInt(newLessonId)
+    );
+    const duplicateTitle = lessons.find(
+      (l) =>
+        l.title.trim().toLowerCase() === newTitle.trim().toLowerCase() &&
+        (!isEditing || l.lesson_id !== parseInt(newLessonId))
+    );
+
+    if (!isEditing && duplicateId) {
+      setFormError(`❌ Lesson ID ${newLessonId} already exists. Please choose a different ID.`);
+      return;
+    }
+
+    if (duplicateTitle) {
+      setFormError(`❌ Lesson title "${newTitle}" already exists. Please choose a different title.`);
+      return;
+    }
 
     try {
-      const res = await fetch("http://localhost:5050/api/admin/lesson-content", {
-        method: "POST",
+      const method = isEditing ? "PUT" : "POST";
+      const url = isEditing
+        ? `http://localhost:5050/api/admin/lesson-content/${newLessonId}`
+        : "http://localhost:5050/api/admin/lesson-content";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           lesson_id: parseInt(newLessonId),
           title: newTitle,
           content: newContent,
+          published: publish ? 1 : 0,
         }),
       });
 
-      if (res.ok) {
-        setShowEditorModal(false);
-        setNewLessonId("");
-        setNewTitle("");
-        setNewContent("");
-      } else {
-        alert("❌ Failed to create lesson");
+      if (!res.ok) {
+        setFormError("❌ Failed to save lesson.");
+        return;
       }
+
+      const refreshed = await fetch("http://localhost:5050/api/admin/lesson-content", {
+        credentials: "include",
+      });
+      if (refreshed.ok) setLessons(await refreshed.json());
+
+      setShowEditorModal(false);
+      setNewLessonId("");
+      setNewTitle("");
+      setNewContent("");
+      setFormError("");
+      setIsEditing(false);
     } catch (err) {
       console.error("Error saving lesson:", err);
+      setFormError("❌ Could not save lesson.");
     }
   };
 
@@ -115,11 +165,7 @@ export default function AdminDashboard() {
                   <td className="px-4 py-2">{u.lastLevel ?? "—"}</td>
                   <td className="px-4 py-2">{u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}</td>
                   <td className="px-4 py-2">
-                    <Link
-                      to="/profile-stats"
-                      state={{ username: u.username }}
-                      className="text-blue-600 hover:underline"
-                    >
+                    <Link to="/profile-stats" state={{ username: u.username }} className="text-blue-600 hover:underline">
                       View Stats →
                     </Link>
                   </td>
@@ -132,7 +178,16 @@ export default function AdminDashboard() {
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">📚 All Lessons</h2>
-            <Button variant="success" onClick={() => setShowEditorModal(true)}>➕ Add Lesson</Button>
+            <Button variant="success" onClick={() => {
+              setIsEditing(false);
+              setNewLessonId("");
+              setNewTitle("");
+              setNewContent("");
+              setFormError("");
+              setShowEditorModal(true);
+            }}>
+              ➕ Add Lesson
+            </Button>
           </div>
 
           <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
@@ -146,54 +201,94 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-              {lessons.map((lesson) => (
-                <tr key={lesson.lesson_id}>
-                  <td className="px-4 py-2">{lesson.lesson_id}</td>
-                  <td className="px-4 py-2">{lesson.title}</td>
-                  <td className="px-4 py-2">
-                    <Button
-                      variant="info"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch(`http://localhost:5050/api/admin/lesson-progress/${lesson.lesson_id}`, {
-                            credentials: "include",
-                          });
-                          if (res.ok) {
-                            const data = await res.json();
-                            setLessonProgressDetails(data);
-                            setShowLessonModal(lesson.lesson_id);
-                          }
-                        } catch (err) {
-                          console.error("❌ Failed to fetch progress details", err);
-                        }
-                      }}
-                    >
-                      {lessonProgress[lesson.lesson_id] !== undefined
-                        ? `${Math.round(lessonProgress[lesson.lesson_id])}%`
-                        : "📊 View"}
-                    </Button>
-                  </td>
-                  <td className="px-4 py-2">{lesson.target_user ?? "🌍 All Users"}</td>
-                  <td className="px-4 py-2 flex gap-2">
-                    <Button variant="ghost" onClick={() => setModalContent(lesson)}>🔍 Preview</Button>
-                    <Button
-                      variant="danger"
-                      onClick={async () => {
-                        if (!window.confirm("Are you sure you want to delete this lesson?")) return;
-                        const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${lesson.lesson_id}`, {
-                          method: "DELETE",
-                          credentials: "include",
-                        });
-                        if (res.ok) {
-                          setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
-                        }
-                      }}
-                    >
-                      ❌ Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+            {lessons.map((lesson) => {
+  const isDraft = lesson.published === 0;
+
+  return (
+    <tr key={lesson.lesson_id}>
+      <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
+        {lesson.lesson_id}
+      </td>
+      <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
+        {lesson.title}
+      </td>
+      <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
+        {lesson.published ? (
+          <Button
+            variant="progress"
+            onClick={async () => {
+              try {
+                const res = await fetch(`http://localhost:5050/api/admin/lesson-progress/${lesson.lesson_id}`, {
+                  credentials: "include",
+                });
+                if (res.ok) {
+                  const data = await res.json();
+                  setLessonProgressDetails(data);
+                  setShowLessonModal(lesson.lesson_id);
+                }
+              } catch (err) {
+                console.error("❌ Failed to fetch progress details", err);
+              }
+            }}
+          >
+            {lessonProgress[lesson.lesson_id] !== undefined
+              ? `${Math.round(lessonProgress[lesson.lesson_id])}%`
+              : "📊 View"}
+          </Button>
+        ) : (
+          <span className="text-sm italic text-gray-400">Draft</span>
+        )}
+      </td>
+      <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
+        {lesson.target_user ?? "🌍 All Users"}
+      </td>
+
+      {/* Actions always visible */}
+      <td className="px-4 py-2 flex gap-2">
+        <Button variant="ghost" onClick={() => setModalContent(lesson)}>🔍 </Button>
+        <Button variant="ghost" onClick={() => handleEditLesson(lesson)}>✏️ </Button>
+        <Button
+          variant={lesson.published ? "danger" : "success"}
+          onClick={async () => {
+            const updated = await fetch(`http://localhost:5050/api/admin/lesson-content/${lesson.lesson_id}`, {
+              method: "PUT",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...lesson,
+                published: lesson.published ? 0 : 1,
+              }),
+            });
+            if (updated.ok) {
+              const refreshed = await fetch("http://localhost:5050/api/admin/lesson-content", {
+                credentials: "include",
+              });
+              if (refreshed.ok) setLessons(await refreshed.json());
+            }
+          }}
+        >
+          {lesson.published ? "🚫" : "📢"}
+        </Button>
+        <Button
+          variant="danger"
+          onClick={async () => {
+            if (!window.confirm("Are you sure you want to delete this lesson?")) return;
+            const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${lesson.lesson_id}`, {
+              method: "DELETE",
+              credentials: "include",
+            });
+            if (res.ok) {
+              setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
+            }
+          }}
+        >
+          ❌
+        </Button>
+      </td>
+    </tr>
+  );
+})}
+
             </tbody>
           </table>
         </Card>
@@ -208,11 +303,14 @@ export default function AdminDashboard() {
 
       {showEditorModal && (
         <Modal onClose={() => setShowEditorModal(false)}>
-          <h2 className="text-xl font-bold mb-4">📝 Create New Lesson</h2>
+          <h2 className="text-xl font-bold mb-4">
+            {isEditing ? "✏️ Edit Lesson" : "📝 Create New Lesson"}
+          </h2>
           <input
             type="number"
             placeholder="Lesson ID"
             value={newLessonId}
+            disabled={isEditing}
             onChange={(e) => setNewLessonId(e.target.value)}
             className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
           />
@@ -223,9 +321,19 @@ export default function AdminDashboard() {
             onChange={(e) => setNewTitle(e.target.value)}
             className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
           />
+
+          {formError && (
+            <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
+          )}
+
           <LessonEditor content={newContent} onContentChange={setNewContent} />
-          <div className="flex justify-end mt-4">
-            <Button variant="success" onClick={handleCreateLesson}>💾 Save Lesson</Button>
+          <div className="flex justify-end mt-4 gap-2">
+            <Button variant="secondary" onClick={() => handleSaveLesson(false)}>
+              💾 Save as Draft
+            </Button>
+            <Button variant="success" onClick={() => handleSaveLesson(true)}>
+              🚀 Save & Publish
+            </Button>
           </div>
         </Modal>
       )}
@@ -237,14 +345,13 @@ export default function AdminDashboard() {
             <p>No progress data available.</p>
           ) : (
             <ul className="space-y-2">
-            {lessonProgressDetails.map((entry, index) => (
-              <li key={`${entry.user}-${index}`} className="flex justify-between">
-                <span className="font-medium">{entry.user}</span>
-                <span>{entry.percent}% ({entry.completed}/{entry.total})</span>
-              </li>
-            ))}
-          </ul>
-          
+              {lessonProgressDetails.map((entry, index) => (
+                <li key={`${entry.user}-${index}`} className="flex justify-between">
+                  <span className="font-medium">{entry.user}</span>
+                  <span>{entry.percent}% ({entry.completed}/{entry.total})</span>
+                </li>
+              ))}
+            </ul>
           )}
         </Modal>
       )}
