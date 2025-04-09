@@ -67,8 +67,12 @@ def mark_lesson_complete():
     data = request.get_json()
     lesson_id = data.get("lesson_id")
 
-    if not lesson_id:
-        return jsonify({"error": "Missing lesson_id"}), 400
+    if lesson_id is None or not isinstance(lesson_id, int):
+        return jsonify({"error": "Invalid lesson ID"}), 400
+
+    # Optional: disallow ID 0
+    if lesson_id <= 0:
+        return jsonify({"error": "Lesson ID must be > 0"}), 400
 
     try:
         with sqlite3.connect(DB) as conn:

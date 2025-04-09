@@ -18,13 +18,11 @@ export default function Lessons() {
 
   useEffect(() => {
     if (!isLoading && (!username || isAdmin)) {
-      navigate(isAdmin ? "/admin-panel" : "/"); // redirect to admin or student login
+      navigate(isAdmin ? "/admin-panel" : "/");
     }
   }, [username, isLoading, isAdmin, navigate]);
-  
 
   useEffect(() => {
-
     if (!username) return;
 
     const fetchLessons = async () => {
@@ -59,42 +57,56 @@ export default function Lessons() {
           <Alert type="info">🤓 No lessons yet. Start practicing to track your progress!</Alert>
         ) : (
           <div className="flex flex-col gap-4">
-            {lessons.map((lesson) => (
-              <Card key={lesson.id}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold">{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
-                    <p className={`text-sm ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
-                      {lesson.completed
-                        ? "✅ Completed"
-                        : `📊 ${Math.round(lesson.percent_complete || 0)}% Complete`}
-                    </p>
+            {(() => {
+              const completed = lessons
+                .filter((l) => l.completed)
+                .sort((a, b) => a.id - b.id);
 
-                    {lesson.last_attempt && (
-                      <p className="text-xs text-gray-400">
-                        Last Attempt: {new Date(lesson.last_attempt).toLocaleString()}
+              const nextUnfinished = lessons
+                .filter((l) => !l.completed)
+                .sort((a, b) => a.id - b.id)[0];
+
+              const visibleLessons = nextUnfinished
+                ? [...completed, nextUnfinished]
+                : completed;
+
+              return visibleLessons.map((lesson) => (
+                <Card key={lesson.id}>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold">{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
+                      <p className={`text-sm ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
+                        {lesson.completed
+                          ? "✅ Completed"
+                          : `📊 ${Math.round(lesson.percent_complete || 0)}% Complete`}
                       </p>
-                    )}
+
+                      {lesson.last_attempt && (
+                        <p className="text-xs text-gray-400">
+                          Last Attempt: {new Date(lesson.last_attempt).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      variant="progress"
+                      type="button"
+                      className="relative overflow-hidden"
+                      onClick={() => navigate(`/lesson/${lesson.id}`)}
+                    >
+                      <span className="relative z-10">
+                        {lesson.completed ? "🔁 Review" : "▶️ Continue"}
+                      </span>
+                      {!lesson.completed && (
+                        <span
+                          className="absolute top-0 left-0 h-full bg-blue-500 opacity-30"
+                          style={{ width: `${lesson.percent_complete || 0}%` }}
+                        />
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    variant="progress"
-                    type="button"
-                    className="relative overflow-hidden"
-                    onClick={() => navigate(`/lesson/${lesson.id}`)}
-                  >
-                    <span className="relative z-10">
-                      {lesson.completed ? "🔁 Review" : "▶️ Continue"}
-                    </span>
-                    {!lesson.completed && (
-                      <span
-                        className="absolute top-0 left-0 h-full bg-blue-500 opacity-30"
-                        style={{ width: `${lesson.percent_complete || 0}%` }}
-                      />
-                    )}
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ));
+            })()}
           </div>
         )}
 

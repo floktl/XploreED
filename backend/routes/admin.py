@@ -61,14 +61,13 @@ def insert_lesson_content():
     title = data.get("title", "")
     content = data.get("content", "")
     target_user = data.get("target_user")
-    content = inject_block_ids(content)
+    published = bool(data.get("published", 0))  # default to False
 
     with sqlite3.connect("user_data.db") as conn:
-        # Save lesson content
         conn.execute("""
-            INSERT INTO lesson_content (lesson_id, title, content, target_user)
-            VALUES (?, ?, ?, ?)
-        """, (lesson_id, title, content, target_user))
+            INSERT INTO lesson_content (lesson_id, title, content, target_user, published)
+            VALUES (?, ?, ?, ?, ?)
+        """, (lesson_id, title, content, target_user, published))
 
         # 🧠 Extract block IDs from content using BeautifulSoup
         soup = BeautifulSoup(content, "html.parser")
@@ -121,7 +120,7 @@ def get_all_lessons():
     with sqlite3.connect("user_data.db") as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.execute("""
-            SELECT lesson_id, title, content, target_user
+            SELECT lesson_id, title, content, target_user, published
             FROM lesson_content
             ORDER BY lesson_id ASC
         """)
@@ -176,13 +175,14 @@ def update_lesson_by_id(lesson_id):
     content = data.get("content")
     content = inject_block_ids(content)
     target_user = data.get("target_user")
+    published = bool(data.get("published", 0))
 
     with sqlite3.connect("user_data.db") as conn:
         conn.execute("""
             UPDATE lesson_content
-            SET title = ?, content = ?, target_user = ?
+            SET title = ?, content = ?, target_user = ?, published = ?
             WHERE lesson_id = ?
-        """, (title, content, target_user, lesson_id))
+        """, (title, content, target_user, published, lesson_id))
 
     # ✅ Sync blocks with lesson_blocks table
     update_lesson_blocks_from_html(lesson_id, content)

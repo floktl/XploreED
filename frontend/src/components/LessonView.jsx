@@ -57,10 +57,13 @@ export default function LessonView() {
   useEffect(() => {
     const total = Object.keys(progress).length;
     const completed = Object.values(progress).filter(Boolean).length;
-
+  
     setPercentComplete(total > 0 ? (completed / total) * 100 : 0);
-    setCanComplete(total > 0 && completed === total);
+  
+    // allow marking complete if no checkboxes OR all are complete
+    setCanComplete(total === 0 || completed === total);
   }, [progress]);
+  
 
   const handleMarkComplete = async () => {
     if (!canComplete) {
@@ -73,7 +76,7 @@ export default function LessonView() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ lesson_id: parseInt(lessonId) }),
+        body: JSON.stringify({ lesson_id: lessonId }),
       });
       if (!res.ok) throw new Error("Failed to mark complete");
 
