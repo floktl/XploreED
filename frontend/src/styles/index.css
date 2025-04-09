@@ -30,4 +30,33 @@
   .btn-block {
     @apply w-full max-w-xs;
   }
+
+  /* 🧼 Refined interactive block styling */
+  .interactive-block {
+    @apply border border-blue-300 bg-blue-50 text-gray-900 
+          dark:border-blue-600 dark:bg-gray-800 dark:text-white 
+          p-5 text-base rounded-xl shadow-sm space-y-3 transition-all duration-200;
+  }
+
+  .interactive-block:hover {
+    @apply shadow-md border-blue-400 dark:border-blue-500;
+  }
+
+  .dark .interactive-block {
+    /* Already handled in main rule, but left here for clarity */
+    @apply border-blue-600 bg-gray-800 text-white;
+  }
+
+
+  .task-content:empty::before {
+    content: attr(placeholder);
+    @apply text-gray-400 dark:text-gray-500 italic;
+    pointer-events: none;
+  }
+  
+
+  /* ✅ Fix: make task block text not bold and properly colored */
+  .task-content p {
+    @apply text-gray-900 dark:text-white font-normal;
+  }
 }

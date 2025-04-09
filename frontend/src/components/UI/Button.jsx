@@ -16,6 +16,14 @@ export default function Button({ variant = "primary", type = "button", className
     link: darkMode
       ? "text-blue-400 hover:text-blue-300 underline bg-transparent justify-start"
       : "text-blue-600 hover:text-blue-500 underline bg-transparent justify-start",
+    ghost: darkMode
+      ? "bg-transparent text-white hover:bg-gray-800"
+      : "bg-transparent text-gray-700 hover:bg-gray-100", // ✅ added ghost
+    // Add this inside `variantClass`:
+    progress: darkMode
+      ? "bg-blue-900 text-white relative overflow-hidden"
+      : "bg-blue-100 text-blue-800 relative overflow-hidden",
+
   }[variant];
 
   return (
@@ -31,7 +39,9 @@ export default function Button({ variant = "primary", type = "button", className
 }
 
 Button.propTypes = {
-  variant: PropTypes.oneOf(["primary", "secondary", "success", "danger", "link"]),
+  variant: PropTypes.oneOf([
+    "primary", "secondary", "success", "danger", "link", "ghost", "progress"  // ✅ added "progress"
+  ]),
   type: PropTypes.oneOf(["button", "submit", "reset"]),
   className: PropTypes.string,
   onClick: PropTypes.func,

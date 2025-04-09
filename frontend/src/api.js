@@ -130,9 +130,13 @@ export async function getLevel(level) {
 
 export async function fetchLevelData(level) {
   try {
-    const res = await fetch(`${BASE_URL}/api/level/${level}`, {
+    const res = await fetch(`${BASE_URL}/api/level`, {
+      method: "POST",
       credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ level }),
     });
+
     const data = await res.json();
     return {
       scrambled: Array.isArray(data.scrambled) ? data.scrambled : [],
@@ -142,6 +146,7 @@ export async function fetchLevelData(level) {
     return { scrambled: [] };
   }
 }
+
 
 export async function submitLevel(payload) {
   const res = await fetch(`${BASE_URL}/api/level/submit`, {

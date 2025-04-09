@@ -8,5 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 ENV PYTHONPATH=/app
 
+RUN apt update && apt install -y sqlite3
 
 CMD ["python", "app.py"]

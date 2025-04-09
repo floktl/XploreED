@@ -22,7 +22,6 @@ clean:
 stop:
 	@docker-compose stop
 
-# Run migration script manually (inside container)
 migrate:
 	@docker compose exec backend python3 migration_script.py || true
 
@@ -40,3 +39,4 @@ reset:
 	@echo "💣 Removing all containers, images, volumes, and networks..."
 	@docker-compose down --volumes --remove-orphans
 	@docker system prune -af --volumes
+	up

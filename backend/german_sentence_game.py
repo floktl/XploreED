@@ -44,7 +44,7 @@ class User:
         })
 
 def init_db():
-    with sqlite3.connect(DB_FILE) as conn:
+    with sqlite3.connect("user_data.db") as conn:
         conn.execute('''CREATE TABLE IF NOT EXISTS results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
@@ -74,6 +74,11 @@ def init_db():
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );''')
 
+        conn.execute('''CREATE TABLE IF NOT EXISTS lesson_blocks (
+            lesson_id INTEGER NOT NULL,
+            block_id TEXT NOT NULL,
+            PRIMARY KEY (lesson_id, block_id)
+        );''')
 
 init_db()
 
@@ -258,27 +263,3 @@ def get_all_results():
             for u, l, c, a, t in rows
         ]
 
-
-def fetch_lessons_for_user(username):
-    print(f"[DEBUG] Fetching lessons for user: {username}", flush=True)
-    lessons = []
-
-    with sqlite3.connect("user_data.db") as conn:
-        cursor = conn.execute("""
-            SELECT DISTINCT level, MAX(timestamp), correct
-            FROM results
-            WHERE username = ?
-            GROUP BY level
-            ORDER BY MAX(timestamp) DESC
-        """, (username,))
-        rows = cursor.fetchall()
-
-        for level, last_attempt, correct in rows:
-            lessons.append({
-                "id": level,
-                "title": f"Lesson {level + 1}",
-                "completed": bool(correct),
-                "last_attempt": last_attempt
-            })
-
-    return lessons

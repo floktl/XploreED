@@ -15,6 +15,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import Lessons from "./components/Lessons";
 import ProfileStats from "./components/ProfileStats";
 import LessonView from "./components/LessonView";
+import LessonEdit from "./components/LessonEdit";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -61,6 +62,7 @@ const router = createBrowserRouter(
     { path: "/lessons", element: <Lessons /> },
     { path: "/lesson/:lessonId", element: <LessonView /> },
     { path: "/profile-stats", element: <ProfileStats /> },
+    { path: "/admin/lessons/:id", element: <LessonEdit /> },
   ],
   {
     future: {
