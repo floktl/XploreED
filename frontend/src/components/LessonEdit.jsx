@@ -1,0 +1,89 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Container, Title, Input } from "../components/UI/UI";
+import Card from "../components/UI/Card";
+import Button from "../components/UI/Button";
+import Alert from "../components/UI/Alert";
+import LessonEditor from "../components/LessonEditor";
+
+export default function LessonEdit() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [lesson, setLesson] = useState(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchLesson = async () => {
+      try {
+        const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${id}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Failed to fetch lesson");
+        const data = await res.json();
+        setLesson(data);
+      } catch (err) {
+        setError("❌ Could not load lesson.");
+      }
+    };
+    fetchLesson();
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(lesson),
+      });
+      if (!res.ok) throw new Error("Failed to update");
+      alert("✅ Lesson updated!");
+      navigate("/admin-panel");
+    } catch (err) {
+      setError("❌ Failed to save changes.");
+    }
+  };
+
+  if (!lesson) return <p className="text-center mt-10">Loading lesson...</p>;
+
+  return (
+    <Container>
+      <Title className="mb-6">✏️ Edit Lesson {id}</Title>
+      {error && <Alert type="danger">{error}</Alert>}
+
+      <Card>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div>
+            <label className="block mb-1 font-medium">Title</label>
+            <Input
+              value={lesson.title}
+              onChange={(e) => setLesson({ ...lesson, title: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Content</label>
+            <div>
+            <label className="block mb-1 font-medium">Content</label>
+            <LessonEditor
+                content={lesson.content}
+                onContentChange={(html) => setLesson({ ...lesson, content: html })}
+            />
+            </div>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Target User (optional)</label>
+            <Input
+              value={lesson.target_user ?? ""}
+              onChange={(e) => setLesson({ ...lesson, target_user: e.target.value })}
+            />
+          </div>
+          <Button type="submit" variant="success">
+            💾 Save Changes
+          </Button>
+        </form>
+      </Card>
+    </Container>
+  );
+}

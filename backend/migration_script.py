@@ -3,9 +3,9 @@ import sqlite3
 
 with sqlite3.connect("user_data.db") as conn:
     cursor = conn.cursor()
-    print(" Running migration script...")
+    print("🔄 Running migration script...")
 
-    # ✅ Create tables if missing
+    # ✅ Create users table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
@@ -14,6 +14,7 @@ with sqlite3.connect("user_data.db") as conn:
         );
     ''')
 
+    # ✅ Create results table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +26,7 @@ with sqlite3.connect("user_data.db") as conn:
         );
     ''')
 
+    # ✅ Create vocab_log table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS vocab_log (
             username TEXT,
@@ -33,6 +35,7 @@ with sqlite3.connect("user_data.db") as conn:
         );
     ''')
 
+    # ✅ Create lesson_content table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS lesson_content (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,7 +46,7 @@ with sqlite3.connect("user_data.db") as conn:
         );
     ''')
 
-    # ✅ Add missing 'target_user' column
+    # ✅ Add target_user column if missing
     cursor.execute("PRAGMA table_info(lesson_content);")
     columns = [col[1] for col in cursor.fetchall()]
     if "target_user" not in columns:
@@ -52,21 +55,45 @@ with sqlite3.connect("user_data.db") as conn:
     else:
         print("ℹ️ 'target_user' column already exists.")
 
-    # ✅ Add missing 'password' and 'created_at' columns to users table
+    # ✅ Add missing user columns
     cursor.execute("PRAGMA table_info(users);")
     user_columns = [col[1] for col in cursor.fetchall()]
-
     if "password" not in user_columns:
         cursor.execute("ALTER TABLE users ADD COLUMN password TEXT;")
-        print("✅ 'password' column added to users table.")
+        print("✅ 'password' column added.")
     else:
         print("ℹ️ 'password' column already exists.")
 
     if "created_at" not in user_columns:
         cursor.execute("ALTER TABLE users ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;")
-        print("✅ 'created_at' column added to users table.")
+        print("✅ 'created_at' column added.")
     else:
         print("ℹ️ 'created_at' column already exists.")
+
+    # ✅ Create lesson_progress table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS lesson_progress (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            lesson_id INTEGER NOT NULL,
+            block_id TEXT NOT NULL,
+            completed BOOLEAN NOT NULL DEFAULT 0,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, lesson_id, block_id),
+            FOREIGN KEY (lesson_id) REFERENCES lesson_content(lesson_id)
+        );
+    ''')
+    print("✅ 'lesson_progress' table created (if not exists).")
+
+    # ✅ Create lesson_blocks table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS lesson_blocks (
+            lesson_id INTEGER NOT NULL,
+            block_id TEXT NOT NULL,
+            PRIMARY KEY (lesson_id, block_id)
+        );
+    ''')
+    print("✅ 'lesson_blocks' table created (if not exists).")
 
     conn.commit()
     print("✅ Migration completed.")

@@ -40,9 +40,9 @@ def submit_level():
 
     def ansi_to_html(text):
         return text.replace("\x1b[31m", '<span style="color:red;">')\
-                   .replace("\x1b[32m", '<span style="color:green;">')\
-                   .replace("\x1b[33m", '<span style="color:orange;">')\
-                   .replace("\x1b[0m", '</span>')
+                .replace("\x1b[32m", '<span style="color:green;">')\
+                .replace("\x1b[33m", '<span style="color:orange;">')\
+                .replace("\x1b[0m", '</span>')
 
     return jsonify({
         "correct": correct,

@@ -6,3 +6,4 @@ python-dotenv
 requests
 colorama
 numpy<2
+beautifulsoup4

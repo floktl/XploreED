@@ -64,9 +64,12 @@ export default function Lessons() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h3 className="font-semibold">{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
-                    <p className={`text-sm ${lesson.completed ? "text-green-500" : "text-yellow-500"}`}>
-                      {lesson.completed ? "✅ Completed" : "⏳ In Progress"}
+                    <p className={`text-sm ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
+                      {lesson.completed
+                        ? "✅ Completed"
+                        : `📊 ${Math.round(lesson.percent_complete || 0)}% Complete`}
                     </p>
+
                     {lesson.last_attempt && (
                       <p className="text-xs text-gray-400">
                         Last Attempt: {new Date(lesson.last_attempt).toLocaleString()}
@@ -74,11 +77,20 @@ export default function Lessons() {
                     )}
                   </div>
                   <Button
-                    variant={lesson.completed ? "secondary" : "primary"}
+                    variant="progress"
                     type="button"
+                    className="relative overflow-hidden"
                     onClick={() => navigate(`/lesson/${lesson.id}`)}
                   >
-                    {lesson.completed ? "🔁 Review" : "▶️ Continue"}
+                    <span className="relative z-10">
+                      {lesson.completed ? "🔁 Review" : "▶️ Continue"}
+                    </span>
+                    {!lesson.completed && (
+                      <span
+                        className="absolute top-0 left-0 h-full bg-blue-500 opacity-30"
+                        style={{ width: `${lesson.percent_complete || 0}%` }}
+                      />
+                    )}
                   </Button>
                 </div>
               </Card>
