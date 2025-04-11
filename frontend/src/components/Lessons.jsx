@@ -61,16 +61,20 @@ export default function Lessons() {
               const completed = lessons
                 .filter((l) => l.completed)
                 .sort((a, b) => a.id - b.id);
+              console.log("✅ Completed lessons:", completed);
 
               const nextUnfinished = lessons
                 .filter((l) => !l.completed)
                 .sort((a, b) => a.id - b.id)[0];
+              console.log("➡️ Next unfinished lesson:", nextUnfinished);
 
               const visibleLessons = nextUnfinished
                 ? [...completed, nextUnfinished]
                 : completed;
+              console.log("📋 Visible lessons:", visibleLessons);
 
               return visibleLessons.map((lesson) => (
+
                 <Card key={lesson.id}>
                   <div className="flex justify-between items-center">
                     <div>

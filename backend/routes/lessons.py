@@ -9,14 +9,18 @@ lessons_bp = Blueprint("lessons", __name__, url_prefix="/api")
 def get_lessons():
     session_id = request.cookies.get("session_id")
     user = session_manager.get_user(session_id)
+    print("🟡 SESSION ID:", session_id, flush=True)
+    print("🟢 USER FROM SESSION:", user, flush=True)
+
     if not user:
+        print("🔴 No user found in session", flush=True)
         return jsonify({"msg": "Unauthorized"}), 401
 
     results = []
     with sqlite3.connect("user_data.db") as conn:
         conn.row_factory = sqlite3.Row
 
-        # ✅ fetch only published lessons visible to this user
+        print("📥 Fetching lessons from DB for user:", user, flush=True)
         lessons = conn.execute("""
             SELECT lesson_id, title, created_at, target_user
             FROM lesson_content
@@ -25,33 +29,54 @@ def get_lessons():
             ORDER BY created_at DESC
         """, (user,)).fetchall()
 
+        print(f"📘 Found {len(lessons)} lessons for user '{user}'", flush=True)
         for lesson in lessons:
+            print("———", flush=True)
+            print("📗 Lesson row:", dict(lesson), flush=True)
+
             lid = lesson["lesson_id"]
 
-            # progress
-            total_blocks = conn.execute("SELECT COUNT(*) FROM lesson_blocks WHERE lesson_id = ?", (lid,)).fetchone()[0] or 0
+            total_blocks = conn.execute(
+                "SELECT COUNT(*) FROM lesson_blocks WHERE lesson_id = ?", (lid,)
+            ).fetchone()[0] or 0
+            print(f"📦 Total blocks for lesson {lid}: {total_blocks}", flush=True)
+
             completed_blocks = conn.execute("""
                 SELECT COUNT(*) FROM lesson_progress
                 WHERE lesson_id = ? AND user_id = ? AND completed = 1
             """, (lid, user)).fetchone()[0] or 0
+            print(f"✅ Completed blocks: {completed_blocks}", flush=True)
 
             percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks else 0
+            print(f"📊 Percent complete: {percent_complete}%", flush=True)
 
-            # latest attempt (if any)
             latest = conn.execute("""
                 SELECT MAX(timestamp) FROM results
                 WHERE username = ? AND level = ?
             """, (user, lid)).fetchone()[0]
+            print(f"🕓 Last attempt: {latest}", flush=True)
+
+            completed_row = conn.execute("""
+                SELECT 1 FROM results
+                WHERE username = ? AND level = ? AND correct = 1
+                LIMIT 1
+            """, (user, lid)).fetchone()
+            completed = completed_row is not None
+            print(f"🏁 Completed: {completed}", flush=True)
 
             results.append({
                 "id": lid,
                 "title": lesson["title"] or f"Lesson {lid + 1}",
-                "completed": percent_complete == 100,
+                "completed": completed,
                 "last_attempt": latest,
                 "percent_complete": percent_complete
             })
 
+        print("✅ Final results array:", results, flush=True)
+        print("====================================", flush=True)
+
     return jsonify(results)
+
 
 
 

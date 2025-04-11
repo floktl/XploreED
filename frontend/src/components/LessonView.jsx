@@ -50,8 +50,29 @@ export default function LessonView() {
       }
     };
 
+    const fetchMarkedComplete = async () => {
+      try {
+        const res = await fetch("http://localhost:5050/api/lesson-completed", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ lesson_id: parseInt(lessonId) }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setMarkedComplete(data.completed);
+        }
+      } catch (err) {
+        console.warn("Could not load marked complete state", err);
+      }
+    };
+    
+
     fetchLesson();
     fetchProgress();
+    fetchProgress();
+    fetchMarkedComplete();
+
   }, [lessonId, isAdmin, navigate]);
 
   useEffect(() => {
@@ -76,11 +97,10 @@ export default function LessonView() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ lesson_id: lessonId }),
+        body: JSON.stringify({ lesson_id: parseInt(lessonId) }),
       });
       if (!res.ok) throw new Error("Failed to mark complete");
 
-      alert("✅ Lesson marked as completed!");
       setMarkedComplete(true);
       navigate("/lessons");
     } catch (err) {

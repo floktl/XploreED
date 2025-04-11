@@ -39,4 +39,4 @@ reset:
 	@echo "💣 Removing all containers, images, volumes, and networks..."
 	@docker-compose down --volumes --remove-orphans
 	@docker system prune -af --volumes
-	up
+	@make up
