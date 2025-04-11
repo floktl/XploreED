@@ -2,8 +2,10 @@ flask
 flask_cors
 flask-limiter
 flask-jwt-extended==4.6.0
+flask-admin==1.6.1
 python-dotenv
 requests
 colorama
 numpy<2
 beautifulsoup4
+sqlalchemy

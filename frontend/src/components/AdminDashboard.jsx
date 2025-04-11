@@ -153,7 +153,7 @@ export default function AdminDashboard() {
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
               <tr>
                 <th className="px-4 py-2 text-left">User</th>
-                <th className="px-4 py-2 text-left">Last Level</th>
+                <th className="px-4 py-2 text-left">Game Level</th>
                 <th className="px-4 py-2 text-left">Last Activity</th>
                 <th className="px-4 py-2 text-left">Action</th>
               </tr>

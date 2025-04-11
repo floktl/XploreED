@@ -83,9 +83,15 @@ def init_db():
 
 init_db()
 
-def vocab_exists(username, word):
+def split_and_clean(text):
+    return re.findall(r"\b\w+\b", text)
+
+def vocab_exists(username, german_word):
     with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.execute("SELECT 1 FROM vocab_log WHERE username = ? AND vocab = ?", (username, word.lower()))
+        cursor = conn.execute(
+            "SELECT 1 FROM vocab_log WHERE username = ? AND vocab = ?",
+            (username, german_word)
+        )
         return cursor.fetchone() is not None
 
 def save_vocab(username, german_word):
@@ -102,20 +108,23 @@ def save_vocab(username, german_word):
         "source_lang": "DE",
         "target_lang": "EN"
     }
+
     try:
         response = requests.post(url, data=data)
         english_word = response.json()["translations"][0]["text"]
+
+        # Smart lowercasing: only lowercase if it's a single word and not all-caps
+        if english_word.isalpha() and english_word.istitle():
+            english_word = english_word.lower()
     except Exception:
         english_word = "(error)"
 
     with sqlite3.connect(DB_FILE) as conn:
         conn.execute(
             "INSERT INTO vocab_log (username, vocab, translation) VALUES (?, ?, ?)",
-            (username, german_word.lower(), english_word)
+            (username, german_word, english_word)
         )
 
-def split_and_clean(text):
-    return re.findall(r"\b\w+\b", text)
 
 def translate_to_german(english_sentence, username=None):
     if not API_KEY:
@@ -127,20 +136,21 @@ def translate_to_german(english_sentence, username=None):
         "text": english_sentence,
         "target_lang": "DE"
     }
-    response = requests.post(url, data=data)
 
     try:
-        json_data = response.json()
-        german_text = json_data["translations"][0]["text"]
+        response = requests.post(url, data=data)
+        german_text = response.json()["translations"][0]["text"]
 
         if username:
-            words_to_check = split_and_clean(german_text)
-            for word in words_to_check:
-                save_vocab(username, word)
+            german_words = split_and_clean(german_text)
+            for de_word in german_words:
+                save_vocab(username, de_word)
 
         return german_text
-    except Exception:
+    except Exception as e:
+        print("❌ Error calling DeepL:", e)
         return "❌ API failure"
+
 
 def get_scrambled_sentence(sentence):
     words = sentence.split()
