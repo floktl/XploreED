@@ -1,13 +1,6 @@
-# backend/routes/game.py
-from flask import Blueprint, request, jsonify
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from session_manager import session_manager
-import os
-from german_sentence_game import LEVELS, get_scrambled_sentence, evaluate_order, save_result
+from utils.imports.imports import *
 
 limiter = Limiter(get_remote_address)
-game_bp = Blueprint("game", __name__, url_prefix="/api")
 
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")

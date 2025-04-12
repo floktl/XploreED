@@ -10,7 +10,7 @@ def update_lesson_blocks_from_html(lesson_id, html):
         if block_id:
             block_ids.add(block_id)
 
-    with sqlite3.connect("user_data.db") as conn:
+    with get_connection() as conn:
         cursor = conn.cursor()
 
         # Delete existing entries for this lesson

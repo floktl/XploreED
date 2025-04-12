@@ -1,17 +1,7 @@
-# backend/routes/auth.py
+from utils.imports.imports import *
 
-from flask import Blueprint, request, jsonify, make_response
-import sqlite3
-import os
-from werkzeug.security import generate_password_hash, check_password_hash
-from session_manager import session_manager
-from extensions import limiter
-
-auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
-
-# === USER SIGNUP ===
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
     data = request.get_json()
@@ -24,27 +14,24 @@ def signup():
     hashed_pw = generate_password_hash(password)
 
     try:
-        with sqlite3.connect("user_data.db") as conn:
-            conn.execute("""
-                CREATE TABLE IF NOT EXISTS users (
-                    username TEXT PRIMARY KEY,
-                    password TEXT NOT NULL,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                );
-            """)
-            cur = conn.execute("SELECT 1 FROM users WHERE username = ?", (username,))
-            if cur.fetchone():
-                return jsonify({"error": "Username already exists"}), 400
+        execute_query("""
+            CREATE TABLE IF NOT EXISTS users (
+                username TEXT PRIMARY KEY,
+                password TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
 
-            conn.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_pw))
+        if user_exists(username):
+            return jsonify({"error": "Username already exists"}), 400
 
+        insert_row("users", {"username": username, "password": hashed_pw})
     except Exception as e:
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     return jsonify({"msg": "User created"}), 201
 
 
-# === USER LOGIN ===
 @auth_bp.route("/login", methods=["POST"])
 @limiter.limit("5 per minute")
 def login():
@@ -55,17 +42,15 @@ def login():
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
 
-    with sqlite3.connect("user_data.db") as conn:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                username TEXT PRIMARY KEY,
-                password TEXT NOT NULL
-            );
-        """)
-        cur = conn.execute("SELECT password FROM users WHERE username = ?", (username,))
-        row = cur.fetchone()
+    execute_query("""
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            password TEXT NOT NULL
+        );
+    """)
 
-    if not row or not check_password_hash(row[0], password):
+    row = fetch_one("SELECT password FROM users WHERE username = ?", (username,))
+    if not row or not check_password_hash(row["password"], password):
         return jsonify({"error": "Invalid username or password"}), 401
 
     session_id = session_manager.create_session(username)
@@ -74,9 +59,11 @@ def login():
     return resp
 
 
-# === ADMIN LOGIN ===
 @auth_bp.route("/admin/login", methods=["POST"])
 def admin_login():
+    print("hello", flush=True)
+    if request.method == "OPTIONS":
+        return '', 200
     data = request.get_json()
     if data.get("password") != ADMIN_PASSWORD:
         return jsonify({"error": "Invalid credentials"}), 401
@@ -87,7 +74,6 @@ def admin_login():
     return resp
 
 
-# === LOGOUT ===
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     session_id = request.cookies.get("session_id")

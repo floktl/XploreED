@@ -8,7 +8,7 @@ class SessionManager:
         self._init_session_table()
 
     def _init_session_table(self):
-        with sqlite3.connect(self.db_path) as conn:
+        with get_connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS sessions (
                     session_id TEXT PRIMARY KEY,
@@ -19,23 +19,23 @@ class SessionManager:
 
     def create_session(self, username):
         session_id = str(uuid.uuid4())
-        with sqlite3.connect(self.db_path) as conn:
+        with get_connection() as conn:
             conn.execute("INSERT INTO sessions (session_id, username) VALUES (?, ?)", (session_id, username))
         return session_id
 
     def get_user(self, session_id):
         if not session_id:
             return None
-        with sqlite3.connect(self.db_path) as conn:
+        with get_connection() as conn:
             result = conn.execute("SELECT username FROM sessions WHERE session_id = ?", (session_id,)).fetchone()
             return result[0] if result else None
 
     def destroy_session(self, session_id):
-        with sqlite3.connect(self.db_path) as conn:
+        with get_connection() as conn:
             conn.execute("DELETE FROM sessions WHERE session_id = ?", (session_id,))
     
     def destroy_user_sessions(self, username):
-        with sqlite3.connect(self.db_path) as conn:
+        with get_connection() as conn:
             conn.execute("DELETE FROM sessions WHERE username = ?", (username,))
 
 session_manager = SessionManager()
