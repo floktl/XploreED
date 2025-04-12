@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 print("🔧 Repairing lesson_blocks...")
 
-with sqlite3.connect("user_data.db") as conn:
+with get_connection() as conn:
     cursor = conn.cursor()
     lessons = cursor.execute("SELECT lesson_id, content FROM lesson_content").fetchall()
 

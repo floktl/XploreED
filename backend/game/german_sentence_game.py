@@ -1,4 +1,5 @@
 # german_sentence_game.py
+from utils.db_utils import get_connection
 import random
 import requests
 from colorama import Fore, Style
@@ -6,8 +7,6 @@ import sqlite3
 from datetime import datetime
 import os
 import re
-
-DB_FILE = "user_data.db"
 
 API_KEY = os.getenv("DEEPL_API_KEY")
 if not API_KEY:
@@ -44,7 +43,7 @@ class User:
         })
 
 def init_db():
-    with sqlite3.connect("user_data.db") as conn:
+    with get_connection() as conn:
         conn.execute('''CREATE TABLE IF NOT EXISTS results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
@@ -87,7 +86,7 @@ def split_and_clean(text):
     return re.findall(r"\b\w+\b", text)
 
 def vocab_exists(username, german_word):
-    with sqlite3.connect(DB_FILE) as conn:
+    with get_connection() as conn:
         cursor = conn.execute(
             "SELECT 1 FROM vocab_log WHERE username = ? AND vocab = ?",
             (username, german_word)
@@ -119,7 +118,7 @@ def save_vocab(username, german_word):
     except Exception:
         english_word = "(error)"
 
-    with sqlite3.connect(DB_FILE) as conn:
+    with get_connection() as conn:
         conn.execute(
             "INSERT INTO vocab_log (username, vocab, translation) VALUES (?, ?, ?)",
             (username, german_word, english_word)
@@ -247,14 +246,14 @@ def get_feedback(student_version, correct_version):
     return False, feedback_text
 
 def save_result(username, level, correct, answer):
-    with sqlite3.connect(DB_FILE) as conn:
+   with get_connection() as conn:
         conn.execute(
             "INSERT INTO results (username, level, correct, answer, timestamp) VALUES (?, ?, ?, ?, ?)",
             (username, level, int(correct), answer, datetime.now().isoformat())
         )
 
 def get_all_results():
-    with sqlite3.connect("user_data.db") as conn:
+    with get_connection() as conn:
         cursor = conn.execute("""
             SELECT u.username, r.level, r.correct, r.answer, r.timestamp
             FROM users u

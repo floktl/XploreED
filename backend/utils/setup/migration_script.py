@@ -1,7 +1,7 @@
 # migration_script.py
-import sqlite3
+from utils.db_utils import get_connection
 
-with sqlite3.connect("user_data.db") as conn:
+with get_connection() as conn:
     cursor = conn.cursor()
     print("🔄 Running migration script...")
 

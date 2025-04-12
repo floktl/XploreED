@@ -1,8 +1,4 @@
-from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
-import sqlite3
-
-profile_bp = Blueprint("profile", __name__, url_prefix="/api")
+from utils.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])
 @jwt_required()
@@ -13,14 +9,12 @@ def get_profile():
     if not username:
         return jsonify({"error": "Invalid session"}), 401
 
-    with sqlite3.connect("user_data.db") as conn:
-        cursor = conn.execute("""
-            SELECT level, answer, correct, timestamp
-            FROM results
-            WHERE username = ?
-            ORDER BY timestamp DESC
-        """, (username,))
-        rows = cursor.fetchall()
+    rows = fetch_all("""
+        SELECT level, answer, correct, timestamp
+        FROM results
+        WHERE username = ?
+        ORDER BY timestamp DESC
+    """, (username,))
 
     results = [
         {

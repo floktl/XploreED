@@ -1,9 +1,4 @@
-# backend/routes/translate.py
-from flask import Blueprint, jsonify, request
-from session_manager import session_manager
-from german_sentence_game import translate_to_german, get_feedback
-
-translate_bp = Blueprint("translate", __name__, url_prefix="/api")
+from utils.imports.imports import *
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():

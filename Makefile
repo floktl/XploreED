@@ -3,7 +3,7 @@
 up:
 	@echo "⚙️ Running DB migration inside backend container..."
 	@docker compose up -d --wait
-	@docker compose exec backend python3 migration_script.py
+	@docker compose exec backend python3 utils/setup/migration_script.py
 	@docker compose logs -f
 
 
@@ -23,7 +23,7 @@ stop:
 	@docker-compose stop
 
 migrate:
-	@docker compose exec backend python3 migration_script.py || true
+	@docker compose exec backend python3 utils/setup/migration_script.py || true
 
 prune:
 	docker system prune -f --volumes
