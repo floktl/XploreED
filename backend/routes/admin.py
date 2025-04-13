@@ -109,9 +109,9 @@ def delete_lesson(lesson_id):
         return jsonify({"error": "unauthorized"}), 401
 
     try:
-        delete_rows("lesson_progress", "lesson_id = ?", (lesson_id,))
-        delete_rows("lesson_blocks", "lesson_id = ?", (lesson_id,))
-        delete_rows("lesson_content", "lesson_id = ?", (lesson_id,))
+        delete_rows("lesson_progress", "WHERE lesson_id = ?", (lesson_id,))
+        delete_rows("lesson_blocks", "WHERE lesson_id = ?", (lesson_id,))
+        delete_rows("lesson_content", "WHERE lesson_id = ?", (lesson_id,))
         return jsonify({"status": "deleted"}), 200
     except Exception as e:
         return jsonify({"error": "Deletion failed", "details": str(e)}), 500
@@ -141,7 +141,8 @@ def update_lesson_by_id(lesson_id):
         "content": content,
         "target_user": data.get("target_user"),
         "published": bool(data.get("published", 0))
-    }, "lesson_id = ?", (lesson_id,))
+    }, "WHERE lesson_id = ?", (lesson_id,))
+
 
     update_lesson_blocks_from_html(lesson_id, content)
     return jsonify({"status": "updated"})

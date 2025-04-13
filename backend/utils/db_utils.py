@@ -17,33 +17,53 @@ def get_connection():
     return sqlite3.connect(DB)
 
 def execute_query(query, params=(), fetch=False, many=False):
-    try:
-        print("📥 QUERY:", query, flush=True)
-        print("📦 PARAMS:", params, flush=True)
-        print(f"🔧 fetch={fetch}, many={many}", flush=True)
+    print("📥 QUERY:", query, flush=True)
+    print("📦 PARAMS:", params, flush=True)
+    print("🔠 PARAM TYPES:", [type(p) for p in params], flush=True)
+    print(f"🔧 fetch={fetch}, many={many}", flush=True)
 
+    try:
         with get_connection() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
 
-            if many:
-                cursor.executemany(query, params)
-            else:
-                cursor.execute(query, params)
+            try:
+                if many:
+                    print("📚 Running executemany...", flush=True)
+                    cursor.executemany(query, params)
+                else:
+                    print("🎯 Running execute...", flush=True)
+                    cursor.execute(query, params)
+                print("✅ Query executed", flush=True)
+            except Exception as e:
+                print("❌ EXECUTE ERROR:", str(e), flush=True)
+                print("⚠️ Failed during cursor.execute", flush=True)
+                raise
 
             if fetch:
-                results = [dict(row) for row in cursor.fetchall()]
-                print("📤 RESULT:", results, flush=True)
-                return results
+                try:
+                    results = [dict(row) for row in cursor.fetchall()]
+                    print("📤 RESULT:", results, flush=True)
+                    return results
+                except Exception as e:
+                    print("❌ FETCH ERROR:", str(e), flush=True)
+                    print("⚠️ Failed during fetchall", flush=True)
+                    raise
 
-            conn.commit()
-            return True
+            try:
+                conn.commit()
+                print("💾 Commit successful", flush=True)
+                return True
+            except Exception as e:
+                print("❌ COMMIT ERROR:", str(e), flush=True)
+                raise
 
     except Exception as e:
-        print("❌ DB Error:", str(e), flush=True)
+        print("❌ DB Error (outer):", str(e), flush=True)
         print("⚠️ Failed SQL input →", query, flush=True)
         print("⚠️ Failed SQL params →", params, flush=True)
         return None
+
 
 
 def fetch_all(table, where_clause="", params=()):
@@ -64,7 +84,7 @@ def insert_row(table, data):
 
 def update_row(table, updates: dict, where_clause: str, params=()):
     set_clause = ", ".join([f"{col} = ?" for col in updates])
-    query = f"UPDATE {table} SET {set_clause} {where_clause}"
+    query = f"UPDATE {table} SET {set_clause} WHERE {where_clause.lstrip('WHERE ')}"
     all_params = tuple(updates.values()) + tuple(params)
     return execute_query(query, all_params)
 

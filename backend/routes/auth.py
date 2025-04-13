@@ -10,36 +10,6 @@ def debug_login():
     print("🧪 debug-login hit!", flush=True)
     return jsonify({"msg": "working"})
 
-# @auth_bp.route("/signup", methods=["POST"])
-# def signup():
-#     data = request.get_json()
-#     username = data.get("username", "").strip()
-#     password = data.get("password", "").strip()
-
-#     if not username or not password:
-#         return jsonify({"error": "Missing username or password"}), 400
-
-#     hashed_pw = generate_password_hash(password)
-
-#     try:
-#         execute_query("""
-#             CREATE TABLE IF NOT EXISTS users (
-#                 username TEXT PRIMARY KEY,
-#                 password TEXT NOT NULL,
-#                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-#             );
-#         """)
-
-#         if user_exists(username):
-#             return jsonify({"error": "Username already exists"}), 400
-#         insert_row("users", {"username": username, "password": hashed_pw})
-#     except Exception as e:
-#         return jsonify({"error": f"Database error: {str(e)}"}), 500
-
-#     return jsonify({"msg": "User created"}), 201
-
-# @limiter.limit("5 per minute")
-
 @auth_bp.route("/login", methods=["POST", "OPTIONS"])
 @limiter.limit("5 per minute")
 def login():

@@ -12,7 +12,6 @@ env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 print(f"\u2705 .env loaded from: {env_path}", flush=True)
 print("\u2705 DB_FILE =", os.getenv("DB_FILE"), flush=True)
-print("\u2705 JWT_SECRET_KEY =", os.getenv("JWT_SECRET_KEY"), flush=True)
 
 # === Now import modules that rely on env vars ===
 from game.german_sentence_game import init_db
@@ -31,14 +30,13 @@ from utils.blueprint import registered_blueprints
 
 # === Create and configure Flask app ===
 app = Flask(__name__)
-app.secret_key = os.getenv("JWT_SECRET_KEY", "super-secret")
-
 # === JWT config ===
-app.config["JWT_SECRET_KEY"] = app.secret_key
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
 app.config["JWT_COOKIE_SECURE"] = False
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
+app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
 
 # === Register Blueprints ===
 for bp in registered_blueprints:
