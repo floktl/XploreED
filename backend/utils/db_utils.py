@@ -17,10 +17,9 @@ def get_connection():
     return sqlite3.connect(DB)
 
 def execute_query(query, params=(), fetch=False, many=False):
-    print("📥 QUERY:", query, flush=True)
-    print("📦 PARAMS:", params, flush=True)
-    print("🔠 PARAM TYPES:", [type(p) for p in params], flush=True)
-    print(f"🔧 fetch={fetch}, many={many}", flush=True)
+    # print("📦 PARAMS:", params, flush=True)
+    # print("🔠 PARAM TYPES:", [type(p) for p in params], flush=True)
+    # print(f"🔧 fetch={fetch}, many={many}", flush=True)
 
     try:
         with get_connection() as conn:
@@ -29,12 +28,12 @@ def execute_query(query, params=(), fetch=False, many=False):
 
             try:
                 if many:
-                    print("📚 Running executemany...", flush=True)
+                    # print("📚 Running executemany...", flush=True)
                     cursor.executemany(query, params)
                 else:
-                    print("🎯 Running execute...", flush=True)
+                    # print("🎯 Running execute...", flush=True)
                     cursor.execute(query, params)
-                print("✅ Query executed", flush=True)
+                # print("✅ Query executed", flush=True)
             except Exception as e:
                 print("❌ EXECUTE ERROR:", str(e), flush=True)
                 print("⚠️ Failed during cursor.execute", flush=True)
@@ -43,7 +42,7 @@ def execute_query(query, params=(), fetch=False, many=False):
             if fetch:
                 try:
                     results = [dict(row) for row in cursor.fetchall()]
-                    print("📤 RESULT:", results, flush=True)
+                    # print("📤 RESULT:", results, flush=True)
                     return results
                 except Exception as e:
                     print("❌ FETCH ERROR:", str(e), flush=True)
@@ -52,7 +51,7 @@ def execute_query(query, params=(), fetch=False, many=False):
 
             try:
                 conn.commit()
-                print("💾 Commit successful", flush=True)
+                # print("💾 Commit successful", flush=True)
                 return True
             except Exception as e:
                 print("❌ COMMIT ERROR:", str(e), flush=True)
@@ -76,7 +75,7 @@ def fetch_one(table, where_clause="", params=()):
     return results[0] if results else None
 
 def insert_row(table, data):
-    print("🔍 Writing to DB path:", os.getenv("DB_FILE"), flush=True)
+    # print("🔍 Writing to DB path:", os.getenv("DB_FILE"), flush=True)
     columns = ", ".join(data.keys())
     placeholders = ", ".join(["?"] * len(data))
     query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
@@ -93,8 +92,8 @@ def delete_rows(table, where_clause="", params=()):
     return execute_query(query, params)
 
 def fetch_custom(query, params=()):
-    print("📥 fetch_custom query:", query, flush=True)
-    print("📦 fetch_custom params:", params, flush=True)
+    # print("📥 fetch_custom query:", query, flush=True)
+    # print("📦 fetch_custom params:", params, flush=True)
     return execute_query(query, params, fetch=True)
 
 def fetch_one_custom(query, params=()):

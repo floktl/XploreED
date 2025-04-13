@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
-import BlockContentRenderer from "./BlockContentRenderer"; 
+import BlockContentRenderer from "./BlockContentRenderer";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
@@ -15,6 +15,8 @@ export default function LessonView() {
   const [markedComplete, setMarkedComplete] = useState(false);
   const navigate = useNavigate();
   const isAdmin = useAppStore((state) => state.isAdmin);
+  const [numBlocks, setNumBlocks] = useState(0);
+
 
   useEffect(() => {
     if (isAdmin) {
@@ -24,15 +26,29 @@ export default function LessonView() {
 
     const fetchLesson = async () => {
       try {
+        console.log(`📡 Fetching lesson from /api/lesson/${lessonId}`);
+
         const res = await fetch(`http://localhost:5050/api/lesson/${lessonId}`, {
           method: "GET",
           credentials: "include",
         });
-        if (!res.ok) throw new Error("Failed to fetch lesson content");
+
+        console.log("🔄 Response status:", res.status);
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error("Failed to fetch lesson content");
+        }
+
         const data = await res.json();
-        setEntries(data);
+        console.log("📥 Received lesson data:", data);
+
+        if (data && !Array.isArray(data)) {
+          setEntries([data]);
+          setNumBlocks(data.num_blocks || 0);
+        }
       } catch (err) {
-        console.error("Failed to load lesson content", err);
+        console.error("🔥 Exception while loading lesson content:", err);
       }
     };
 
@@ -66,25 +82,19 @@ export default function LessonView() {
         console.warn("Could not load marked complete state", err);
       }
     };
-    
 
     fetchLesson();
     fetchProgress();
-    fetchProgress();
     fetchMarkedComplete();
-
   }, [lessonId, isAdmin, navigate]);
 
   useEffect(() => {
-    const total = Object.keys(progress).length;
     const completed = Object.values(progress).filter(Boolean).length;
-  
-    setPercentComplete(total > 0 ? (completed / total) * 100 : 0);
-  
-    // allow marking complete if no checkboxes OR all are complete
-    setCanComplete(total === 0 || completed === total);
-  }, [progress]);
-  
+
+    setPercentComplete(numBlocks > 0 ? (completed / numBlocks) * 100 : 0);
+    setCanComplete(numBlocks === 0 || completed === numBlocks);
+
+  }, [progress, numBlocks]);
 
   const handleMarkComplete = async () => {
     if (!canComplete) {
@@ -93,7 +103,7 @@ export default function LessonView() {
     }
 
     try {
-      const res = await fetch("http://localhost:5050/api/lesson-progress-complete", {
+      const res = await fetch("http://localhost:5050/api/mark-as-completed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -143,38 +153,38 @@ export default function LessonView() {
         ) : (
           <div className="space-y-4">
             {entries.map((entry, i) => (
-  <Card key={i}>
-    <h3 className="text-xl font-semibold">{entry.title}</h3>
-    <p className="text-sm text-gray-500 dark:text-gray-400">
-      Added on {new Date(entry.created_at).toLocaleString()}
-    </p>
-    <BlockContentRenderer
-      html={entry.content}
-      progress={progress}
-      onToggle={async (blockId, completed) => {
-        try {
-          await fetch("http://localhost:5050/api/lesson-progress", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              lesson_id: parseInt(lessonId),
-              block_id: blockId,
-              completed,
-            }),
-          });
+              <Card key={i}>
+                <h3 className="text-xl font-semibold">{entry.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Added on {new Date(entry.created_at).toLocaleString()}
+                </p>
+                <BlockContentRenderer
+                  html={entry.content}
+                  progress={progress}
+                  onToggle={async (blockId, completed) => {
+                    try {
+                      await fetch("http://localhost:5050/api/lesson-progress", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({
+                          lesson_id: parseInt(lessonId),
+                          block_id: blockId,
+                          completed,
+                        }),
+                      });
 
-          setProgress((prev) => ({
-            ...prev,
-            [blockId]: completed,
-          }));
-        } catch (err) {
-          console.error("❌ Failed to update progress", err);
-        }
-      }}
-    />
-  </Card>
-))}
+                      setProgress((prev) => ({
+                        ...prev,
+                        [blockId]: completed,
+                      }));
+                    } catch (err) {
+                      console.error("❌ Failed to update progress", err);
+                    }
+                  }}
+                />
+              </Card>
+            ))}
           </div>
         )}
 

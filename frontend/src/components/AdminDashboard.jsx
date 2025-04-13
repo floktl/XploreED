@@ -13,7 +13,7 @@ import BlockContentRenderer from "./BlockContentRenderer";
 
 export default function AdminDashboard() {
   useRequireAdmin();
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
   const [error, setError] = useState("");
   const [modalContent, setModalContent] = useState(null);
   const [showEditorModal, setShowEditorModal] = useState(false);
@@ -26,6 +26,8 @@ export default function AdminDashboard() {
   const [lessonProgressDetails, setLessonProgressDetails] = useState([]);
   const [formError, setFormError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const setIsAdmin = useAppStore((state) => state.setIsAdmin);
+
 
   const navigate = useNavigate();
   const darkMode = useAppStore((state) => state.darkMode);
@@ -33,34 +35,42 @@ export default function AdminDashboard() {
   const isLoading = useAppStore((state) => state.isLoading);
 
   useEffect(() => {
-    if (isLoading || !isAdmin) {
-      navigate("/admin-login");
-    }
-
-    const fetchData = async () => {
+    const verifyAdmin = async () => {
       try {
+        const res = await fetch("http://localhost:5050/api/role", {
+          credentials: "include",
+        });
+        
+        const data = await res.json();
+        setIsAdmin(data.is_admin);
+  
+        if (!data.is_admin) {
+          navigate("/admin-login");
+          return;
+        }
+  
+        // ✅ now safe to load data
         const [resultsRes, lessonsRes, progressRes] = await Promise.all([
           fetch("http://localhost:5050/api/admin/results", { credentials: "include" }),
           fetch("http://localhost:5050/api/admin/lesson-content", { credentials: "include" }),
           fetch("http://localhost:5050/api/admin/lesson-progress-summary", { credentials: "include" }),
         ]);
-
-        if (resultsRes.ok) {
-          const json = await resultsRes.json();
-          setResults(Array.isArray(json) ? json : []);
-        }
+  
+        if (resultsRes.ok) setResults(await resultsRes.json());
         if (lessonsRes.ok) setLessons(await lessonsRes.json());
         if (progressRes.ok) setLessonProgress(await progressRes.json());
+  
       } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("❌ Could not connect to the server.");
+        console.error("❌ Admin verification failed:", err);
+        navigate("/admin-login");
       }
     };
+  
+    verifyAdmin();
+  }, [navigate, setIsAdmin]);
+  
 
-    fetchData();
-  }, [isAdmin, isLoading, navigate]);
-
-  const userSummary = (results ?? []).reduce((acc, curr) => {
+  const userSummary = results.reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
     if (!acc[username] || new Date(timestamp) > new Date(acc[username].lastTime || 0)) {
       acc[username] = { username, lastLevel: level, lastTime: timestamp };
@@ -148,6 +158,7 @@ export default function AdminDashboard() {
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
         <Title>📊 Admin Dashboard</Title>
+
         {error && <Alert type="danger">{error}</Alert>}
 
         <Card className="overflow-x-auto mb-10">
@@ -197,7 +208,7 @@ export default function AdminDashboard() {
               <tr>
                 <th className="px-4 py-2 text-left">Lesson ID</th>
                 <th className="px-4 py-2 text-left">Title</th>
-                <th className="px-4 py-2 text-left">Avg Progress</th>
+                <th className="px-4 py-2 text-left">Progress</th>
                 <th className="px-4 py-2 text-left">Target User</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
@@ -215,7 +226,16 @@ export default function AdminDashboard() {
         {lesson.title}
       </td>
       <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-        {lesson.published ? (
+      {lesson.published ? (
+        lesson.num_blocks === 0 ? (
+          <Button
+            variant="outline"
+            disabled
+            className="opacity-60 cursor-not-allowed"
+          >
+            🧱
+          </Button>
+        ) : (
           <Button
             variant="progress"
             onClick={async () => {
@@ -233,16 +253,43 @@ export default function AdminDashboard() {
               }
             }}
           >
-            {lessonProgress[lesson.lesson_id] !== undefined
-              ? `${Math.round(lessonProgress[lesson.lesson_id])}%`
-              : "📊 View"}
+           {lessonProgress[lesson.lesson_id]?.num_blocks === 0 ? (
+  <Button variant="outline" disabled className="opacity-60 cursor-not-allowed">
+    🧱
+  </Button>
+) : (
+  <Button
+    variant="progress"
+    onClick={async () => {
+      try {
+        const res = await fetch(`http://localhost:5050/api/admin/lesson-progress/${lesson.lesson_id}`, {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLessonProgressDetails(data);
+          setShowLessonModal(lesson.lesson_id);
+        }
+      } catch (err) {
+        console.error("❌ Failed to fetch progress details", err);
+      }
+    }}
+  >
+    {lessonProgress[lesson.lesson_id]
+      ? `${Math.round(lessonProgress[lesson.lesson_id].percent)}%`
+      : "📊 View"}
+  </Button>
+)}
+
           </Button>
-        ) : (
-          <span className="text-sm italic text-gray-400">Draft</span>
-        )}
-      </td>
+        )
+      ) : (
+        <span className="text-sm italic text-gray-400">Draft</span>
+      )}
+    </td>
+
       <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-        {lesson.target_user ?? "🌍 All Users"}
+        {lesson.target_user ?? "🌍"}
       </td>
 
       {/* Actions always visible */}

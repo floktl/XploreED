@@ -1,5 +1,10 @@
 from utils.imports.imports import *
 
+@admin_bp.route("/check-admin", methods=["GET"])
+def check_admin():
+    return jsonify({"is_admin": is_admin()})
+
+
 @admin_bp.route("/results", methods=["GET"])
 def admin_results():
     if not is_admin():
@@ -30,24 +35,29 @@ def insert_lesson_content():
     target_user = data.get("target_user")
     published = bool(data.get("published", 0))
 
+    # 🧽 Extract block_ids from HTML
+    soup = BeautifulSoup(content, "html.parser")
+    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
+    num_blocks = len(block_ids)
+    print(f"🔍 Extracted block_ids: {block_ids} (count = {num_blocks})", flush=True)
+
     print(f"📝 Inserting lesson_id={lesson_id}, title='{title}', published={published}", flush=True)
 
+    # 🧾 Insert lesson row with num_blocks
     insert_success = insert_row("lesson_content", {
         "lesson_id": lesson_id,
         "title": title,
         "content": content,
         "target_user": target_user,
-        "published": published
+        "published": published,
+        "num_blocks": num_blocks
     })
 
     if not insert_success:
         print("❌ Failed to insert lesson_content", flush=True)
         return jsonify({"error": "Failed to insert lesson"}), 500
 
-    soup = BeautifulSoup(content, "html.parser")
-    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
-    print(f"🔍 Extracted block_ids: {block_ids}", flush=True)
-
+    # ➕ Insert individual blocks
     for block_id in block_ids:
         block_inserted = insert_row("lesson_blocks", {
             "lesson_id": lesson_id,
@@ -57,6 +67,7 @@ def insert_lesson_content():
 
     print("✅ Lesson insertion complete", flush=True)
     return jsonify({"status": "ok"})
+
 
 
 @admin_bp.route("/profile-stats", methods=["POST"])
@@ -130,23 +141,38 @@ def get_lesson_by_id(lesson_id):
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT"])
 def update_lesson_by_id(lesson_id):
+    print(f"🛠️ [update_lesson_by_id] Called with lesson_id={lesson_id}")
+
     if not is_admin():
+        print("❌ Not authorized")
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json()
+    print("📥 Received JSON payload:", data)
+
+    # 🧠 Inject or reassign block IDs into the HTML
     content = inject_block_ids(data.get("content"))
 
+    # 🧽 Count block_ids
+    soup = BeautifulSoup(content, "html.parser")
+    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
+    num_blocks = len(block_ids)
+    print(f"🔍 Updated block_ids for lesson {lesson_id}: {block_ids} (count = {num_blocks})", flush=True)
+
+    # ✏️ Update the lesson row including num_blocks
     update_row("lesson_content", {
         "title": data.get("title"),
         "content": content,
         "target_user": data.get("target_user"),
-        "published": bool(data.get("published", 0))
+        "published": bool(data.get("published", 0)),
+        "num_blocks": num_blocks
     }, "WHERE lesson_id = ?", (lesson_id,))
+    print("✅ Lesson content updated in DB")
 
-
+    # 🔁 Sync lesson_blocks table
     update_lesson_blocks_from_html(lesson_id, content)
-    return jsonify({"status": "updated"})
 
+    return jsonify({"status": "updated"})
 
 @admin_bp.route("/lesson-progress-summary", methods=["GET"])
 def lesson_progress_summary():
@@ -159,24 +185,43 @@ def lesson_progress_summary():
         summary = {}
 
         for lid in lesson_ids:
-            total_blocks = conn.execute("SELECT COUNT(*) as total FROM lesson_blocks WHERE lesson_id = ?", (lid,)).fetchone()["total"]
+            row = conn.execute("SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lid,)).fetchone()
+            total_blocks = row["num_blocks"] if row else 0
+
             if total_blocks == 0:
-                summary[lid] = 0
+                summary[lid] = {
+                    "percent": 0,
+                    "num_blocks": 0
+                }
                 continue
 
-            users = [row["user_id"] for row in conn.execute("SELECT DISTINCT user_id FROM lesson_progress WHERE lesson_id = ?", (lid,)).fetchall()]
+            users = [row["user_id"] for row in conn.execute(
+                "SELECT DISTINCT user_id FROM lesson_progress WHERE lesson_id = ?", (lid,)
+            ).fetchall()]
             if not users:
-                summary[lid] = 0
+                summary[lid] = {
+                    "percent": 0,
+                    "num_blocks": total_blocks
+                }
                 continue
 
             total_percent = 0
             for uid in users:
-                completed = conn.execute("SELECT COUNT(*) FROM lesson_progress WHERE lesson_id = ? AND user_id = ? AND completed = 1", (lid, uid)).fetchone()[0]
+                completed = conn.execute("""
+                    SELECT COUNT(*) FROM lesson_progress
+                    WHERE lesson_id = ? AND user_id = ? AND completed = 1
+                """, (lid, uid)).fetchone()[0]
+
                 total_percent += (completed / total_blocks) * 100
 
-            summary[lid] = round(total_percent / len(users))
+            summary[lid] = {
+                "percent": round(total_percent / len(users)),
+                "num_blocks": total_blocks
+            }
 
     return jsonify(summary)
+
+
 
 
 @admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
@@ -186,7 +231,10 @@ def get_individual_lesson_progress(lesson_id):
 
     with get_connection() as conn:
         conn.row_factory = sqlite3.Row
-        total_blocks = conn.execute("SELECT COUNT(*) FROM lesson_blocks WHERE lesson_id = ?", (lesson_id,)).fetchone()[0]
+
+        # 🟡 Get total blocks from lesson_content table instead of counting lesson_blocks
+        num_blocks_row = conn.execute("SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lesson_id,)).fetchone()
+        total_blocks = num_blocks_row["num_blocks"] if num_blocks_row else 0
 
         if total_blocks == 0:
             return jsonify([])
