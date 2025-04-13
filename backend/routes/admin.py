@@ -2,40 +2,65 @@ from utils.imports.imports import *
 
 @admin_bp.route("/results", methods=["GET"])
 def admin_results():
-    # Returns all game results for all users (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
-    results = fetch_all("SELECT username, level, correct, answer, timestamp FROM results ORDER BY username ASC, timestamp DESC")
+
+    results = fetch_custom("""
+        SELECT username, level, correct, answer, timestamp
+        FROM results
+        ORDER BY username ASC, timestamp DESC
+    """)
     return jsonify(results)
+
 
 @admin_bp.route("/lesson-content", methods=["POST"])
 def insert_lesson_content():
-    # Inserts a new lesson with content and associated blocks (admin only)
+    print("📥 POST /lesson-content hit", flush=True)
+
     if not is_admin():
+        print("❌ Unauthorized access attempt", flush=True)
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json()
-    insert_row("lesson_content", {
-        "lesson_id": data.get("lesson_id"),
-        "title": data.get("title", ""),
-        "content": data.get("content", ""),
-        "target_user": data.get("target_user"),
-        "published": bool(data.get("published", 0))
+    print("🧾 Received data:", data, flush=True)
+
+    lesson_id = data.get("lesson_id")
+    title = data.get("title", "")
+    content = data.get("content", "")
+    target_user = data.get("target_user")
+    published = bool(data.get("published", 0))
+
+    print(f"📝 Inserting lesson_id={lesson_id}, title='{title}', published={published}", flush=True)
+
+    insert_success = insert_row("lesson_content", {
+        "lesson_id": lesson_id,
+        "title": title,
+        "content": content,
+        "target_user": target_user,
+        "published": published
     })
 
-    soup = BeautifulSoup(data.get("content", ""), "html.parser")
-    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]')}
+    if not insert_success:
+        print("❌ Failed to insert lesson_content", flush=True)
+        return jsonify({"error": "Failed to insert lesson"}), 500
+
+    soup = BeautifulSoup(content, "html.parser")
+    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
+    print(f"🔍 Extracted block_ids: {block_ids}", flush=True)
+
     for block_id in block_ids:
-        insert_row("lesson_blocks", {
-            "lesson_id": data.get("lesson_id"),
+        block_inserted = insert_row("lesson_blocks", {
+            "lesson_id": lesson_id,
             "block_id": block_id
         })
+        print(f"📦 Insert block_id={block_id}: {'✅' if block_inserted else '❌'}", flush=True)
 
+    print("✅ Lesson insertion complete", flush=True)
     return jsonify({"status": "ok"})
+
 
 @admin_bp.route("/profile-stats", methods=["POST"])
 def profile_stats():
-    # Returns detailed profile stats for a specific user (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -43,41 +68,43 @@ def profile_stats():
     if not username:
         return jsonify({"error": "Missing username"}), 400
 
-    rows = fetch_all("""
+    rows = fetch_custom("""
         SELECT level, correct, answer, timestamp
         FROM results
         WHERE username = ?
         ORDER BY timestamp DESC
     """, (username,))
 
-    return jsonify({
-        "level": l,
-        "correct": bool(c),
-        "answer": a,
-        "timestamp": t
-    } for l, c, a, t in [tuple(row.values()) for row in rows]])
+    return jsonify([
+        {
+            "level": l,
+            "correct": bool(c),
+            "answer": a,
+            "timestamp": t
+        } for l, c, a, t in [tuple(row.values()) for row in rows]
+    ])
+
 
 @admin_bp.route("/lesson-content", methods=["GET"])
 def get_all_lessons():
-    # Returns all lesson content (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    lessons = fetch_all("""
+    lessons = fetch_custom("""
         SELECT lesson_id, title, content, target_user, published
         FROM lesson_content
         ORDER BY lesson_id ASC
     """)
     return jsonify(lessons)
 
+
 @admin_bp.route("/debug-lessons", methods=["GET"])
 def debug_lessons():
-    # Returns all lesson content (debug route)
-    return jsonify(fetch_all("SELECT * FROM lesson_content"))
+    return jsonify(fetch_custom("SELECT * FROM lesson_content"))
+
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["DELETE"])
 def delete_lesson(lesson_id):
-    # Deletes a lesson and all related data (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -89,20 +116,20 @@ def delete_lesson(lesson_id):
     except Exception as e:
         return jsonify({"error": "Deletion failed", "details": str(e)}), 500
 
+
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["GET"])
 def get_lesson_by_id(lesson_id):
-    # Returns a single lesson by ID (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    lesson = fetch_one("SELECT * FROM lesson_content WHERE lesson_id = ?", (lesson_id,))
+    lesson = fetch_one_custom("SELECT * FROM lesson_content WHERE lesson_id = ?", (lesson_id,))
     if not lesson:
         return jsonify({"error": "not found"}), 404
     return jsonify(lesson)
 
+
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT"])
 def update_lesson_by_id(lesson_id):
-    # Updates lesson content and syncs block IDs (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -119,9 +146,9 @@ def update_lesson_by_id(lesson_id):
     update_lesson_blocks_from_html(lesson_id, content)
     return jsonify({"status": "updated"})
 
+
 @admin_bp.route("/lesson-progress-summary", methods=["GET"])
 def lesson_progress_summary():
-    # Returns the average completion percentage for each lesson (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -147,11 +174,12 @@ def lesson_progress_summary():
                 total_percent += (completed / total_blocks) * 100
 
             summary[lid] = round(total_percent / len(users))
+
     return jsonify(summary)
+
 
 @admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_individual_lesson_progress(lesson_id):
-    # Returns individual user completion stats for a specific lesson (admin only)
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -177,4 +205,5 @@ def get_individual_lesson_progress(lesson_id):
                 "percent": round((row["completed_blocks"] / total_blocks) * 100)
             } for row in cursor.fetchall()
         ]
+
     return jsonify(result)

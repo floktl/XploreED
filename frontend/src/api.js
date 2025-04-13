@@ -17,6 +17,7 @@ export const signup = async (username, password) => {
 };
 
 export const login = async (username, password) => {
+  console.log("[DEBUG] Sending login request...");
   const res = await fetch(`${BASE_URL}/api/login`, {
     method: "POST",
     credentials: "include",
@@ -52,7 +53,7 @@ export const getMe = async () => {
   });
 
   if (!res.ok) throw new Error("❌ Failed to fetch user");
-
+  console.log("[getMe] status", res.status); // add this
   return await res.json();
 };
 

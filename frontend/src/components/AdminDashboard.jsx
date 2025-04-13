@@ -13,7 +13,7 @@ import BlockContentRenderer from "./BlockContentRenderer";
 
 export default function AdminDashboard() {
   useRequireAdmin();
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null);
   const [error, setError] = useState("");
   const [modalContent, setModalContent] = useState(null);
   const [showEditorModal, setShowEditorModal] = useState(false);
@@ -45,7 +45,10 @@ export default function AdminDashboard() {
           fetch("http://localhost:5050/api/admin/lesson-progress-summary", { credentials: "include" }),
         ]);
 
-        if (resultsRes.ok) setResults(await resultsRes.json());
+        if (resultsRes.ok) {
+          const json = await resultsRes.json();
+          setResults(Array.isArray(json) ? json : []);
+        }
         if (lessonsRes.ok) setLessons(await lessonsRes.json());
         if (progressRes.ok) setLessonProgress(await progressRes.json());
       } catch (err) {
@@ -57,7 +60,7 @@ export default function AdminDashboard() {
     fetchData();
   }, [isAdmin, isLoading, navigate]);
 
-  const userSummary = results.reduce((acc, curr) => {
+  const userSummary = (results ?? []).reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
     if (!acc[username] || new Date(timestamp) > new Date(acc[username].lastTime || 0)) {
       acc[username] = { username, lastLevel: level, lastTime: timestamp };
@@ -145,7 +148,6 @@ export default function AdminDashboard() {
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
         <Title>📊 Admin Dashboard</Title>
-
         {error && <Alert type="danger">{error}</Alert>}
 
         <Card className="overflow-x-auto mb-10">
