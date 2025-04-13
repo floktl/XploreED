@@ -20,6 +20,7 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
     if (isInteractiveBlock) {
       const blockId = node.getAttribute("data-block-id") || `block-${index}`;
       const isChecked = progress[blockId] ?? false;
+      console.log("🧮 Progress object:", progress);
       const contentText = node.querySelector(".task-content")?.innerText || "No task description";
       const interactive = node.querySelector("input[type=checkbox]");
 
