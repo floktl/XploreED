@@ -55,14 +55,18 @@ def mark_lesson_complete():
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid lesson ID"}), 400
 
-    total_blocks = fetch_one("""
-        SELECT COUNT(*) as total FROM lesson_blocks WHERE lesson_id = ?
-    """, (lesson_id,))["total"]
+    total_blocks_res = fetch_custom(
+        "SELECT COUNT(*) as count FROM lesson_blocks WHERE lesson_id = ?", (lesson_id,)
+    )
+    total_blocks = total_blocks_res[0]["count"] if total_blocks_res else 0
 
-    completed_blocks = fetch_one("""
-        SELECT COUNT(*) FROM lesson_progress
+    completed_blocks_res = fetch_custom("""
+        SELECT COUNT(*) as count FROM lesson_progress
         WHERE user_id = ? AND lesson_id = ? AND completed = 1
-    """, (user_id, lesson_id))[0]
+    """, (user_id, lesson_id))
+    completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
+
+    print(f"🔍 Completion check — user: {user_id}, lesson: {lesson_id}, completed: {completed_blocks}, total: {total_blocks}", flush=True)
 
     if total_blocks > 0 and completed_blocks < total_blocks:
         return jsonify({"error": "Lesson not fully completed"}), 400
@@ -84,14 +88,16 @@ def check_lesson_marked_complete():
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid lesson ID"}), 400
 
-    total_blocks = fetch_one("""
-        SELECT COUNT(*) as total FROM lesson_blocks WHERE lesson_id = ?
-    """, (lesson_id,))["total"]
+    total_blocks_res = fetch_custom(
+        "SELECT COUNT(*) as count FROM lesson_blocks WHERE lesson_id = ?", (lesson_id,)
+    )
+    total_blocks = total_blocks_res[0]["count"] if total_blocks_res else 0
 
-    completed_blocks = fetch_one("""
-        SELECT COUNT(*) FROM lesson_progress
+    completed_blocks_res = fetch_custom("""
+        SELECT COUNT(*) as count FROM lesson_progress
         WHERE user_id = ? AND lesson_id = ? AND completed = 1
-    """, (user_id, lesson_id))[0]
+    """, (user_id, lesson_id))
+    completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
 
     completed = total_blocks > 0 and completed_blocks == total_blocks
     return jsonify({"completed": completed})

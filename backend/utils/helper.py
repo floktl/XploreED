@@ -1,5 +1,5 @@
 from flask import request
-from backend.utils.session.session_manager import session_manager
+from utils.session.session_manager import session_manager
 from utils.db_utils import fetch_one
 
 

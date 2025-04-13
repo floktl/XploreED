@@ -5,7 +5,7 @@ def show_all_data():
     db_path = os.getenv("DB_FILE", "user_data.db")  # or use a fixed path if needed
 
     try:
-       with get_connection() as conn:
+        with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = [row[0] for row in cursor.fetchall()]
@@ -23,6 +23,6 @@ def show_all_data():
                     "rows": rows
                 }
 
-        return jsonify(result)
+            return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500

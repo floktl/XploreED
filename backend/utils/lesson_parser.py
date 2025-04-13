@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import sqlite3
+from .db_utils import get_connection
 
 def update_lesson_blocks_from_html(lesson_id, html):
     soup = BeautifulSoup(html, "html.parser")

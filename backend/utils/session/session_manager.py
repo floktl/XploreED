@@ -1,6 +1,7 @@
 # session_manager.py
 import uuid
 import sqlite3
+from ..db_utils import get_connection
 
 class SessionManager:
     def __init__(self, db_path="user_data.db"):
