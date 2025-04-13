@@ -2,7 +2,6 @@
 
 # ✅ Common imports used in most route files
 from flask import Blueprint, request, jsonify, make_response, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from utils.session.session_manager import session_manager
@@ -73,8 +72,8 @@ class Imports:
     ]
 
     profile = [
-        "profile_bp", "jsonify", "jwt_required", "get_jwt_identity", "session_manager",
-        "fetch_all", "fetch_custom"
+        "profile_bp", "jsonify", "session_manager",
+        "fetch_all", "fetch_custom", "request"
     ]
 
     translate = [

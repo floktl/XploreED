@@ -1,9 +1,8 @@
 from utils.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])
-@jwt_required()
 def get_profile():
-    session_id = get_jwt_identity()
+    session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
 
     if not username:

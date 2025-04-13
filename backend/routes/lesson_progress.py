@@ -24,8 +24,11 @@ def update_lesson_progress():
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json()
-    lesson_id = data.get("lesson_id")
-    block_id = data.get("block_id")
+    try:
+        lesson_id = int(lesson_id)
+        block_id = str(block_id)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid lesson_id or block_id format"}), 400
     completed = data.get("completed", False)
 
     if not lesson_id or not block_id:
