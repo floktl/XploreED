@@ -15,12 +15,19 @@ def get_me():
     return jsonify({"username": user})
 
 
-@user_bp.route("/role", methods=["GET"])
+@auth_bp.route("/role", methods=["GET"])
 def get_role():
-    user = get_current_user()
-    if not user:
+    session_id = request.cookies.get("session_id")
+    print(f"🔍 [role] session_id from cookie: {session_id}", flush=True)
+
+    username = session_manager.get_user(session_id)
+    print(f"🧠 [role] resolved username: {username}", flush=True)
+
+    if username is None:
         return jsonify({"msg": "Unauthorized"}), 401
-    return jsonify({"is_admin": user == "admin"})
+
+    return jsonify({"role": "admin" if username == "admin" else "user"})
+
 
 
 @user_bp.route("/profile", methods=["GET"])
