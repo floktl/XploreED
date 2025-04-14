@@ -108,3 +108,15 @@ def signup():
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     return jsonify({"msg": "User created"}), 201
+
+@auth_bp.route("/test-cookie", methods=["GET"])
+def test_cookie():
+    resp = make_response(jsonify({"msg": "cookie test"}))
+    resp.set_cookie(
+        "test_cookie", 
+        "hello", 
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
+    return resp
