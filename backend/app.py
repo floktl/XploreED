@@ -60,6 +60,6 @@ for rule in app.url_map.iter_rules():
     print(f" - {rule.rule} [{methods}] \u2192 {rule.endpoint}", file=sys.stderr, flush=True)
 
 # === Run app ===
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5050))
-    app.run(host="0.0.0.0", port=port, debug=True)
+# if __name__ == "__main__":
+#     port = int(os.getenv("PORT", 5050))
+#     app.run(host="0.0.0.0", port=port, debug=True)
