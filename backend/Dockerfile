@@ -10,5 +10,6 @@ ENV PYTHONPATH=/app
 ENV PYTHONDONTWRITEBYTECODE=1
 
 RUN apt update && apt install -y sqlite3
+EXPOSE 5050
 
 CMD ["python", "app.py"]

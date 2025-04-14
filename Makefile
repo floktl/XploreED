@@ -6,7 +6,6 @@ up:
 	@docker compose exec backend python3 utils/setup/migration_script.py
 	@docker compose logs -f
 
-
 cytest:
 	@docker build -t cypress-only ./cypress-tests
 	@docker run --rm -it \
@@ -40,3 +39,25 @@ reset:
 	@docker-compose down --volumes --remove-orphans
 	@docker system prune -af --volumes
 	@make up
+
+# === Makefile ===
+
+# Backend
+backend-image:
+	docker build -t my-backend ./backend
+
+backend-run:
+	docker run -p 5050:5050 --env-file ./backend/secrets/.env my-backend
+
+# Frontend
+frontend-image:
+	docker build -t my-frontend ./frontend
+
+frontend-run:
+	docker run -p 5173:5173 my-frontend
+
+# Full
+dev:
+	make backend-image && make frontend-image
+	make backend-run & make frontend-run
+
