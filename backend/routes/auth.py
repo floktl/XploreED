@@ -46,16 +46,22 @@ def login():
         return jsonify({"error": "Server error"}), 500
 
 
-
 @auth_bp.route("/admin/login", methods=["POST", "OPTIONS"])
 def admin_login():
     if request.method == "OPTIONS":
+        print("🔧 [admin_login] OPTIONS preflight received", flush=True)
         return '', 200
+
     data = request.get_json()
+    print(f"🔐 [admin_login] Payload received: {data}", flush=True)
+
     if data.get("password") != ADMIN_PASSWORD:
+        print("❌ [admin_login] Invalid admin password", flush=True)
         return jsonify({"error": "Invalid credentials"}), 401
 
     session_id = session_manager.create_session("admin")
+    print(f"✅ [admin_login] Session created: {session_id}", flush=True)
+
     resp = make_response(jsonify({"msg": "Login successful"}))
     resp.set_cookie(
         "session_id",
@@ -65,6 +71,7 @@ def admin_login():
         samesite="None",
         domain=".onrender.com"
     )
+    print("🍪 [admin_login] session_id cookie set with domain=.onrender.com", flush=True)
 
     return resp
 
