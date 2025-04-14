@@ -7,6 +7,8 @@ import Alert from "./UI/Alert";
 import Spinner from "./UI/Spinner";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
+import { translateSentence } from "../api";
+
 
 export default function Translator() {
   const [english, setEnglish] = useState("");
@@ -54,22 +56,7 @@ export default function Translator() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5050/api/translate", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("[CLIENT] Server error response:", errorText);
-        throw new Error(`❌ Server error: ${res.status}`);
-      }
-
-      const data = await res.json();
+      const data = await translateSentence(payload);
       setGerman(data.german || "");
       setFeedback(data.feedback || "");
     } catch (err) {

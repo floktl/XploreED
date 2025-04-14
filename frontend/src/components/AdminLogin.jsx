@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
+import { verifyAdminPassword } from "../api";
 
 export default function AdminLogin() {
   const [password, setPassword] = useState("");
@@ -14,30 +15,23 @@ export default function AdminLogin() {
 
   const darkMode = useAppStore((state) => state.darkMode);
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
-
+  
   const handleLogin = async () => {
     try {
-      const res = await fetch("http://localhost:5050/api/admin/login", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password }),
-      });
-
-      if (res.ok) {
+      const success = await verifyAdminPassword(password); // ✅ 2. Use API helper
+  
+      if (success) {
         setIsAdmin(true);
         navigate("/admin-panel");
       } else {
-        const data = await res.json();
-        setError(data.error || "❌ Login failed.");
+        setError("❌ Login failed. Wrong password?");
       }
     } catch (err) {
       console.error("[CLIENT] Login failed:", err);
       setError("❌ Server error. Please try again.");
     }
   };
+  
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>

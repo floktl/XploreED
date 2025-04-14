@@ -9,6 +9,7 @@ import {
   PanelTop,
 } from "lucide-react";
 import useAppStore from "../../store/useAppStore";
+import { logout } from "../../api";
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -19,19 +20,17 @@ export default function Footer() {
   const isAdmin = useAppStore((state) => state.isAdmin);
 
   const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:5050/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.warn("[CLIENT] Logout request failed:", err);
-    }
+  try {
+    await logout();
+  } catch (err) {
+    console.warn("[CLIENT] Logout request failed:", err);
+  }
+
+  localStorage.removeItem("username");
+  useAppStore.getState().resetStore();
+  navigate("/");
+};
   
-    localStorage.removeItem("username");
-    useAppStore.getState().resetStore();
-    navigate("/");
-  };
   
   const isNameInputPage = location.pathname === "/" || location.pathname === "/nameinput";
 
