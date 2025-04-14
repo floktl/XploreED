@@ -36,7 +36,8 @@ def login():
             session_id,
             httponly=True,
             secure=True,
-            samesite="None"
+            samesite="None",
+            domain=".onrender.com"
         )
 
         return resp
@@ -61,7 +62,8 @@ def admin_login():
         session_id,
         httponly=True,
         secure=True,
-        samesite="None"
+        samesite="None",
+        domain=".onrender.com"
     )
 
     return resp
@@ -117,6 +119,7 @@ def test_cookie():
         "hello", 
         httponly=True,
         secure=True,
-        samesite="None"
+        samesite="None",
+        domain=".onrender.com"
     )
     return resp

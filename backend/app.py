@@ -47,7 +47,7 @@ for bp in registered_blueprints:
     app.register_blueprint(bp)
 
 # === Enable CORS ===
-CORS(app, origins=os.getenv("FRONTEND_URL"), supports_credentials=True)
+CORS(app, origins=os.getenv("FRONTEND_URL"), supports_credentials=True, expose_headers=["Set-Cookie"])
 
 
 # === Init limiter and database ===
