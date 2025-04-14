@@ -26,3 +26,9 @@ def show_all_data():
             return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@debug_bp.route("/api/debug-session", methods=["GET"])
+def debug_session():
+    return jsonify({
+        "session_id_from_cookie": request.cookies.get("session_id")
+    })
