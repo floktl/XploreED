@@ -32,6 +32,7 @@ app = Flask(__name__)
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
 app.config["JWT_COOKIE_SECURE"] = True
+app.config["JWT_COOKIE_SAMESITE"] = "None"
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF attacks
 app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
