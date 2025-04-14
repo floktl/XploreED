@@ -34,9 +34,13 @@ app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
 app.config["JWT_COOKIE_SECURE"] = True
 app.config["JWT_COOKIE_SAMESITE"] = "None"
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF attacks
+
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # ❗️ changed from 'Lax'
+app.config["SESSION_COOKIE_SECURE"] = True      # ✅ newly added
+
 app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
 app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
+
 
 # === Register Blueprints ===
 for bp in registered_blueprints:
