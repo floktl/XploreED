@@ -6,6 +6,8 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
+import { getStudentLessons } from "../api";
+
 
 export default function Lessons() {
   const [lessons, setLessons] = useState([]);
@@ -21,27 +23,22 @@ export default function Lessons() {
       navigate(isAdmin ? "/admin-panel" : "/");
     }
   }, [username, isLoading, isAdmin, navigate]);
-
   useEffect(() => {
     if (!username) return;
-
+  
     const fetchLessons = async () => {
       try {
-        const res = await fetch("http://localhost:5050/api/lessons", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to fetch lessons");
-        const data = await res.json();
+        const data = await getStudentLessons(); // ✅ use central API helper
         setLessons(data);
       } catch (err) {
         console.error("[CLIENT] Failed to load lessons:", err);
         setError("❌ Could not load lessons. Please try again later.");
       }
     };
-
+  
     fetchLessons();
   }, [username]);
+  
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>

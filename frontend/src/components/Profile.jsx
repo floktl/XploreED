@@ -6,7 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Badge from "./UI/Badge";
 import Footer from "./UI/Footer";
-import { fetchProfileResults } from "../api";
+import { getMe, getRole, fetchProfileResults } from "../api";
 import useAppStore from "../store/useAppStore";
 
 export default function Profile() {
@@ -23,47 +23,28 @@ export default function Profile() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const res = await fetch("http://localhost:5050/api/me", {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("unauthorized");
-
-        const data = await res.json();
+        const data = await getMe();
         setUsername(data.username);
-
-        const roleRes = await fetch("http://localhost:5050/api/role", {
-          credentials: "include",
-        });
-        const roleData = await roleRes.json();
+  
+        const roleData = await getRole();
         setIsAdmin(roleData.is_admin);
-
+  
         if (roleData.is_admin) {
           navigate("/admin-panel");
+          return;
         }
+  
+        const profileResults = await fetchProfileResults();
+        setResults(profileResults);
       } catch (err) {
         console.warn("[CLIENT] Not logged in or session expired.");
         navigate("/");
       }
     };
-
-    const loadProfile = async () => {
-      try {
-        const res = await fetch("http://localhost:5050/api/profile", {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to fetch profile");
-
-        const data = await res.json();
-        setResults(data);
-      } catch (err) {
-        console.error("[CLIENT] Failed to load profile:", err);
-        setError("❌ Could not load profile results.");
-      }
-    };
-
-    checkSession().then(loadProfile);
+  
+    checkSession();
   }, [navigate, setUsername, setIsAdmin]);
-
+  
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>

@@ -5,6 +5,7 @@ import Card from "../components/UI/Card";
 import Button from "../components/UI/Button";
 import Alert from "../components/UI/Alert";
 import LessonEditor from "../components/LessonEditor";
+import { getLessonById, updateLesson } from "../api";
 
 export default function LessonEdit() {
   const { id } = useParams();
@@ -15,11 +16,7 @@ export default function LessonEdit() {
   useEffect(() => {
     const fetchLesson = async () => {
       try {
-        const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${id}`, {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Failed to fetch lesson");
-        const data = await res.json();
+        const data = await getLessonById(id);
         setLesson(data);
       } catch (err) {
         setError("❌ Could not load lesson.");
@@ -27,23 +24,20 @@ export default function LessonEdit() {
     };
     fetchLesson();
   }, [id]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5050/api/admin/lesson-content/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(lesson),
-      });
-      if (!res.ok) throw new Error("Failed to update");
+      const updated = await updateLesson(id, lesson);
+      if (!updated.ok && updated !== true) throw new Error("Failed to update");
       alert("✅ Lesson updated!");
       navigate("/admin-panel");
     } catch (err) {
       setError("❌ Failed to save changes.");
     }
   };
+
 
   if (!lesson) return <p className="text-center mt-10">Loading lesson...</p>;
 
@@ -87,3 +81,4 @@ export default function LessonEdit() {
     </Container>
   );
 }
+

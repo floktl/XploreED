@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import useAppStore from "../store/useAppStore";
 import Footer from "./UI/Footer";
+import { updatePassword, uploadAvatar, deactivateAccount } from "../api";
 
 export default function Settings() {
   const [oldPw, setOldPw] = useState("");
@@ -22,23 +23,9 @@ export default function Settings() {
       setError("❌ Missing fields or passwords do not match.");
       return;
     }
-
+  
     try {
-      const res = await fetch("http://localhost:5050/api/settings/password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          current_password: oldPw,
-          new_password: password,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
+      await updatePassword(oldPw, password);
       setSuccess("✅ Password updated successfully.");
       setError("");
       setOldPw("");
@@ -48,47 +35,30 @@ export default function Settings() {
       setError("❌ " + err.message);
     }
   };
-
+  
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const formData = new FormData();
-    formData.append("avatar", file);
-
+  
     try {
-      const res = await fetch("http://localhost:5050/api/settings/avatar", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
+      await uploadAvatar(file);
       setSuccess("✅ Avatar uploaded successfully.");
       setError("");
     } catch (err) {
       setError("❌ " + err.message);
     }
   };
-
+  
   const handleDeactivate = async () => {
     try {
-      const res = await fetch("http://localhost:5050/api/settings/deactivate", {
-        method: "POST",
-        credentials: "include",
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
+      await deactivateAccount();
       useAppStore.getState().resetStore();
       navigate("/");
     } catch (err) {
       setError("❌ " + err.message);
     }
   };
+  
 
   return (
     <div className="min-h-screen pb-24">

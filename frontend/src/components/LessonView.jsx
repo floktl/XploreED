@@ -5,6 +5,13 @@ import BlockContentRenderer from "./BlockContentRenderer";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import {
+  getLesson,
+  getLessonProgress,
+  isLessonCompleted,
+  markLessonComplete,
+  updateLessonBlockProgress,
+} from "../api";
 
 export default function LessonView() {
   const { lessonId } = useParams();
@@ -17,7 +24,6 @@ export default function LessonView() {
   const isAdmin = useAppStore((state) => state.isAdmin);
   const [numBlocks, setNumBlocks] = useState(0);
 
-
   useEffect(() => {
     if (isAdmin) {
       navigate("/admin-panel");
@@ -26,23 +32,7 @@ export default function LessonView() {
 
     const fetchLesson = async () => {
       try {
-        console.log(`📡 Fetching lesson from /api/lesson/${lessonId}`);
-
-        const res = await fetch(`http://localhost:5050/api/lesson/${lessonId}`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        console.log("🔄 Response status:", res.status);
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error("Failed to fetch lesson content");
-        }
-
-        const data = await res.json();
-        console.log("📥 Received lesson data:", data);
-
+        const data = await getLesson(lessonId);
         if (data && !Array.isArray(data)) {
           setEntries([data]);
           setNumBlocks(data.num_blocks || 0);
@@ -54,13 +44,8 @@ export default function LessonView() {
 
     const fetchProgress = async () => {
       try {
-        const res = await fetch(`http://localhost:5050/api/lesson-progress/${lessonId}`, {
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setProgress(data);
-        }
+        const data = await getLessonProgress(lessonId);
+        setProgress(data);
       } catch (err) {
         console.warn("Could not load progress", err);
       }
@@ -68,16 +53,8 @@ export default function LessonView() {
 
     const fetchMarkedComplete = async () => {
       try {
-        const res = await fetch("http://localhost:5050/api/lesson-completed", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ lesson_id: parseInt(lessonId) }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setMarkedComplete(data.completed);
-        }
+        const data = await isLessonCompleted(lessonId);
+        setMarkedComplete(data.completed);
       } catch (err) {
         console.warn("Could not load marked complete state", err);
       }
@@ -90,10 +67,8 @@ export default function LessonView() {
 
   useEffect(() => {
     const completed = Object.values(progress).filter(Boolean).length;
-
     setPercentComplete(numBlocks > 0 ? (completed / numBlocks) * 100 : 0);
     setCanComplete(numBlocks === 0 || completed === numBlocks);
-
   }, [progress, numBlocks]);
 
   const handleMarkComplete = async () => {
@@ -103,14 +78,7 @@ export default function LessonView() {
     }
 
     try {
-      const res = await fetch("http://localhost:5050/api/mark-as-completed", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ lesson_id: parseInt(lessonId) }),
-      });
-      if (!res.ok) throw new Error("Failed to mark complete");
-
+      await markLessonComplete(lessonId);
       setMarkedComplete(true);
       navigate("/lessons");
     } catch (err) {
@@ -163,17 +131,7 @@ export default function LessonView() {
                   progress={progress}
                   onToggle={async (blockId, completed) => {
                     try {
-                      await fetch("http://localhost:5050/api/lesson-progress", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify({
-                          lesson_id: parseInt(lessonId),
-                          block_id: blockId,
-                          completed,
-                        }),
-                      });
-
+                      await updateLessonBlockProgress(lessonId, blockId, completed);
                       setProgress((prev) => ({
                         ...prev,
                         [blockId]: completed,

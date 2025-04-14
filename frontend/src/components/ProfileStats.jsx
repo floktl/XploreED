@@ -6,6 +6,7 @@ import Alert from "./UI/Alert";
 import Button from "./UI/Button";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
+import { fetchProfileStats } from "../api";
 
 export default function ProfileStats() {
   const navigate = useNavigate();
@@ -30,16 +31,7 @@ export default function ProfileStats() {
 
     const loadStats = async () => {
       try {
-        const res = await fetch("http://localhost:5050/api/admin/profile-stats", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ username }),
-        });
-
-        if (!res.ok) throw new Error("❌ Failed to fetch stats");
-
-        const data = await res.json();
+        const data = await fetchProfileStats(username);
         setResults(data);
       } catch (err) {
         console.error("[CLIENT] Failed to load stats:", err);
@@ -47,6 +39,7 @@ export default function ProfileStats() {
         navigate("/admin-login");
       }
     };
+    
 
     loadStats();
   }, [username, isAdmin, navigate]);
