@@ -4,7 +4,6 @@ from utils.imports.imports import *
 def get_me():
     if request.method == "OPTIONS":
         response = jsonify({'ok': True})
-        response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
         response.headers.add("Access-Control-Allow-Credentials", "true")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
         response.headers.add("Access-Control-Allow-Methods", "GET, OPTIONS")

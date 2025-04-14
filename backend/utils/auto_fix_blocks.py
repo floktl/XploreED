@@ -2,8 +2,6 @@
 import sqlite3
 from bs4 import BeautifulSoup
 
-print("🔄 Auto-injecting data-block-id into lesson_content...")
-
 with get_connection() as conn:
     cursor = conn.cursor()
     lessons = cursor.execute("SELECT lesson_id, content FROM lesson_content").fetchall()
@@ -19,10 +17,8 @@ with get_connection() as conn:
                 changed = True
 
         if changed:
-            print(f"🛠 Updating lesson {lesson_id} with {len(blocks)} block ids")
             cursor.execute("""
                 UPDATE lesson_content SET content = ? WHERE lesson_id = ?
             """, (str(soup), lesson_id))
 
     conn.commit()
-print("✅ Finished.")

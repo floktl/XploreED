@@ -3,7 +3,6 @@ from utils.db_utils import fetch_custom  # Needed for raw SQL queries
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
-    print("📥 GET /api/lessons hit", flush=True)
     session_id = request.cookies.get("session_id")
     user = session_manager.get_user(session_id)
     if not user:
@@ -18,22 +17,18 @@ def get_lessons():
         ORDER BY created_at DESC
     """, (user,))
 
-    print(f"📚 Fetched {len(lessons)} lessons", flush=True)
     results = []
 
     for lesson in lessons:
         lid = lesson["lesson_id"]
-        print(f"\n📦 Processing lesson_id: {lid}", flush=True)
 
         total_blocks = lesson.get("num_blocks") or 0
-        print(f"🔢 Total blocks (from num_blocks): {total_blocks}", flush=True)
 
         completed_blocks_res = fetch_custom("""
             SELECT COUNT(*) as count FROM lesson_progress
             WHERE lesson_id = ? AND user_id = ? AND completed = 1
         """, (lid, user))
         completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
-        print(f"✅ Completed blocks: {completed_blocks}", flush=True)
 
         completed_res = fetch_custom("""
             SELECT 1 FROM results
@@ -41,19 +36,16 @@ def get_lessons():
             LIMIT 1
         """, (user, lid))
         completed = bool(completed_res)
-        print(f"🏁 Lesson completed: {completed}", flush=True)
 
         percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks else 100
         if completed:
             percent_complete = 100
-        print(f"📊 Percent complete: {percent_complete}%", flush=True)
 
         latest_res = fetch_custom("""
             SELECT MAX(timestamp) as ts FROM results
             WHERE username = ? AND level = ?
         """, (user, lid))
         latest = latest_res[0]["ts"] if latest_res else None
-        print(f"🕒 Last attempt timestamp: {latest}", flush=True)
 
         results.append({
             "id": lid,
@@ -63,7 +55,6 @@ def get_lessons():
             "percent_complete": percent_complete
         })
 
-    print(f"\n✅ Returning {len(results)} lessons to frontend\n", flush=True)
     return jsonify(results)
 
 

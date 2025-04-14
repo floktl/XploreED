@@ -18,8 +18,6 @@ def get_profile():
     if rows is None:
         return jsonify({"error": "Failed to fetch results"}), 500
 
-    print(f"📄 Fetched {len(rows)} result entries for user: {username}", flush=True)
-
     results = [
         {
             "level": row["level"],

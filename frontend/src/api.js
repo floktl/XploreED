@@ -17,7 +17,6 @@ export const signup = async (username, password) => {
 };
 
 export const login = async (username, password) => {
-  console.log("[DEBUG] Sending login request...");
   const res = await fetch(`${BASE_URL}/api/login`, {
     method: "POST",
     credentials: "include",

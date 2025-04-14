@@ -30,11 +30,9 @@ function AppWrapper() {
     const fetchUserAndRole = async () => {
       try {
         const me = await getMe();
-        console.log("👤 Got user:", me);
         setUsername(me.username);
         const role = await getRole();
         setIsAdmin(role.is_admin);
-        console.log("👤 Logged in as", me)
       } catch (err) {
         console.warn("[App] Not logged in");
         setIsAdmin(false);

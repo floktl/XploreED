@@ -10,8 +10,6 @@ import sys
 from dotenv import load_dotenv
 env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
-print(f"\u2705 .env loaded from: {env_path}", flush=True)
-print("\u2705 DB_FILE =", os.getenv("DB_FILE"), flush=True)
 
 # === Now import modules that rely on env vars ===
 from game.german_sentence_game import init_db
@@ -35,6 +33,7 @@ app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
 app.config["JWT_COOKIE_SECURE"] = False
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF attacks
 app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
 app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
 
@@ -43,29 +42,8 @@ for bp in registered_blueprints:
     app.register_blueprint(bp)
 
 # === Enable CORS ===
-CORS(app, supports_credentials=True, resources={
-    r"/api/*": {
-        "origins": "http://localhost:5173",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-    }
-})
+CORS(app, origins=os.getenv("FRONTEND_URL"), supports_credentials=True)
 
-print("🔐 ADMIN_PASSWORD:", os.getenv("ADMIN_PASSWORD"))
-
-
-# === Add CORS headers manually ===
-@app.after_request
-def add_cors_headers(response):
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
-    response.headers.add("Access-Control-Allow-Credentials", "true")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-    response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-    return response
-
-@app.route('/api/<path:path>', methods=['OPTIONS'])
-def options_handler(path):
-    return '', 200
 
 # === Init limiter and database ===
 limiter.init_app(app)
