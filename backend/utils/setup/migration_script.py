@@ -8,9 +8,6 @@ from dotenv import load_dotenv
 env_path = Path(__file__).resolve().parent.parent.parent / "secrets" / ".env"
 load_dotenv(dotenv_path=env_path)
 
-print(f"✅ .env loaded for migration: {env_path}", flush=True)
-print("✅ DB_FILE =", os.getenv("DB_FILE"), flush=True)
-
 # NOW import anything using DB_FILE
 from utils.db_utils import get_connection
 

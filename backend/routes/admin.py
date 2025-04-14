@@ -20,14 +20,12 @@ def admin_results():
 
 @admin_bp.route("/lesson-content", methods=["POST"])
 def insert_lesson_content():
-    print("📥 POST /lesson-content hit", flush=True)
 
     if not is_admin():
         print("❌ Unauthorized access attempt", flush=True)
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json()
-    print("🧾 Received data:", data, flush=True)
 
     lesson_id = data.get("lesson_id")
     title = data.get("title", "")
@@ -39,9 +37,6 @@ def insert_lesson_content():
     soup = BeautifulSoup(content, "html.parser")
     block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
     num_blocks = len(block_ids)
-    print(f"🔍 Extracted block_ids: {block_ids} (count = {num_blocks})", flush=True)
-
-    print(f"📝 Inserting lesson_id={lesson_id}, title='{title}', published={published}", flush=True)
 
     # 🧾 Insert lesson row with num_blocks
     insert_success = insert_row("lesson_content", {
@@ -63,9 +58,7 @@ def insert_lesson_content():
             "lesson_id": lesson_id,
             "block_id": block_id
         })
-        print(f"📦 Insert block_id={block_id}: {'✅' if block_inserted else '❌'}", flush=True)
 
-    print("✅ Lesson insertion complete", flush=True)
     return jsonify({"status": "ok"})
 
 
@@ -141,14 +134,12 @@ def get_lesson_by_id(lesson_id):
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT"])
 def update_lesson_by_id(lesson_id):
-    print(f"🛠️ [update_lesson_by_id] Called with lesson_id={lesson_id}")
 
     if not is_admin():
         print("❌ Not authorized")
         return jsonify({"error": "unauthorized"}), 401
 
     data = request.get_json()
-    print("📥 Received JSON payload:", data)
 
     # 🧠 Inject or reassign block IDs into the HTML
     content = inject_block_ids(data.get("content"))
@@ -157,8 +148,6 @@ def update_lesson_by_id(lesson_id):
     soup = BeautifulSoup(content, "html.parser")
     block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
     num_blocks = len(block_ids)
-    print(f"🔍 Updated block_ids for lesson {lesson_id}: {block_ids} (count = {num_blocks})", flush=True)
-
     # ✏️ Update the lesson row including num_blocks
     update_row("lesson_content", {
         "title": data.get("title"),
@@ -167,7 +156,6 @@ def update_lesson_by_id(lesson_id):
         "published": bool(data.get("published", 0)),
         "num_blocks": num_blocks
     }, "WHERE lesson_id = ?", (lesson_id,))
-    print("✅ Lesson content updated in DB")
 
     # 🔁 Sync lesson_blocks table
     update_lesson_blocks_from_html(lesson_id, content)

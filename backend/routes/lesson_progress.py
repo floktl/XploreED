@@ -25,7 +25,6 @@ def update_lesson_progress():
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json()
-    print(f"📨 lesson-progress payload: {data}", flush=True)
 
     try:
         lesson_id = int(data.get("lesson_id"))
@@ -51,7 +50,6 @@ def update_lesson_progress():
 
 @lesson_progress_bp.route("/lesson-progress-complete", methods=["POST"])
 def mark_lesson_complete():
-    print(f"====================================================@lesson_progress_bp.route(lesson-progress-compl============================================================", flush=True)
     session_id = request.cookies.get("session_id")
 
     user_id = session_manager.get_user(session_id)
@@ -62,14 +60,11 @@ def mark_lesson_complete():
 
     try:
         data = request.get_json()
-        print(f"📨 Received JSON payload: {data}", flush=True)
 
         if not data or "lesson_id" not in data:
-            print("⚠️ Missing lesson_id in request", flush=True)
             return jsonify({"error": "Missing lesson_id in request"}), 400
 
         lesson_id = int(data.get("lesson_id"))
-        print(f"📘 Parsed lesson_id = {lesson_id}", flush=True)
 
         if lesson_id <= 0:
             print("❌ lesson_id must be greater than 0", flush=True)
@@ -79,37 +74,26 @@ def mark_lesson_complete():
         print(f"❌ Error parsing lesson_id: {e}", flush=True)
         return jsonify({"error": "Invalid lesson ID"}), 400
 
-    print("🔎 Reading stored num_blocks in lesson_content...", flush=True)
     num_blocks_res = fetch_custom(
         "SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lesson_id,)
     )
     total_blocks = num_blocks_res[0]["num_blocks"] if num_blocks_res else 0
-    print(f"📦 Total lesson_blocks (from num_blocks) = {total_blocks}", flush=True)
-
-    print("🔎 Checking completed blocks by user...", flush=True)
     completed_blocks_res = fetch_custom("""
         SELECT COUNT(*) as count FROM lesson_progress
         WHERE user_id = ? AND lesson_id = ? AND completed = 1
     """, (user_id, lesson_id))
     completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
-    print(f"✅ User completed blocks = {completed_blocks}", flush=True)
-
-    print(f"🔍 Completion check — user: {user_id}, lesson: {lesson_id}, completed: {completed_blocks}, total: {total_blocks}", flush=True)
 
     if completed_blocks < total_blocks and total_blocks > 0:
         print("❌ Lesson not fully completed", flush=True)
         return jsonify({"error": "Lesson not fully completed"}), 400
 
-    print("✅ Lesson confirmed as complete 🎉", flush=True)
-        # ✅ Update percentage completion to 100%
-    print("💾 Updating all progress blocks for this lesson to completed = 1...", flush=True)
     with get_connection() as conn:
         conn.execute("""
             UPDATE lesson_progress SET completed = 1
             WHERE user_id = ? AND lesson_id = ?
         """, (user_id, lesson_id))
         conn.commit()
-    print("🔄 Progress entries updated to 100% complete ✅", flush=True)
     return jsonify({"status": "lesson confirmed mplete"}), 200
 
 
