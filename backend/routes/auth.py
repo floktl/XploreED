@@ -31,7 +31,14 @@ def login():
         session_id = session_manager.create_session(username)
 
         resp = make_response(jsonify({"msg": "Login successful"}))
-        resp.set_cookie("session_id", session_id, httponly=True, samesite="Lax")
+        resp.set_cookie(
+            "session_id",
+            session_id,
+            httponly=True,
+            secure=True,
+            samesite="None"
+        )
+
         return resp
     except Exception as e:
         print(f"❌ Exception during login: {e}", flush=True)
@@ -49,7 +56,14 @@ def admin_login():
 
     session_id = session_manager.create_session("admin")
     resp = make_response(jsonify({"msg": "Login successful"}))
-    resp.set_cookie("session_id", session_id, httponly=True, samesite="Lax")
+    resp.set_cookie(
+        "session_id",
+        session_id,
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
+
     return resp
 
 
@@ -58,7 +72,7 @@ def logout():
     session_id = request.cookies.get("session_id")
     session_manager.destroy_session(session_id)
     resp = make_response(jsonify({"msg": "Logout successful"}))
-    resp.set_cookie("session_id", "", max_age=0)
+    resp.set_cookie("session_id", "", max_age=0, secure=True, samesite="None")
     return resp
 
 @auth_bp.route("/signup", methods=["POST"])
