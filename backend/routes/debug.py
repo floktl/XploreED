@@ -30,5 +30,6 @@ def show_all_data():
 @debug_bp.route("/debug-session", methods=["GET"])
 def debug_session():
     return jsonify({
-        "session_id_from_cookie": request.cookies.get("session_id")
+        "session_id_cookie": request.cookies.get("session_id"),
+        "headers": dict(request.headers)
     })
