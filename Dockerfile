@@ -26,6 +26,9 @@
     
     # Copy app and frontend
     COPY --from=backend /app/backend /app/backend
+        # Create the database directory (if SQLite wants to create the DB)
+    RUN mkdir -p /app/backend/utils/database
+
     COPY --from=frontend /app/frontend/dist /app/frontend/dist
     RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
     COPY nginx/default.conf /etc/nginx/conf.d/default.conf
@@ -37,9 +40,12 @@
     COPY backend/requirements.txt .
     RUN pip install --break-system-packages -r requirements.txt
     
+    # Run database migration script once during image build
+    RUN python3 backend/utils/setup/migration_script.py || true
+
     # Expose port
     EXPOSE 80
     
     # Start Gunicorn and Nginx
-    CMD sh -c "gunicorn --chdir backend --bind 127.0.0.1:5050 app:app & nginx -g 'daemon off;'"
+    CMD sh -c "gunicorn --chdir backend --bind 0.0.0.0:5050 app:app & nginx -g 'daemon off;'"
     
