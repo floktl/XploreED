@@ -1,42 +1,73 @@
-.PHONY: up cytest clean stop prune rebuild logs migrate reset
+.PHONY: build run migrate logs stop prune rebuild reset cytest shell
 
-up:
-	@echo "⚙️ Running DB migration inside backend container..."
-	@docker compose up -d --wait
-	@docker compose exec backend python3 utils/setup/migration_script.py
-	@docker compose logs -f
+IMAGE_NAME=german_class_tool
+CONTAINER_NAME=german_class_tool_dev
 
+# === Build the Docker image (runs DB migration during build) ===
+build:
+	@echo "📦 Building Docker image (includes DB migration)..."
+	@docker build -t $(IMAGE_NAME) .
 
+# === Run the container locally ===
+run:
+	@echo "🚀 Running container on http://localhost:8080 ..."
+	@if [ -z "$$(docker images -q $(IMAGE_NAME))" ]; then \
+		echo "📦 Image not found — building first..."; \
+		make build; \
+	fi
+	@docker run -it --rm -d \
+		--name $(CONTAINER_NAME) \
+		-p 8080:80 \
+		--env-file backend/secrets/.env \
+		$(IMAGE_NAME)
+	@sleep 2
+	@docker logs -f $(CONTAINER_NAME)
+
+# === Run DB migration again manually (if needed) ===
+migrate:
+	@echo "🔁 Re-running DB migration manually..."
+	@docker run --rm \
+		--env-file backend/secrets/.env \
+		$(IMAGE_NAME) \
+		python3 backend/utils/setup/migration_script.py
+
+# === Run Cypress tests ===
 cytest:
+	@echo "🧪 Running Cypress tests..."
 	@docker build -t cypress-only ./cypress-tests
 	@docker run --rm -it \
 		-v $$PWD/cypress-tests:/e2e \
 		-w /e2e \
-		--network="host" \
+		--network host \
 		cypress-only
 
-clean:
-	@echo "🧹 Cleaning up containers..."
-	@docker-compose down --remove-orphans
-
-stop:
-	@docker-compose stop
-
-migrate:
-	@docker compose exec backend python3 utils/setup/migration_script.py || true
-
-prune:
-	docker system prune -f --volumes
-
-rebuild:
-	docker-compose down --volumes --remove-orphans
-	docker-compose build --no-cache
-
+# === View logs ===
 logs:
-	docker-compose logs -f --tail=100
+	@docker logs -f $(CONTAINER_NAME)
 
-reset:
-	@echo "💣 Removing all containers, images, volumes, and networks..."
-	@docker-compose down --volumes --remove-orphans
+# === Stop the container ===
+stop:
+	@echo "🛑 Stopping container..."
+	@docker stop $(CONTAINER_NAME) || true
+
+# === Full rebuild ===
+rebuild:
+	@echo "🔁 Rebuilding image from scratch..."
+	@docker image rm -f $(IMAGE_NAME)
+	@make build
+
+# === Clean up Docker data ===
+prune:
+	@echo "🔥 Pruning Docker system..."
 	@docker system prune -af --volumes
-	@make up
+
+# === Full reset ===
+reset:
+	@make stop
+	@make prune
+	@make build
+	@make run
+
+# === Open shell inside running container ===
+shell:
+	@docker exec -it $(CONTAINER_NAME) sh

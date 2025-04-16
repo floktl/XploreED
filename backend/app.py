@@ -42,12 +42,20 @@ for bp in registered_blueprints:
     app.register_blueprint(bp)
 
 # === Enable CORS ===
-CORS(app, origins=os.getenv("FRONTEND_URL"), supports_credentials=True)
+allowed_origin = os.getenv("FRONTEND_URL", "").split(",")
+CORS(app, origins=allowed_origin, supports_credentials=True)
+
 
 
 # === Init limiter and database ===
 limiter.init_app(app)
-init_db()
+def init_db():
+    try:
+        with get_connection() as conn:
+            ...
+        print("✅ Database initialized successfully")
+    except Exception as e:
+        print(f"❌ DB init error: {e}")
 
 # === Debug registered routes ===
 print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
