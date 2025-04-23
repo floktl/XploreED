@@ -6,6 +6,8 @@ import {
   Menu,
   CheckCircle2,
   ArrowRightCircle,
+  BookOpen,
+  Gamepad2,
 } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
@@ -17,15 +19,25 @@ import useAppStore from "../store/useAppStore";
 
 export default function LevelGame() {
   const [level, setLevel] = useState(0);
-  const [scrambled, setScrambled] = useState([]);
   const [userOrder, setUserOrder] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [typedAnswer, setTypedAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
+  const [showRedirectModal, setShowRedirectModal] = useState(false);
 
   const username = useAppStore((state) => state.username);
   const darkMode = useAppStore((state) => state.darkMode);
+  const addMistake = useAppStore((state) => state.addMistake);
+  const resetMistakes = useAppStore((state) => state.resetMistakes);
+  const mistakeCount = useAppStore((state) => state.mistakeCount);
   const navigate = useNavigate();
+
+  // Check for redirect when mistake count changes
+  useEffect(() => {
+    if (mistakeCount >= 3) {
+      setShowRedirectModal(true);
+    }
+  }, [mistakeCount]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,21 +46,19 @@ export default function LevelGame() {
         if (!data || !Array.isArray(data.scrambled)) {
           throw new Error("Invalid data format");
         }
-        setScrambled(data.scrambled);
         setUserOrder(data.scrambled);
         setFeedback(null);
         setTypedAnswer("");
         setSelectedIndex(null);
       } catch (err) {
         console.error("[LevelGame] Failed to load level data:", err);
-        setScrambled([]);
         setUserOrder([]);
       }
     };
-  
+
     loadData();
   }, [level]);
-  
+
 
   const moveWord = (direction) => {
     if (selectedIndex === null) return;
@@ -69,6 +79,26 @@ export default function LevelGame() {
     const answer = typedAnswer.trim() || userOrder.join(" ");
     const result = await submitLevelAnswer(level, answer);
     setFeedback(result);
+
+    // Track mistakes and redirect if needed
+    if (!result.correct) {
+      const currentMistakes = addMistake();
+      console.log(`Mistake ${currentMistakes}/3`);
+
+      if (currentMistakes >= 3) {
+        setShowRedirectModal(true);
+      }
+    } else {
+      // Reset mistakes counter on correct answer
+      resetMistakes();
+    }
+  };
+
+  // Handle redirection to games or dictionary
+  const handleRedirect = (destination) => {
+    resetMistakes();
+    setShowRedirectModal(false);
+    navigate(destination);
   };
 
   return (
@@ -176,6 +206,36 @@ export default function LevelGame() {
       </Container>
 
       <Footer />
+
+      {/* Redirect Modal after 3 mistakes */}
+      {showRedirectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`bg-${darkMode ? 'gray-800' : 'white'} p-6 rounded-lg shadow-xl max-w-md w-full`}>
+            <h3 className="text-xl font-bold mb-4">Learning Suggestion</h3>
+            <p className="mb-6">
+              You've made 3 mistakes. It might be helpful to practice with some games or review vocabulary.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                className="flex-1"
+                onClick={() => handleRedirect('/level-game')}
+              >
+                <Gamepad2 className="w-4 h-4 mr-2" />
+                Continue Practice
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={() => handleRedirect('/vocabulary')}
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Review Vocabulary
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

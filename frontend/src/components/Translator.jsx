@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BookOpen, Gamepad2 } from "lucide-react";
 import Button from "./UI/Button";
 import { Input, Title, Container } from "./UI/UI";
 import Card from "./UI/Card";
@@ -17,12 +18,23 @@ export default function Translator() {
   const [studentInput, setStudentInput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showRedirectModal, setShowRedirectModal] = useState(false);
 
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
+  const addMistake = useAppStore((state) => state.addMistake);
+  const resetMistakes = useAppStore((state) => state.resetMistakes);
+  const mistakeCount = useAppStore((state) => state.mistakeCount);
   const navigate = useNavigate();
+
+  // Check for redirect when mistake count changes
+  useEffect(() => {
+    if (mistakeCount >= 3) {
+      setShowRedirectModal(true);
+    }
+  }, [mistakeCount]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -59,12 +71,35 @@ export default function Translator() {
       const data = await translateSentence(payload);
       setGerman(data.german || "");
       setFeedback(data.feedback || "");
+
+      // Check if the translation was correct
+      const isCorrect = data.feedback && data.feedback.includes("✅");
+
+      // Track mistakes and redirect if needed
+      if (!isCorrect) {
+        const currentMistakes = addMistake();
+        console.log(`Mistake ${currentMistakes}/3`);
+
+        if (currentMistakes >= 3) {
+          setShowRedirectModal(true);
+        }
+      } else {
+        // Reset mistakes counter on correct answer
+        resetMistakes();
+      }
     } catch (err) {
       console.error("[CLIENT] Translation request failed:", err);
       setError("❌ Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle redirection to games or dictionary
+  const handleRedirect = (destination) => {
+    resetMistakes();
+    setShowRedirectModal(false);
+    navigate(destination);
   };
 
   const handleReset = () => {
@@ -136,6 +171,36 @@ export default function Translator() {
       </Container>
 
       <Footer />
+
+      {/* Redirect Modal after 3 mistakes */}
+      {showRedirectModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`bg-${darkMode ? 'gray-800' : 'white'} p-6 rounded-lg shadow-xl max-w-md w-full`}>
+            <h3 className="text-xl font-bold mb-4">Learning Suggestion</h3>
+            <p className="mb-6">
+              You've made 3 mistakes. It might be helpful to practice with some games or review vocabulary.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="primary"
+                className="flex-1"
+                onClick={() => handleRedirect('/level-game')}
+              >
+                <Gamepad2 className="w-4 h-4 mr-2" />
+                Practice with Games
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex-1"
+                onClick={() => handleRedirect('/vocabulary')}
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Review Vocabulary
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
