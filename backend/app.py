@@ -29,13 +29,19 @@ from utils.blueprint import registered_blueprints
 # === Create and configure Flask app ===
 app = Flask(__name__)
 # === JWT config ===
+debug_mode = os.getenv("FLASK_ENV", "development") == "development"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
 app.config["JWT_COOKIE_SECURE"] = os.getenv("JWT_COOKIE_SECURE", "false").lower() == "true"
 app.config["JWT_COOKIE_CSRF_PROTECT"] = os.getenv("JWT_COOKIE_CSRF_PROTECT", "false").lower() == "true"
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Prevent CSRF attacks
 app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
 app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
+if debug_mode:
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_SECURE"] = False
+else:
+    app.config["SESSION_COOKIE_SAMESITE"] = "None"
+    app.config["SESSION_COOKIE_SECURE"] = True
 
 # === Register Blueprints ===
 for bp in registered_blueprints:
@@ -67,7 +73,6 @@ for rule in app.url_map.iter_rules():
     methods = ",".join(sorted(rule.methods))
     print(f" - {rule.rule} [{methods}] \u2192 {rule.endpoint}", file=sys.stderr, flush=True)
 
-debug_mode = os.getenv("FLASK_ENV", "development") == "development"
 
 # === Run app ===
 if __name__ == "__main__":
