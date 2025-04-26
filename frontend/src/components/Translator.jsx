@@ -8,6 +8,7 @@ import Alert from "./UI/Alert";
 import Spinner from "./UI/Spinner";
 import Footer from "./UI/Footer";
 import ConfidenceIndicator from "./UI/ConfidenceIndicator";
+import PronunciationButton from "./UI/PronunciationButton";
 import useAppStore from "../store/useAppStore";
 import { translateSentence } from "../api";
 import "react-tooltip/dist/react-tooltip.css";
@@ -165,10 +166,17 @@ export default function Translator() {
                 <p className={`text-lg font-semibold ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
                   🗣️ Correct German:
                 </p>
-                <ConfidenceIndicator
-                  confidence={translationConfidence}
-                  tooltipId="translation-confidence-tooltip"
-                />
+                <div className="flex items-center">
+                  <PronunciationButton
+                    text={german}
+                    language="de-DE"
+                    className="mr-2"
+                  />
+                  <ConfidenceIndicator
+                    confidence={translationConfidence}
+                    tooltipId="translation-confidence-tooltip"
+                  />
+                </div>
               </div>
               <p className={`mb-3 ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
 

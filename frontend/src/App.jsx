@@ -10,6 +10,7 @@ import Translator from "./components/Translator";
 import LevelGame from "./components/LevelGame";
 import Profile from "./components/Profile";
 import Vocabulary from "./components/Vocabulary";
+import PronunciationPractice from "./components/PronunciationPractice";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import Lessons from "./components/Lessons";
@@ -56,6 +57,7 @@ const router = createBrowserRouter(
     { path: "/level-game", element: <LevelGame /> },
     { path: "/profile", element: <Profile /> },
     { path: "/vocabulary", element: <Vocabulary /> },
+    { path: "/pronunciation", element: <PronunciationPractice /> },
     { path: "/admin", element: <AdminLogin /> },
 	{ path: "/admin-login", element: <AdminLogin /> },
     { path: "/admin-panel", element: <AdminDashboard /> },

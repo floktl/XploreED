@@ -6,6 +6,7 @@ import {
   Book,
   Library,
   BarChart3,
+  Mic,
 } from "lucide-react";
 
 import Button from "./UI/Button";
@@ -68,6 +69,11 @@ export default function Menu() {
             <Button type="button" variant="primary" onClick={() => navigate("/vocabulary")} className="justify-start gap-3">
               <Book className="w-5 h-5" />
               My Vocabulary
+            </Button>
+
+            <Button type="button" variant="primary" onClick={() => navigate("/pronunciation")} className="justify-start gap-3">
+              <Mic className="w-5 h-5" />
+              Pronunciation Practice
             </Button>
 
             <Button type="button" variant="secondary" onClick={() => navigate("/lessons")} className="justify-start gap-3">
