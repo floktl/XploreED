@@ -9,3 +9,4 @@ colorama
 numpy<2
 beautifulsoup4
 sqlalchemy
+google-generativeai
