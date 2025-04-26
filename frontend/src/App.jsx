@@ -11,6 +11,8 @@ import LevelGame from "./components/LevelGame";
 import Profile from "./components/Profile";
 import Vocabulary from "./components/Vocabulary";
 import PronunciationPractice from "./components/PronunciationPractice";
+import AnalyticsDashboard from "./components/AnalyticsDashboard";
+import Achievements from "./components/Achievements";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import Lessons from "./components/Lessons";
@@ -58,6 +60,8 @@ const router = createBrowserRouter(
     { path: "/profile", element: <Profile /> },
     { path: "/vocabulary", element: <Vocabulary /> },
     { path: "/pronunciation", element: <PronunciationPractice /> },
+    { path: "/analytics", element: <AnalyticsDashboard /> },
+    { path: "/achievements", element: <Achievements /> },
     { path: "/admin", element: <AdminLogin /> },
 	{ path: "/admin-login", element: <AdminLogin /> },
     { path: "/admin-panel", element: <AdminDashboard /> },

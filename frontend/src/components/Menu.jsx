@@ -7,6 +7,8 @@ import {
   Library,
   BarChart3,
   Mic,
+  Award,
+  PieChart,
 } from "lucide-react";
 
 import Button from "./UI/Button";
@@ -81,9 +83,19 @@ export default function Menu() {
               {username ? `${username}'s Lessons` : "Your Lessons"}
             </Button>
 
+            <Button type="button" variant="primary" onClick={() => navigate("/analytics")} className="justify-start gap-3">
+              <PieChart className="w-5 h-5" />
+              Learning Analytics
+            </Button>
+
             <Button type="button" variant="secondary" onClick={() => navigate("/profile")} className="justify-start gap-3">
               <BarChart3 className="w-5 h-5" />
               My Progress
+            </Button>
+
+            <Button type="button" variant="secondary" onClick={() => navigate("/achievements")} className="justify-start gap-3">
+              <Award className="w-5 h-5" />
+              Achievements
             </Button>
           </div>
         </Card>

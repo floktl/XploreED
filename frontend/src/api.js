@@ -352,6 +352,49 @@ export async function deactivateAccount() {
   return data;
 }
 
+// ---------- Analytics ----------
+export async function getAnalytics(days = 30) {
+  const res = await fetch(`${BASE_URL}/api/analytics?days=${days}`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to fetch analytics");
+  return await res.json();
+}
+
+export async function logActivity(activityType, details = null) {
+  const res = await fetch(`${BASE_URL}/api/analytics/log`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ activity_type: activityType, details }),
+  });
+  if (!res.ok) throw new Error("Failed to log activity");
+  return await res.json();
+}
+
+export async function updateAnalytics(activityType, correct = false, timeSpent = 0) {
+  const res = await fetch(`${BASE_URL}/api/analytics/update`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      activity_type: activityType,
+      correct,
+      time_spent: timeSpent
+    }),
+  });
+  if (!res.ok) throw new Error("Failed to update analytics");
+  return await res.json();
+}
+
+export async function getAchievements() {
+  const res = await fetch(`${BASE_URL}/api/analytics/achievements`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to fetch achievements");
+  return await res.json();
+}
+
 export const getLesson = async (lessonId) => {
   const res = await fetch(`${BASE_URL}/api/lesson/${lessonId}`, {
     method: "GET",
