@@ -7,8 +7,10 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Spinner from "./UI/Spinner";
 import Footer from "./UI/Footer";
+import ConfidenceIndicator from "./UI/ConfidenceIndicator";
 import useAppStore from "../store/useAppStore";
 import { translateSentence } from "../api";
+import "react-tooltip/dist/react-tooltip.css";
 
 
 export default function Translator() {
@@ -19,6 +21,8 @@ export default function Translator() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showRedirectModal, setShowRedirectModal] = useState(false);
+  const [translationConfidence, setTranslationConfidence] = useState(0);
+  const [feedbackConfidence, setFeedbackConfidence] = useState(0);
 
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
@@ -72,8 +76,12 @@ export default function Translator() {
       setGerman(data.german || "");
       setFeedback(data.feedback || "");
 
+      // Set confidence scores
+      setTranslationConfidence(data.translation_confidence || 75);
+      setFeedbackConfidence(data.feedback_confidence || 75);
+
       // Check if the translation was correct
-      const isCorrect = data.feedback && data.feedback.includes("✅");
+      const isCorrect = data.feedback?.includes("✅");
 
       // Track mistakes and redirect if needed
       if (!isCorrect) {
@@ -108,6 +116,8 @@ export default function Translator() {
     setGerman("");
     setFeedback("");
     setError("");
+    setTranslationConfidence(0);
+    setFeedbackConfidence(0);
   };
 
   return (
@@ -151,10 +161,26 @@ export default function Translator() {
         {german && (
           <>
             <Card className="mt-8">
-              <p className={`text-lg font-semibold mb-2 ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
-                🗣️ Correct German:
-              </p>
+              <div className="flex justify-between items-center mb-2">
+                <p className={`text-lg font-semibold ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
+                  🗣️ Correct German:
+                </p>
+                <ConfidenceIndicator
+                  confidence={translationConfidence}
+                  tooltipId="translation-confidence-tooltip"
+                />
+              </div>
               <p className={`mb-3 ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
+
+              <div className="flex justify-between items-center mb-2">
+                <p className={`text-lg font-semibold ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
+                  📝 Feedback:
+                </p>
+                <ConfidenceIndicator
+                  confidence={feedbackConfidence}
+                  tooltipId="feedback-confidence-tooltip"
+                />
+              </div>
               <div
                 className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}
                 dangerouslySetInnerHTML={{ __html: feedback }}
