@@ -604,40 +604,68 @@ for german, english in GERMAN_ENGLISH_DICT.items():
         ENGLISH_GERMAN_DICT[english] = german
 
 def translate_to_german(english_sentence, username=None):
-    # Simple rule-based translation
-    words = english_sentence.lower().split()
-    translated_words = []
+    """
+    Translate English text to German.
+    This function now uses the Gemini AI translator with fallback to dictionary.
 
-    for word in words:
-        # Remove punctuation for lookup
-        clean_word = word.strip(".,!?;:()\"'")
+    Args:
+        english_sentence (str): The English text to translate
+        username (str, optional): The username for personalization
 
-        # Try to find the word in our dictionary
-        if clean_word in ENGLISH_GERMAN_DICT:
-            german_word = ENGLISH_GERMAN_DICT[clean_word]
-            # Capitalize if it's the first word in the sentence
-            if len(translated_words) == 0:
-                german_word = german_word.capitalize()
-            translated_words.append(german_word)
-        else:
-            # If not found, keep the original word
-            translated_words.append(clean_word)
+    Returns:
+        str: The German translation
+    """
+    try:
+        # Try to use the Gemini AI translator
+        from utils.gemini_translator import translate_with_gemini
+        german_text = translate_with_gemini(english_sentence, username)
 
-    german_text = " ".join(translated_words)
+        # If translation succeeded, save vocabulary for the user
+        if username and german_text:
+            german_words = split_and_clean(german_text)
+            for de_word in german_words:
+                save_vocab(username, de_word)
 
-    # Add basic capitalization for German nouns (simplified rule)
-    for word in GERMAN_ENGLISH_DICT.keys():
-        if len(word) > 1 and word[0].isupper():
-            # Replace all occurrences with capitalized version
-            pattern = r'\b' + word[0].lower() + word[1:] + r'\b'
-            german_text = re.sub(pattern, word, german_text)
+        return german_text
 
-    if username:
-        german_words = split_and_clean(german_text)
-        for de_word in german_words:
-            save_vocab(username, de_word)
+    except Exception as e:
+        print(f"❌ Error using Gemini translator: {e}")
+        print("⚠️ Falling back to dictionary translation")
 
-    return german_text
+        # Fallback to dictionary-based translation
+        words = english_sentence.lower().split()
+        translated_words = []
+
+        for word in words:
+            # Remove punctuation for lookup
+            clean_word = word.strip(".,!?;:()\"'")
+
+            # Try to find the word in our dictionary
+            if clean_word in ENGLISH_GERMAN_DICT:
+                german_word = ENGLISH_GERMAN_DICT[clean_word]
+                # Capitalize if it's the first word in the sentence
+                if len(translated_words) == 0:
+                    german_word = german_word.capitalize()
+                translated_words.append(german_word)
+            else:
+                # If not found, keep the original word
+                translated_words.append(clean_word)
+
+        german_text = " ".join(translated_words)
+
+        # Add basic capitalization for German nouns (simplified rule)
+        for word in GERMAN_ENGLISH_DICT.keys():
+            if len(word) > 1 and word[0].isupper():
+                # Replace all occurrences with capitalized version
+                pattern = r'\b' + word[0].lower() + word[1:] + r'\b'
+                german_text = re.sub(pattern, word, german_text)
+
+        if username:
+            german_words = split_and_clean(german_text)
+            for de_word in german_words:
+                save_vocab(username, de_word)
+
+        return german_text
 
 
 def get_scrambled_sentence(sentence):
