@@ -30,7 +30,13 @@ The application now uses Google's Gemini AI for translation and feedback, provid
    - Highlights what students did well, even when there are mistakes
    - Explains grammar concepts in a friendly, accessible way
 
-3. **Technical Implementation**
+3. **AI Confidence Indicators**
+   - Shows confidence levels for both translations and feedback
+   - Helps users understand when the AI is certain vs. making an educated guess
+   - Color-coded indicators with helpful tooltips
+   - Improves transparency and builds trust in the AI assistance
+
+4. **Technical Implementation**
    - Added Google Generative AI Python package
    - Created a dedicated Gemini translator module
    - Implemented error handling and fallback mechanisms
@@ -144,4 +150,31 @@ german_class_tool/
 
 - `POST /api/translate`
   - Request: `{ "english": "English text", "student_input": "Student's German translation" }`
-  - Response: `{ "german": "Correct German", "feedback": "Feedback with HTML formatting" }`
+  - Response: `{ "german": "Correct German", "feedback": "Feedback with HTML formatting", "translation_confidence": 85, "feedback_confidence": 90 }`
+
+## Future Improvements
+
+### 1. Pronunciation Feature with Audio
+- Add text-to-speech functionality for German translations
+- Allow users to hear correct pronunciation of words and sentences
+- Implement speech recognition for pronunciation practice
+
+### 2. Learning Progress Analytics
+- Create a dashboard showing user progress over time
+- Track commonly made mistakes and suggest targeted exercises
+- Visualize learning patterns with charts and graphs
+
+### 3. Personalized Learning Paths
+- Develop an AI-driven system to recommend personalized exercises
+- Adapt difficulty based on user performance
+- Create custom vocabulary lists based on user interests
+
+### 4. Example Sentences Database
+- Build a database of example sentences for each vocabulary word
+- Show contextual usage of words in different scenarios
+- Allow filtering by difficulty level and topic
+
+### 5. Collaborative Learning Features
+- Add peer review functionality for translations
+- Create a community forum for language learning discussions
+- Implement a system for sharing custom exercises
