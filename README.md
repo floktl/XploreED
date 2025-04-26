@@ -36,7 +36,13 @@ The application now uses Google's Gemini AI for translation and feedback, provid
    - Color-coded indicators with helpful tooltips
    - Improves transparency and builds trust in the AI assistance
 
-4. **Technical Implementation**
+4. **Pronunciation Features**
+   - Text-to-speech functionality for German translations
+   - Speech recognition for pronunciation practice
+   - Dedicated pronunciation practice module with difficulty levels
+   - Uses browser's native Web Speech API (no external API required)
+
+5. **Technical Implementation**
    - Added Google Generative AI Python package
    - Created a dedicated Gemini translator module
    - Implemented error handling and fallback mechanisms
@@ -124,12 +130,19 @@ german_class_tool/
    - Enter an English sentence
    - Provide your German translation
    - Receive AI-powered feedback on your attempt
+   - Listen to correct pronunciation with text-to-speech
 
-2. **Sentence Ordering Game**
+2. **Pronunciation Practice**
+   - Listen to German phrases with text-to-speech
+   - Practice speaking with speech recognition
+   - Get instant feedback on your pronunciation
+   - Choose from different difficulty levels
+
+3. **Sentence Ordering Game**
    - Arrange scrambled German words into correct order
    - Progress through increasingly difficult levels
 
-3. **Vocabulary Building**
+4. **Vocabulary Building**
    - Track words you've encountered
    - Review your vocabulary list
 
@@ -154,27 +167,37 @@ german_class_tool/
 
 ## Future Improvements
 
-### 1. Pronunciation Feature with Audio
-- Add text-to-speech functionality for German translations
-- Allow users to hear correct pronunciation of words and sentences
-- Implement speech recognition for pronunciation practice
-
-### 2. Learning Progress Analytics
-- Create a dashboard showing user progress over time
+### 1. Enhanced Learning Progress Analytics
+- Create a comprehensive dashboard showing user progress over time
 - Track commonly made mistakes and suggest targeted exercises
-- Visualize learning patterns with charts and graphs
+- Visualize learning patterns with interactive charts and graphs
+- Implement a streak system to encourage daily practice
+- Add achievement badges for reaching milestones
 
-### 3. Personalized Learning Paths
+### 2. Personalized Learning Paths
 - Develop an AI-driven system to recommend personalized exercises
-- Adapt difficulty based on user performance
-- Create custom vocabulary lists based on user interests
+- Adapt difficulty based on user performance and learning style
+- Create custom vocabulary lists based on user interests and goals
+- Implement spaced repetition for vocabulary review
+- Provide personalized study plans with daily goals
 
-### 4. Example Sentences Database
+### 3. Example Sentences Database
 - Build a database of example sentences for each vocabulary word
 - Show contextual usage of words in different scenarios
-- Allow filtering by difficulty level and topic
+- Allow filtering by difficulty level, topic, and grammar concepts
+- Include cultural notes and usage tips for each example
+- Enable users to save favorite examples for later review
 
-### 5. Collaborative Learning Features
+### 4. Collaborative Learning Features
 - Add peer review functionality for translations
 - Create a community forum for language learning discussions
 - Implement a system for sharing custom exercises
+- Add a tandem learning feature to connect German and English speakers
+- Create group challenges and leaderboards
+
+### 5. Advanced Grammar Exercises
+- Develop interactive exercises for specific grammar concepts
+- Create visual grammar explanations with examples
+- Implement a grammar checker for user input
+- Provide contextual grammar tips based on common mistakes
+- Add progressive grammar lessons with increasing difficulty
