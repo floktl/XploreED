@@ -18,3 +18,8 @@ env/
 .german_env/
 german_env/
 DEEPL_API_KEY
+
+# Frontend files
+# Dependencies
+/node_modules
+package-lock.json
