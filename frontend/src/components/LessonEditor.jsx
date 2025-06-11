@@ -18,9 +18,11 @@ import { TaskBlock } from "../extensions/TaskBlock";
 
 import Modal from "./UI/Modal";
 import BlockContentRenderer from "./BlockContentRenderer";
+import { getAiExercises } from "../api";
 
 export default function LessonEditor({ content, onContentChange }) {
   const [showPreview, setShowPreview] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -89,6 +91,29 @@ export default function LessonEditor({ content, onContentChange }) {
         { type: "paragraph" },
       ])
       .run();
+  };
+
+  const getLastTaskText = () => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(editor.getHTML(), "text/html");
+    const blocks = doc.querySelectorAll("div[data-task-block]");
+    if (blocks.length === 0) return null;
+    return blocks[blocks.length - 1].textContent.trim();
+  };
+
+  const insertAiExercise = async () => {
+    setAiLoading(true);
+    try {
+      const mistake = getLastTaskText();
+      const data = await getAiExercises({ mistake });
+      const html = data?.html || "<p>AI exercise placeholder</p>";
+      editor.chain().focus().insertContent(html).run();
+    } catch (err) {
+      console.error("[LessonEditor] Failed to load AI exercise", err);
+      alert("Failed to fetch AI exercise");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -167,6 +192,9 @@ export default function LessonEditor({ content, onContentChange }) {
           📊 Table
         </EditorButton>
         <EditorButton onClick={insertInteractiveBlock}>✅ Block</EditorButton>
+        <EditorButton onClick={insertAiExercise}>
+          {aiLoading ? "🤖 Loading..." : "🤖 AI Exercise"}
+        </EditorButton>
         <EditorButton onClick={() => setShowPreview(true)}>👁️ Preview</EditorButton>
       </div>
 
