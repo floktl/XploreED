@@ -405,3 +405,16 @@ export const updateLessonBlockProgress = async (lessonId, blockId, completed) =>
     if (!res.ok) throw new Error("Failed to update block progress");
     return res.json();
 };
+
+// Request AI-generated exercises.
+// Payload can include the user's last mistake as `mistake` text.
+export const getAiExercises = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/ai-exercises`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI exercises");
+    return res.json();
+};
