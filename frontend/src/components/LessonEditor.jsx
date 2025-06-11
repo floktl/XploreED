@@ -18,9 +18,11 @@ import { TaskBlock } from "../extensions/TaskBlock";
 
 import Modal from "./UI/Modal";
 import BlockContentRenderer from "./BlockContentRenderer";
+import { getAiExercises } from "../api";
 
 export default function LessonEditor({ content, onContentChange }) {
   const [showPreview, setShowPreview] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -89,6 +91,75 @@ export default function LessonEditor({ content, onContentChange }) {
         { type: "paragraph" },
       ])
       .run();
+  };
+
+  const getLastTaskText = () => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(editor.getHTML(), "text/html");
+    const blocks = doc.querySelectorAll("div[data-task-block]");
+    if (blocks.length === 0) return null;
+    return blocks[blocks.length - 1].textContent.trim();
+  };
+
+  const aiExerciseJsonToHtml = (data) => {
+    if (!data || !Array.isArray(data.exercises)) {
+      return "<p>AI exercise placeholder</p>";
+    }
+
+    let html = `<div data-ai-exercise="true" class="space-y-4">`;
+    if (data.title) {
+      html += `<h3>${data.title}</h3>`;
+    }
+    if (data.instructions) {
+      html += `<p>${data.instructions}</p>`;
+    }
+
+    html += "<ol class='list-decimal list-inside space-y-2'>";
+    data.exercises.forEach((ex) => {
+      html += "<li>";
+      if (ex.question) {
+        html += `<p>${ex.question}</p>`;
+      }
+      if (Array.isArray(ex.options)) {
+        html += "<ul class='list-disc list-inside ml-4'>";
+        ex.options.forEach((opt) => {
+          html += `<li>${opt}</li>`;
+        });
+        html += "</ul>";
+      }
+      html += "</li>";
+    });
+    html += "</ol>";
+
+    if (Array.isArray(data.vocabHelp) && data.vocabHelp.length > 0) {
+      html += "<div><strong>Vocabulary Help</strong><ul class='list-disc list-inside ml-4'>";
+      data.vocabHelp.forEach((item) => {
+        html += `<li><strong>${item.word}</strong>: ${item.meaning}</li>`;
+      });
+      html += "</ul></div>";
+    }
+
+    if (data.feedbackPrompt) {
+      html += `<p>${data.feedbackPrompt}</p>`;
+    }
+
+    html += "</div>";
+    return html;
+  };
+
+  const insertAiExercise = async () => {
+    setAiLoading(true);
+    try {
+      const mistake = getLastTaskText();
+      const data = await getAiExercises({ mistake });
+      const html = aiExerciseJsonToHtml(data);
+      editor.chain().focus().insertContent(html).run();
+    } catch (err) {
+      console.error("[LessonEditor] Failed to load AI exercise", err);
+      alert("Failed to fetch AI exercise");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   return (
@@ -167,6 +238,9 @@ export default function LessonEditor({ content, onContentChange }) {
           📊 Table
         </EditorButton>
         <EditorButton onClick={insertInteractiveBlock}>✅ Block</EditorButton>
+        <EditorButton onClick={insertAiExercise}>
+          {aiLoading ? "🤖 Loading..." : "🤖 AI Exercise"}
+        </EditorButton>
         <EditorButton onClick={() => setShowPreview(true)}>👁️ Preview</EditorButton>
       </div>
 
