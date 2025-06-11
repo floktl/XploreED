@@ -15,13 +15,25 @@ run:
 		echo "📦 Image not found — building first..."; \
 		make build; \
 	fi
-	@docker run -it --rm -d \
-		--name $(CONTAINER_NAME) \
-		-p 8080:80 \
-		--env-file backend/secrets/.env \
-		$(IMAGE_NAME)
+	@if [ "$$(docker ps -a -q -f name=$(CONTAINER_NAME))" ]; then \
+		echo "🔁 Container exists. Starting or attaching..."; \
+		if [ "$$(docker ps -q -f name=$(CONTAINER_NAME))" ]; then \
+			echo "✅ Already running."; \
+		else \
+			echo "▶️  Starting existing container..."; \
+			docker start $(CONTAINER_NAME); \
+		fi; \
+	else \
+		echo "📦 No existing container. Creating a new one..."; \
+		docker run -it -d \
+			--name $(CONTAINER_NAME) \
+			-p 8080:80 \
+			--env-file backend/secrets/.env \
+			$(IMAGE_NAME); \
+	fi
 	@sleep 2
 	@docker logs -f $(CONTAINER_NAME)
+
 
 # === Run DB migration again manually (if needed) ===
 migrate:
