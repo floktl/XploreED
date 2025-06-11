@@ -49,32 +49,32 @@ export default function AdminDashboard() {
       try {
         const data = await getAdminRole();
         setIsAdmin(data.is_admin);
-  
+
         if (!data.is_admin) {
           navigate("/admin-login");
           return;
         }
-  
+
         // ✅ now safe to load data
         const [results, lessons, progress] = await Promise.all([
           getAdminResults(),
           getLessons(),
           getLessonProgressSummary(),
         ]);
-  
+
         setResults(results);
         setLessons(lessons);
         setLessonProgress(progress);
-  
+
       } catch (err) {
         console.error("❌ Admin verification failed:", err);
         navigate("/admin-login");
       }
     };
-  
+
     verifyAdmin();
   }, [navigate, setIsAdmin]);
-  
+
   const userSummary = results.reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
     if (!acc[username] || new Date(timestamp) > new Date(acc[username].lastTime || 0)) {
@@ -94,12 +94,12 @@ export default function AdminDashboard() {
 
   const handleSaveLesson = async (publish = false) => {
     setFormError("");
-  
+
     if (!newTitle || !newContent || !newLessonId) {
       setFormError("❗ Please fill out all fields.");
       return;
     }
-  
+
     const duplicateId = lessons.find(
       (l) => l.lesson_id === parseInt(newLessonId)
     );
@@ -108,17 +108,17 @@ export default function AdminDashboard() {
         l.title.trim().toLowerCase() === newTitle.trim().toLowerCase() &&
         (!isEditing || l.lesson_id !== parseInt(newLessonId))
     );
-  
+
     if (!isEditing && duplicateId) {
       setFormError(`❌ Lesson ID ${newLessonId} already exists. Please choose a different ID.`);
       return;
     }
-  
+
     if (duplicateTitle) {
       setFormError(`❌ Lesson title "${newTitle}" already exists. Please choose a different title.`);
       return;
     }
-  
+
     try {
       const lessonPayload = {
         lesson_id: parseInt(newLessonId),
@@ -126,17 +126,17 @@ export default function AdminDashboard() {
         content: newContent,
         published: publish ? 1 : 0,
       };
-  
+
       const res = await saveLesson(lessonPayload, isEditing);
-  
+
       if (!res.ok) {
         setFormError("❌ Failed to save lesson.");
         return;
       }
-  
+
       const updatedLessons = await getLessons();
       setLessons(updatedLessons);
-  
+
       // Clear UI state
       setShowEditorModal(false);
       setNewLessonId("");
@@ -152,10 +152,10 @@ export default function AdminDashboard() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📊 Admin Dashboard</Title>
-  
+        <Title>📊 Admin Dj,hgkuygfashboard</Title>
+
         {error && <Alert type="danger">{error}</Alert>}
-  
+
         <Card className="overflow-x-auto mb-10">
           <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </Card>
-  
+
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">📚 All Lessons</h2>
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
               ➕ Add Lesson
             </Button>
           </div>
-  
+
           <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
               <tr>
@@ -304,14 +304,14 @@ export default function AdminDashboard() {
           </table>
         </Card>
       </Container>
-  
+
       {modalContent && (
         <Modal onClose={() => setModalContent(null)}>
           <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
           <BlockContentRenderer html={modalContent.content} />
         </Modal>
       )}
-  
+
       {showEditorModal && (
         <Modal onClose={() => setShowEditorModal(false)}>
           <h2 className="text-xl font-bold mb-4">
@@ -332,11 +332,11 @@ export default function AdminDashboard() {
             onChange={(e) => setNewTitle(e.target.value)}
             className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
           />
-  
+
           {formError && (
             <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
           )}
-  
+
           <LessonEditor content={newContent} onContentChange={setNewContent} />
           <div className="flex justify-end mt-4 gap-2">
             <Button variant="secondary" onClick={() => handleSaveLesson(false)}>
@@ -348,7 +348,7 @@ export default function AdminDashboard() {
           </div>
         </Modal>
       )}
-  
+
       {showLessonModal && (
         <Modal onClose={() => setShowLessonModal(null)}>
           <h2 className="text-xl font-bold mb-4">📘 Lesson {showLessonModal} – User Progress</h2>
@@ -366,9 +366,9 @@ export default function AdminDashboard() {
           )}
         </Modal>
       )}
-  
+
       <Footer />
     </div>
   );
-  
+
 }
