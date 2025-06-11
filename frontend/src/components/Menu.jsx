@@ -5,6 +5,7 @@ import {
   Target,
   Book,
   Library,
+  Bot,
   BarChart3,
 } from "lucide-react";
 
@@ -73,6 +74,11 @@ export default function Menu() {
             <Button type="button" variant="secondary" onClick={() => navigate("/lessons")} className="justify-start gap-3">
               <Library className="w-5 h-5" />
               {username ? `${username}'s Lessons` : "Your Lessons"}
+            </Button>
+
+            <Button type="button" variant="secondary" onClick={() => navigate("/ai-feedback")} className="justify-start gap-3">
+              <Bot className="w-5 h-5" />
+              AI Feedback
             </Button>
 
             <Button type="button" variant="secondary" onClick={() => navigate("/profile")} className="justify-start gap-3">

@@ -16,6 +16,8 @@ import Lessons from "./components/Lessons";
 import ProfileStats from "./components/ProfileStats";
 import LessonView from "./components/LessonView";
 import LessonEdit from "./components/LessonEdit";
+import AIFeedback from "./components/AIFeedback";
+import AIFeedbackView from "./components/AIFeedbackView";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -63,6 +65,8 @@ const router = createBrowserRouter(
     { path: "/lesson/:lessonId", element: <LessonView /> },
     { path: "/profile-stats", element: <ProfileStats /> },
     { path: "/admin/lessons/:id", element: <LessonEdit /> },
+    { path: "/ai-feedback", element: <AIFeedback /> },
+    { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView /> }
   ],
   {
     future: {
