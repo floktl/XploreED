@@ -1,5 +1,5 @@
 # Python cache
-__pycache__/
+**/__pycache__/
 *.py[cod]
 
 # Bytecode cache in virtual environments
@@ -21,5 +21,6 @@ DEEPL_API_KEY
 
 # Frontend files
 # Dependencies
-/node_modules
+/node_modules/
+frontend/node_modules/
 package-lock.json
