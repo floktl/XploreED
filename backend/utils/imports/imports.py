@@ -26,6 +26,7 @@ from utils.blueprint import (
     profile_bp,
     translate_bp,
     user_bp,
+    ai_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -83,4 +84,8 @@ class Imports:
 
     user = [
         "user_bp", "request", "jsonify", "session_manager", "fetch_all", "get_current_user", "fetch_custom"
+    ]
+
+    ai = [
+        "ai_bp", "request", "jsonify", "session_manager"
     ]
