@@ -1,0 +1,19 @@
+version: '3.9'
+services:
+  frontend:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"
+
+  backend:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./backend:/app/backend
+    command: sh -c "pip install -r backend/requirements.txt && FLASK_ENV=development python backend/app.py"
+    ports:
+      - "5050:5050"
