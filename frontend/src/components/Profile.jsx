@@ -96,8 +96,8 @@ export default function Profile() {
           <Button variant="secondary" onClick={toggleDarkMode}>
             {darkMode ? "☀️ Light" : "🌙 Dark"}
           </Button>
-          <Button onClick={() => navigate("/menu")} variant="link">
-            ⬅️ Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>

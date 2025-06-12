@@ -147,7 +147,7 @@ def save_vocab(username, german_word, context=None, exercise=None):
     with get_connection() as conn:
         conn.execute(
             "INSERT INTO vocab_log (username, vocab, translation, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (username, german_word, english_word, context, exercise, now, now),
+            (username, german_word, english_word, context, exercise, now, now),)
 
 
 def translate_to_german(english_sentence, username=None):

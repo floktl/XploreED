@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   User,
   Settings,
+  Menu,
   LogOut,
   Moon,
   Sun,
@@ -88,25 +89,41 @@ export default function Footer() {
                 <PanelTop className={iconStyle} />
                 Admin Panel
               </button>
-            )}
-            <button onClick={handleLogout} className={buttonBase}>
-              <LogOut className={iconStyle} />
-              Logout
+              <button onClick={() => navigate("/profile")} className={buttonBase}>
+                <Settings className={iconStyle} />
+                Settings
+              </button>
+              <button onClick={() => navigate("/menu")} className={buttonBase}>
+                <Menu className={iconStyle} />
+                Menu
+              </button>
+            </>
+          )}
+          {isAdmin && (
+            <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
+              <PanelTop className={iconStyle} />
+              Admin Panel
             </button>
-          </div>
-        )}
-
-        <div>
-          <button onClick={toggleDarkMode} className={buttonBase}>
-            {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </button>
-          <button onClick={() => {setShowFeedback(true); setFbError(""); setFbSuccess("");}} className={buttonBase}>
-            <Mail className={iconStyle} />
-            Support
+          )}
+          <button onClick={handleLogout} className={buttonBase}>
+            <LogOut className={iconStyle} />
+            Logout
           </button>
         </div>
+      )}
+
+      {/* Right block: always right-aligned */}
+      <div className="flex gap-2 items-center ml-auto">
+        <button onClick={toggleDarkMode} className={buttonBase}>
+          {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+        <button onClick={() => {setShowFeedback(true); setFbError(""); setFbSuccess("");}} className={buttonBase}>
+          <Mail className={iconStyle} />
+          Support
+        </button>
       </div>
+    </div>
       {showFeedback && (
         <Modal onClose={() => {setShowFeedback(false); setFbError(""); setFbSuccess("");}}>
           <h2 className="text-lg font-bold mb-2">Send Feedback (anonymous)</h2>
