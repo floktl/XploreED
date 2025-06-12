@@ -64,7 +64,7 @@ export default function AdminDashboard() {
         ]);
 
         setResults(results);
-        setLessons(lessons);
+        setLessons(Array.isArray(lessons) ? lessons : []);
         setLessonProgress(progress);
 
       } catch (err) {
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
       }
 
       const updatedLessons = await getLessons();
-      setLessons(updatedLessons);
+      setLessons(Array.isArray(updatedLessons) ? updatedLessons : []);
 
       // Clear UI state
       setShowEditorModal(false);
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📊 Admin Dj,hgkuygfashboard</Title>
+        <Title>📊 Admin Dashboard</Title>
 
         {error && <Alert type="danger">{error}</Alert>}
 
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
                 });
                 if (updated.ok || updated === true) {
                   const refreshed = await getLessons();
-                  setLessons(refreshed);
+                  setLessons(Array.isArray(refreshed) ? refreshed : []);
                 }
               } catch (err) {
                 console.error("❌ Failed to toggle publish status", err);
