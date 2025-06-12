@@ -371,10 +371,12 @@ export async function uploadAvatar(file) {
     return data;
 }
 
-export async function deactivateAccount() {
+export async function deactivateAccount(deleteAll = false) {
     const res = await fetch(`${BASE_URL}/api/settings/deactivate`, {
         method: "POST",
         credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ delete_all: deleteAll })
     });
 
     const data = await res.json();
