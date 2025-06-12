@@ -418,3 +418,11 @@ export const getAiExercises = async (payload = {}) =>
     return res.json();
 };
 
+export const getAiFeedback = async () => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI feedback");
+    return res.json();
+};
+
