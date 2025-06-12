@@ -16,7 +16,6 @@ the frontend. The Flask API is served on <http://localhost:5050>.
 1. **Admin**
    - Log in and open the lesson editor in the admin panel.
    - Use the "🤖 AI Exercise" button in the toolbar to insert an AI exercise block.
-   - The editor shows a preview, but only a placeholder is saved so students always get fresh exercises.
    - Save and publish the lesson.
 
 2. **Student**

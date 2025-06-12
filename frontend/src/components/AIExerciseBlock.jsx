@@ -31,6 +31,7 @@ export default function AIExerciseBlock({ data }) {
       </Card>
     );
   }
+  const [current, setCurrent] = useState(data);
   const [stage, setStage] = useState(1);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
