@@ -418,6 +418,35 @@ export const getAiExercises = async (payload = {}) =>
     return res.json();
 };
 
+export const getTrainingExercises = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/training-exercises`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to fetch training exercises");
+    return res.json();
+};
+
+export const sendSupportFeedback = async (message) => {
+    const res = await fetch(`${BASE_URL}/api/support/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+    });
+    if (!res.ok) throw new Error("Failed to send feedback");
+    return res.json();
+};
+
+export const fetchSupportFeedback = async () => {
+    const res = await fetch(`${BASE_URL}/api/support/feedback`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch feedback");
+    return res.json();
+};
+
 export const getAiFeedback = async () => {
     const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
         credentials: "include",
