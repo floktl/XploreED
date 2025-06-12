@@ -40,7 +40,10 @@ from game.german_sentence_game import (
     save_result,
     translate_to_german,
     get_feedback,
+    save_vocab,
+    split_and_clean,
 )
+from utils.algorithm import sm2
 
 # ✅ Route-specific grouped imports
 class Imports:
@@ -64,7 +67,7 @@ class Imports:
     game = [
         "game_bp", "request", "jsonify", "Limiter", "get_remote_address",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
-        "evaluate_order", "save_result"
+        "evaluate_order", "save_result", "save_vocab", "split_and_clean"
     ]
 
     lesson_progress = [
@@ -88,7 +91,9 @@ class Imports:
     ]
 
     user = [
-        "user_bp", "request", "jsonify", "session_manager", "fetch_all", "get_current_user", "fetch_custom"
+        "user_bp", "request", "jsonify", "session_manager", "fetch_all",
+        "get_current_user", "fetch_custom", "save_vocab", "split_and_clean",
+        "sm2"
     ]
 
     ai = [
