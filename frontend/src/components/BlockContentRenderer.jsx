@@ -10,10 +10,10 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
 
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
-  const children = Array.from(tempDiv.childNodes);
   const elements = [];
 
-  children.forEach((node, index) => {
+  const processNode = (node, keyPrefix = "") => {
+    const index = elements.length;
     const isInteractiveBlock =
       node.nodeType === Node.ELEMENT_NODE &&
       node.hasAttribute("data-task-block");
@@ -55,6 +55,12 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
         data = JSON.parse(decodeURIComponent(encoded));
       } catch {}
       elements.push(<AIExerciseBlock key={`ai-${index}`} data={data} />);
+    } else if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      (node.querySelector("[data-ai-exercise]") ||
+        node.querySelector("[data-task-block]"))
+    ) {
+      Array.from(node.childNodes).forEach((child) => processNode(child, keyPrefix));
     } else {
       elements.push(
         <div
@@ -65,7 +71,9 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
         />
       );
     }
-  });
+  };
+
+  Array.from(tempDiv.childNodes).forEach((node) => processNode(node));
 
   return <div className="prose dark:prose-invert space-y-4 mt-4">{elements}</div>;
 }
