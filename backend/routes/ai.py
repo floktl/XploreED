@@ -24,8 +24,11 @@ def get_ai_feedback():
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    with open(FEEDBACK_FILE, "r") as f:
-        feedback_data = json.load(f)
+    try:
+        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+            feedback_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        feedback_data = []
 
     return jsonify(feedback_data)
 
