@@ -3,7 +3,7 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { getAiExercises } from "../api";
 
-export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student" }) {
+export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
   const [loadingInit, setLoadingInit] = useState(mode === "student" && (!data || !Array.isArray(data.exercises)));
   const [isComplete, setIsComplete] = useState(completed);
@@ -29,12 +29,12 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
     if (mode !== "student") return;
     if (!current || !Array.isArray(current.exercises)) {
       setLoadingInit(true);
-      getAiExercises()
+      fetchExercisesFn()
         .then((d) => setCurrent(d))
         .catch(() => setCurrent(null))
         .finally(() => setLoadingInit(false));
     }
-  }, [mode]);
+  }, [mode, fetchExercisesFn]);
 
   useEffect(() => {
     if (mode === "student" && submitted && allCorrect && !isComplete) {
@@ -80,7 +80,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
     if (allCorrect) return;
     setLoading(true);
     try {
-      const newData = await getAiExercises();
+      const newData = await fetchExercisesFn({ answers });
       setCurrent(newData);
       setStage((s) => s + 1);
       setAnswers({});
