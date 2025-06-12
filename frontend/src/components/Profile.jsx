@@ -91,8 +91,8 @@ export default function Profile() {
         )}
 
         <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/menu")} variant="link">
-            ⬅️ Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>

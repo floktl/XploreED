@@ -38,12 +38,8 @@ export default function AIFeedback() {
         </p>
         <AIExerciseBlock fetchExercisesFn={getTrainingExercises} />
         <div className="mt-6 text-center">
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => navigate("/menu")}
-          >
-            ⬅️ Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>
