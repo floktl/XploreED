@@ -2,6 +2,7 @@ from utils.imports.imports import *
 
 limiter = Limiter(get_remote_address)
 
+
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")
 def level_game():
@@ -15,6 +16,7 @@ def level_game():
     sentence = LEVELS[level]
     scrambled = get_scrambled_sentence(sentence)
     return jsonify({"level": level, "sentence": sentence, "scrambled": scrambled})
+
 
 @game_bp.route("/level/submit", methods=["POST"])
 @limiter.limit("20/minute")
@@ -33,16 +35,27 @@ def submit_level():
 
     if correct:
         for word in split_and_clean(LEVELS[level]):
-            save_vocab(username, word)
+            save_vocab(
+                username,
+                word,
+                context=LEVELS[level],
+                exercise=f"game_level_{level}",
+            )
 
     def ansi_to_html(text):
-        return text.replace("\x1b[31m", '<span style="color:red;">')\
-                .replace("\x1b[32m", '<span style="color:green;">')\
-                .replace("\x1b[33m", '<span style="color:orange;">')\
-                .replace("\x1b[0m", '</span>')
+        return (
+            text.replace("\x1b[31m", '<span style="color:red;">')
+            .replace("\x1b[32m", '<span style="color:green;">')
+            .replace("\x1b[33m", '<span style="color:orange;">')
+            .replace("\x1b[0m", "</span>")
+        )
 
-    return jsonify({
-        "correct": correct,
-        "feedback": ansi_to_html(feedback),
-        "correct_sentence": LEVELS[level] if os.getenv("FLASK_ENV") != "production" else None
-    })
+    return jsonify(
+        {
+            "correct": correct,
+            "feedback": ansi_to_html(feedback),
+            "correct_sentence": (
+                LEVELS[level] if os.getenv("FLASK_ENV") != "production" else None
+            ),
+        }
+    )
