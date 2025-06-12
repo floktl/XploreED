@@ -115,6 +115,25 @@ export async function getVocabulary() {
     return res.json();
 }
 
+export const getNextVocabCard = async () => {
+    const res = await fetch(`${BASE_URL}/api/vocab-train`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch card");
+    return res.json();
+};
+
+export const submitVocabAnswer = async (id, quality) => {
+    const res = await fetch(`${BASE_URL}/api/vocab-train`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id, quality }),
+    });
+    if (!res.ok) throw new Error("Failed to submit answer");
+    return res.json();
+};
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
