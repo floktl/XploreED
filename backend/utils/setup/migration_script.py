@@ -2,7 +2,18 @@
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+
+try:
+    from dotenv import load_dotenv  # type: ignore
+except Exception:
+    def load_dotenv(dotenv_path=None, **_):  # type: ignore
+        if dotenv_path and os.path.exists(dotenv_path):
+            with open(dotenv_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ.setdefault(key, value)
 
 # Load .env file early!
 env_path = Path(__file__).resolve().parent.parent.parent / "secrets" / ".env"
@@ -50,7 +61,14 @@ with get_connection() as conn:
         CREATE TABLE IF NOT EXISTS vocab_log (
             username TEXT,
             vocab TEXT,
-            translation TEXT
+            translation TEXT,
+            repetitions INTEGER DEFAULT 0,
+            interval_days INTEGER DEFAULT 1,
+            ef REAL DEFAULT 2.5,
+            next_review DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            context TEXT,
+            exercise TEXT
         );
     """
     )
@@ -91,9 +109,7 @@ with get_connection() as conn:
 
     # ✅ Add new metadata columns
     if "created_at" not in vocab_cols:
-        cursor.execute(
-            "ALTER TABLE vocab_log ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;"
-        )
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN created_at DATETIME;")
         cursor.execute(
             "UPDATE vocab_log SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL;"
         )
@@ -154,8 +170,9 @@ with get_connection() as conn:
         print("ℹ️ 'password' column already exists.")
 
     if "created_at" not in user_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN created_at DATETIME;")
         cursor.execute(
-            "ALTER TABLE users ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;"
+            "UPDATE users SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL;"
         )
         print("✅ 'created_at' column added.")
     else:
