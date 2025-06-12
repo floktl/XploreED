@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   User,
   Settings,
+  Menu,
   LogOut,
   Moon,
   Sun,
@@ -57,6 +58,10 @@ export default function Footer() {
                 <button onClick={() => navigate("/profile")} className={buttonBase}>
                   <Settings className={iconStyle} />
                   Settings
+                </button>
+                <button onClick={() => navigate("/menu")} className={buttonBase}>
+                  <Menu className={iconStyle} />
+                  Menu
                 </button>
               </>
             )}
