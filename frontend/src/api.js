@@ -418,6 +418,17 @@ export const getAiExercises = async (payload = {}) =>
     return res.json();
 };
 
+export const getTrainingExercises = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/training-exercises`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to fetch training exercises");
+    return res.json();
+};
+
 export const getAiFeedback = async () => {
     const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
         credentials: "include",
