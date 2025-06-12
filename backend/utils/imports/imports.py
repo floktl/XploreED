@@ -13,7 +13,11 @@ from bs4 import BeautifulSoup
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.init_app.extensions import limiter
 
-from utils.lesson_parser import update_lesson_blocks_from_html, inject_block_ids
+from utils.lesson_parser import (
+    update_lesson_blocks_from_html,
+    inject_block_ids,
+    strip_ai_data,
+)
 from utils.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
 from utils.helper import is_admin, get_current_user, user_exists
 from utils.blueprint import (
@@ -26,6 +30,7 @@ from utils.blueprint import (
     profile_bp,
     translate_bp,
     user_bp,
+    ai_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -41,8 +46,8 @@ class Imports:
     admin = [
         "admin_bp", "request", "jsonify", "session_manager", "BeautifulSoup",
         "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
-        "update_lesson_blocks_from_html", "inject_block_ids", "is_admin",
-        "OrderedDict"
+        "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
+        "is_admin", "OrderedDict"
     ]
 
     auth = [
@@ -83,4 +88,8 @@ class Imports:
 
     user = [
         "user_bp", "request", "jsonify", "session_manager", "fetch_all", "get_current_user", "fetch_custom"
+    ]
+
+    ai = [
+        "ai_bp", "request", "jsonify", "session_manager"
     ]

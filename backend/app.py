@@ -22,6 +22,7 @@ import routes.lessons
 import routes.profile
 import routes.translate
 import routes.user
+import routes.ai
 
 from utils.init_app.extensions import limiter
 from utils.blueprint import registered_blueprints
