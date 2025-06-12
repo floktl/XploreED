@@ -6,6 +6,7 @@ import AIExerciseBlock from "./AIExerciseBlock";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import ErrorPage from "./ErrorPage";
 import {
   getLesson,
   getLessonProgress,
@@ -22,6 +23,7 @@ export default function LessonView() {
   const [canComplete, setCanComplete] = useState(false);
   const [markedComplete, setMarkedComplete] = useState(false);
   const [showAi, setShowAi] = useState(false);
+  const [fatalError, setFatalError] = useState(false);
   const navigate = useNavigate();
   const isAdmin = useAppStore((state) => state.isAdmin);
   const [numBlocks, setNumBlocks] = useState(0);
@@ -41,6 +43,7 @@ export default function LessonView() {
         }
       } catch (err) {
         console.error("🔥 Exception while loading lesson content:", err);
+        setFatalError(true);
       }
     };
 
@@ -50,6 +53,7 @@ export default function LessonView() {
         setProgress(data);
       } catch (err) {
         console.warn("Could not load progress", err);
+        setFatalError(true);
       }
     };
 
@@ -59,6 +63,7 @@ export default function LessonView() {
         setMarkedComplete(data.completed);
       } catch (err) {
         console.warn("Could not load marked complete state", err);
+        setFatalError(true);
       }
     };
 
@@ -86,8 +91,13 @@ export default function LessonView() {
     } catch (err) {
       console.error("❌ Could not mark lesson complete:", err);
       alert("Failed to mark lesson complete.");
+      setFatalError(true);
     }
   };
+
+  if (fatalError) {
+    return <ErrorPage />;
+  }
 
   return (
     <div className="min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
@@ -141,6 +151,7 @@ export default function LessonView() {
                       }));
                     } catch (err) {
                       console.error("❌ Failed to update progress", err);
+                      setFatalError(true);
                     }
                   }}
                 />
