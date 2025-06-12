@@ -4,7 +4,6 @@ import Button from "./UI/Button";
 import { getAiExercises } from "../api";
 
 export default function AIExerciseBlock({ data }) {
-  const [current, setCurrent] = useState(data);
   const [loadingInit, setLoadingInit] = useState(!data || !Array.isArray(data.exercises));
 
   useEffect(() => {
@@ -31,7 +30,6 @@ export default function AIExerciseBlock({ data }) {
       </Card>
     );
   }
-  const [current, setCurrent] = useState(data);
   const [stage, setStage] = useState(1);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -183,3 +181,4 @@ export default function AIExerciseBlock({ data }) {
     </Card>
   );
 }
+
