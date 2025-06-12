@@ -32,6 +32,7 @@ def insert_lesson_content():
     content = strip_ai_data(data.get("content", ""))
     target_user = data.get("target_user")
     published = bool(data.get("published", 0))
+    ai_enabled = bool(data.get("ai_enabled", 0))
 
     # 🧽 Extract block_ids from HTML
     soup = BeautifulSoup(content, "html.parser")
@@ -45,7 +46,8 @@ def insert_lesson_content():
         "content": content,
         "target_user": target_user,
         "published": published,
-        "num_blocks": num_blocks
+        "num_blocks": num_blocks,
+        "ai_enabled": ai_enabled
     })
 
     if not insert_success:
@@ -94,11 +96,13 @@ def get_all_lessons():
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    lessons = fetch_custom("""
-        SELECT lesson_id, title, content, target_user, published
+    lessons = fetch_custom(
+        """
+        SELECT lesson_id, title, content, target_user, published, ai_enabled, num_blocks
         FROM lesson_content
         ORDER BY lesson_id ASC
-    """)
+    """
+    )
     return jsonify(lessons)
 
 
@@ -150,13 +154,19 @@ def update_lesson_by_id(lesson_id):
     block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
     num_blocks = len(block_ids)
     # ✏️ Update the lesson row including num_blocks
-    update_row("lesson_content", {
-        "title": data.get("title"),
-        "content": content,
-        "target_user": data.get("target_user"),
-        "published": bool(data.get("published", 0)),
-        "num_blocks": num_blocks
-    }, "WHERE lesson_id = ?", (lesson_id,))
+    update_row(
+        "lesson_content",
+        {
+            "title": data.get("title"),
+            "content": content,
+            "target_user": data.get("target_user"),
+            "published": bool(data.get("published", 0)),
+            "num_blocks": num_blocks,
+            "ai_enabled": bool(data.get("ai_enabled", 0)),
+        },
+        "WHERE lesson_id = ?",
+        (lesson_id,),
+    )
 
     # 🔁 Sync lesson_blocks table
     update_lesson_blocks_from_html(lesson_id, content)

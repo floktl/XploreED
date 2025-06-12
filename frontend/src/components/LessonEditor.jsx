@@ -19,9 +19,8 @@ import { TaskBlock } from "../extensions/TaskBlock";
 import Modal from "./UI/Modal";
 import BlockContentRenderer from "./BlockContentRenderer";
 
-export default function LessonEditor({ content, onContentChange }) {
+export default function LessonEditor({ content, onContentChange, aiEnabled = false, onToggleAI }) {
   const [showPreview, setShowPreview] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -101,19 +100,6 @@ export default function LessonEditor({ content, onContentChange }) {
   };
 
 
-  const insertAiExercise = async () => {
-    setAiLoading(true);
-    try {
-      const blockId = generateBlockId();
-      const html = `<div data-ai-exercise="true" data-block-id="${blockId}">🤖 AI Exercise</div><p></p>`;
-      editor.chain().focus().insertContent(html).run();
-    } catch (err) {
-      console.error("[LessonEditor] Failed to insert AI exercise placeholder", err);
-      alert("Failed to insert AI exercise");
-    } finally {
-      setAiLoading(false);
-    }
-  };
 
   return (
     <div>
@@ -191,8 +177,8 @@ export default function LessonEditor({ content, onContentChange }) {
           📊 Table
         </EditorButton>
         <EditorButton onClick={insertInteractiveBlock}>✅ Block</EditorButton>
-        <EditorButton onClick={insertAiExercise}>
-          {aiLoading ? "🤖 Loading..." : "🤖 AI Exercise"}
+        <EditorButton onClick={onToggleAI}>
+          {aiEnabled ? "🤖 AI On" : "🤖 AI Off"}
         </EditorButton>
         <EditorButton onClick={() => setShowPreview(true)}>👁️ Preview</EditorButton>
       </div>

@@ -12,6 +12,15 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const exercises = current?.exercises || [];
+  const instructions = current?.instructions;
+  const feedbackPrompt = current?.feedbackPrompt;
+  const allCorrect = exercises.every(
+    (ex) =>
+      String(answers[ex.id]).trim().toLowerCase() ===
+      String(ex.correctAnswer).trim().toLowerCase()
+  );
+
   useEffect(() => {
     setIsComplete(completed);
   }, [completed]);
@@ -58,14 +67,6 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
     );
   }
 
-  const exercises = current.exercises || [];
-  const instructions = current.instructions;
-  const feedbackPrompt = current.feedbackPrompt;
-  const allCorrect = exercises.every(
-    (ex) =>
-      String(answers[ex.id]).trim().toLowerCase() ===
-      String(ex.correctAnswer).trim().toLowerCase()
-  );
 
   const handleSelect = (exId, value) => {
     setAnswers((prev) => ({ ...prev, [exId]: value }));
