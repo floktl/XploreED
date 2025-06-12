@@ -11,3 +11,17 @@ docker compose -f docker-compose.dev.yml up
 Once the stack is running, open <http://localhost:5173> in your browser to see
 the frontend. The Flask API is served on <http://localhost:5050>.
 
+## AI Exercise Workflow
+
+1. **Admin**
+   - Log in and open the lesson editor in the admin panel.
+   - Use the "🤖 AI Exercise" button in the toolbar to insert an AI exercise block.
+   - The editor shows a preview, but only a placeholder is saved so students always get fresh exercises.
+   - Save and publish the lesson.
+
+2. **Student**
+   - Open the lesson from the Lessons page.
+   - Complete the five AI exercises shown in the block and submit the answers.
+   - If any answers are incorrect you will see feedback. Click **Continue** to fetch a new random set and try again.
+   - Repeat the process until every answer is correct, then mark the lesson as completed.
+
