@@ -64,54 +64,56 @@ export default function Footer() {
   const iconStyle = "w-4 h-4";
 
   return (
-    <footer
-      className={`fixed bottom-0 w-full z-50 border-t ${
-        darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
-      }`}
-    >
-      <div className="max-w-5xl mx-auto flex flex-wrap justify-center sm:justify-between items-center px-4 py-3 gap-3">
-        {!isNameInputPage && (
-          <div className="flex flex-wrap gap-3 items-center">
-            {!isAdmin && (
-              <>
-                <button onClick={() => navigate("/profile")} className={buttonBase}>
-                  <User className={iconStyle} />
-                  Profile
-                </button>
-                <button onClick={() => navigate("/profile")} className={buttonBase}>
-                  <Settings className={iconStyle} />
-                  Settings
-                </button>
-                <button onClick={() => navigate("/menu")} className={buttonBase}>
-                  <Menu className={iconStyle} />
-                  Menu
-                </button>
-              </>
-            )}
-            {isAdmin && (
-              <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
-                <PanelTop className={iconStyle} />
-                Admin Panel
+  <footer
+    className={`fixed bottom-0 w-full z-50 border-t ${
+      darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
+    }`}
+  >
+    <div className="max-w-5xl mx-auto flex justify-between items-center px-4 py-3 gap-3">
+      {/* Left block: navigation buttons */}
+      {!isNameInputPage && (
+        <div className="flex flex-wrap gap-3 items-center">
+          {!isAdmin && (
+            <>
+              <button onClick={() => navigate("/profile")} className={buttonBase}>
+                <User className={iconStyle} />
+                Profile
               </button>
-            )}
-            <button onClick={handleLogout} className={buttonBase}>
-              <LogOut className={iconStyle} />
-              Logout
+              <button onClick={() => navigate("/profile")} className={buttonBase}>
+                <Settings className={iconStyle} />
+                Settings
+              </button>
+              <button onClick={() => navigate("/menu")} className={buttonBase}>
+                <Menu className={iconStyle} />
+                Menu
+              </button>
+            </>
+          )}
+          {isAdmin && (
+            <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
+              <PanelTop className={iconStyle} />
+              Admin Panel
             </button>
-          </div>
-        )}
-
-        <div>
-          <button onClick={toggleDarkMode} className={buttonBase}>
-            {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
-            {darkMode ? "Light Mode" : "Dark Mode"}
-          </button>
-          <button onClick={() => {setShowFeedback(true); setFbError(""); setFbSuccess("");}} className={buttonBase}>
-            <Mail className={iconStyle} />
-            Support
+          )}
+          <button onClick={handleLogout} className={buttonBase}>
+            <LogOut className={iconStyle} />
+            Logout
           </button>
         </div>
+      )}
+
+      {/* Right block: always right-aligned */}
+      <div className="flex gap-2 items-center ml-auto">
+        <button onClick={toggleDarkMode} className={buttonBase}>
+          {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
+          {darkMode ? "Light Mode" : "Dark Mode"}
+        </button>
+        <button onClick={() => {setShowFeedback(true); setFbError(""); setFbSuccess("");}} className={buttonBase}>
+          <Mail className={iconStyle} />
+          Support
+        </button>
       </div>
+    </div>
       {showFeedback && (
         <Modal onClose={() => {setShowFeedback(false); setFbError(""); setFbSuccess("");}}>
           <h2 className="text-lg font-bold mb-2">Send Feedback (anonymous)</h2>
