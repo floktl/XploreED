@@ -13,6 +13,7 @@ translate_bp = Blueprint("translate", __name__, url_prefix="/api")
 user_bp = Blueprint("user", __name__, url_prefix="/api")
 ai_bp = Blueprint("ai", __name__, url_prefix="/api")
 support_bp = Blueprint("support", __name__, url_prefix="/api/support")
+settings_bp = Blueprint("settings", __name__, url_prefix="/api/settings")
 
 # Register all Blueprints manually here
 registered_blueprints = [
@@ -27,4 +28,5 @@ registered_blueprints = [
     user_bp,
     ai_bp,
     support_bp,
+    settings_bp,
 ]

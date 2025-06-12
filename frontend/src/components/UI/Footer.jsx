@@ -77,7 +77,7 @@ export default function Footer() {
                   <User className={iconStyle} />
                   Profile
                 </button>
-                <button onClick={() => navigate("/profile")} className={buttonBase}>
+                <button onClick={() => navigate("/settings")} className={buttonBase}>
                   <Settings className={iconStyle} />
                   Settings
                 </button>
