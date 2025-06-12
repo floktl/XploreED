@@ -115,6 +115,16 @@ with get_connection() as conn:
     ''')
     print("✅ 'lesson_blocks' table created (if not exists).")
 
+    # ✅ Create support_feedback table
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS support_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            message TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    ''')
+    print("✅ 'support_feedback' table created (if not exists).")
+
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
 columns = [col[1] for col in cursor.fetchall()]
