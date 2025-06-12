@@ -63,7 +63,14 @@ def init_db():
             """CREATE TABLE IF NOT EXISTS vocab_log (
             username TEXT,
             vocab TEXT,
-            translation TEXT
+            translation TEXT,
+            repetitions INTEGER DEFAULT 0,
+            interval_days INTEGER DEFAULT 1,
+            ef REAL DEFAULT 2.5,
+            next_review DATETIME DEFAULT CURRENT_TIMESTAMP,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            context TEXT,
+            exercise TEXT
         );"""
         )
 
@@ -136,11 +143,11 @@ def save_vocab(username, german_word, context=None, exercise=None):
     except Exception:
         english_word = "(error)"
 
+    now = datetime.now().isoformat()
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO vocab_log (username, vocab, translation, context, exercise) VALUES (?, ?, ?, ?, ?)",
-            (username, german_word, english_word, context, exercise),
-        )
+            "INSERT INTO vocab_log (username, vocab, translation, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (username, german_word, english_word, context, exercise, now, now),
 
 
 def translate_to_german(english_sentence, username=None):
