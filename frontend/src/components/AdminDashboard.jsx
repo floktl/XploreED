@@ -19,7 +19,8 @@ import {
   getLessonProgressDetails,
   saveLesson,
   togglePublishLesson,
-  deleteLesson
+  deleteLesson,
+  fetchSupportFeedback
 } from "../api";
 
 export default function AdminDashboard() {
@@ -36,6 +37,7 @@ export default function AdminDashboard() {
   const [lessonProgress, setLessonProgress] = useState({});
   const [showLessonModal, setShowLessonModal] = useState(null);
   const [lessonProgressDetails, setLessonProgressDetails] = useState([]);
+  const [supportFeedback, setSupportFeedback] = useState([]);
   const [formError, setFormError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [fatalError, setFatalError] = useState(false);
@@ -63,15 +65,17 @@ export default function AdminDashboard() {
         }
 
         // ✅ now safe to load data
-        const [results, lessons, progress] = await Promise.all([
+        const [results, lessons, progress, feedback] = await Promise.all([
           getAdminResults(),
           getLessons(),
           getLessonProgressSummary(),
+          fetchSupportFeedback(),
         ]);
 
         setResults(results);
         setLessons(Array.isArray(lessons) ? lessons : []);
         setLessonProgress(progress);
+        setSupportFeedback(Array.isArray(feedback) ? feedback : []);
 
       } catch (err) {
         console.error("❌ Admin verification failed:", err);
@@ -317,6 +321,26 @@ export default function AdminDashboard() {
 </tbody>
 
           </table>
+        </Card>
+
+        <Card className="mt-8">
+          <h2 className="text-xl font-bold mb-4">📮 User Feedback</h2>
+          {supportFeedback.length === 0 ? (
+            <p>No feedback messages.</p>
+          ) : (
+            <ul className="space-y-2 max-h-64 overflow-y-auto">
+              {supportFeedback.map((fb) => (
+                <li key={fb.id} className="border-b pb-1 last:border-none">
+                  <p className="whitespace-pre-wrap">{fb.message}</p>
+                  {fb.created_at && (
+                    <span className="text-xs text-gray-400">
+                      {new Date(fb.created_at).toLocaleString()}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
       </Container>
 
