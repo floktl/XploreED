@@ -4,6 +4,7 @@ import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
+import ErrorPage from "./ErrorPage";
 import Footer from "./UI/Footer";
 import Modal from "./UI/Modal";
 import useAppStore from "../store/useAppStore";
@@ -30,12 +31,14 @@ export default function AdminDashboard() {
   const [newLessonId, setNewLessonId] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newTitle, setNewTitle] = useState("");
+  const [aiEnabled, setAiEnabled] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [lessonProgress, setLessonProgress] = useState({});
   const [showLessonModal, setShowLessonModal] = useState(null);
   const [lessonProgressDetails, setLessonProgressDetails] = useState([]);
   const [formError, setFormError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [fatalError, setFatalError] = useState(false);
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
 
 
@@ -44,37 +47,41 @@ export default function AdminDashboard() {
   const isAdmin = useAppStore((state) => state.isAdmin);
   const isLoading = useAppStore((state) => state.isLoading);
 
+  if (fatalError) {
+    return <ErrorPage />;
+  }
+
   useEffect(() => {
     const verifyAdmin = async () => {
       try {
         const data = await getAdminRole();
         setIsAdmin(data.is_admin);
-  
+
         if (!data.is_admin) {
           navigate("/admin-login");
           return;
         }
-  
+
         // ✅ now safe to load data
         const [results, lessons, progress] = await Promise.all([
           getAdminResults(),
           getLessons(),
           getLessonProgressSummary(),
         ]);
-  
+
         setResults(results);
-        setLessons(lessons);
+        setLessons(Array.isArray(lessons) ? lessons : []);
         setLessonProgress(progress);
-  
+
       } catch (err) {
         console.error("❌ Admin verification failed:", err);
-        navigate("/admin-login");
+        setFatalError(true);
       }
     };
-  
+
     verifyAdmin();
   }, [navigate, setIsAdmin]);
-  
+
   const userSummary = results.reduce((acc, curr) => {
     const { username, timestamp, level } = curr;
     if (!acc[username] || new Date(timestamp) > new Date(acc[username].lastTime || 0)) {
@@ -87,6 +94,7 @@ export default function AdminDashboard() {
     setNewLessonId(lesson.lesson_id);
     setNewTitle(lesson.title);
     setNewContent(lesson.content);
+    setAiEnabled(!!lesson.ai_enabled);
     setIsEditing(true);
     setShowEditorModal(true);
     setFormError("");
@@ -94,12 +102,12 @@ export default function AdminDashboard() {
 
   const handleSaveLesson = async (publish = false) => {
     setFormError("");
-  
+
     if (!newTitle || !newContent || !newLessonId) {
       setFormError("❗ Please fill out all fields.");
       return;
     }
-  
+
     const duplicateId = lessons.find(
       (l) => l.lesson_id === parseInt(newLessonId)
     );
@@ -108,35 +116,36 @@ export default function AdminDashboard() {
         l.title.trim().toLowerCase() === newTitle.trim().toLowerCase() &&
         (!isEditing || l.lesson_id !== parseInt(newLessonId))
     );
-  
+
     if (!isEditing && duplicateId) {
       setFormError(`❌ Lesson ID ${newLessonId} already exists. Please choose a different ID.`);
       return;
     }
-  
+
     if (duplicateTitle) {
       setFormError(`❌ Lesson title "${newTitle}" already exists. Please choose a different title.`);
       return;
     }
-  
+
     try {
       const lessonPayload = {
         lesson_id: parseInt(newLessonId),
         title: newTitle,
         content: newContent,
         published: publish ? 1 : 0,
+        ai_enabled: aiEnabled ? 1 : 0,
       };
-  
+
       const res = await saveLesson(lessonPayload, isEditing);
-  
+
       if (!res.ok) {
         setFormError("❌ Failed to save lesson.");
         return;
       }
-  
+
       const updatedLessons = await getLessons();
-      setLessons(updatedLessons);
-  
+      setLessons(Array.isArray(updatedLessons) ? updatedLessons : []);
+
       // Clear UI state
       setShowEditorModal(false);
       setNewLessonId("");
@@ -144,18 +153,20 @@ export default function AdminDashboard() {
       setNewContent("");
       setFormError("");
       setIsEditing(false);
+      setAiEnabled(false);
     } catch (err) {
       console.error("Error saving lesson:", err);
       setFormError("❌ Could not save lesson.");
+      setFatalError(true);
     }
   };
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
         <Title>📊 Admin Dashboard</Title>
-  
+
         {error && <Alert type="danger">{error}</Alert>}
-  
+
         <Card className="overflow-x-auto mb-10">
           <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
@@ -182,7 +193,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </Card>
-  
+
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">📚 All Lessons</h2>
@@ -192,12 +203,13 @@ export default function AdminDashboard() {
               setNewTitle("");
               setNewContent("");
               setFormError("");
+              setAiEnabled(false);
               setShowEditorModal(true);
             }}>
               ➕ Add Lesson
             </Button>
           </div>
-  
+
           <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
               <tr>
@@ -240,6 +252,7 @@ export default function AdminDashboard() {
                     setShowLessonModal(lesson.lesson_id);
                   } catch (err) {
                     console.error("❌ Failed to fetch progress details", err);
+                    setFatalError(true);
                   }
                 }}
               >
@@ -270,10 +283,11 @@ export default function AdminDashboard() {
                 });
                 if (updated.ok || updated === true) {
                   const refreshed = await getLessons();
-                  setLessons(refreshed);
+                  setLessons(Array.isArray(refreshed) ? refreshed : []);
                 }
               } catch (err) {
                 console.error("❌ Failed to toggle publish status", err);
+                setFatalError(true);
               }
             }}
           >
@@ -290,6 +304,7 @@ export default function AdminDashboard() {
                 }
               } catch (err) {
                 console.error("❌ Failed to delete lesson", err);
+                setFatalError(true);
               }
             }}
           >
@@ -304,14 +319,14 @@ export default function AdminDashboard() {
           </table>
         </Card>
       </Container>
-  
+
       {modalContent && (
         <Modal onClose={() => setModalContent(null)}>
           <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
-          <BlockContentRenderer html={modalContent.content} />
+          <BlockContentRenderer html={modalContent.content} mode="admin-preview" />
         </Modal>
       )}
-  
+
       {showEditorModal && (
         <Modal onClose={() => setShowEditorModal(false)}>
           <h2 className="text-xl font-bold mb-4">
@@ -332,12 +347,26 @@ export default function AdminDashboard() {
             onChange={(e) => setNewTitle(e.target.value)}
             className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
           />
-  
+
+          <label className="flex items-center mb-3 gap-2">
+            <input
+              type="checkbox"
+              checked={aiEnabled}
+              onChange={(e) => setAiEnabled(e.target.checked)}
+            />
+            <span>Include AI Exercises</span>
+          </label>
+
           {formError && (
             <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
           )}
-  
-          <LessonEditor content={newContent} onContentChange={setNewContent} />
+
+          <LessonEditor
+            content={newContent}
+            onContentChange={setNewContent}
+            aiEnabled={aiEnabled}
+            onToggleAI={() => setAiEnabled((v) => !v)}
+          />
           <div className="flex justify-end mt-4 gap-2">
             <Button variant="secondary" onClick={() => handleSaveLesson(false)}>
               💾 Save as Draft
@@ -348,7 +377,7 @@ export default function AdminDashboard() {
           </div>
         </Modal>
       )}
-  
+
       {showLessonModal && (
         <Modal onClose={() => setShowLessonModal(null)}>
           <h2 className="text-xl font-bold mb-4">📘 Lesson {showLessonModal} – User Progress</h2>
@@ -366,9 +395,9 @@ export default function AdminDashboard() {
           )}
         </Modal>
       )}
-  
+
       <Footer />
     </div>
   );
-  
+
 }

@@ -1,4 +1,10 @@
 from utils.imports.imports import *
+import json
+import random
+from pathlib import Path
+
+EXERCISE_FILE = Path(__file__).resolve().parent.parent / "mock_data" / "ai_exercises.json"
+FEEDBACK_FILE = Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
 def get_ai_exercises():
@@ -7,40 +13,40 @@ def get_ai_exercises():
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    # Currently returns mock data for development/testing purposes
-    return jsonify({
-        "lessonId": "mock-ai-lesson-001",
-        "title": "Using 'sein' in the Present Tense",
-        "instructions": "Fill in the correct form of the verb 'sein' in each sentence.",
-        "level": "A1",
-        "type": "gap-fill",
-        "exercises": [
-            {
-                "id": "ex1",
-                "question": "Ich ___ müde.",
-                "options": ["bist", "bin", "ist", "seid"],
-                "correctAnswer": "bin",
-                "explanation": "‘Ich’ uses the form ‘bin’ of the verb ‘sein’ in present tense."
-            },
-            {
-                "id": "ex2",
-                "question": "Du ___ mein Freund.",
-                "options": ["bin", "bist", "ist", "seid"],
-                "correctAnswer": "bist",
-                "explanation": "‘Du’ requires ‘bist’ in the present tense of ‘sein’."
-            },
-            {
-                "id": "ex3",
-                "question": "Wir ___ in Berlin.",
-                "options": ["seid", "bin", "ist", "sind"],
-                "correctAnswer": "sind",
-                "explanation": "‘Wir’ uses ‘sind’ as the plural form of ‘sein’."
-            }
-        ],
-        "vocabHelp": [
-            {"word": "sein", "meaning": "to be"},
-            {"word": "müde", "meaning": "tired"},
-            {"word": "Freund", "meaning": "friend"}
-        ],
-        "feedbackPrompt": "Great work! Review any incorrect answers and try again if needed."
-    })
+    with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
+        base_data = json.load(f)
+
+    # Combine all available exercises and randomly pick five for this round
+    pool = base_data.get("exercises", []) + base_data.get("nextExercises", [])
+    random.shuffle(pool)
+    selected = pool[:5]
+
+    response = {
+        "lessonId": base_data.get("lessonId"),
+        "title": base_data.get("title"),
+        "instructions": base_data.get("instructions"),
+        "level": base_data.get("level"),
+        "exercises": selected,
+        "feedbackPrompt": base_data.get("feedbackPrompt"),
+        "nextInstructions": base_data.get("nextInstructions"),
+        "nextFeedbackPrompt": base_data.get("nextFeedbackPrompt"),
+        "vocabHelp": base_data.get("vocabHelp", []),
+    }
+
+    return jsonify(response)
+
+@ai_bp.route("/ai-feedback", methods=["GET"])
+def get_ai_feedback():
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    try:
+        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+            feedback_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        feedback_data = []
+
+    return jsonify(feedback_data)
+

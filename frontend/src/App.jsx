@@ -16,6 +16,9 @@ import Lessons from "./components/Lessons";
 import ProfileStats from "./components/ProfileStats";
 import LessonView from "./components/LessonView";
 import LessonEdit from "./components/LessonEdit";
+import AIFeedback from "./components/AIFeedback";
+import AIFeedbackView from "./components/AIFeedbackView";
+import ErrorPage from "./components/ErrorPage";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -50,19 +53,21 @@ function AppWrapper() {
 // ✅ Route definitions
 const router = createBrowserRouter(
   [
-    { path: "/", element: <NameInput /> },
-    { path: "/menu", element: <Menu /> },
-    { path: "/translate", element: <Translator /> },
-    { path: "/level-game", element: <LevelGame /> },
-    { path: "/profile", element: <Profile /> },
-    { path: "/vocabulary", element: <Vocabulary /> },
-    { path: "/admin", element: <AdminLogin /> },
-	{ path: "/admin-login", element: <AdminLogin /> },
-    { path: "/admin-panel", element: <AdminDashboard /> },
-    { path: "/lessons", element: <Lessons /> },
-    { path: "/lesson/:lessonId", element: <LessonView /> },
-    { path: "/profile-stats", element: <ProfileStats /> },
-    { path: "/admin/lessons/:id", element: <LessonEdit /> },
+    { path: "/", element: <NameInput />, errorElement: <ErrorPage /> },
+    { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
+    { path: "/translate", element: <Translator />, errorElement: <ErrorPage /> },
+    { path: "/level-game", element: <LevelGame />, errorElement: <ErrorPage /> },
+    { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
+    { path: "/vocabulary", element: <Vocabulary />, errorElement: <ErrorPage /> },
+    { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
+    { path: "/admin-login", element: <AdminLogin />, errorElement: <ErrorPage /> },
+    { path: "/admin-panel", element: <AdminDashboard />, errorElement: <ErrorPage /> },
+    { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
+    { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
+    { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },
+    { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
+    { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
+    { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> }
   ],
   {
     future: {
