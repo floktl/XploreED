@@ -70,10 +70,10 @@ export default function Lessons() {
               return visibleLessons.map((lesson) => (
 
                 <Card key={lesson.id}>
-                  <div className="flex justify-between items-center flex-wrap">
-                    <div className="flex justify-start items-baseline w-2/5 min-w-0 overflow-hidden">
+                  <div className="flex justify-between items-center">
+                    <div className="flex justify-start items-baseline w-1/2 min-w-0 overflow-hidden">
                       <h3 className="font-semibold truncate" title={lesson.title}>{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
-                      <p className={`text-sm mx-2 flex items-center space-x-1 ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
+                      <p className={`text-sm mx-2 flex items-center space-x-1 ${lesson.completed ? "text-green-600" : "text-gray-500"}`}>
                         {lesson.completed ? (
                           <>
                             <span className="text-base">✅</span>
@@ -95,7 +95,7 @@ export default function Lessons() {
                     <Button
                       variant="secondary"
                       type="button"
-                      className="relative overflow-hidden w-3/5"
+                      className="relative overflow-hidden w-1/2"
                       onClick={() => navigate(`/lesson/${lesson.id}`)}
                     >
                       <span className="relative z-10">
