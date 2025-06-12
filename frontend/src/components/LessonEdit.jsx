@@ -61,8 +61,12 @@ export default function LessonEdit() {
             <div>
             <label className="block mb-1 font-medium">Content</label>
             <LessonEditor
-                content={lesson.content}
-                onContentChange={(html) => setLesson({ ...lesson, content: html })}
+              content={lesson.content}
+              onContentChange={(html) => setLesson({ ...lesson, content: html })}
+              aiEnabled={!!lesson.ai_enabled}
+              onToggleAI={() =>
+                setLesson({ ...lesson, ai_enabled: lesson.ai_enabled ? 0 : 1 })
+              }
             />
             </div>
           </div>
@@ -73,6 +77,16 @@ export default function LessonEdit() {
               onChange={(e) => setLesson({ ...lesson, target_user: e.target.value })}
             />
           </div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={!!lesson.ai_enabled}
+              onChange={(e) =>
+                setLesson({ ...lesson, ai_enabled: e.target.checked ? 1 : 0 })
+              }
+            />
+            <span>Include AI Exercises</span>
+          </label>
           <Button type="submit" variant="success">
             💾 Save Changes
           </Button>
