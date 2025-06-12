@@ -4,6 +4,7 @@ import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import { getAiFeedback } from "../api";
 
 export default function AIFeedbackView() {
   const { feedbackId } = useParams();
@@ -20,11 +21,20 @@ export default function AIFeedbackView() {
       return;
     }
 
-    // Fetch feedback from localStorage (mocked)
-    const allFeedback = JSON.parse(localStorage.getItem("aiFeedback") || "[]");
-    const item = allFeedback.find(fb => String(fb.id) === String(feedbackId));
-    if (!item) setError("Could not load feedback.");
-    setFeedback(item);
+    const fetchData = async () => {
+      try {
+        const allFeedback = await getAiFeedback();
+        const item = Array.isArray(allFeedback)
+          ? allFeedback.find((fb) => String(fb.id) === String(feedbackId))
+          : null;
+        if (!item) setError("Could not load feedback.");
+        setFeedback(item);
+      } catch (err) {
+        setError("Could not load feedback.");
+      }
+    };
+
+    fetchData();
   }, [feedbackId, isAdmin, navigate]);
 
   const handleSelect = (exId, option) => {
@@ -53,41 +63,58 @@ export default function AIFeedbackView() {
                 <strong>Instructions:</strong> {feedback.instructions}
               </div>
             )}
-            {feedback.type === "gap-fill" && feedback.exercises && (
+            {feedback.exercises && (
               <div className="mt-4 space-y-6">
-                {feedback.exercises.map((ex, idx) => (
+                {feedback.exercises.map((ex) => (
                   <div key={ex.id} className="mb-4">
-                   <div className="mb-2 font-medium">
-                      {(() => {
-                        const parts = String(ex.question).split("___");
-                        return (
-                          <>
-                            {parts[0]}
-                            {answers[ex.id]
-                              ? <span className="text-blue-600">{answers[ex.id]}</span>
-                              : <span className="text-gray-400">___</span>
-                            }
-                            {parts[1]}
-                          </>
-                        );
-                      })()}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {ex.options.map(opt => (
-                        <Button
-                          key={opt}
-                          variant={answers[ex.id] === opt ? "primary" : "secondary"}
-                          type="button"
-                          onClick={() => handleSelect(ex.id, opt)}
+                    {ex.type === "gap-fill" ? (
+                      <>
+                        <div className="mb-2 font-medium">
+                          {(() => {
+                            const parts = String(ex.question).split("___");
+                            return (
+                              <>
+                                {parts[0]}
+                                {answers[ex.id]
+                                  ? <span className="text-blue-600">{answers[ex.id]}</span>
+                                  : <span className="text-gray-400">___</span>
+                                }
+                                {parts[1]}
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {ex.options.map(opt => (
+                            <Button
+                              key={opt}
+                              variant={answers[ex.id] === opt ? "primary" : "secondary"}
+                              type="button"
+                              onClick={() => handleSelect(ex.id, opt)}
+                              disabled={submitted}
+                            >
+                              {opt}
+                            </Button>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <label className="block mb-2 font-medium">{ex.question}</label>
+                        <input
+                          type="text"
+                          className="border rounded p-2 w-full"
+                          value={answers[ex.id] || ""}
+                          onChange={(e) => handleSelect(ex.id, e.target.value)}
                           disabled={submitted}
-                        >
-                          {opt}
-                        </Button>
-                      ))}
-                    </div>
+                          placeholder="Your answer"
+                        />
+                      </>
+                    )}
                     {submitted && (
                       <div className="mt-2">
-                        {answers[ex.id] === ex.correctAnswer ? (
+                        {String(answers[ex.id]).trim().toLowerCase() ===
+                        String(ex.correctAnswer).trim().toLowerCase() ? (
                           <span className="text-green-600">✅ Correct!</span>
                         ) : (
                           <span className="text-red-600">

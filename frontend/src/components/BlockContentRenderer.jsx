@@ -1,7 +1,8 @@
 // BlockContentRenderer.jsx
 import React from "react";
+import AIExerciseBlock from "./AIExerciseBlock";
 
-export default function BlockContentRenderer({ html, progress = {}, onToggle }) {
+export default function BlockContentRenderer({ html, progress = {}, onToggle, mode = "student" }) {
   if (!html) {
     console.warn("⚠️ No HTML provided to BlockContentRenderer.");
     return <div className="text-sm text-gray-400 italic">No content</div>;
@@ -9,13 +10,17 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
 
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
-  const children = Array.from(tempDiv.childNodes);
   const elements = [];
 
-  children.forEach((node, index) => {
+  const processNode = (node, keyPrefix = "") => {
+    const index = elements.length;
     const isInteractiveBlock =
       node.nodeType === Node.ELEMENT_NODE &&
       node.hasAttribute("data-task-block");
+
+    const isAiExerciseBlock =
+      node.nodeType === Node.ELEMENT_NODE &&
+      node.hasAttribute("data-ai-exercise");
 
     if (isInteractiveBlock) {
       const blockId = node.getAttribute("data-block-id") || `block-${index}`;
@@ -43,6 +48,32 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
           </label>
         </div>
       );
+    } else if (isAiExerciseBlock) {
+      let data = null;
+      try {
+        const encoded = node.getAttribute("data-ai-data") || "";
+        if (encoded) {
+          data = JSON.parse(decodeURIComponent(encoded));
+        }
+      } catch {}
+      const blockId = node.getAttribute("data-block-id") || `ai-${index}`;
+      const isCompleted = progress[blockId] ?? false;
+      elements.push(
+        <AIExerciseBlock
+          key={blockId}
+          data={data}
+          blockId={blockId}
+          completed={isCompleted}
+          onComplete={onToggle ? (() => onToggle(blockId, true)) : undefined}
+          mode={mode}
+        />
+      );
+    } else if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      (node.querySelector("[data-ai-exercise]") ||
+        node.querySelector("[data-task-block]"))
+    ) {
+      Array.from(node.childNodes).forEach((child) => processNode(child, keyPrefix));
     } else {
       elements.push(
         <div
@@ -53,7 +84,9 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
         />
       );
     }
-  });
+  };
+
+  Array.from(tempDiv.childNodes).forEach((node) => processNode(node));
 
   return <div className="prose dark:prose-invert space-y-4 mt-4">{elements}</div>;
 }

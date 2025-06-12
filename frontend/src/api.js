@@ -408,46 +408,6 @@ export const updateLessonBlockProgress = async (lessonId, blockId, completed) =>
 
 export const getAiExercises = async (payload = {}) =>
 {
-    // === MOCKED RESPONSE ===
-    return {
-        lessonId: "mock-ai-lesson-001",
-        title: "Using 'sein' in the Present Tense",
-        instructions: "Fill in the correct form of the verb 'sein' in each sentence.",
-        level: "A1",
-        type: "gap-fill",
-        exercises: [
-            {
-                id: "ex1",
-                question: "Ich ___ müde.",
-                options: ["bist", "bin", "ist", "seid"],
-                correctAnswer: "bin",
-                explanation: "‘Ich’ uses the form ‘bin’ of the verb ‘sein’ in present tense."
-            },
-            {
-                id: "ex2",
-                question: "Du ___ mein Freund.",
-                options: ["bin", "bist", "ist", "seid"],
-                correctAnswer: "bist",
-                explanation: "‘Du’ requires ‘bist’ in the present tense of ‘sein’."
-            },
-            {
-                id: "ex3",
-                question: "Wir ___ in Berlin.",
-                options: ["seid", "bin", "ist", "sind"],
-                correctAnswer: "sind",
-                explanation: "‘Wir’ uses ‘sind’ as the plural form of ‘sein’."
-            }
-        ],
-        vocabHelp: [
-            { word: "sein", meaning: "to be" },
-            { word: "müde", meaning: "tired" },
-            { word: "Freund", meaning: "friend" }
-        ],
-        feedbackPrompt: "Great work! Review any incorrect answers and try again if needed."
-    };
-
-    // === REAL REQUEST ===
-    /*
     const res = await fetch(`${BASE_URL}/api/ai-exercises`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -456,6 +416,13 @@ export const getAiExercises = async (payload = {}) =>
     });
     if (!res.ok) throw new Error("Failed to fetch AI exercises");
     return res.json();
-    */
+};
+
+export const getAiFeedback = async () => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI feedback");
+    return res.json();
 };
 

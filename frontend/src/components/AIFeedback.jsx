@@ -6,7 +6,7 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
-// import your AI feedback API helper here
+import { getAiFeedback } from "../api";
 
 export default function AIFeedback() {
   const [feedback, setFeedback] = useState([]);
@@ -23,14 +23,17 @@ export default function AIFeedback() {
     }
   }, [username, isLoading, isAdmin, navigate]);
 
-  // For demo: read from localStorage
   useEffect(() => {
-    try {
-      const data = JSON.parse(localStorage.getItem("aiFeedback") || "[]");
-      setFeedback(data);
-    } catch (err) {
-      setError("❌ Could not load AI feedback.");
-    }
+    const fetchFeedback = async () => {
+      try {
+        const data = await getAiFeedback();
+        setFeedback(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setError("❌ Could not load AI feedback.");
+      }
+    };
+
+    fetchFeedback();
   }, []);
 
   return (
