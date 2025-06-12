@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
 import BlockContentRenderer from "./BlockContentRenderer";
+import AIExerciseBlock from "./AIExerciseBlock";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import Footer from "./UI/Footer";
+import ErrorPage from "./ErrorPage";
 import {
   getLesson,
   getLessonProgress,
@@ -20,6 +23,8 @@ export default function LessonView() {
   const [percentComplete, setPercentComplete] = useState(0);
   const [canComplete, setCanComplete] = useState(false);
   const [markedComplete, setMarkedComplete] = useState(false);
+  const [showAi, setShowAi] = useState(false);
+  const [fatalError, setFatalError] = useState(false);
   const navigate = useNavigate();
   const isAdmin = useAppStore((state) => state.isAdmin);
   const [numBlocks, setNumBlocks] = useState(0);
@@ -39,6 +44,7 @@ export default function LessonView() {
         }
       } catch (err) {
         console.error("🔥 Exception while loading lesson content:", err);
+        setFatalError(true);
       }
     };
 
@@ -48,6 +54,7 @@ export default function LessonView() {
         setProgress(data);
       } catch (err) {
         console.warn("Could not load progress", err);
+        setFatalError(true);
       }
     };
 
@@ -57,6 +64,7 @@ export default function LessonView() {
         setMarkedComplete(data.completed);
       } catch (err) {
         console.warn("Could not load marked complete state", err);
+        setFatalError(true);
       }
     };
 
@@ -84,11 +92,16 @@ export default function LessonView() {
     } catch (err) {
       console.error("❌ Could not mark lesson complete:", err);
       alert("Failed to mark lesson complete.");
+      setFatalError(true);
     }
   };
 
+  if (fatalError) {
+    return <ErrorPage />;
+  }
+
   return (
-    <div className="min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Container>
         <Title>📘 Lesson {lessonId}</Title>
 
@@ -139,9 +152,21 @@ export default function LessonView() {
                       }));
                     } catch (err) {
                       console.error("❌ Failed to update progress", err);
+                      setFatalError(true);
                     }
                   }}
                 />
+                {entry.ai_enabled && (
+                  <div className="mt-4">
+                    {showAi ? (
+                      <AIExerciseBlock blockId={`lesson-${lessonId}-ai`} />
+                    ) : (
+                      <Button variant="secondary" onClick={() => setShowAi(true)}>
+                        Start AI Exercises
+                      </Button>
+                    )}
+                  </div>
+                )}
               </Card>
             ))}
           </div>
@@ -153,6 +178,7 @@ export default function LessonView() {
           </Button>
         </div>
       </Container>
+      <Footer />
     </div>
   );
 }
