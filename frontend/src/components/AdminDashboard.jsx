@@ -308,7 +308,7 @@ export default function AdminDashboard() {
       {modalContent && (
         <Modal onClose={() => setModalContent(null)}>
           <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
-          <BlockContentRenderer html={modalContent.content} />
+          <BlockContentRenderer html={modalContent.content} mode="admin-preview" />
         </Modal>
       )}
 
