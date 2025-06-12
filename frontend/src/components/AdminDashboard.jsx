@@ -4,6 +4,7 @@ import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
+import ErrorPage from "./ErrorPage";
 import Footer from "./UI/Footer";
 import Modal from "./UI/Modal";
 import useAppStore from "../store/useAppStore";
@@ -37,6 +38,7 @@ export default function AdminDashboard() {
   const [lessonProgressDetails, setLessonProgressDetails] = useState([]);
   const [formError, setFormError] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [fatalError, setFatalError] = useState(false);
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
 
 
@@ -44,6 +46,10 @@ export default function AdminDashboard() {
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
   const isLoading = useAppStore((state) => state.isLoading);
+
+  if (fatalError) {
+    return <ErrorPage />;
+  }
 
   useEffect(() => {
     const verifyAdmin = async () => {
@@ -69,7 +75,7 @@ export default function AdminDashboard() {
 
       } catch (err) {
         console.error("❌ Admin verification failed:", err);
-        navigate("/admin-login");
+        setFatalError(true);
       }
     };
 
@@ -151,6 +157,7 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error("Error saving lesson:", err);
       setFormError("❌ Could not save lesson.");
+      setFatalError(true);
     }
   };
   return (
@@ -245,6 +252,7 @@ export default function AdminDashboard() {
                     setShowLessonModal(lesson.lesson_id);
                   } catch (err) {
                     console.error("❌ Failed to fetch progress details", err);
+                    setFatalError(true);
                   }
                 }}
               >
@@ -279,6 +287,7 @@ export default function AdminDashboard() {
                 }
               } catch (err) {
                 console.error("❌ Failed to toggle publish status", err);
+                setFatalError(true);
               }
             }}
           >
@@ -295,6 +304,7 @@ export default function AdminDashboard() {
                 }
               } catch (err) {
                 console.error("❌ Failed to delete lesson", err);
+                setFatalError(true);
               }
             }}
           >

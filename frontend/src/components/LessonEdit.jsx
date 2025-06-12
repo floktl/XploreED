@@ -4,6 +4,7 @@ import { Container, Title, Input } from "../components/UI/UI";
 import Card from "../components/UI/Card";
 import Button from "../components/UI/Button";
 import Alert from "../components/UI/Alert";
+import ErrorPage from "./ErrorPage";
 import LessonEditor from "../components/LessonEditor";
 import { getLessonById, updateLesson } from "../api";
 
@@ -12,6 +13,7 @@ export default function LessonEdit() {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState(null);
   const [error, setError] = useState("");
+  const [fatalError, setFatalError] = useState(false);
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -20,6 +22,7 @@ export default function LessonEdit() {
         setLesson(data);
       } catch (err) {
         setError("❌ Could not load lesson.");
+        setFatalError(true);
       }
     };
     fetchLesson();
@@ -35,10 +38,11 @@ export default function LessonEdit() {
       navigate("/admin-panel");
     } catch (err) {
       setError("❌ Failed to save changes.");
+      setFatalError(true);
     }
   };
 
-
+  if (fatalError) return <ErrorPage />;
   if (!lesson) return <p className="text-center mt-10">Loading lesson...</p>;
 
   return (

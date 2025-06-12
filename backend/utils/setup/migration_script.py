@@ -9,6 +9,9 @@ env_path = Path(__file__).resolve().parent.parent.parent / "secrets" / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # NOW import anything using DB_FILE
+import sys
+sys.path.append(str(Path(__file__).resolve().parents[2]))
+
 from utils.db_utils import get_connection
 
 with get_connection() as conn:
