@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import useAppStore from "../../store/useAppStore";
 
-export default function Button({ variant = "primary", type = "button", className = "", onClick, children, ...props }) {
+export default function Button({ variant = "primary", type = "button", className = "", onClick, disabled = false, children, ...props }) {
   const darkMode = useAppStore((state) => state.darkMode);
 
   const baseClass =
@@ -26,11 +26,15 @@ export default function Button({ variant = "primary", type = "button", className
 
   }[variant];
 
+  const disabledClass = "opacity-50 cursor-not-allowed pointer-events-none";
+
+  const btnClass = `${baseClass} ${variantClass} ${disabled ? disabledClass : ""} ${className}`;
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`${baseClass} ${variantClass} ${className}`}
+      disabled={disabled}
+      className={btnClass}
       {...props}
     >
       {children}
@@ -45,5 +49,6 @@ Button.propTypes = {
   type: PropTypes.oneOf(["button", "submit", "reset"]),
   className: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };
