@@ -52,6 +52,10 @@ export default function Vocabulary() {
           All words saved from your translations
         </p>
 
+        <div className="mb-4 text-center">
+          <Button onClick={() => navigate("/vocab-trainer")}>🎯 Train Vocabulary</Button>
+        </div>
+
         {vocab.length === 0 ? (
           <Alert type="info">
             🤓 No vocabulary saved yet. Try completing a few translations or levels!
