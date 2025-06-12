@@ -2,7 +2,7 @@
 import React from "react";
 import AIExerciseBlock from "./AIExerciseBlock";
 
-export default function BlockContentRenderer({ html, progress = {}, onToggle }) {
+export default function BlockContentRenderer({ html, progress = {}, onToggle, mode = "student" }) {
   if (!html) {
     console.warn("⚠️ No HTML provided to BlockContentRenderer.");
     return <div className="text-sm text-gray-400 italic">No content</div>;
@@ -52,9 +52,22 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
       let data = null;
       try {
         const encoded = node.getAttribute("data-ai-data") || "";
-        data = JSON.parse(decodeURIComponent(encoded));
+        if (encoded) {
+          data = JSON.parse(decodeURIComponent(encoded));
+        }
       } catch {}
-      elements.push(<AIExerciseBlock key={`ai-${index}`} data={data} />);
+      const blockId = node.getAttribute("data-block-id") || `ai-${index}`;
+      const isCompleted = progress[blockId] ?? false;
+      elements.push(
+        <AIExerciseBlock
+          key={blockId}
+          data={data}
+          blockId={blockId}
+          completed={isCompleted}
+          onComplete={onToggle ? (() => onToggle(blockId, true)) : undefined}
+          mode={mode}
+        />
+      );
     } else if (
       node.nodeType === Node.ELEMENT_NODE &&
       (node.querySelector("[data-ai-exercise]") ||

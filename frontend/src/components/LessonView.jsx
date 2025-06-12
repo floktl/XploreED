@@ -129,6 +129,7 @@ export default function LessonView() {
                 <BlockContentRenderer
                   html={entry.content}
                   progress={progress}
+                  mode="student"
                   onToggle={async (blockId, completed) => {
                     try {
                       await updateLessonBlockProgress(lessonId, blockId, completed);

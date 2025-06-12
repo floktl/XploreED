@@ -1,12 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { getAiExercises } from "../api";
 
-export default function AIExerciseBlock({ data }) {
-  const [loadingInit, setLoadingInit] = useState(!data || !Array.isArray(data.exercises));
+export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student" }) {
+  const [current, setCurrent] = useState(data || null);
+  const [loadingInit, setLoadingInit] = useState(mode === "student" && (!data || !Array.isArray(data.exercises)));
+  const [isComplete, setIsComplete] = useState(completed);
+  const [stage, setStage] = useState(1);
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setIsComplete(completed);
+  }, [completed]);
+
+  useEffect(() => {
+    if (mode !== "student") return;
     if (!current || !Array.isArray(current.exercises)) {
       setLoadingInit(true);
       getAiExercises()
@@ -14,7 +25,22 @@ export default function AIExerciseBlock({ data }) {
         .catch(() => setCurrent(null))
         .finally(() => setLoadingInit(false));
     }
-  }, []);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === "student" && submitted && allCorrect && !isComplete) {
+      setIsComplete(true);
+      onComplete?.();
+    }
+  }, [submitted, allCorrect, isComplete, onComplete, mode]);
+
+  if (mode !== "student") {
+    return (
+      <Card className="text-center py-4">
+        <p>🤖 AI Exercise</p>
+      </Card>
+    );
+  }
 
   if (loadingInit) {
     return (
@@ -23,6 +49,7 @@ export default function AIExerciseBlock({ data }) {
       </Card>
     );
   }
+
   if (!current || !Array.isArray(current.exercises)) {
     return (
       <Card className="bg-red-100 text-red-800">
@@ -30,14 +57,15 @@ export default function AIExerciseBlock({ data }) {
       </Card>
     );
   }
-  const [stage, setStage] = useState(1);
-  const [answers, setAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const exercises = current.exercises || [];
   const instructions = current.instructions;
   const feedbackPrompt = current.feedbackPrompt;
+  const allCorrect = exercises.every(
+    (ex) =>
+      String(answers[ex.id]).trim().toLowerCase() ===
+      String(ex.correctAnswer).trim().toLowerCase()
+  );
 
   const handleSelect = (exId, value) => {
     setAnswers((prev) => ({ ...prev, [exId]: value }));
@@ -46,12 +74,6 @@ export default function AIExerciseBlock({ data }) {
   const handleSubmit = () => {
     setSubmitted(true);
   };
-
-  const allCorrect = exercises.every(
-    (ex) =>
-      String(answers[ex.id]).trim().toLowerCase() ===
-      String(ex.correctAnswer).trim().toLowerCase()
-  );
 
   const handleNext = async () => {
     if (allCorrect) return;
@@ -181,4 +203,3 @@ export default function AIExerciseBlock({ data }) {
     </Card>
   );
 }
-
