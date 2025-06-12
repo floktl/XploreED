@@ -1,9 +1,10 @@
 from utils.imports.imports import *
 
+
 @user_bp.route("/me", methods=["GET", "OPTIONS"])
 def get_me():
     if request.method == "OPTIONS":
-        response = jsonify({'ok': True})
+        response = jsonify({"ok": True})
         response.headers.add("Access-Control-Allow-Credentials", "true")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
         response.headers.add("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -29,21 +30,29 @@ def profile():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom("""
+    rows = fetch_custom(
+        """
         SELECT level, correct, answer, timestamp
         FROM results
         WHERE username = ?
         ORDER BY timestamp DESC
-    """, (user,))
+    """,
+        (user,),
+    )
 
-    results = [
-        {
-            "level": row["level"],
-            "correct": bool(row["correct"]),
-            "answer": row["answer"],
-            "timestamp": row["timestamp"]
-        } for row in rows
-    ] if rows else []
+    results = (
+        [
+            {
+                "level": row["level"],
+                "correct": bool(row["correct"]),
+                "answer": row["answer"],
+                "timestamp": row["timestamp"],
+            }
+            for row in rows
+        ]
+        if rows
+        else []
+    )
 
     return jsonify(results)
 
@@ -56,15 +65,32 @@ def vocabulary():
 
     rows = fetch_custom(
         """
-        SELECT vocab, translation FROM vocab_log WHERE username = ?
+        SELECT rowid as id, vocab, translation, next_review, created_at, context, exercise
+        FROM vocab_log
+        WHERE username = ?
+        ORDER BY datetime(next_review) ASC
         """,
         (user,),
     )
 
-    return jsonify([
-        {"vocab": row["vocab"], "translation": row["translation"]}
-        for row in rows
-    ]) if rows else []
+    return (
+        jsonify(
+            [
+                {
+                    "id": row["id"],
+                    "vocab": row["vocab"],
+                    "translation": row["translation"],
+                    "next_review": row.get("next_review"),
+                    "created_at": row.get("created_at"),
+                    "context": row.get("context"),
+                    "exercise": row.get("exercise"),
+                }
+                for row in rows
+            ]
+        )
+        if rows
+        else []
+    )
 
 
 @user_bp.route("/vocab-train", methods=["GET", "POST"])
@@ -101,7 +127,9 @@ def vocab_train():
 
     ef, reps, interval = sm2(quality, ef, reps, interval)
 
-    next_review = (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat()
+    next_review = (
+        datetime.datetime.now() + datetime.timedelta(days=interval)
+    ).isoformat()
 
     update_row(
         "vocab_log",
@@ -127,6 +155,8 @@ def save_vocab_words():
 
     data = request.get_json() or {}
     words = data.get("words", [])
+    context = data.get("context")
+    exercise = data.get("exercise")
 
     if isinstance(words, str):
         words = split_and_clean(words)
@@ -137,6 +167,6 @@ def save_vocab_words():
         words = collected
 
     for word in words:
-        save_vocab(user, word)
+        save_vocab(user, word, context=context, exercise=exercise)
 
     return jsonify({"saved": len(words)})
