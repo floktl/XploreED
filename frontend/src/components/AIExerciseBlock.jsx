@@ -1,17 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { getAiExercises } from "../api";
 
 export default function AIExerciseBlock({ data }) {
-  if (!data || !Array.isArray(data.exercises)) {
+  const [current, setCurrent] = useState(data);
+  const [loadingInit, setLoadingInit] = useState(!data || !Array.isArray(data.exercises));
+
+  useEffect(() => {
+    if (!current || !Array.isArray(current.exercises)) {
+      setLoadingInit(true);
+      getAiExercises()
+        .then((d) => setCurrent(d))
+        .catch(() => setCurrent(null))
+        .finally(() => setLoadingInit(false));
+    }
+  }, []);
+
+  if (loadingInit) {
     return (
-      <Card className="bg-red-100 text-red-800">
-        <p>Invalid AI exercise data.</p>
+      <Card className="text-center py-4">
+        <p>Loading AI exercises...</p>
       </Card>
     );
   }
-
+  if (!current || !Array.isArray(current.exercises)) {
+    return (
+      <Card className="bg-red-100 text-red-800">
+        <p>Failed to load AI exercise.</p>
+      </Card>
+    );
+  }
   const [current, setCurrent] = useState(data);
   const [stage, setStage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -56,7 +75,9 @@ export default function AIExerciseBlock({ data }) {
 
   return (
     <Card className="space-y-4">
-      {stage === 1 && data.title && <h3 className="text-xl font-semibold">{data.title}</h3>}
+      {stage === 1 && current.title && (
+        <h3 className="text-xl font-semibold">{current.title}</h3>
+      )}
       {instructions && <p>{instructions}</p>}
       <div className="space-y-6">
         {exercises.map((ex) => (
