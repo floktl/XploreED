@@ -2,7 +2,16 @@ import React from "react";
 import PropTypes from "prop-types";
 import useAppStore from "../../store/useAppStore";
 
-export default function Button({ variant = "primary", type = "button", className = "", onClick, children, ...props }) {
+export default function Button({
+  variant = "primary",
+  size = "md",
+  type = "button",
+  className = "",
+  onClick,
+  disabled = false,
+  children,
+  ...props
+}) {
   const darkMode = useAppStore((state) => state.darkMode);
 
   const baseClass =
@@ -18,19 +27,28 @@ export default function Button({ variant = "primary", type = "button", className
       : "text-blue-600 hover:text-blue-500 underline bg-transparent justify-start",
     ghost: darkMode
       ? "bg-transparent text-white hover:bg-gray-800"
-      : "bg-transparent text-gray-700 hover:bg-gray-100", // ✅ added ghost
-    // Add this inside `variantClass`:
+      : "bg-transparent text-gray-700 hover:bg-gray-100", 
     progress: darkMode
       ? "bg-blue-900 text-white relative overflow-hidden"
-      : "bg-blue-100 text-blue-800 relative overflow-hidden",
-
+      : "bg-blue-100 text-blue-800 relative overflow-hidden"
   }[variant];
 
+    const sizeClass = {
+      sm: "px-2 py-1 text-sm w-auto",
+      md: "px-4 py-2 text-base w-full",
+      lg: "px-6 py-3 text-lg w-full",
+      auto: "px-4 py-2 text-base w-auto"
+    }[size];
+
+  const disabledClass = "opacity-50 cursor-not-allowed pointer-events-none";
+
+  const btnClass = `${baseClass} ${variantClass} ${sizeClass} ${disabled ? disabledClass : ""} ${className}`;
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`${baseClass} ${variantClass} ${className}`}
+      disabled={disabled}
+      className={btnClass}
       {...props}
     >
       {children}
@@ -45,5 +63,6 @@ Button.propTypes = {
   type: PropTypes.oneOf(["button", "submit", "reset"]),
   className: PropTypes.string,
   onClick: PropTypes.func,
+  disabled: PropTypes.bool,
   children: PropTypes.node.isRequired,
 };

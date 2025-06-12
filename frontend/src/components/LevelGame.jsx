@@ -168,9 +168,8 @@ export default function LevelGame() {
         )}
 
         <div className="text-center mt-8">
-          <Button variant="link" type="button" onClick={() => navigate("/menu")}>
-            <Menu className="w-4 h-4 mr-2" />
-            Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>

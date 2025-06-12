@@ -24,3 +24,4 @@ DEEPL_API_KEY
 /node_modules/
 frontend/node_modules/
 package-lock.json
+frontend/package-lock.json
