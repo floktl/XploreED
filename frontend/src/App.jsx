@@ -20,6 +20,7 @@ import LessonEdit from "./components/LessonEdit";
 import AIFeedback from "./components/AIFeedback";
 import AIFeedbackView from "./components/AIFeedbackView";
 import ErrorPage from "./components/ErrorPage";
+import Settings from "./components/Settings";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -67,6 +68,7 @@ const router = createBrowserRouter(
     { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
     { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
     { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },
+    { path: "/settings", element: <Settings />, errorElement: <ErrorPage /> },
     { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
     { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
     { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> }

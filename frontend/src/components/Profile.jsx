@@ -19,6 +19,7 @@ export default function Profile() {
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
   const navigate = useNavigate();
   const darkMode = useAppStore((state) => state.darkMode);
+  const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -90,7 +91,11 @@ export default function Profile() {
           </Card>
         )}
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex justify-center gap-4">
+          <Button onClick={() => navigate("/settings")}>⚙️ Settings</Button>
+          <Button variant="secondary" onClick={toggleDarkMode}>
+            {darkMode ? "☀️ Light" : "🌙 Dark"}
+          </Button>
           <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
             🔙 Back to Menu
           </Button>

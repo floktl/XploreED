@@ -64,20 +64,30 @@ export default function Footer() {
   const iconStyle = "w-4 h-4";
 
   return (
-  <footer
-    className={`fixed bottom-0 w-full z-50 border-t ${
-      darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
-    }`}
-  >
-    <div className="max-w-5xl mx-auto flex justify-between items-center px-4 py-3 gap-3">
-      {/* Left block: navigation buttons */}
-      {!isNameInputPage && (
-        <div className="flex flex-wrap gap-3 items-center">
-          {!isAdmin && (
-            <>
-              <button onClick={() => navigate("/profile")} className={buttonBase}>
-                <User className={iconStyle} />
-                Profile
+    <footer
+      className={`fixed bottom-0 w-full z-50 border-t ${
+        darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
+      }`}
+    >
+      <div className="max-w-5xl mx-auto flex flex-wrap justify-center sm:justify-between items-center px-4 py-3 gap-3">
+        {!isNameInputPage && (
+          <div className="flex flex-wrap gap-3 items-center">
+            {!isAdmin && (
+              <>
+                <button onClick={() => navigate("/profile")} className={buttonBase}>
+                  <User className={iconStyle} />
+                  Profile
+                </button>
+                <button onClick={() => navigate("/settings")} className={buttonBase}>
+                  <Settings className={iconStyle} />
+                  Settings
+                </button>
+              </>
+            )}
+            {isAdmin && (
+              <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
+                <PanelTop className={iconStyle} />
+                Admin Panel
               </button>
               <button onClick={() => navigate("/profile")} className={buttonBase}>
                 <Settings className={iconStyle} />
