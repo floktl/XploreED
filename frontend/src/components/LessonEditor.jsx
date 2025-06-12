@@ -106,7 +106,8 @@ export default function LessonEditor({ content, onContentChange }) {
       return "<p>AI exercise placeholder</p>";
     }
 
-    let html = `<div data-ai-exercise="true" class="space-y-4">`;
+    const encoded = encodeURIComponent(JSON.stringify(data));
+    let html = `<div data-ai-exercise="true" data-ai-data="${encoded}" class="space-y-4">`;
     if (data.title) {
       html += `<h3>${data.title}</h3>`;
     }
