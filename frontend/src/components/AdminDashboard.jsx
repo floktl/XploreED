@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [newLessonId, setNewLessonId] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newTitle, setNewTitle] = useState("");
+  const [aiEnabled, setAiEnabled] = useState(false);
   const [lessons, setLessons] = useState([]);
   const [lessonProgress, setLessonProgress] = useState({});
   const [showLessonModal, setShowLessonModal] = useState(null);
@@ -87,6 +88,7 @@ export default function AdminDashboard() {
     setNewLessonId(lesson.lesson_id);
     setNewTitle(lesson.title);
     setNewContent(lesson.content);
+    setAiEnabled(!!lesson.ai_enabled);
     setIsEditing(true);
     setShowEditorModal(true);
     setFormError("");
@@ -125,6 +127,7 @@ export default function AdminDashboard() {
         title: newTitle,
         content: newContent,
         published: publish ? 1 : 0,
+        ai_enabled: aiEnabled ? 1 : 0,
       };
 
       const res = await saveLesson(lessonPayload, isEditing);
@@ -144,6 +147,7 @@ export default function AdminDashboard() {
       setNewContent("");
       setFormError("");
       setIsEditing(false);
+      setAiEnabled(false);
     } catch (err) {
       console.error("Error saving lesson:", err);
       setFormError("❌ Could not save lesson.");
@@ -192,6 +196,7 @@ export default function AdminDashboard() {
               setNewTitle("");
               setNewContent("");
               setFormError("");
+              setAiEnabled(false);
               setShowEditorModal(true);
             }}>
               ➕ Add Lesson
@@ -333,11 +338,25 @@ export default function AdminDashboard() {
             className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
           />
 
+          <label className="flex items-center mb-3 gap-2">
+            <input
+              type="checkbox"
+              checked={aiEnabled}
+              onChange={(e) => setAiEnabled(e.target.checked)}
+            />
+            <span>Include AI Exercises</span>
+          </label>
+
           {formError && (
             <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
           )}
 
-          <LessonEditor content={newContent} onContentChange={setNewContent} />
+          <LessonEditor
+            content={newContent}
+            onContentChange={setNewContent}
+            aiEnabled={aiEnabled}
+            onToggleAI={() => setAiEnabled((v) => !v)}
+          />
           <div className="flex justify-end mt-4 gap-2">
             <Button variant="secondary" onClick={() => handleSaveLesson(false)}>
               💾 Save as Draft
