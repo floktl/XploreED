@@ -31,6 +31,10 @@ def submit_level():
     correct, feedback = evaluate_order(user_answer, LEVELS[level])
     save_result(username, level, correct, user_answer)
 
+    if correct:
+        for word in split_and_clean(LEVELS[level]):
+            save_vocab(username, word)
+
     def ansi_to_html(text):
         return text.replace("\x1b[31m", '<span style="color:red;">')\
                 .replace("\x1b[32m", '<span style="color:green;">')\
