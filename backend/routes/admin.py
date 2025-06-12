@@ -29,7 +29,7 @@ def insert_lesson_content():
 
     lesson_id = data.get("lesson_id")
     title = data.get("title", "")
-    content = data.get("content", "")
+    content = strip_ai_data(data.get("content", ""))
     target_user = data.get("target_user")
     published = bool(data.get("published", 0))
 
@@ -141,8 +141,9 @@ def update_lesson_by_id(lesson_id):
 
     data = request.get_json()
 
-    # 🧠 Inject or reassign block IDs into the HTML
+    # 🧠 Inject or reassign block IDs into the HTML and strip AI data
     content = inject_block_ids(data.get("content"))
+    content = strip_ai_data(content)
 
     # 🧽 Count block_ids
     soup = BeautifulSoup(content, "html.parser")
