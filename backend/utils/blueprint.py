@@ -10,8 +10,9 @@ lesson_progress_bp = Blueprint("lesson_progress", __name__, url_prefix="/api")
 lessons_bp = Blueprint("lessons", __name__, url_prefix="/api")
 profile_bp = Blueprint("profile", __name__, url_prefix="/api")
 translate_bp = Blueprint("translate", __name__, url_prefix="/api")
-user_bp = Blueprint("user", __name__, url_prefix="/api")
-ai_bp = Blueprint("ai", __name__, url_prefix="/api")
+    user_bp = Blueprint("user", __name__, url_prefix="/api")
+    ai_bp = Blueprint("ai", __name__, url_prefix="/api")
+    support_bp = Blueprint("support", __name__, url_prefix="/api/support")
 
 # Register all Blueprints manually here
 registered_blueprints = [
@@ -25,4 +26,5 @@ registered_blueprints = [
     translate_bp,
     user_bp,
     ai_bp,
+    support_bp,
 ]
