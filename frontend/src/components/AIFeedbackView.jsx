@@ -4,6 +4,7 @@ import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import { getAiFeedback } from "../api";
 
 export default function AIFeedbackView() {
   const { feedbackId } = useParams();
@@ -20,11 +21,20 @@ export default function AIFeedbackView() {
       return;
     }
 
-    // Fetch feedback from localStorage (mocked)
-    const allFeedback = JSON.parse(localStorage.getItem("aiFeedback") || "[]");
-    const item = allFeedback.find(fb => String(fb.id) === String(feedbackId));
-    if (!item) setError("Could not load feedback.");
-    setFeedback(item);
+    const fetchData = async () => {
+      try {
+        const allFeedback = await getAiFeedback();
+        const item = Array.isArray(allFeedback)
+          ? allFeedback.find((fb) => String(fb.id) === String(feedbackId))
+          : null;
+        if (!item) setError("Could not load feedback.");
+        setFeedback(item);
+      } catch (err) {
+        setError("Could not load feedback.");
+      }
+    };
+
+    fetchData();
   }, [feedbackId, isAdmin, navigate]);
 
   const handleSelect = (exId, option) => {
