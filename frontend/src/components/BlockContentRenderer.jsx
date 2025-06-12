@@ -1,5 +1,6 @@
 // BlockContentRenderer.jsx
 import React from "react";
+import AIExerciseBlock from "./AIExerciseBlock";
 
 export default function BlockContentRenderer({ html, progress = {}, onToggle }) {
   if (!html) {
@@ -16,6 +17,10 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
     const isInteractiveBlock =
       node.nodeType === Node.ELEMENT_NODE &&
       node.hasAttribute("data-task-block");
+
+    const isAiExerciseBlock =
+      node.nodeType === Node.ELEMENT_NODE &&
+      node.hasAttribute("data-ai-exercise");
 
     if (isInteractiveBlock) {
       const blockId = node.getAttribute("data-block-id") || `block-${index}`;
@@ -43,6 +48,13 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle }) 
           </label>
         </div>
       );
+    } else if (isAiExerciseBlock) {
+      let data = null;
+      try {
+        const encoded = node.getAttribute("data-ai-data") || "";
+        data = JSON.parse(decodeURIComponent(encoded));
+      } catch {}
+      elements.push(<AIExerciseBlock key={`ai-${index}`} data={data} />);
     } else {
       elements.push(
         <div
