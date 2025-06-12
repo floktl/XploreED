@@ -70,15 +70,22 @@ export default function Lessons() {
               return visibleLessons.map((lesson) => (
 
                 <Card key={lesson.id}>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold">{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
-                      <p className={`text-sm ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
-                        {lesson.completed
-                          ? "✅ Completed"
-                          : `📊 ${Math.round(lesson.percent_complete || 0)}% Complete`}
+                  <div className="flex justify-between items-center flex-wrap">
+                    <div className="flex justify-start items-baseline w-2/5 min-w-0 overflow-hidden">
+                      <h3 className="font-semibold truncate" title={lesson.title}>{lesson.title || `Lesson ${lesson.id + 1}`}</h3>
+                      <p className={`text-sm mx-2 flex items-center space-x-1 ${lesson.completed ? "text-green-600" : "text-blue-500"}`}>
+                        {lesson.completed ? (
+                          <>
+                            <span className="text-base">✅</span>
+                            <span>Completed</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-base">📊</span>
+                            <span>{Math.round(lesson.percent_complete || 0)}% Complete</span>
+                          </>
+                        )}
                       </p>
-
                       {lesson.last_attempt && (
                         <p className="text-xs text-gray-400">
                           Last Attempt: {new Date(lesson.last_attempt).toLocaleString()}
@@ -86,9 +93,9 @@ export default function Lessons() {
                       )}
                     </div>
                     <Button
-                      variant="progress"
+                      variant="secondary"
                       type="button"
-                      className="relative overflow-hidden"
+                      className="relative overflow-hidden w-3/5"
                       onClick={() => navigate(`/lesson/${lesson.id}`)}
                     >
                       <span className="relative z-10">
@@ -109,8 +116,8 @@ export default function Lessons() {
         )}
 
         <div className="mt-6 text-center">
-          <Button variant="link" type="button" onClick={() => navigate("/menu")}>
-            ⬅️ Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>
