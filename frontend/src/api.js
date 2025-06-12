@@ -134,6 +134,17 @@ export const submitVocabAnswer = async (id, quality) => {
     return res.json();
 };
 
+export const saveVocabWords = async (words) => {
+    const res = await fetch(`${BASE_URL}/api/save-vocab`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ words }),
+    });
+    if (!res.ok) throw new Error("Failed to save vocab");
+    return res.json();
+};
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
