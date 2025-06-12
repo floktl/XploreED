@@ -6,6 +6,7 @@ import AIExerciseBlock from "./AIExerciseBlock";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import Footer from "./UI/Footer";
 import ErrorPage from "./ErrorPage";
 import {
   getLesson,
@@ -100,7 +101,7 @@ export default function LessonView() {
   }
 
   return (
-    <div className="min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Container>
         <Title>📘 Lesson {lessonId}</Title>
 
@@ -177,6 +178,7 @@ export default function LessonView() {
           </Button>
         </div>
       </Container>
+      <Footer />
     </div>
   );
 }
