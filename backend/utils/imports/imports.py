@@ -32,6 +32,7 @@ from utils.blueprint import (
     user_bp,
     ai_bp,
     support_bp,
+    settings_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -102,4 +103,10 @@ class Imports:
 
     support = [
         "support_bp", "request", "jsonify", "insert_row", "fetch_custom", "is_admin"
+    ]
+
+    settings = [
+        "settings_bp", "request", "jsonify", "session_manager", "os",
+        "generate_password_hash", "check_password_hash", "fetch_one",
+        "update_row", "delete_rows"
     ]

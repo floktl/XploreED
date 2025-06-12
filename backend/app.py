@@ -35,6 +35,7 @@ import routes.translate
 import routes.user
 import routes.ai
 import routes.support
+import routes.settings
 
 from utils.init_app.extensions import limiter
 from utils.blueprint import registered_blueprints
