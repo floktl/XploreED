@@ -77,7 +77,10 @@ with get_connection() as conn:
 
     if "next_review" not in vocab_cols:
         cursor.execute(
-            "ALTER TABLE vocab_log ADD COLUMN next_review DATETIME DEFAULT CURRENT_TIMESTAMP;"
+            "ALTER TABLE vocab_log ADD COLUMN next_review DATETIME;"
+        )
+        cursor.execute(
+            "UPDATE vocab_log SET next_review = CURRENT_TIMESTAMP WHERE next_review IS NULL;"
         )
         print("✅ 'next_review' column added.")
     else:
