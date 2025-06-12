@@ -36,3 +36,12 @@ def inject_block_ids(html):
 
     result = str(soup)
     return result
+
+
+def strip_ai_data(html: str) -> str:
+    """Remove encoded AI exercise payloads before storing."""
+    soup = BeautifulSoup(html, "html.parser")
+    for el in soup.select('[data-ai-exercise]'):
+        if 'data-ai-data' in el.attrs:
+            del el['data-ai-data']
+    return str(soup)
