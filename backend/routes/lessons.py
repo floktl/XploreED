@@ -9,13 +9,16 @@ def get_lessons():
         print("❌ Unauthorized: No user found for session", flush=True)
         return jsonify({"msg": "Unauthorized"}), 401
 
-    lessons = fetch_custom("""
-        SELECT lesson_id, title, created_at, target_user, num_blocks
+    lessons = fetch_custom(
+        """
+        SELECT lesson_id, title, created_at, target_user, num_blocks, ai_enabled
         FROM lesson_content
         WHERE (target_user IS NULL OR target_user = ?)
             AND published = 1
         ORDER BY created_at DESC
-    """, (user,))
+    """,
+        (user,),
+    )
 
     results = []
 
@@ -47,13 +50,16 @@ def get_lessons():
         """, (user, lid))
         latest = latest_res[0]["ts"] if latest_res else None
 
-        results.append({
-            "id": lid,
-            "title": lesson["title"] or f"Lesson {lid + 1}",
-            "completed": completed,
-            "last_attempt": latest,
-            "percent_complete": percent_complete
-        })
+        results.append(
+            {
+                "id": lid,
+                "title": lesson["title"] or f"Lesson {lid + 1}",
+                "completed": completed,
+                "last_attempt": latest,
+                "percent_complete": percent_complete,
+                "ai_enabled": bool(lesson.get("ai_enabled", 0)),
+            }
+        )
 
     return jsonify(results)
 
@@ -66,12 +72,15 @@ def get_lesson_content(lesson_id):
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    row = fetch_custom("""
-        SELECT title, content, created_at, num_blocks FROM lesson_content
+    row = fetch_custom(
+        """
+        SELECT title, content, created_at, num_blocks, ai_enabled FROM lesson_content
         WHERE lesson_id = ?
           AND (target_user IS NULL OR target_user = ?)
           AND published = 1
-    """, (lesson_id, user))
+    """,
+        (lesson_id, user),
+    )
 
     if not row:
         return jsonify({"msg": "Lesson not found"}), 404
@@ -81,6 +90,7 @@ def get_lesson_content(lesson_id):
         "content": row[0]["content"],
         "created_at": row[0]["created_at"],
         "num_blocks": row[0]["num_blocks"],
+        "ai_enabled": bool(row[0].get("ai_enabled", 0)),
     }
 
     return jsonify(data)
