@@ -48,6 +48,44 @@ with get_connection() as conn:
         );
     ''')
 
+    # ✅ Add spaced repetition columns if missing
+    cursor.execute("PRAGMA table_info(vocab_log);")
+    vocab_cols = [col[1] for col in cursor.fetchall()]
+    if "repetitions" not in vocab_cols:
+        cursor.execute(
+            "ALTER TABLE vocab_log ADD COLUMN repetitions INTEGER DEFAULT 0;"
+        )
+        print("✅ 'repetitions' column added.")
+    else:
+        print("ℹ️ 'repetitions' column already exists.")
+
+    if "interval_days" not in vocab_cols:
+        cursor.execute(
+            "ALTER TABLE vocab_log ADD COLUMN interval_days INTEGER DEFAULT 1;"
+        )
+        print("✅ 'interval_days' column added.")
+    else:
+        print("ℹ️ 'interval_days' column already exists.")
+
+    if "ef" not in vocab_cols:
+        cursor.execute(
+            "ALTER TABLE vocab_log ADD COLUMN ef REAL DEFAULT 2.5;"
+        )
+        print("✅ 'ef' column added.")
+    else:
+        print("ℹ️ 'ef' column already exists.")
+
+    if "next_review" not in vocab_cols:
+        cursor.execute(
+            "ALTER TABLE vocab_log ADD COLUMN next_review DATETIME;"
+        )
+        cursor.execute(
+            "UPDATE vocab_log SET next_review = CURRENT_TIMESTAMP WHERE next_review IS NULL;"
+        )
+        print("✅ 'next_review' column added.")
+    else:
+        print("ℹ️ 'next_review' column already exists.")
+
     # ✅ Create lesson_content table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS lesson_content (
