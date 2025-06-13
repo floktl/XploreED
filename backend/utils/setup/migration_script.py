@@ -25,6 +25,9 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 from utils.db_utils import get_connection
+from db_models import create_tables
+
+create_tables()
 
 with get_connection() as conn:
     cursor = conn.cursor()

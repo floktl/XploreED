@@ -2,6 +2,7 @@
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from db_models import create_tables
 from pathlib import Path
 import os
 import sys
@@ -23,7 +24,7 @@ env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # === Now import modules that rely on env vars ===
-from game.german_sentence_game import init_db
+# Import route modules after env vars are loaded
 import routes.auth  # noqa: F401
 import routes.admin
 import routes.debug
@@ -69,10 +70,11 @@ CORS(app, origins=allowed_origin, supports_credentials=True)
 
 # === Init limiter and database ===
 limiter.init_app(app)
+
+# Ensure SQLAlchemy tables exist on startup
 def init_db():
     try:
-        with get_connection() as conn:
-            ...
+        create_tables()
         print("✅ Database initialized successfully")
     except Exception as e:
         print(f"❌ DB init error: {e}")
