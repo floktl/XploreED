@@ -3,6 +3,7 @@
 import os
 import sqlite3
 from pathlib import Path
+from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
 from db_models import engine
 
@@ -29,9 +30,14 @@ if not DB:
 # SQLAlchemy session factory bound to the same engine used by ORM models
 SessionLocal = sessionmaker(bind=engine)
 
+@contextmanager
 def get_connection():
-    """Return a raw DB-API connection using SQLAlchemy's engine."""
-    return engine.raw_connection()
+    """Yield a raw DB-API connection using SQLAlchemy's engine."""
+    conn = engine.raw_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 def get_session():
     """Get an ORM Session for higher-level database operations."""
