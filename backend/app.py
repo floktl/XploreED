@@ -79,6 +79,8 @@ def init_db():
     except Exception as e:
         print(f"❌ DB init error: {e}")
 
+init_db()
+
 # === Debug registered routes ===
 print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
 for name, bp in app.blueprints.items():

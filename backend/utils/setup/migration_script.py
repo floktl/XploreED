@@ -222,28 +222,30 @@ with get_connection() as conn:
     )
     print("✅ 'support_feedback' table created (if not exists).")
 
-# ✅ Add num_blocks column if missing
-cursor.execute("PRAGMA table_info(lesson_content);")
-columns = [col[1] for col in cursor.fetchall()]
-if "num_blocks" not in columns:
-    cursor.execute(
-        "ALTER TABLE lesson_content ADD COLUMN num_blocks INTEGER DEFAULT 0;"
-    )
-    print("✅ 'num_blocks' column added.")
-else:
-    print("ℹ️ 'num_blocks' column already exists.")
-
-# ✅ Add ai_enabled column if missing
-cursor.execute("PRAGMA table_info(lesson_content);")
-columns = [col[1] for col in cursor.fetchall()]
-if "ai_enabled" not in columns:
-    cursor.execute(
-        "ALTER TABLE lesson_content ADD COLUMN ai_enabled INTEGER DEFAULT 0;"
-    )
-    print("✅ 'ai_enabled' column added.")
-else:
-    print("ℹ️ 'ai_enabled' column already exists.")
-
-
-conn.commit()
-print("✅ Migration completed.")
+    # ✅ Add num_blocks column if missing
+    cursor.execute("PRAGMA table_info(lesson_content);")
+    columns = [col[1] for col in cursor.fetchall()]
+    if "num_blocks" not in columns:
+        cursor.execute(
+            "ALTER TABLE lesson_content ADD COLUMN num_blocks INTEGER DEFAULT 0;"
+        )
+        print("✅ 'num_blocks' column added.")
+    else:
+        print("ℹ️ 'num_blocks' column already exists.")
+    
+    # ✅ Add ai_enabled column if missing
+    cursor.execute("PRAGMA table_info(lesson_content);")
+    columns = [col[1] for col in cursor.fetchall()]
+    if "ai_enabled" not in columns:
+        cursor.execute(
+            "ALTER TABLE lesson_content ADD COLUMN ai_enabled INTEGER DEFAULT 0;"
+        )
+        print("✅ 'ai_enabled' column added.")
+    else:
+        print("ℹ️ 'ai_enabled' column already exists.")
+    
+    conn.commit()
+    print("✅ Migration completed.")
+    
+    
+    
