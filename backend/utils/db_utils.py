@@ -30,7 +30,6 @@ if not DB:
 # SQLAlchemy session factory bound to the same engine used by ORM models
 SessionLocal = sessionmaker(bind=engine)
 
-
 @contextmanager
 def get_connection():
     """Yield a raw DB-API connection using SQLAlchemy's engine."""
