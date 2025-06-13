@@ -1,9 +1,9 @@
 # german_sentence_game.py
 from utils.db_utils import get_connection
+from db_models import create_tables
 import random
 import requests
 from colorama import Fore, Style
-import sqlite3
 from datetime import datetime
 import os
 import re
@@ -47,59 +47,8 @@ class User:
 
 
 def init_db():
-    with get_connection() as conn:
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            level INTEGER,
-            correct INTEGER,
-            answer TEXT,
-            timestamp TEXT
-        );"""
-        )
-
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS vocab_log (
-            username TEXT,
-            vocab TEXT,
-            translation TEXT,
-            repetitions INTEGER DEFAULT 0,
-            interval_days INTEGER DEFAULT 1,
-            ef REAL DEFAULT 2.5,
-            next_review DATETIME DEFAULT CURRENT_TIMESTAMP,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            context TEXT,
-            exercise TEXT
-        );"""
-        )
-
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS lesson_content (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            lesson_id INTEGER NOT NULL,
-            title TEXT,
-            content TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            published INTEGER DEFAULT 0
-        );"""
-        )
-
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY,
-            password TEXT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        );"""
-        )
-
-        conn.execute(
-            """CREATE TABLE IF NOT EXISTS lesson_blocks (
-            lesson_id INTEGER NOT NULL,
-            block_id TEXT NOT NULL,
-            PRIMARY KEY (lesson_id, block_id)
-        );"""
-        )
+    """Initialize the database using the SQLAlchemy models."""
+    create_tables()
 
 
 init_db()

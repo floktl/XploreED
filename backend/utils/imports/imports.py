@@ -18,7 +18,19 @@ from utils.lesson_parser import (
     inject_block_ids,
     strip_ai_data,
 )
-from utils.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
+from utils.db_utils import (
+    fetch_all,
+    fetch_one,
+    insert_row,
+    update_row,
+    delete_rows,
+    execute_query,
+    get_connection,
+    fetch_custom,
+    fetch_one_custom,
+    get_session,
+)
+from db_models import LessonProgress, LessonContent, LessonBlock, Result
 from utils.helper import is_admin, get_current_user, user_exists
 from utils.blueprint import (
     admin_bp,
@@ -73,7 +85,8 @@ class Imports:
 
     lesson_progress = [
         "lesson_progress_bp", "request", "jsonify", "datetime",
-        "session_manager", "fetch_all", "fetch_one", "execute_query", "fetch_custom"
+        "session_manager", "fetch_all", "fetch_one", "execute_query", "fetch_custom",
+        "get_session", "LessonProgress", "LessonContent", "LessonBlock", "Result"
     ]
 
     lessons = [
