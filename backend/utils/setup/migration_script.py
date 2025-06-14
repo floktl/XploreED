@@ -233,6 +233,25 @@ with get_connection() as conn:
     )
     print("✅ 'exercise_submissions' table created (if not exists).")
 
+    # ✅ Create topic_memory table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS topic_memory (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            topic TEXT,
+            skill_type TEXT,
+            lesson_content_id TEXT,
+            ease_factor REAL,
+            intervall INTEGER,
+            next_repeat DATETIME,
+            repetitions INTEGER,
+            last_review DATETIME
+        );
+        """
+    )
+    print("✅ 'topic_memory' table created (if not exists).")
+
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
 columns = [col[1] for col in cursor.fetchall()]
