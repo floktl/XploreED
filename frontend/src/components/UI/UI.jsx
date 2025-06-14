@@ -9,10 +9,10 @@ export const Input = ({ className, ...props }) => {
     <input
       {...props}
       className={clsx(
-        "w-full px-4 py-2 rounded focus:outline-none focus:ring-2",
+        "w-full px-4 py-2 rounded border focus:outline-none focus:ring-2",
         darkMode
           ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-blue-500"
-          : "bg-white text-gray-800 border-gray-300 placeholder-gray-500 focus:ring-blue-400",
+          : "bg-white text-gray-800 border-gray-100 placeholder-gray-500 focus:ring-blue-400",
         className
       )}
     />
@@ -41,14 +41,13 @@ export const Container = ({ children, className }) => {
   return (
     <div
       className={clsx(
-        "min-h-screen flex flex-col items-center px-4 py-8",
-        darkMode ? "bg-gray-900" : "bg-gray-100"
+        "min-h-screen flex flex-col items-center px-4 py-8"
       )}
     >
       <div
         className={clsx(
-          "w-full max-w-2xl rounded-xl shadow-lg p-6",
-          darkMode ? "bg-gray-800" : "bg-white",
+          "w-full max-w-2xl p-6",
+          darkMode ? "bg-gray-900" : "bg-white",
           className
         )}
       >
