@@ -11,21 +11,23 @@ FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
 
-
 @ai_bp.route("/ai-exercises", methods=["POST"])
 def get_ai_exercises():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print("Session ID:", session_id, flush=True)
+    print("Username:", username, flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
     with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
         base_data = json.load(f)
 
-    # Combine all available exercises and randomly pick five for this round
     pool = base_data.get("exercises", []) + base_data.get("nextExercises", [])
     random.shuffle(pool)
     selected = pool[:5]
+    print("Selected exercises:", selected, flush=True)
 
     response = {
         "lessonId": base_data.get("lessonId"),
@@ -46,10 +48,13 @@ def get_ai_exercises():
 def submit_ai_exercise(block_id):
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print("Session ID:", session_id, "Username:", username, flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
+    print("Received submission data:", data, flush=True)
     answers = data.get("answers", {})
 
     try:
@@ -61,6 +66,7 @@ def submit_ai_exercise(block_id):
                 "answers": json.dumps(answers),
             },
         )
+        print("Successfully inserted submission", flush=True)
     except Exception as e:
         current_app.logger.error("Failed to save exercise submission: %s", e)
         return jsonify({"msg": "Error"}), 500
@@ -72,6 +78,8 @@ def submit_ai_exercise(block_id):
 def get_ai_feedback():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print("Fetching AI feedback for:", username, flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
@@ -88,6 +96,8 @@ def get_ai_feedback():
 def get_ai_feedback_item(feedback_id):
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
@@ -107,11 +117,13 @@ def get_ai_feedback_item(feedback_id):
 def generate_ai_feedback():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print("Generating feedback for user:", username, flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
-    _ = data.get("answers", {})  # currently unused but reserved for future use
+    print("Feedback generation data (placeholder):", data, flush=True)
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
@@ -127,16 +139,18 @@ def generate_ai_feedback():
 def get_training_exercises():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
+    print("Training request from user:", username, flush=True)
+
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
     answers = data.get("answers", {})
+    print("Training answers received:", answers, flush=True)
 
     with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
         base_data = json.load(f)
 
-    # Save vocab for correctly answered questions
     all_exercises = base_data.get("exercises", []) + base_data.get("nextExercises", [])
     answer_map = {str(k): str(v) for k, v in answers.items()}
     for ex in all_exercises:
@@ -153,10 +167,10 @@ def get_training_exercises():
                         exercise=ex_id,
                     )
 
-    # Provide a random new set of exercises
     pool = list(all_exercises)
     random.shuffle(pool)
     selected = pool[:5]
+    print("Returning new training exercises", flush=True)
 
     response = {
         "lessonId": base_data.get("lessonId"),
