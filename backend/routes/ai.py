@@ -58,6 +58,26 @@ def get_ai_feedback():
     return jsonify(feedback_data)
 
 
+@ai_bp.route("/ai-feedback", methods=["POST"])
+def generate_ai_feedback():
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    _ = data.get("answers", {})  # currently unused but reserved for future use
+
+    try:
+        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+            feedback_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        feedback_data = []
+
+    feedback = random.choice(feedback_data) if feedback_data else {}
+    return jsonify(feedback)
+
+
 @ai_bp.route("/training-exercises", methods=["POST"])
 def get_training_exercises():
     session_id = request.cookies.get("session_id")
