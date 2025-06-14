@@ -40,6 +40,9 @@ import routes.settings
 from utils.init_app.extensions import limiter
 from utils.blueprint import registered_blueprints
 
+# from routes.ai import ai_bp
+# app.register_blueprint(ai_bp, url_prefix="/api")
+
 # === Create and configure Flask app ===
 app = Flask(__name__)
 # === JWT config ===
