@@ -506,12 +506,16 @@ export const generateAiFeedback = async (payload = {}) => {
     return res.json();
 };
 
-export const submitExerciseAnswers = async (blockId, answers = {}) => {
+export const submitExerciseAnswers = async (
+    blockId,
+    answers = {},
+    exerciseBlock = null
+) => {
     const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify({ answers, exercise_block: exerciseBlock }),
     });
     if (!res.ok) throw new Error("Failed to submit answers");
     return res.json();
