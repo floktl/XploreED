@@ -13,7 +13,7 @@ FEEDBACK_FILE = (
 )
 
 
-def process_ai_answers(username: str, block_id: str, answers: dict) -> None:
+def process_ai_answers(username: str, block_id: str, answers: dict) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
     try:
         with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
