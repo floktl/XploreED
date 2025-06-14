@@ -103,6 +103,7 @@ def submit_ai_exercise(block_id):
     # Process answers with SM2 spaced repetition algorithm
     process_ai_answers(username, str(block_id), answers)
 
+    #raw adata, not important for now
     try:
         insert_row(
             "exercise_submissions",
