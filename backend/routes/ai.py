@@ -24,7 +24,41 @@ EXERCISE_TEMPLATE = {
 }
 
 
+@ai_bp.route("/tts", methods=["POST"])
+def tts():
+    data = request.get_json()
+    text = data.get("text", "")
+    voice_id = data.get("voice_id", "JBFqnCBsd6RMkjVDRZzb")
+    model_id = data.get("model_id", "eleven_multilingual_v2")
 
+    api_key = os.getenv("ELEVENLABS_API_KEY")
+    if not api_key:
+        return jsonify({"error": "API key not set"}), 500
+
+    client = ElevenLabs(api_key=api_key)
+    try:
+        audio = client.text_to_speech.convert(
+            voice_id=voice_id,
+            text=text,
+            model_id=model_id,
+            output_format="mp3_44100_128",
+        )
+        return Response(audio, mimetype="audio/mpeg")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def fetch_topic_memory(username: str) -> list:
+    """Retrieve topic memory rows for a user if the table exists."""
+    try:
+        rows = fetch_custom(
+            "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review FROM topic_memory WHERE username = ?",
+            (username,),
+        )
+        return rows if rows else []
+    except Exception:
+        # Table might not exist yet
+        return []
 
 def fetch_topic_memory(username: str) -> list:
     """Retrieve topic memory rows for a user if the table exists."""
