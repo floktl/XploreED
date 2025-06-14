@@ -173,8 +173,8 @@ export default function LessonView() {
         )}
 
         <div className="text-center mt-8">
-          <Button variant="link" type="button" onClick={() => navigate("/lessons")}>
-            ⬅ Back to Lessons
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")}>
+            🔙 Back to Lessons
           </Button>
         </div>
       </Container>
