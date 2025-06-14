@@ -2,8 +2,22 @@
 
 import os
 import sqlite3
-from dotenv import load_dotenv
 from pathlib import Path
+from contextlib import contextmanager
+from sqlalchemy.orm import sessionmaker
+from db_models import engine
+
+try:
+    from dotenv import load_dotenv  # type: ignore
+except Exception:
+    def load_dotenv(dotenv_path=None, **_):  # type: ignore
+        if dotenv_path and os.path.exists(dotenv_path):
+            with open(dotenv_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ.setdefault(key, value)
 
 # Load env just in case (won't override if already loaded)
 env_path = Path(__file__).resolve().parent.parent.parent / "secrets" / ".env"
@@ -13,8 +27,21 @@ DB = os.getenv("DB_FILE")
 if not DB:
     raise RuntimeError("\u274c DB_FILE is not set in .env or environment variables.")
 
+# SQLAlchemy session factory bound to the same engine used by ORM models
+SessionLocal = sessionmaker(bind=engine)
+
+@contextmanager
 def get_connection():
-    return sqlite3.connect(DB)
+    """Yield a raw DB-API connection using SQLAlchemy's engine."""
+    conn = engine.raw_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def get_session():
+    """Get an ORM Session for higher-level database operations."""
+    return SessionLocal()
 
 def execute_query(query, params=(), fetch=False, many=False):
 

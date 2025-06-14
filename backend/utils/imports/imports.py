@@ -18,7 +18,19 @@ from utils.lesson_parser import (
     inject_block_ids,
     strip_ai_data,
 )
-from utils.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
+from utils.db_utils import (
+    fetch_all,
+    fetch_one,
+    insert_row,
+    update_row,
+    delete_rows,
+    execute_query,
+    get_connection,
+    fetch_custom,
+    fetch_one_custom,
+    get_session,
+)
+from db_models import LessonProgress, LessonContent, LessonBlock, Result
 from utils.helper import is_admin, get_current_user, user_exists
 from utils.blueprint import (
     admin_bp,
@@ -32,6 +44,7 @@ from utils.blueprint import (
     user_bp,
     ai_bp,
     support_bp,
+    settings_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -40,7 +53,10 @@ from game.german_sentence_game import (
     save_result,
     translate_to_german,
     get_feedback,
+    save_vocab,
+    split_and_clean,
 )
+from utils.algorithm import sm2
 
 # ✅ Route-specific grouped imports
 class Imports:
@@ -64,12 +80,13 @@ class Imports:
     game = [
         "game_bp", "request", "jsonify", "Limiter", "get_remote_address",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
-        "evaluate_order", "save_result"
+        "evaluate_order", "save_result", "save_vocab", "split_and_clean"
     ]
 
     lesson_progress = [
         "lesson_progress_bp", "request", "jsonify", "datetime",
-        "session_manager", "fetch_all", "fetch_one", "execute_query", "fetch_custom"
+        "session_manager", "fetch_all", "fetch_one", "execute_query", "fetch_custom",
+        "get_session", "LessonProgress", "LessonContent", "LessonBlock", "Result"
     ]
 
     lessons = [
@@ -88,7 +105,9 @@ class Imports:
     ]
 
     user = [
-        "user_bp", "request", "jsonify", "session_manager", "fetch_all", "get_current_user", "fetch_custom"
+        "user_bp", "request", "jsonify", "session_manager", "fetch_all",
+        "get_current_user", "fetch_custom", "save_vocab", "split_and_clean",
+        "sm2"
     ]
 
     ai = [
@@ -97,4 +116,10 @@ class Imports:
 
     support = [
         "support_bp", "request", "jsonify", "insert_row", "fetch_custom", "is_admin"
+    ]
+
+    settings = [
+        "settings_bp", "request", "jsonify", "session_manager", "os",
+        "generate_password_hash", "check_password_hash", "fetch_one",
+        "update_row", "delete_rows"
     ]

@@ -1,9 +1,10 @@
 from utils.imports.imports import *
 
+
 @user_bp.route("/me", methods=["GET", "OPTIONS"])
 def get_me():
     if request.method == "OPTIONS":
-        response = jsonify({'ok': True})
+        response = jsonify({"ok": True})
         response.headers.add("Access-Control-Allow-Credentials", "true")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type")
         response.headers.add("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -29,21 +30,29 @@ def profile():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom("""
+    rows = fetch_custom(
+        """
         SELECT level, correct, answer, timestamp
         FROM results
         WHERE username = ?
         ORDER BY timestamp DESC
-    """, (user,))
+    """,
+        (user,),
+    )
 
-    results = [
-        {
-            "level": row["level"],
-            "correct": bool(row["correct"]),
-            "answer": row["answer"],
-            "timestamp": row["timestamp"]
-        } for row in rows
-    ] if rows else []
+    results = (
+        [
+            {
+                "level": row["level"],
+                "correct": bool(row["correct"]),
+                "answer": row["answer"],
+                "timestamp": row["timestamp"],
+            }
+            for row in rows
+        ]
+        if rows
+        else []
+    )
 
     return jsonify(results)
 
@@ -54,11 +63,110 @@ def vocabulary():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom("""
-        SELECT vocab, translation FROM vocab_log WHERE username = ?
-    """, (user,))
+    rows = fetch_custom(
+        """
+        SELECT rowid as id, vocab, translation, next_review, created_at, context, exercise
+        FROM vocab_log
+        WHERE username = ?
+        ORDER BY datetime(next_review) ASC
+        """,
+        (user,),
+    )
 
-    return jsonify([
-        {"vocab": row["vocab"], "translation": row["translation"]}
-        for row in rows
-    ]) if rows else []
+    return (
+        jsonify(
+            [
+                {
+                    "id": row["id"],
+                    "vocab": row["vocab"],
+                    "translation": row["translation"],
+                    "next_review": row.get("next_review"),
+                    "created_at": row.get("created_at"),
+                    "context": row.get("context"),
+                    "exercise": row.get("exercise"),
+                }
+                for row in rows
+            ]
+        )
+        if rows
+        else []
+    )
+
+
+@user_bp.route("/vocab-train", methods=["GET", "POST"])
+def vocab_train():
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    if request.method == "GET":
+        row = fetch_one_custom(
+            "SELECT rowid as id, vocab, translation FROM vocab_log "
+            "WHERE username = ? AND datetime(next_review) <= datetime('now') "
+            "ORDER BY next_review ASC LIMIT 1",
+            (user,),
+        )
+        return jsonify(row or {})
+
+    data = request.get_json() or {}
+    rowid = data.get("id")
+    quality = int(data.get("quality", 0))
+    if rowid is None:
+        return jsonify({"msg": "Missing id"}), 400
+
+    row = fetch_one_custom(
+        "SELECT ef, repetitions, interval_days FROM vocab_log WHERE rowid = ? AND username = ?",
+        (rowid, user),
+    )
+    if not row:
+        return jsonify({"msg": "Not found"}), 404
+
+    ef = row.get("ef", 2.5)
+    reps = row.get("repetitions", 0)
+    interval = row.get("interval_days", 1)
+
+    ef, reps, interval = sm2(quality, ef, reps, interval)
+
+    next_review = (
+        datetime.datetime.now() + datetime.timedelta(days=interval)
+    ).isoformat()
+
+    update_row(
+        "vocab_log",
+        {
+            "ef": ef,
+            "repetitions": reps,
+            "interval_days": interval,
+            "next_review": next_review,
+        },
+        "rowid = ? AND username = ?",
+        (rowid, user),
+    )
+
+    return jsonify({"msg": "updated"})
+
+
+@user_bp.route("/save-vocab", methods=["POST"])
+def save_vocab_words():
+    """Save a list of German words to the user's vocabulary."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    words = data.get("words", [])
+    context = data.get("context")
+    exercise = data.get("exercise")
+
+    if isinstance(words, str):
+        words = split_and_clean(words)
+    else:
+        collected = []
+        for w in words:
+            collected.extend(split_and_clean(str(w)))
+        words = collected
+
+    for word in words:
+        save_vocab(user, word, context=context, exercise=exercise)
+
+    return jsonify({"saved": len(words)})

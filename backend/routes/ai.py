@@ -4,8 +4,13 @@ import random
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
 
-EXERCISE_FILE = Path(__file__).resolve().parent.parent / "mock_data" / "ai_exercises.json"
-FEEDBACK_FILE = Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
+EXERCISE_FILE = (
+    Path(__file__).resolve().parent.parent / "mock_data" / "ai_exercises.json"
+)
+FEEDBACK_FILE = (
+    Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
+)
+
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
 def get_ai_exercises():
@@ -35,6 +40,7 @@ def get_ai_exercises():
     }
 
     return jsonify(response)
+
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
 def get_ai_feedback():
@@ -75,7 +81,12 @@ def get_training_exercises():
             correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
             if user_ans == correct_ans:
                 for word in split_and_clean(correct_ans):
-                    save_vocab(username, word)
+                    save_vocab(
+                        username,
+                        word,
+                        context=correct_ans,
+                        exercise=ex_id,
+                    )
 
     # Provide a random new set of exercises
     pool = list(all_exercises)
@@ -95,4 +106,3 @@ def get_training_exercises():
     }
 
     return jsonify(response)
-

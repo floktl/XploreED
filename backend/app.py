@@ -2,17 +2,29 @@
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from db_models import create_tables
 from pathlib import Path
 import os
 import sys
 
 # === Load environment variables EARLY ===
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv  # type: ignore
+except Exception:
+    def load_dotenv(dotenv_path=None, **_):  # type: ignore
+        if dotenv_path and os.path.exists(dotenv_path):
+            with open(dotenv_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ.setdefault(key, value)
+
 env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # === Now import modules that rely on env vars ===
-from game.german_sentence_game import init_db
+# Import route modules after env vars are loaded
 import routes.auth  # noqa: F401
 import routes.admin
 import routes.debug
@@ -24,6 +36,7 @@ import routes.translate
 import routes.user
 import routes.ai
 import routes.support
+import routes.settings
 
 from utils.init_app.extensions import limiter
 from utils.blueprint import registered_blueprints
@@ -57,13 +70,16 @@ CORS(app, origins=allowed_origin, supports_credentials=True)
 
 # === Init limiter and database ===
 limiter.init_app(app)
+
+# Ensure SQLAlchemy tables exist on startup
 def init_db():
     try:
-        with get_connection() as conn:
-            ...
+        create_tables()
         print("✅ Database initialized successfully")
     except Exception as e:
         print(f"❌ DB init error: {e}")
+
+init_db()
 
 # === Debug registered routes ===
 print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
