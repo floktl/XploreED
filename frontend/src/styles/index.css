@@ -59,4 +59,28 @@
   .task-content p {
     @apply text-gray-900 dark:text-white font-normal;
   }
+
+  /* Drag and drop styles */
+.word-item {
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-drag: element;
+}
+
+.word-item.dragging {
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.word-item.invisible {
+  visibility: hidden;
+}
+
+/* Mobile touch feedback */
+@media (pointer: coarse) {
+  .word-item:active {
+    background-color: var(--active-color) !important;
+  }
+}
 }
