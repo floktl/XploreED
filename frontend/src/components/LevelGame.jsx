@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, CheckCircle2, ArrowRightCircle, Mic } from "lucide-react";
+import { CheckCircle2, ArrowRightCircle, Mic } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -308,12 +308,6 @@ export default function LevelGame() {
         </div>
 
         <div className="relative mb-6">
-          {/* <Input
-            placeholder="Type or speak your solution here"
-            value={typedAnswer}
-            onChange={(e) => setTypedAnswer(e.target.value)}
-            className="pr-12" // Add padding for mic button
-          /> */}
           <TextToSpeechBox
             value={typedAnswer}
             onChange={e => setTypedAnswer(e.target.value)}
@@ -386,10 +380,9 @@ export default function LevelGame() {
           </Card>
         )}
 
-        <div className="text-center mt-8">
-          <Button variant="link" type="button" onClick={() => navigate("/menu")}>
-            <Menu className="w-4 h-4 mr-2" />
-            Back to Menu
+        <div className="mt-6 text-center">
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>
