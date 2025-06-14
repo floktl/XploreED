@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu, CheckCircle2, ArrowRightCircle } from "lucide-react";
+import { Menu, CheckCircle2, ArrowRightCircle, Mic } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -8,6 +8,7 @@ import Footer from "./UI/Footer";
 import { Container, Title, Input } from "./UI/UI";
 import { fetchLevelData, submitLevelAnswer } from "../api";
 import useAppStore from "../store/useAppStore";
+import axios from "axios";
 
 export default function LevelGame() {
   const [level, setLevel] = useState(0);
@@ -17,11 +18,18 @@ export default function LevelGame() {
   const [feedback, setFeedback] = useState(null);
   const [draggedItem, setDraggedItem] = useState(null);
   const [hoverIndex, setHoverIndex] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [status, setStatus] = useState("");
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
   const containerRef = useRef(null);
 
   const username = useAppStore((state) => state.username);
   const darkMode = useAppStore((state) => state.darkMode);
   const navigate = useNavigate();
+
+  // ElevenLabs API Key - replace with your actual key
+  const ELEVENLABS_API_KEY = "sk_7ee62fb46781e4c799b9e0e0ea2d48e2fce51b431bd3d8a8";
 
   useEffect(() => {
     const loadData = async () => {
@@ -43,6 +51,127 @@ export default function LevelGame() {
   
     loadData();
   }, [level]);
+
+  const startRecording = async () => {
+    try {
+      // Clear previous text when starting new recording
+      setTypedAnswer("");
+      setStatus("Starting microphone...");
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          sampleRate: 16000,
+          channelCount: 1,
+          echoCancellation: true
+        } 
+      });
+
+      setStatus("Recording... Speak in German");
+      audioChunksRef.current = [];
+      setIsRecording(true);
+      
+      mediaRecorderRef.current = new MediaRecorder(stream);
+
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        try {
+          if (audioChunksRef.current.length === 0) {
+            throw new Error("No audio recorded");
+          }
+          
+          const audioBlob = new Blob(audioChunksRef.current);
+          await processAudio(audioBlob);
+        } catch (error) {
+          setStatus(`Error: ${error.message}`);
+        } finally {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      };
+
+      mediaRecorderRef.current.start(100);
+      
+      setTimeout(() => {
+        if (isRecording) {
+          stopRecording();
+        }
+      }, 10000);
+
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+      setIsRecording(false);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setStatus("Processing German audio...");
+    }
+  };
+
+  const processAudio = async (audioBlob) => {
+    try {
+      if (audioBlob.size < 2000) {
+        throw new Error("Audio too short - please speak for at least 2 seconds");
+      }
+
+      const audioFile = new File([audioBlob], 'recording.webm', {
+        type: 'audio/webm',
+        lastModified: Date.now()
+      });
+
+      const formData = new FormData();
+      formData.append('file', audioFile);
+      formData.append('model_id', 'scribe_v1');
+      formData.append('language', 'de'); // Force German language
+      formData.append('punctuation', 'false'); // Disable automatic punctuation
+
+      setStatus("Sending to ElevenLabs...");
+      const response = await axios.post(
+        'https://api.elevenlabs.io/v1/speech-to-text',
+        formData,
+        {
+          headers: {
+            'xi-api-key': ELEVENLABS_API_KEY,
+            'Content-Type': 'multipart/form-data'
+          },
+          timeout: 20000
+        }
+      );
+
+      if (response.data?.text) {
+        // Remove any trailing punctuation (including full stops)
+        let cleanedText = response.data.text.trim();
+        cleanedText = cleanedText.replace(/[.,;!?]+$/, '');
+        
+        setTypedAnswer(cleanedText);
+        setStatus("German transcription complete");
+      } else {
+        throw new Error("No text in response");
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail?.message || 
+                      error.response?.data?.message || 
+                      error.message;
+      setStatus(`API Error: ${errorMsg}`);
+      console.error('API Error:', error.response?.data);
+    }
+  };
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
 
   const handleDragStart = (e, index) => {
     e.dataTransfer.setData("text/plain", index);
@@ -141,8 +270,6 @@ export default function LevelGame() {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
       }`}
       ref={containerRef}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       <Container>
         <Title className="text-3xl font-bold mb-4">
@@ -163,7 +290,6 @@ export default function LevelGame() {
               onDragOver={(e) => handleDragOver(e, i)}
               onDragEnd={handleDragEnd}
               onDrop={(e) => handleDrop(e, i)}
-              onTouchStart={(e) => handleTouchStart(e, i)}
               className={`word-item px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
                 draggedItem === i 
                   ? "bg-blue-600 text-white shadow-lg z-10" 
@@ -180,12 +306,45 @@ export default function LevelGame() {
           ))}
         </div>
 
-        <Input
-          placeholder="Or type your solution here"
-          value={typedAnswer}
-          onChange={(e) => setTypedAnswer(e.target.value)}
-          className="mb-6"
-        />
+        <div className="relative mb-6">
+          <Input
+            placeholder="Type or speak your solution here"
+            value={typedAnswer}
+            onChange={(e) => setTypedAnswer(e.target.value)}
+            className="pr-12" // Add padding for mic button
+          />
+          <button
+            onClick={toggleRecording}
+            disabled={!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE"}
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 ${
+              isRecording 
+                ? "bg-red-500 animate-pulse" 
+                : darkMode 
+                  ? "bg-gray-600 hover:bg-gray-500" 
+                  : "bg-gray-200 hover:bg-gray-300"
+            } transition-all`}
+            title={isRecording ? "Stop recording" : "Start recording (German)"}
+          >
+            <Mic className={`w-5 h-5 ${
+              isRecording ? "text-white" : darkMode ? "text-gray-300" : "text-gray-700"
+            }`} />
+          </button>
+        </div>
+
+        {/* Status and error messages */}
+        {status && (
+          <div className={`text-sm mb-4 text-center ${
+            status.includes("Error") ? "text-red-500" : "text-blue-500"
+          }`}>
+            {status}
+          </div>
+        )}
+
+        {(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE") && (
+          <Alert type="error" className="mb-4">
+            Please configure your ElevenLabs API key to enable speech-to-text
+          </Alert>
+        )}
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
           <Button variant="primary" type="button" onClick={handleSubmit}>
