@@ -10,3 +10,4 @@ colorama
 numpy<2
 beautifulsoup4
 sqlalchemy
+elevenlabs>=0.2.26

@@ -5,6 +5,10 @@ import datetime
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
 from mock_data.script import generate_new_exercises
+from flask import request, Response
+from elevenlabs.client import ElevenLabs
+import os
+
 
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
@@ -121,6 +125,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
                 current_app.logger.error("Failed to insert topic memory: %s", e)
 
     print("AI submission results:", results, flush=True)
+
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
 def get_ai_exercises():
