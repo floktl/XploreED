@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
-import { getAiExercises, saveVocabWords } from "../api";
+import { getAiExercises, saveVocabWords, submitExerciseAnswers } from "../api";
 
 export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
@@ -74,12 +74,13 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
 
   const handleSubmit = async () => {
     setSubmitted(true);
-    if (allCorrect && mode === "student") {
-      try {
+    try {
+      await submitExerciseAnswers(blockId, answers);
+      if (allCorrect && mode === "student") {
         await saveVocabWords(exercises.map((ex) => ex.correctAnswer));
-      } catch (e) {
-        console.error("Failed to save vocab", e);
       }
+    } catch (e) {
+      console.error("Submission failed:", e);
     }
   };
 

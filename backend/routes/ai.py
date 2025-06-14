@@ -42,6 +42,32 @@ def get_ai_exercises():
     return jsonify(response)
 
 
+@ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
+def submit_ai_exercise(block_id):
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    answers = data.get("answers", {})
+
+    try:
+        insert_row(
+            "exercise_submissions",
+            {
+                "username": username,
+                "block_id": str(block_id),
+                "answers": json.dumps(answers),
+            },
+        )
+    except Exception as e:
+        current_app.logger.error("Failed to save exercise submission: %s", e)
+        return jsonify({"msg": "Error"}), 500
+
+    return jsonify({"status": "ok"})
+
+
 @ai_bp.route("/ai-feedback", methods=["GET"])
 def get_ai_feedback():
     session_id = request.cookies.get("session_id")
@@ -56,6 +82,45 @@ def get_ai_feedback():
         feedback_data = []
 
     return jsonify(feedback_data)
+
+
+@ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
+def get_ai_feedback_item(feedback_id):
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    try:
+        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+            feedback_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        feedback_data = []
+
+    item = next((fb for fb in feedback_data if str(fb.get("id")) == str(feedback_id)), None)
+    if not item:
+        return jsonify({"msg": "Feedback not found"}), 404
+    return jsonify(item)
+
+
+@ai_bp.route("/ai-feedback", methods=["POST"])
+def generate_ai_feedback():
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    _ = data.get("answers", {})  # currently unused but reserved for future use
+
+    try:
+        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+            feedback_data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        feedback_data = []
+
+    feedback = random.choice(feedback_data) if feedback_data else {}
+    return jsonify(feedback)
 
 
 @ai_bp.route("/training-exercises", methods=["POST"])

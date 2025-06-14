@@ -215,9 +215,23 @@ with get_connection() as conn:
             message TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-    """
+        """
     )
     print("✅ 'support_feedback' table created (if not exists).")
+
+    # ✅ Create exercise_submissions table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS exercise_submissions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            block_id TEXT NOT NULL,
+            answers TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    print("✅ 'exercise_submissions' table created (if not exists).")
 
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
