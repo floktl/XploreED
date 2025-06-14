@@ -41,14 +41,13 @@ export const Container = ({ children, className }) => {
   return (
     <div
       className={clsx(
-        "min-h-screen flex flex-col items-center px-4 py-8",
-        darkMode ? "bg-gray-900" : "bg-gray-100"
+        "min-h-screen flex flex-col items-center px-4 py-8"
       )}
     >
       <div
         className={clsx(
-          "w-full max-w-2xl rounded-xl shadow-lg p-6",
-          darkMode ? "bg-gray-800" : "bg-white",
+          "w-full max-w-2xl p-6",
+          darkMode ? "bg-gray-900" : "bg-white",
           className
         )}
       >

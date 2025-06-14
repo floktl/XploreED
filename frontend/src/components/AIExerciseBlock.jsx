@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
+import { Input } from "./UI/UI";
 import { getAiExercises, saveVocabWords } from "../api";
 
 export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
@@ -144,15 +145,14 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
               </>
             ) : (
               <>
-                <label className="block mb-2 font-medium">{ex.question}</label>
-                <input
-                  type="text"
-                  className="border rounded p-2 w-full"
-                  value={answers[ex.id] || ""}
-                  onChange={(e) => handleSelect(ex.id, e.target.value)}
-                  disabled={submitted}
-                  placeholder="Your answer"
-                />
+            <label className="block mb-2 font-medium">{ex.question}</label>
+            <Input
+              type="text"
+              value={answers[ex.id] || ""}
+              onChange={(e) => handleSelect(ex.id, e.target.value)}
+              disabled={submitted}
+              placeholder="Your answer"
+            />
               </>
             )}
             {submitted && (

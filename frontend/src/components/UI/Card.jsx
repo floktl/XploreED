@@ -9,8 +9,8 @@ export default function Card({ children, className }) {
   return (
     <div
       className={clsx(
-        "shadow-md rounded-lg p-4",
-        darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800",
+        "shadow-md border  rounded-lg p-4",
+        darkMode ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-800 border-gray-100",
         className
       )}
     >
