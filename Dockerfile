@@ -45,7 +45,8 @@
 
     # Expose port
     EXPOSE 80
-    
+    ENV LC_ALL=C.UTF-8
+    ENV LANG=C.UTF-8
     # Start Gunicorn and Nginx
     CMD sh -c "gunicorn --chdir backend --bind 0.0.0.0:5050 app:app & nginx -g 'daemon off;'"
     
