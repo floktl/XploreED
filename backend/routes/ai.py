@@ -5,12 +5,7 @@ import datetime
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
 from mock_data.script import generate_new_exercises
-from flask import Response
-from elevenlabs import ElevenLabs
 
-EXERCISE_FILE = (
-    Path(__file__).resolve().parent.parent / "mock_data" / "ai_exercises.json"
-)
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
@@ -65,18 +60,27 @@ def fetch_topic_memory(username: str) -> list:
         # Table might not exist yet
         return []
 
-
-
-def process_ai_answers(username: str, block_id: str, answers: dict) -> list:
-    """Evaluate answers and print spaced repetition info using SM2."""
+def fetch_topic_memory(username: str) -> list:
+    """Retrieve topic memory rows for a user if the table exists."""
     try:
-        with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        print("❌ Failed to load exercises for processing", flush=True)
+        rows = fetch_custom(
+            "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review FROM topic_memory WHERE username = ?",
+            (username,),
+        )
+        return rows if rows else []
+    except Exception:
+        # Table might not exist yet
+        return []
+
+
+
+def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
+    """Evaluate answers and print spaced repetition info using SM2."""
+    if not exercise_block:
+        print("❌ Missing exercise block for processing", flush=True)
         return
 
-    all_exercises = data.get("exercises", []) + data.get("nextExercises", [])
+    all_exercises = exercise_block.get("exercises", []) + exercise_block.get("nextExercises", [])
     exercise_map = {str(e.get("id")): e for e in all_exercises}
 
     results = []
@@ -177,9 +181,10 @@ def submit_ai_exercise(block_id):
     data = request.get_json() or {}
     print("Received submission data:", data, flush=True)
     answers = data.get("answers", {})
+    exercise_block = data.get("exercise_block")
 
     # Process answers with SM2 spaced repetition algorithm
-    process_ai_answers(username, str(block_id), answers)
+    process_ai_answers(username, str(block_id), answers, exercise_block)
 
     #raw adata, not important for now
     try:
