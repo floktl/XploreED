@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
-import Card from "./UI/Card";
-import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
-import { getAiFeedback } from "../api";
+import AIExerciseBlock from "./AIExerciseBlock";
+import { getTrainingExercises } from "../api";
 
 export default function AIFeedback() {
-  const [feedback, setFeedback] = useState([]);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const darkMode = useAppStore((state) => state.darkMode);
   const username = useAppStore((state) => state.username);
@@ -23,18 +20,6 @@ export default function AIFeedback() {
     }
   }, [username, isLoading, isAdmin, navigate]);
 
-  useEffect(() => {
-    const fetchFeedback = async () => {
-      try {
-        const data = await getAiFeedback();
-        setFeedback(Array.isArray(data) ? data : []);
-      } catch (err) {
-        setError("❌ Could not load AI feedback.");
-      }
-    };
-
-    fetchFeedback();
-  }, []);
 
   return (
     <div
@@ -49,48 +34,12 @@ export default function AIFeedback() {
             darkMode ? "text-gray-300" : "text-gray-600"
           }`}
         >
-          Here is your personalized feedback from our AI
+          Practice with our AI generated exercises
         </p>
-        {error && <Alert type="danger">{error}</Alert>}
-        {feedback.length === 0 && !error ? (
-          <Alert type="info">
-            No feedback yet. Complete some lessons to get AI feedback!
-          </Alert>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {feedback.map((item, idx) => (
-              <Card key={item.id}>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold">
-                      {item.title || `Feedback #${item.id}`}
-                    </h3>
-                    <p className="text-xs text-gray-400">
-                      {item.created_at &&
-                        `Created: ${new Date(
-                          item.created_at
-                        ).toLocaleString()}`}
-                    </p>
-                  </div>
-                  <Button
-                    variant="progress"
-                    type="button"
-                    onClick={() => navigate(`/ai-feedback/${item.id}`)}
-                  >
-                    View
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+        <AIExerciseBlock fetchExercisesFn={getTrainingExercises} />
         <div className="mt-6 text-center">
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => navigate("/menu")}
-          >
-            ⬅️ Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
           </Button>
         </div>
       </Container>

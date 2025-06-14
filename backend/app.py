@@ -7,7 +7,18 @@ import os
 import sys
 
 # === Load environment variables EARLY ===
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv  # type: ignore
+except Exception:
+    def load_dotenv(dotenv_path=None, **_):  # type: ignore
+        if dotenv_path and os.path.exists(dotenv_path):
+            with open(dotenv_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ.setdefault(key, value)
+
 env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -23,6 +34,8 @@ import routes.profile
 import routes.translate
 import routes.user
 import routes.ai
+import routes.support
+import routes.settings
 
 from utils.init_app.extensions import limiter
 from utils.blueprint import registered_blueprints

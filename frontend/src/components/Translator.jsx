@@ -107,9 +107,9 @@ export default function Translator() {
             <Button variant="primary" className="w-full" onClick={handleTranslate} disabled={loading}>
               🚀 {loading ? "Translating..." : "Get Feedback"}
             </Button>
-            <Button variant="link" className="w-full" onClick={() => navigate("/menu")}>
-              ⬅️ Back to Menu
-            </Button>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
+            🔙 Back to Menu
+          </Button>
           </div>
         </form>
 
