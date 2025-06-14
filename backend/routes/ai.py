@@ -1,6 +1,7 @@
 from utils.imports.imports import *
 import json
 import random
+import datetime
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
 
@@ -10,6 +11,48 @@ EXERCISE_FILE = (
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
+
+
+def process_ai_answers(username: str, block_id: str, answers: dict) -> None:
+    """Evaluate answers and print spaced repetition info using SM2."""
+    try:
+        with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("❌ Failed to load exercises for processing", flush=True)
+        return
+
+    all_exercises = data.get("exercises", []) + data.get("nextExercises", [])
+    exercise_map = {str(e.get("id")): e for e in all_exercises}
+
+    results = []
+    for ex_id, user_ans in answers.items():
+        ex = exercise_map.get(str(ex_id))
+        if not ex:
+            continue
+        correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
+        user_ans = str(user_ans).strip().lower()
+        quality = 5 if user_ans == correct_ans else 2
+        ef, reps, interval = sm2(quality)
+        if user_ans != correct_ans:
+            entry = {
+                "topic_memory": {
+                    "topic": ex.get("question", ""),
+                    "skill_type": ex.get("type", ""),
+                    "lesson_content_id": block_id,
+                    "ease_factor": ef,
+                    "intervall": interval,
+                    "next_repeat": (
+                        datetime.datetime.now()
+                        + datetime.timedelta(days=interval)
+                    ).isoformat(),
+                    "repetitions": reps,
+                    "last_review": datetime.datetime.now().isoformat(),
+                }
+            }
+            results.append(entry)
+
+    print("AI submission results:", results, flush=True)
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
 def get_ai_exercises():
@@ -56,6 +99,9 @@ def submit_ai_exercise(block_id):
     data = request.get_json() or {}
     print("Received submission data:", data, flush=True)
     answers = data.get("answers", {})
+
+    # Process answers with SM2 spaced repetition algorithm
+    process_ai_answers(username, str(block_id), answers)
 
     try:
         insert_row(
