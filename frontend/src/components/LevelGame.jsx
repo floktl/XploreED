@@ -5,6 +5,7 @@ import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
+import TextToSpeechBox from "./TextToSpeechBox";
 import { Container, Title, Input } from "./UI/UI";
 import { fetchLevelData, submitLevelAnswer } from "../api";
 import useAppStore from "../store/useAppStore";
@@ -307,11 +308,17 @@ export default function LevelGame() {
         </div>
 
         <div className="relative mb-6">
-          <Input
+          {/* <Input
             placeholder="Type or speak your solution here"
             value={typedAnswer}
             onChange={(e) => setTypedAnswer(e.target.value)}
             className="pr-12" // Add padding for mic button
+          /> */}
+          <TextToSpeechBox
+            value={typedAnswer}
+            onChange={e => setTypedAnswer(e.target.value)}
+            placeholder="Type or speak your solution here"
+            disabled={isRecording}
           />
           <button
             onClick={toggleRecording}
