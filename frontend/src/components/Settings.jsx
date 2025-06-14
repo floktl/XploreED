@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import useAppStore from "../store/useAppStore";
 import Footer from "./UI/Footer";
+import Modal from "./UI/Modal";
 import { updatePassword, uploadAvatar, deactivateAccount } from "../api";
 
 export default function Settings() {
@@ -17,6 +18,9 @@ export default function Settings() {
   const [language, setLanguage] = useState("en");
   const [image, setImage] = useState(null);
   const navigate = useNavigate();
+  const darkMode = useAppStore((state) => state.darkMode);
+  const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
+  const [showDelete, setShowDelete] = useState(false);
 
   const handlePasswordChange = async () => {
     if (!oldPw || !password || password !== confirmPassword) {
@@ -49,9 +53,19 @@ export default function Settings() {
     }
   };
   
-  const handleDeactivate = async () => {
+  const handleDeleteAll = async () => {
     try {
-      await deactivateAccount();
+      await deactivateAccount(true);
+      useAppStore.getState().resetStore();
+      navigate("/");
+    } catch (err) {
+      setError("❌ " + err.message);
+    }
+  };
+
+  const handleAnonymize = async () => {
+    try {
+      await deactivateAccount(false);
       useAppStore.getState().resetStore();
       navigate("/");
     } catch (err) {
@@ -112,10 +126,18 @@ export default function Settings() {
               </select>
             </div>
 
-            {/* Deactivate Account */}
+            {/* Dark Mode */}
             <div>
-              <Button variant="danger" onClick={handleDeactivate}>
-                ❌ Deactivate Account
+              <label className="block font-semibold mb-1">Theme</label>
+              <Button variant="secondary" onClick={toggleDarkMode}>
+                {darkMode ? "Switch to Light" : "Switch to Dark"}
+              </Button>
+            </div>
+
+            {/* Delete Account */}
+            <div>
+              <Button variant="danger" onClick={() => setShowDelete(true)}>
+                ❌ Delete Account
               </Button>
             </div>
 
@@ -126,6 +148,16 @@ export default function Settings() {
         </Card>
       </Container>
       <Footer />
+      {showDelete && (
+        <Modal onClose={() => setShowDelete(false)}>
+          <h2 className="text-lg font-bold mb-2">Delete Account</h2>
+          <p className="mb-4">Would you like to delete all data or allow it to be anonymized for research?</p>
+          <div className="flex justify-end gap-2">
+            <Button variant="danger" onClick={handleDeleteAll}>Delete All</Button>
+            <Button variant="secondary" onClick={handleAnonymize}>Anonymize</Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

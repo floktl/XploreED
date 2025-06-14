@@ -32,6 +32,7 @@ from utils.blueprint import (
     user_bp,
     ai_bp,
     support_bp,
+    settings_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -40,7 +41,10 @@ from game.german_sentence_game import (
     save_result,
     translate_to_german,
     get_feedback,
+    save_vocab,
+    split_and_clean,
 )
+from utils.algorithm import sm2
 
 # ✅ Route-specific grouped imports
 class Imports:
@@ -64,7 +68,7 @@ class Imports:
     game = [
         "game_bp", "request", "jsonify", "Limiter", "get_remote_address",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
-        "evaluate_order", "save_result"
+        "evaluate_order", "save_result", "save_vocab", "split_and_clean"
     ]
 
     lesson_progress = [
@@ -88,7 +92,9 @@ class Imports:
     ]
 
     user = [
-        "user_bp", "request", "jsonify", "session_manager", "fetch_all", "get_current_user", "fetch_custom"
+        "user_bp", "request", "jsonify", "session_manager", "fetch_all",
+        "get_current_user", "fetch_custom", "save_vocab", "split_and_clean",
+        "sm2"
     ]
 
     ai = [
@@ -97,4 +103,10 @@ class Imports:
 
     support = [
         "support_bp", "request", "jsonify", "insert_row", "fetch_custom", "is_admin"
+    ]
+
+    settings = [
+        "settings_bp", "request", "jsonify", "session_manager", "os",
+        "generate_password_hash", "check_password_hash", "fetch_one",
+        "update_row", "delete_rows"
     ]
