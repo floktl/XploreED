@@ -4,7 +4,7 @@ import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
-import { getAiFeedback } from "../api";
+import { getAiFeedback, generateAiFeedback } from "../api";
 
 export default function AIFeedbackView() {
   const { feedbackId } = useParams();
@@ -41,8 +41,17 @@ export default function AIFeedbackView() {
     setAnswers(prev => ({ ...prev, [exId]: option }));
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    try {
+      const result = await generateAiFeedback({ answers, feedbackId });
+      if (result && result.feedbackPrompt) {
+        setFeedback((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
+      }
+    } catch (err) {
+      console.error("Failed to generate AI feedback", err);
+    } finally {
+      setSubmitted(true);
+    }
   };
 
   return (
