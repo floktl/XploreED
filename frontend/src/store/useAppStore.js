@@ -1,11 +1,13 @@
 // useAppStore.js
 import { create } from "zustand";
 
+const initialDark = JSON.parse(localStorage.getItem("darkMode") || "false");
+
 const useAppStore = create((set) => ({
   username: null,
   isAdmin: false,
   adminPassword: null,
-  darkMode: false,
+  darkMode: initialDark,
   currentLevel: 0,
   isLoading: true,
   
@@ -13,7 +15,16 @@ const useAppStore = create((set) => ({
   setIsAdmin: (isAdmin) => set({ isAdmin }),
   setAdminPassword: (adminPassword) => set({ adminPassword }),
   setCurrentLevel: (level) => set({ currentLevel: level }),
-  toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
+  toggleDarkMode: () =>
+    set((state) => {
+      const val = !state.darkMode;
+      localStorage.setItem("darkMode", JSON.stringify(val));
+      return { darkMode: val };
+    }),
+  setDarkMode: (val) => {
+    localStorage.setItem("darkMode", JSON.stringify(val));
+    set({ darkMode: val });
+  },
   setIsLoading: (val) => set({ isLoading: val }),
 
   resetStore: () => {
