@@ -1,6 +1,7 @@
 import requests
 import os
 import json
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,6 +20,20 @@ Your task is to generate new grammar and vocabulary exercises in JSON format.
 Use provided memory data to tailor difficulty and topic focus.
 Use the example structure to maintain consistency.
 """
+
+def _extract_json(text: str):
+    """Try to parse JSON even if wrapped in code fences."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(0))
+            except json.JSONDecodeError:
+                pass
+    return None
+
 
 def generate_new_exercises(vocabular, topic_memory, example_exercise_block):
     user_prompt = {
@@ -49,13 +64,12 @@ Now create a new exercise block that adapts to the student's vocabulary and gram
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
-        try:
-            parsed_json = json.loads(content)
-            return parsed_json
-        except json.JSONDecodeError:
-            print("Error parsing JSON from model response. Raw output:")
-            print(content)
-            return None
+        parsed = _extract_json(content)
+        if parsed is not None:
+            return parsed
+        print("Error parsing JSON from model response. Raw output:")
+        print(content)
+        return None
     else:
         print(f"API request failed: {response.status_code} - {response.text}")
         return None
