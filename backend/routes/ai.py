@@ -4,25 +4,49 @@ import random
 import datetime
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
+from mock_data.script import generate_new_exercises
 
-EXERCISE_FILE = (
-    Path(__file__).resolve().parent.parent / "mock_data" / "ai_exercises.json"
-)
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
 
+EXERCISE_TEMPLATE = {
+    "lessonId": "dynamic-ai-lesson",
+    "title": "AI Generated Exercises",
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "level": "A1",
+    "exercises": [],
+    "feedbackPrompt": "",
+    "nextInstructions": "",
+    "nextExercises": [],
+    "nextFeedbackPrompt": "",
+    "vocabHelp": [],
+}
 
-def process_ai_answers(username: str, block_id: str, answers: dict) -> list:
-    """Evaluate answers and print spaced repetition info using SM2."""
+
+
+
+def fetch_topic_memory(username: str) -> list:
+    """Retrieve topic memory rows for a user if the table exists."""
     try:
-        with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        print("❌ Failed to load exercises for processing", flush=True)
+        rows = fetch_custom(
+            "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review FROM topic_memory WHERE username = ?",
+            (username,),
+        )
+        return rows if rows else []
+    except Exception:
+        # Table might not exist yet
+        return []
+
+
+
+def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
+    """Evaluate answers and print spaced repetition info using SM2."""
+    if not exercise_block:
+        print("❌ Missing exercise block for processing", flush=True)
         return
 
-    all_exercises = data.get("exercises", []) + data.get("nextExercises", [])
+    all_exercises = exercise_block.get("exercises", []) + exercise_block.get("nextExercises", [])
     exercise_map = {str(e.get("id")): e for e in all_exercises}
 
     results = []
@@ -51,6 +75,16 @@ def process_ai_answers(username: str, block_id: str, answers: dict) -> list:
                 }
             }
             results.append(entry)
+            try:
+                insert_row(
+                    "topic_memory",
+                    {
+                        "username": username,
+                        **entry["topic_memory"],
+                    },
+                )
+            except Exception as e:
+                current_app.logger.error("Failed to insert topic memory: %s", e)
 
     print("AI submission results:", results, flush=True)
 
@@ -64,27 +98,41 @@ def get_ai_exercises():
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
-        base_data = json.load(f)
+    example_block = EXERCISE_TEMPLATE.copy()
 
-    pool = base_data.get("exercises", []) + base_data.get("nextExercises", [])
-    random.shuffle(pool)
-    selected = pool[:5]
-    print("Selected exercises:", selected, flush=True)
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+        "FROM vocab_log WHERE username = ?",
+        (username,),
+    )
 
-    response = {
-        "lessonId": base_data.get("lessonId"),
-        "title": base_data.get("title"),
-        "instructions": base_data.get("instructions"),
-        "level": base_data.get("level"),
-        "exercises": selected,
-        "feedbackPrompt": base_data.get("feedbackPrompt"),
-        "nextInstructions": base_data.get("nextInstructions"),
-        "nextFeedbackPrompt": base_data.get("nextFeedbackPrompt"),
-        "vocabHelp": base_data.get("vocabHelp", []),
-    }
+    vocab_data = [
+        {
+            "type": "string",
+            "word": row["vocab"],
+            "translation": row.get("translation"),
+            "sm2_interval": row.get("interval_days"),
+            "sm2_due_date": row.get("next_review"),
+            "sm2_ease": row.get("ef"),
+            "repetitions": row.get("repetitions"),
+            "sm2_last_review": row.get("created_at"),
+            "quality": 0,
+        }
+        for row in vocab_rows
+    ] if vocab_rows else []
 
-    return jsonify(response)
+    topic_rows = fetch_topic_memory(username)
+    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+
+    ai_block = generate_new_exercises(vocab_data, topic_memory, example_block)
+    if not ai_block:
+        ai_block = example_block.copy()
+
+    exercises = ai_block.get("exercises", [])
+    random.shuffle(exercises)
+    ai_block["exercises"] = exercises[:5]
+
+    return jsonify(ai_block)
 
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
@@ -99,9 +147,10 @@ def submit_ai_exercise(block_id):
     data = request.get_json() or {}
     print("Received submission data:", data, flush=True)
     answers = data.get("answers", {})
+    exercise_block = data.get("exercise_block")
 
     # Process answers with SM2 spaced repetition algorithm
-    process_ai_answers(username, str(block_id), answers)
+    process_ai_answers(username, str(block_id), answers, exercise_block)
 
     #raw adata, not important for now
     try:
@@ -195,40 +244,38 @@ def get_training_exercises():
     answers = data.get("answers", {})
     print("Training answers received:", answers, flush=True)
 
-    with open(EXERCISE_FILE, "r", encoding="utf-8") as f:
-        base_data = json.load(f)
+    example_block = EXERCISE_TEMPLATE.copy()
 
-    all_exercises = base_data.get("exercises", []) + base_data.get("nextExercises", [])
-    answer_map = {str(k): str(v) for k, v in answers.items()}
-    for ex in all_exercises:
-        ex_id = str(ex.get("id"))
-        if ex_id in answer_map:
-            user_ans = answer_map[ex_id].strip().lower()
-            correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
-            if user_ans == correct_ans:
-                for word in split_and_clean(correct_ans):
-                    save_vocab(
-                        username,
-                        word,
-                        context=correct_ans,
-                        exercise=ex_id,
-                    )
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+        "FROM vocab_log WHERE username = ?",
+        (username,),
+    )
+    vocab_data = [
+        {
+            "type": "string",
+            "word": row["vocab"],
+            "translation": row.get("translation"),
+            "sm2_interval": row.get("interval_days"),
+            "sm2_due_date": row.get("next_review"),
+            "sm2_ease": row.get("ef"),
+            "repetitions": row.get("repetitions"),
+            "sm2_last_review": row.get("created_at"),
+            "quality": 0,
+        }
+        for row in vocab_rows
+    ] if vocab_rows else []
 
-    pool = list(all_exercises)
-    random.shuffle(pool)
-    selected = pool[:5]
+    topic_rows = fetch_topic_memory(username)
+    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+
+    ai_block = generate_new_exercises(vocab_data, topic_memory, example_block)
+    if not ai_block:
+        ai_block = example_block.copy()
+
+    exercises = ai_block.get("exercises", [])
+    random.shuffle(exercises)
+    ai_block["exercises"] = exercises[:5]
     print("Returning new training exercises", flush=True)
 
-    response = {
-        "lessonId": base_data.get("lessonId"),
-        "title": base_data.get("title"),
-        "instructions": base_data.get("instructions"),
-        "level": base_data.get("level"),
-        "exercises": selected,
-        "feedbackPrompt": base_data.get("feedbackPrompt"),
-        "nextInstructions": base_data.get("nextInstructions"),
-        "nextFeedbackPrompt": base_data.get("nextFeedbackPrompt"),
-        "vocabHelp": base_data.get("vocabHelp", []),
-    }
-
-    return jsonify(response)
+    return jsonify(ai_block)

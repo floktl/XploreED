@@ -12,6 +12,8 @@ The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` f
 - **lesson_progress** – progress per lesson block for each user
 - **support_feedback** – user feedback messages
 - **exercise_submissions** – submissions of lesson exercises
+- **topic_memory** – spaced repetition data for grammar and topics
+- **ai_exercises** – generated dynamically via Mistral based on stored vocabulary
  
 The schema creation queries can be found around lines 33‑258 of the migration script.
 
