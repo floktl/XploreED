@@ -115,6 +115,36 @@ export async function getVocabulary() {
     return res.json();
 }
 
+export const getNextVocabCard = async () => {
+    const res = await fetch(`${BASE_URL}/api/vocab-train`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch card");
+    return res.json();
+};
+
+export const submitVocabAnswer = async (id, quality) => {
+    const res = await fetch(`${BASE_URL}/api/vocab-train`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id, quality }),
+    });
+    if (!res.ok) throw new Error("Failed to submit answer");
+    return res.json();
+};
+
+export const saveVocabWords = async (words) => {
+    const res = await fetch(`${BASE_URL}/api/save-vocab`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ words }),
+    });
+    if (!res.ok) throw new Error("Failed to save vocab");
+    return res.json();
+};
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
@@ -341,10 +371,12 @@ export async function uploadAvatar(file) {
     return data;
 }
 
-export async function deactivateAccount() {
+export async function deactivateAccount(deleteAll = false) {
     const res = await fetch(`${BASE_URL}/api/settings/deactivate`, {
         method: "POST",
         credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ delete_all: deleteAll })
     });
 
     const data = await res.json();
@@ -415,6 +447,35 @@ export const getAiExercises = async (payload = {}) =>
         body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error("Failed to fetch AI exercises");
+    return res.json();
+};
+
+export const getTrainingExercises = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/training-exercises`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to fetch training exercises");
+    return res.json();
+};
+
+export const sendSupportFeedback = async (message) => {
+    const res = await fetch(`${BASE_URL}/api/support/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+    });
+    if (!res.ok) throw new Error("Failed to send feedback");
+    return res.json();
+};
+
+export const fetchSupportFeedback = async () => {
+    const res = await fetch(`${BASE_URL}/api/support/feedback`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch feedback");
     return res.json();
 };
 
