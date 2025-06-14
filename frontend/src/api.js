@@ -487,3 +487,33 @@ export const getAiFeedback = async () => {
     return res.json();
 };
 
+export const getAiFeedbackItem = async (feedbackId) => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback/${feedbackId}`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI feedback item");
+    return res.json();
+};
+
+export const generateAiFeedback = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to generate AI feedback");
+    return res.json();
+};
+
+export const submitExerciseAnswers = async (blockId, answers = {}) => {
+    const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ answers }),
+    });
+    if (!res.ok) throw new Error("Failed to submit answers");
+    return res.json();
+};
+
