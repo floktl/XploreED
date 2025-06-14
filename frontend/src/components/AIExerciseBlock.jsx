@@ -76,7 +76,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   const handleSubmit = async () => {
     setSubmitted(true);
     try {
-      await submitExerciseAnswers(blockId, answers);
+      await submitExerciseAnswers(blockId, answers, current);
       if (allCorrect && mode === "student") {
         await saveVocabWords(exercises.map((ex) => ex.correctAnswer));
       }
