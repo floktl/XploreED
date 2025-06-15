@@ -207,7 +207,7 @@ def generate_feedback_prompt(
     vocab: list | None = None,
     topic_memory: list | None = None,
 ) -> str:
-    """Return a short paragraph of feedback in German.
+    """Return a short paragraph of feedback in English.
 
     The prompt uses the student's vocabulary list to build short example
     sentences and checks topic memory entries to highlight repeated errors.
@@ -217,10 +217,10 @@ def generate_feedback_prompt(
     mistakes = summary.get("mistakes", [])
 
     if total == 0:
-        return "Keine Antworten wurden eingereicht."
+        return "No answers were submitted."
 
     mistakes_text = "\n".join(
-        f"- Frage: {m['question']} | Deine Antwort: {m['your_answer']} | Richtig: {m['correct_answer']}"
+        f"- Question: {m['question']} | Your answer: {m['your_answer']} | Correct: {m['correct_answer']}"
         for m in mistakes[:3]
     )
 
@@ -233,9 +233,9 @@ def generate_feedback_prompt(
                 continue
             translation = item.get("translation")
             if translation:
-                examples.append(f"Beispiel: {word} – {translation}.")
+                examples.append(f"Example: {word} – {translation}.")
             else:
-                examples.append(f"Beispiel: {word}.")
+                examples.append(f"Example: {word}.")
     examples_text = "\n".join(examples)
 
     # Identify topics that repeatedly appear in the topic memory
@@ -256,26 +256,26 @@ def generate_feedback_prompt(
     user_prompt = {
         "role": "user",
         "content": f"""
-Du bist ein freundlicher Deutschlehrer. Hier sind die Ergebnisse des Schülers:
+You are a friendly German teacher. Here are the student’s results:
 
-Richtige Antworten: {correct} von {total}
+Correct answers: {correct} out of {total}
 
 {mistakes_text}
 
-Falls ein Thema mehrfach falsch beantwortet wurde:
+If a topic was answered incorrectly multiple times:
 {repeated_text}
 
-Nutze diese Vokabeln in kurzen Beispielsätzen:
+Use these vocabulary items in short example sentences:
 {examples_text}
 
-Gib ein kurzes Feedback auf Deutsch (2-3 Sätze). Erwähne, was gut lief und was noch verbessert werden kann. Vorschläge sollen motivierend sein.
+Write a short feedback in English (2–3 sentences). Mention what went well and what could be improved. Suggestions should be encouraging.
 """
     }
 
     payload = {
         "model": "mistral-medium",
         "messages": [
-            {"role": "system", "content": "Du bist ein freundlicher Deutschlehrer, der personalisiertes Feedback gibt."},
+            {"role": "system", "content": "You are a friendly German teacher who provides personalized feedback."},
             user_prompt
         ],
         "temperature": 0.5
@@ -285,5 +285,4 @@ Gib ein kurzes Feedback auf Deutsch (2-3 Sätze). Erwähne, was gut lief und was
     if response.status_code == 200:
         return response.json()["choices"][0]["message"]["content"].strip()
     else:
-        return "Feedback konnte nicht generiert werden."
-
+        return "Could not generate feedback."
