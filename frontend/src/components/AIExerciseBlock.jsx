@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Input } from "./UI/UI";
-import { getAiExercises, saveVocabWords, submitExerciseAnswers } from "../api";
+import {
+  getAiExercises,
+  saveVocabWords,
+  submitExerciseAnswers,
+  generateAiFeedback,
+} from "../api";
 
 export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
@@ -79,6 +84,10 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
       await submitExerciseAnswers(blockId, answers, current);
       if (allCorrect && mode === "student") {
         await saveVocabWords(exercises.map((ex) => ex.correctAnswer));
+      }
+      const result = await generateAiFeedback({ answers, exercise_block: current });
+      if (result && result.feedbackPrompt) {
+        setCurrent((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
       }
     } catch (e) {
       console.error("Submission failed:", e);
