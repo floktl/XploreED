@@ -145,6 +145,14 @@ export const saveVocabWords = async (words) => {
     return res.json();
 };
 
+// ---------- Topic Memory ----------
+export async function getTopicMemory() {
+    const res = await fetch(`${BASE_URL}/api/topic-memory`, {
+        credentials: "include",
+    });
+    return res.json();
+}
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
