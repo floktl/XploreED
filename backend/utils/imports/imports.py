@@ -43,6 +43,7 @@ from game.german_sentence_game import (
     get_feedback,
     save_vocab,
     split_and_clean,
+    generate_ai_sentence,
 )
 from utils.algorithm import sm2
 
