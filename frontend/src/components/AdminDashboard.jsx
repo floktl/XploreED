@@ -382,35 +382,6 @@ export default function AdminDashboard() {
               />
               <span>Include AI Exercises</span>
             </label>
-            <div>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              className="py-1 px-3 text-sm flex-shrink-0"
-              onClick={async () => {
-                try {
-                  const data = await getAiLesson();
-                  if (data && data.html) {
-                    setNewContent(data.html);
-                    return;
-                  }
-                } catch (err) {
-                  console.error("Failed to load AI lesson", err);
-                }
-                const samples = [
-                  "<h2>AI Generated Lesson</h2><p>This is a random AI-generated lesson block. 🚀</p>",
-                  "<ul><li>AI Point 1</li><li>AI Point 2</li></ul>",
-                  "<p><strong>Did you know?</strong> AI can help generate exercises automatically!</p>",
-                  "<blockquote>Learning German is fun with AI! 🤖</blockquote>"
-                ];
-                const randomHtml = samples[Math.floor(Math.random() * samples.length)];
-                setNewContent(randomHtml);
-              }}
-            >
-              🤖 Add AI Lesson
-            </Button>
-            </div>
           </div>
 
           {formError && (
