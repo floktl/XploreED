@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ArrowRightCircle, Mic } from "lucide-react";
+import { CheckCircle2, MoveRight, Mic } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -21,6 +21,7 @@ export default function LevelGame() {
   const [hoverIndex, setHoverIndex] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const containerRef = useRef(null);
@@ -265,6 +266,15 @@ export default function LevelGame() {
     }
   };
 
+  const handleNextWithAnimation = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsAnimating(false);
+      setLevel((prev) => (prev + 1) % 10);
+    }, 400); // 400ms matches the animation duration
+  };
+
+
   return (
     <div
       className={`relative min-h-screen pb-20 ${
@@ -274,117 +284,111 @@ export default function LevelGame() {
     >
       <Container>
         <Title className="text-3xl font-bold mb-4">
-          {username ? `${username}'s` : "Your"} Sentence Order Game
+          {username ? `${username}'s` : "Your"} Sentence Order Game 🧩
         </Title>
 
-        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-          Drag and drop words to reorder the sentence
-        </p>
-
-        <div className="flex flex-wrap justify-center gap-2 mb-4 min-h-[60px] items-center">
-          {Array.isArray(currentOrder) && currentOrder.map((word, i) => (
-            <div
-              key={i}
-              data-index={i}
-              draggable
-              onDragStart={(e) => handleDragStart(e, i)}
-              onDragOver={(e) => handleDragOver(e, i)}
-              onDragEnd={handleDragEnd}
-              onDrop={(e) => handleDrop(e, i)}
-              className={`word-item px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
-                draggedItem === i 
-                  ? "bg-blue-600 text-white shadow-lg z-10" 
-                  : hoverIndex === i 
-                    ? "bg-blue-400 text-white" 
-                    : darkMode 
-                      ? "bg-gray-700 hover:bg-gray-600 text-white" 
-                      : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-              } cursor-ew-resize select-none flex items-center justify-center`}
-              style={{ height: "42px" }}
-            >
-              {word}
-            </div>
-          ))}
-        </div>
-
-        <div className="relative mb-6">
-          <TextToSpeechBox
-            value={typedAnswer}
-            onChange={e => setTypedAnswer(e.target.value)}
-            placeholder="Type or speak your solution here"
-            disabled={isRecording}
-          />
-          <button
-            onClick={toggleRecording}
-            disabled={!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE"}
-            className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 ${
-              isRecording 
-                ? "bg-red-500 animate-pulse" 
-                : darkMode 
-                  ? "bg-gray-600 hover:bg-gray-500" 
-                  : "bg-gray-200 hover:bg-gray-300"
-            } transition-all`}
-            title={isRecording ? "Stop recording" : "Start recording (German)"}
+        <div className="flex justify-center">
+          <Card
+            className={`
+              w-full max-w-xl mx-auto mb-8 p-6 transition-transform duration-400
+              ${isAnimating ? "animate-slide-out" : "animate-slide-in"}
+              shadow-lg
+            `}
+            style={{ minHeight: 320 }}
           >
-            <Mic className={`w-5 h-5 ${
-              isRecording ? "text-white" : darkMode ? "text-gray-300" : "text-gray-700"
-            }`} />
-          </button>
-        </div>
+            <p className={`mb-4 text-center text-lg ${darkMode ? "text-gray-300" : "text-gray-700"}`}>
+              Drag and drop words to reorder the sentence
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 mb-4 min-h-[60px] items-center">
+              {Array.isArray(currentOrder) && currentOrder.map((word, i) => (
+                <div
+                  key={i}
+                  data-index={i}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, i)}
+                  onDragOver={(e) => handleDragOver(e, i)}
+                  onDragEnd={handleDragEnd}
+                  onDrop={(e) => handleDrop(e, i)}
+                  className={`word-item px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
+                    draggedItem === i 
+                      ? "bg-blue-600 text-white shadow-lg z-10" 
+                      : hoverIndex === i 
+                        ? "bg-blue-400 text-white" 
+                        : darkMode 
+                          ? "bg-gray-700 hover:bg-gray-600 text-white" 
+                          : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                  } cursor-ew-resize select-none flex items-center justify-center`}
+                  style={{ height: "42px" }}
+                >
+                  {word}
+                </div>
+              ))}
+            </div>
+            <div className="relative mb-6">
+              <TextToSpeechBox
+                value={typedAnswer}
+                onChange={e => setTypedAnswer(e.target.value)}
+                placeholder="Type or speak your solution here"
+                disabled={isRecording}
+              />
+              <button
+                onClick={toggleRecording}
+                disabled={!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE"}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 ${
+                  isRecording 
+                    ? "bg-red-500 animate-pulse" 
+                    : darkMode 
+                      ? "bg-gray-600 hover:bg-gray-500" 
+                      : "bg-gray-200 hover:bg-gray-300"
+                } transition-all`}
+                title={isRecording ? "Stop recording" : "Start recording (German)"}
+              >
+                <Mic className={`w-5 h-5 ${
+                  isRecording ? "text-white" : darkMode ? "text-gray-300" : "text-gray-700"
+                }`} />
+              </button>
+            </div>
 
         {/* Status and error messages */}
-        {status && (
-          <div className={`text-sm mb-4 text-center ${
-            status.includes("Error") ? "text-red-500" : "text-blue-500"
-          }`}>
-            {status}
-          </div>
-        )}
+          {status && (
+              <div className={`text-sm mb-4 text-center ${
+                status.includes("Error") ? "text-red-500" : "text-blue-500"
+              }`}>
+                {status}
+              </div>
+            )}
+          {feedback && (
+            <div className="mt-6 max-w-xl mx-auto feedback-fade-in">
+                <strong>Feedback:</strong>
+                <Alert type={feedback.correct ? "success" : "error"} className="mt-1">
+                  <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{
+                      __html: feedback.feedback || "No feedback",
+                    }}
+                  />
+                </Alert>
+              </div>
+          )}
+          </Card>
+        </div>
 
-        {(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE") && (
-          <Alert type="error" className="mb-4">
-            Please configure your ElevenLabs API key to enable speech-to-text
-          </Alert>
-        )}
-
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <Button variant="primary" type="button" onClick={handleSubmit}>
-            <CheckCircle2 className="w-4 h-4 mr-2" />
+        <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-4 justify-end">
+          <Button variant="primary" type="button" onClick={handleSubmit} className="w-full sm:w-auto">
             Submit
           </Button>
-          <Button variant="success" type="button" onClick={() => setLevel((prev) => (prev + 1) % 10)}>
-            <ArrowRightCircle className="w-4 h-4 mr-2" />
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={handleNextWithAnimation}
+            disabled={isAnimating}
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
             Next
+            <MoveRight />
           </Button>
         </div>
 
-        {feedback && (
-          <Card className="mt-6 max-w-xl mx-auto">
-            <p className={`text-lg font-semibold mb-2 ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
-              Correct: <span className="font-normal">{feedback.correct ? "Yes" : "No"}</span>
-            </p>
-            <div className="mb-2">
-              <strong>Feedback:</strong>
-              <Alert type={feedback.correct ? "success" : "error"} className="mt-1">
-                <div
-                  className="text-sm"
-                  dangerouslySetInnerHTML={{
-                    __html: feedback.feedback || "No feedback",
-                  }}
-                />
-              </Alert>
-            </div>
-            <p className={`mt-2 text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-              <strong>Correct Sentence:</strong> {feedback.correct_sentence}
-            </p>
-          </Card>
-        )}
-
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
-          </Button>
-        </div>
       </Container>
 
       <Footer />
