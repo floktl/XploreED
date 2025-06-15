@@ -13,7 +13,9 @@ def level_game():
 
     data = request.get_json()
     level = int(data.get("level", 0))
-    sentence = LEVELS[level]
+    sentence = generate_ai_sentence(username)
+    if not sentence:
+        sentence = LEVELS[level % len(LEVELS)]
     scrambled = get_scrambled_sentence(sentence)
     return jsonify({"level": level, "sentence": sentence, "scrambled": scrambled})
 
@@ -28,17 +30,18 @@ def submit_level():
 
     data = request.get_json()
     level = int(data.get("level", 0))
+    sentence = data.get("sentence") or LEVELS[level % len(LEVELS)]
     user_answer = data.get("answer", "").strip()
 
-    correct, feedback = evaluate_order(user_answer, LEVELS[level])
+    correct, feedback = evaluate_order(user_answer, sentence)
     save_result(username, level, correct, user_answer)
 
     if correct:
-        for word in split_and_clean(LEVELS[level]):
+        for word in split_and_clean(sentence):
             save_vocab(
                 username,
                 word,
-                context=LEVELS[level],
+                context=sentence,
                 exercise=f"game_level_{level}",
             )
 
@@ -55,7 +58,7 @@ def submit_level():
             "correct": correct,
             "feedback": ansi_to_html(feedback),
             "correct_sentence": (
-                LEVELS[level] if os.getenv("FLASK_ENV") != "production" else None
+                sentence if os.getenv("FLASK_ENV") != "production" else None
             ),
         }
     )

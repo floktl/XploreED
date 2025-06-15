@@ -68,7 +68,8 @@ class Imports:
     game = [
         "game_bp", "request", "jsonify", "Limiter", "get_remote_address",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
-        "evaluate_order", "save_result", "save_vocab", "split_and_clean"
+        "evaluate_order", "save_result", "save_vocab", "split_and_clean",
+        "generate_ai_sentence"
     ]
 
     lesson_progress = [
