@@ -385,4 +385,4 @@ def create_ai_lesson():
     else:
         html = "<h2>AI Review Lesson</h2><p>No topic memory found.</p>"
 
-    return jsonify({"html": html})
+    return Response(html, mimetype="text/html")

@@ -526,6 +526,6 @@ export const getAiLesson = async () => {
         credentials: "include",
     });
     if (!res.ok) throw new Error("Failed to fetch AI lesson");
-    return res.json();
+    return res.text();
 };
 
