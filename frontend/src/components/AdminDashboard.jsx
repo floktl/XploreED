@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import { Input } from "./UI/UI";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import ErrorPage from "./ErrorPage";
@@ -357,21 +358,21 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold mb-4">
             {isEditing ? "✏️ Edit Lesson" : "📝 Create New Lesson"}
           </h2>
-          <input
-            type="number"
-            placeholder="Lesson ID"
-            value={newLessonId}
-            disabled={isEditing}
-            onChange={(e) => setNewLessonId(e.target.value)}
-            className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
-          />
-          <input
-            type="text"
-            placeholder="Lesson Title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="w-full mb-3 px-3 py-2 rounded border dark:bg-gray-800 dark:text-white"
-          />
+        <Input
+          type="number"
+          placeholder="Lesson ID"
+          value={newLessonId}
+          disabled={isEditing}
+          onChange={(e) => setNewLessonId(e.target.value)}
+          className="mb-3"
+        />
+        <Input
+          type="text"
+          placeholder="Lesson Title"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          className="mb-3"
+        />
 
           <div className="flex items-center mb-3 gap-2">
             <label className="flex items-center gap-2 m-0 whitespace-nowrap">
