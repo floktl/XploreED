@@ -175,6 +175,7 @@ export async function fetchLevelData(level) {
         const data = await res.json();
         return {
             scrambled: Array.isArray(data.scrambled) ? data.scrambled : [],
+            sentence: data.sentence || "",
         };
     } catch (err) {
         console.error("[API] Failed to fetch level data:", err);
@@ -192,12 +193,12 @@ export async function submitLevel(payload) {
     return res.json();
 }
 
-export async function submitLevelAnswer(level, answer) {
+export async function submitLevelAnswer(level, answer, sentence = "") {
     const res = await fetch(`${BASE_URL}/api/level/submit`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level, answer }),
+        body: JSON.stringify({ level, answer, sentence }),
     });
 
     return await res.json();
