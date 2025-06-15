@@ -66,7 +66,7 @@ class Imports:
     ]
 
     game = [
-        "game_bp", "request", "jsonify", "Limiter", "get_remote_address",
+        "game_bp", "request", "jsonify",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
         "evaluate_order", "save_result", "save_vocab", "split_and_clean",
         "generate_ai_sentence"

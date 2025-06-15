@@ -1,7 +1,5 @@
 from utils.imports.imports import *
 
-limiter = Limiter(get_remote_address)
-
 
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")
