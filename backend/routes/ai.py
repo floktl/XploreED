@@ -361,3 +361,28 @@ def get_training_exercises():
     print("Returning new training exercises", flush=True)
 
     return jsonify(ai_block)
+
+
+@ai_bp.route("/ai-lesson", methods=["GET"])
+def create_ai_lesson():
+    """Return a mock HTML lesson based on the user's topic memory."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    topic_rows = fetch_topic_memory(username)
+    topics = [row.get("topic") for row in topic_rows if row.get("topic")] if topic_rows else []
+
+    if topics:
+        items = "".join(f"<li>{t}</li>" for t in topics[:5])
+        html = (
+            "<h2>AI Review Lesson</h2>"
+            "<p>Let's review these topics:</p>"
+            f"<ul>{items}</ul>"
+        )
+    else:
+        html = "<h2>AI Review Lesson</h2><p>No topic memory found.</p>"
+
+    return jsonify({"html": html})
