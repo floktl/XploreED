@@ -18,6 +18,7 @@ import { TaskBlock } from "../extensions/TaskBlock";
 
 import Modal from "./UI/Modal";
 import BlockContentRenderer from "./BlockContentRenderer";
+import { getAiLesson } from "../api";
 
 export default function LessonEditor({ content, onContentChange, aiEnabled = false, onToggleAI }) {
   const [showPreview, setShowPreview] = useState(false);
@@ -99,6 +100,17 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
     return blocks[blocks.length - 1].textContent.trim();
   };
 
+  const insertAiLesson = async () => {
+    try {
+      const html = await getAiLesson();
+      if (html) {
+        editor.chain().focus().insertContent(html).run();
+      }
+    } catch (err) {
+      console.error("Failed to load AI lesson", err);
+    }
+  };
+
 
 
   return (
@@ -177,6 +189,7 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
           📊 Table
         </EditorButton>
         <EditorButton onClick={insertInteractiveBlock}>✅ Block</EditorButton>
+        <EditorButton onClick={insertAiLesson}>🤖 Add AI Lesson</EditorButton>
         <EditorButton onClick={onToggleAI}>
           {aiEnabled ? "🤖 AI On" : "🤖 AI Off"}
         </EditorButton>
