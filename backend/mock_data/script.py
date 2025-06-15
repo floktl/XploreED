@@ -202,8 +202,16 @@ Create a new exercise block using the **same structure** and **same field names*
 
 # === Generate Feedback Prompt using Mistral ===
 
-def generate_feedback_prompt(summary: dict) -> str:
-    """Return a short paragraph of feedback in German."""
+def generate_feedback_prompt(
+    summary: dict,
+    vocab: list | None = None,
+    topic_memory: list | None = None,
+) -> str:
+    """Return a short paragraph of feedback in German.
+
+    The prompt uses the student's vocabulary list to build short example
+    sentences and checks topic memory entries to highlight repeated errors.
+    """
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
     mistakes = summary.get("mistakes", [])
@@ -216,6 +224,35 @@ def generate_feedback_prompt(summary: dict) -> str:
         for m in mistakes[:3]
     )
 
+    # Build short example sentences using the student's vocabulary
+    examples = []
+    if vocab:
+        for item in vocab[:3]:
+            word = item.get("word")
+            if not word:
+                continue
+            translation = item.get("translation")
+            if translation:
+                examples.append(f"Beispiel: {word} – {translation}.")
+            else:
+                examples.append(f"Beispiel: {word}.")
+    examples_text = "\n".join(examples)
+
+    # Identify topics that repeatedly appear in the topic memory
+    repeated_topics = []
+    if topic_memory and mistakes:
+        topic_counts = {}
+        for entry in topic_memory:
+            topic = entry.get("topic")
+            if topic:
+                topic_counts[topic] = topic_counts.get(topic, 0) + 1
+        for m in mistakes:
+            topic = m.get("question")
+            if topic and topic_counts.get(topic, 0) > 1:
+                repeated_topics.append(topic)
+        repeated_topics = list(dict.fromkeys(repeated_topics))
+    repeated_text = "\n".join(f"- {t}" for t in repeated_topics[:3])
+
     user_prompt = {
         "role": "user",
         "content": f"""
@@ -224,6 +261,12 @@ Du bist ein freundlicher Deutschlehrer. Hier sind die Ergebnisse des Schülers:
 Richtige Antworten: {correct} von {total}
 
 {mistakes_text}
+
+Falls ein Thema mehrfach falsch beantwortet wurde:
+{repeated_text}
+
+Nutze diese Vokabeln in kurzen Beispielsätzen:
+{examples_text}
 
 Gib ein kurzes Feedback auf Deutsch (2-3 Sätze). Erwähne, was gut lief und was noch verbessert werden kann. Vorschläge sollen motivierend sein.
 """

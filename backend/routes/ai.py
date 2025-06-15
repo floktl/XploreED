@@ -288,7 +288,24 @@ def generate_ai_feedback():
                 )
 
         summary = {"correct": correct, "total": total, "mistakes": mistakes}
-        feedback_prompt = generate_feedback_prompt(summary)
+
+        vocab_rows = fetch_custom(
+            "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+            "FROM vocab_log WHERE username = ?",
+            (username,),
+        )
+        vocab_data = [
+            {
+                "word": row["vocab"],
+                "translation": row.get("translation"),
+            }
+            for row in vocab_rows
+        ] if vocab_rows else []
+
+        topic_rows = fetch_topic_memory(username)
+        topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+
+        feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
         return jsonify({"feedbackPrompt": feedback_prompt})
 
     try:
