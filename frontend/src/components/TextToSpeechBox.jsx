@@ -1,6 +1,7 @@
 import React from "react";
 import { Play } from "lucide-react";
 import { Input } from "./UI/UI";
+import useAppStore from "../store/useAppStore";
 
 export default function TextToSpeechBox({
   value,
@@ -11,9 +12,9 @@ export default function TextToSpeechBox({
   className = "",
   inputClassName = "",
   disabled = false,
-  darkMode = false, // pass this prop if needed
 }) {
   const [loading, setLoading] = React.useState(false);
+  const darkMode = useAppStore((state) => state.darkMode);
 
   const handleSpeak = async () => {
     if (!value?.trim()) return;
@@ -53,14 +54,13 @@ export default function TextToSpeechBox({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`flex-grow px-4 py-2 text-gray-800 dark:text-gray-100 bg-transparent placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none border-none shadow-none ${inputClassName}`}
+        className={`flex-grow ${inputClassName}`}
         disabled={disabled}
       />
       <button
-        type="button"
         onClick={handleSpeak}
         disabled={loading || disabled}
-        className={`absolute right-14 top-1/2 transform -translate-y-1/2 rounded-full p-2 transition-all
+        className={`absolute right-14 top-1/2 transform -translate-y-1/2 rounded-full p-2
           ${darkMode
             ? "bg-gray-600 hover:bg-gray-500"
             : "bg-gray-200 hover:bg-gray-300"
@@ -69,7 +69,9 @@ export default function TextToSpeechBox({
         style={{ minWidth: "36px", minHeight: "36px" }}
         title="Play sentence"
       >
-        <Play className={`w-5 h-5 ${darkMode ? "text-gray-300" : "text-gray-700"}`} />
+        <Play className={`w-5 h-5 ${
+          darkMode ? "text-gray-300" : "text-gray-700"
+        }`} />
       </button>
     </div>
   );
