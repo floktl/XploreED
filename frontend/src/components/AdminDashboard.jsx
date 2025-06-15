@@ -20,7 +20,8 @@ import {
   saveLesson,
   togglePublishLesson,
   deleteLesson,
-  fetchSupportFeedback
+  fetchSupportFeedback,
+  getAiLesson
 } from "../api";
 
 export default function AdminDashboard() {
