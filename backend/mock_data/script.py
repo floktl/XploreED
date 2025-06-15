@@ -188,7 +188,7 @@ Create a new exercise block using the **same structure** and **same field names*
             {"role": "system", "content": SYSTEM_PROMPT},
             user_prompt
         ],
-        "temperature": 0.7
+        "temperature": 0.3
     }
 
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
