@@ -11,10 +11,14 @@ import {
 
 export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
-  const [loadingInit, setLoadingInit] = useState(mode === "student" && (!data || !Array.isArray(data.exercises)));
+  const [loadingInit, setLoadingInit] = useState(
+    mode === "student" && (!data || !Array.isArray(data.exercises))
+  );
   const [isComplete, setIsComplete] = useState(completed);
+  const [stage, setStage] = useState(1);
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const exercises = current?.exercises || [];
   const instructions = current?.instructions;
@@ -92,11 +96,29 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
     }
   };
 
-  const showVocab = submitted && Array.isArray(current.vocabHelp);
+  const handleNext = async () => {
+    if (allCorrect) return;
+    setLoading(true);
+    try {
+      const newData = await fetchExercisesFn({ answers });
+      setCurrent(newData);
+      setStage((s) => s + 1);
+      setAnswers({});
+      setSubmitted(false);
+    } catch (err) {
+      alert("Failed to load AI exercises");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
 
   return (
     <Card className="space-y-4">
-      {current.title && <h3 className="text-xl font-semibold">{current.title}</h3>}
+      {stage === 1 && current.title && (
+        <h3 className="text-xl font-semibold">{current.title}</h3>
+      )}
       {instructions && <p>{instructions}</p>}
       <div className="space-y-6">
         {exercises.map((ex) => (
@@ -171,7 +193,16 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
           </div>
         )}
         {submitted && !allCorrect && (
-          <div className="mt-4 text-red-700">Some answers are incorrect.</div>
+          <div className="mt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleNext}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Continue"}
+            </Button>
+          </div>
         )}
         {submitted && allCorrect && (
           <div className="mt-4 text-green-700">All exercises correct!</div>
