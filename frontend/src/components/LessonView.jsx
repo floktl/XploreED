@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import useAppStore from "../store/useAppStore";
+import Container from "./Container";
+import Title from "./Title";
+import Card from "./Card";
+import Button from "./Button";
+import Footer from "./Footer";
+import ErrorPage from "./ErrorPage";
 import BlockContentRenderer from "./BlockContentRenderer";
 import AIExerciseBlock from "./AIExerciseBlock";
-import Card from "./UI/Card";
-import Button from "./UI/Button";
-import { Container, Title } from "./UI/UI";
-import Footer from "./UI/Footer";
-import ErrorPage from "./ErrorPage";
+import { useAppStore } from "../store";
 import {
   getLesson,
   getLessonProgress,
@@ -29,6 +30,12 @@ export default function LessonView() {
   const isAdmin = useAppStore((state) => state.isAdmin);
   const [numBlocks, setNumBlocks] = useState(0);
 
+  // New state for AI lesson generation
+  const [generatedLesson, setGeneratedLesson] = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiLevel, setAiLevel] = useState("beginner");
+
   useEffect(() => {
     if (isAdmin) {
       navigate("/admin-panel");
@@ -39,8 +46,10 @@ export default function LessonView() {
       try {
         const data = await getLesson(lessonId);
         if (data && !Array.isArray(data)) {
-          setEntries([data]);
+          setEntries([{ ...data }]);
           setNumBlocks(data.num_blocks || 0);
+        } else {
+          setEntries([]);
         }
       } catch (err) {
         console.error("🔥 Exception while loading lesson content:", err);
@@ -63,8 +72,7 @@ export default function LessonView() {
         const data = await isLessonCompleted(lessonId);
         setMarkedComplete(data.completed);
       } catch (err) {
-        console.warn("Could not load marked complete state", err);
-        setFatalError(true);
+        // ignore
       }
     };
 
@@ -96,6 +104,32 @@ export default function LessonView() {
     }
   };
 
+  // AI lesson generation handler
+  const handleGenerateLesson = async () => {
+    if (!aiTopic.trim()) {
+      alert("Please enter a topic for the AI lesson.");
+      return;
+    }
+    setGenerating(true);
+    setGeneratedLesson(null);
+    try {
+      const response = await fetch("/api/generate_lesson", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: aiTopic,
+          level: aiLevel,
+          use_dust: true,
+        }),
+      });
+      const data = await response.json();
+      setGeneratedLesson(data.lesson_html);
+    } catch (err) {
+      alert("Failed to generate lesson.");
+    }
+    setGenerating(false);
+  };
+
   if (fatalError) {
     return <ErrorPage />;
   }
@@ -104,6 +138,40 @@ export default function LessonView() {
     <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Container>
         <Title>📘 Lesson {lessonId}</Title>
+
+        {/* AI Lesson Generator UI */}
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded">
+          <h3 className="text-lg font-semibold mb-2">Generate a New Lesson with AI</h3>
+          <div className="flex flex-col md:flex-row gap-2 mb-2">
+            <input
+              type="text"
+              className="border rounded px-2 py-1 flex-1"
+              placeholder="Enter topic (e.g. German basics)"
+              value={aiTopic}
+              onChange={(e) => setAiTopic(e.target.value)}
+              disabled={generating}
+            />
+            <select
+              className="border rounded px-2 py-1"
+              value={aiLevel}
+              onChange={(e) => setAiLevel(e.target.value)}
+              disabled={generating}
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+            <Button onClick={handleGenerateLesson} disabled={generating}>
+              {generating ? "Generating..." : "Generate Lesson (AI)"}
+            </Button>
+          </div>
+          {generatedLesson && (
+            <Card>
+              <h3 className="text-xl font-semibold">Generated Lesson</h3>
+              <BlockContentRenderer html={generatedLesson} mode="student" />
+            </Card>
+          )}
+        </div>
 
         {entries.length > 0 && (
           <div className="mb-6">

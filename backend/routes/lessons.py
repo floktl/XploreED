@@ -1,5 +1,24 @@
 from utils.imports.imports import *
 from utils.db_utils import fetch_custom  # Needed for raw SQL queries
+from utils.dust_agent.lesson_agent_client import LessonTaskGeneratorClient
+
+
+def generate_lesson():
+    data = request.get_json()
+    topic = data.get("topic")
+    level = data.get("level", "intermediate")
+
+    api_key = os.getenv('DUST_API_KEY')
+    workspace_id = os.getenv('DUST_WORKSPACE_ID')
+    if not api_key or not workspace_id:
+        return jsonify({"error": "Dust API credentials not set"}), 500
+
+    client = LessonTaskGeneratorClient(api_key, workspace_id)
+    try:
+        html_lesson = client.generate_lesson(topic, level)
+        return jsonify({"lesson_html": html_lesson})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
@@ -114,3 +133,23 @@ def get_lesson_progress(lesson_id):
 
     progress = {row[0]: bool(row[1]) for row in rows}
     return jsonify(progress)
+
+@lessons_bp.route("/generate_lesson", methods=["POST"])
+def generate_lesson():
+    data = request.get_json()
+    topic = data.get("topic")
+    level = data.get("level", "intermediate")
+    use_dust = data.get("use_dust", False)  # New option
+
+    if use_dust:
+        api_key = os.getenv('DUST_API_KEY')
+        workspace_id = os.getenv('DUST_WORKSPACE_ID')
+        if not api_key or not workspace_id:
+            return jsonify({"error": "Dust API credentials not set"}), 500
+
+        client = LessonTaskGeneratorClient(api_key, workspace_id)
+        try:
+            html_lesson = client.generate_lesson(topic, level)
+            return jsonify({"lesson_html": html_lesson})
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
