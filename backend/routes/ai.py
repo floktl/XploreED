@@ -383,6 +383,58 @@ def create_ai_lesson():
             f"<ul>{items}</ul>"
         )
     else:
-        html = "<h2>AI Review Lesson</h2><p>No topic memory found.</p>"
+        html = """
+    <h2>AI Review Lesson: Modalverben (Modal Verbs)</h2>
+    <p>Modalverben sind Hilfsverben, die ein anderes Verb im Infinitiv begleiten. Sie drücken Notwendigkeit, Möglichkeit, Erlaubnis oder Wunsch aus.</p>
+
+    <h3>🧠 Die wichtigsten Modalverben:</h3>
+    <ul>
+    <li><strong>müssen</strong> – to have to, must</li>
+    <li><strong>können</strong> – to be able to, can</li>
+    <li><strong>wollen</strong> – to want</li>
+    <li><strong>sollen</strong> – should, ought to</li>
+    <li><strong>dürfen</strong> – may, to be allowed to</li>
+    <li><strong>mögen</strong> – to like</li>
+    </ul>
+
+    <h3>🔧 Satzbau (Word Order):</h3>
+    <p>Im Präsens steht das Modalverb an zweiter Stelle, das Hauptverb am Ende des Satzes im Infinitiv:</p>
+    <ul>
+    <li>Ich <strong>muss</strong> heute <strong>lernen</strong>.</li>
+    <li>Wir <strong>dürfen</strong> hier nicht <strong>parken</strong>.</li>
+    </ul>
+
+    <h3>🗣 Konjugation von <code>müssen</code> im Präsens:</h3>
+    <table border="1" cellpadding="5">
+    <tr><th>Person</th><th>Form</th></tr>
+    <tr><td>ich</td><td>muss</td></tr>
+    <tr><td>du</td><td>musst</td></tr>
+    <tr><td>er/sie/es</td><td>muss</td></tr>
+    <tr><td>wir</td><td>müssen</td></tr>
+    <tr><td>ihr</td><td>müsst</td></tr>
+    <tr><td>sie/Sie</td><td>müssen</td></tr>
+    </table>
+
+    <h3>🎯 Beispiele mit verschiedenen Modalverben:</h3>
+    <ul>
+    <li>Ich <strong>kann</strong> gut schwimmen. (I can swim well.)</li>
+    <li>Du <strong>musst</strong> deine Hausaufgaben machen. (You must do your homework.)</li>
+    <li>Er <strong>will</strong> Arzt werden. (He wants to become a doctor.)</li>
+    <li>Wir <strong>sollen</strong> pünktlich sein. (We should be on time.)</li>
+    <li>Ihr <strong>dürft</strong> nicht laut sprechen. (You are not allowed to speak loudly.)</li>
+    </ul>
+
+    <h3>📝 Übung:</h3>
+    <p>Setze das passende Modalverb ein:</p>
+    <ol>
+    <li>Ich _______ ins Kino gehen. (Permission)</li>
+    <li>Wir _______ jeden Tag Deutsch lernen. (Obligation)</li>
+    <li>Du _______ deine Eltern anrufen. (Advice)</li>
+    </ol>
+
+    <h3>📌 Merke:</h3>
+    <p>Modalverben helfen dir, deine Meinung, Absichten oder Pflichten auszudrücken. Übe sie regelmäßig in verschiedenen Kontexten!</p>
+    """
+
 
     return Response(html, mimetype="text/html")
