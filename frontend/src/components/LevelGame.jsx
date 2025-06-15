@@ -15,6 +15,7 @@ export default function LevelGame() {
   const [level, setLevel] = useState(0);
   const [scrambled, setScrambled] = useState([]);
   const [currentOrder, setCurrentOrder] = useState([]);
+  const [sentence, setSentence] = useState("");
   const [typedAnswer, setTypedAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
   const [draggedItem, setDraggedItem] = useState(null);
@@ -42,6 +43,7 @@ export default function LevelGame() {
         }
         setScrambled(data.scrambled);
         setCurrentOrder([...data.scrambled]);
+        setSentence(data.sentence || "");
         setFeedback(null);
         setTypedAnswer("");
       } catch (err) {
@@ -254,7 +256,7 @@ export default function LevelGame() {
   const handleSubmit = async () => {
     try {
       const answer = typedAnswer.trim() || currentOrder.join(" ");
-      const result = await submitLevelAnswer(level, answer);
+      const result = await submitLevelAnswer(level, answer, sentence);
       setFeedback(result);
     } catch (error) {
       console.error("Submission error:", error);
@@ -270,6 +272,7 @@ export default function LevelGame() {
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);
+      setSentence("");
       setLevel((prev) => (prev + 1) % 10);
     }, 400); // 400ms matches the animation duration
   };

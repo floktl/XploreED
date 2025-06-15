@@ -1,5 +1,5 @@
 # german_sentence_game.py
-from utils.db_utils import get_connection
+from utils.db_utils import get_connection, fetch_custom
 import random
 import requests
 from colorama import Fore, Style
@@ -15,6 +15,13 @@ if not API_KEY:
             API_KEY = f.read().strip()
     except Exception:
         API_KEY = None
+
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY") or "WPu0KpNOAUFviCzNgnbWQuRbz7Zpwyde"
+MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
+HEADERS = {
+    "Authorization": f"Bearer {MISTRAL_API_KEY}",
+    "Content-Type": "application/json",
+}
 
 LEVELS = [
     "Ich bin Anna",
@@ -103,6 +110,59 @@ def init_db():
 
 
 init_db()
+
+
+def generate_ai_sentence(username=None):
+    """Return a short German sentence created by Mistral."""
+    try:
+        vocab_rows = (
+            fetch_custom(
+                "SELECT vocab FROM vocab_log WHERE username = ? ORDER BY RANDOM() LIMIT 5",
+                (username,),
+            )
+            if username
+            else []
+        )
+        vocab_list = [row["vocab"] for row in vocab_rows] if vocab_rows else []
+
+        topic_rows = (
+            fetch_custom(
+                "SELECT topic FROM topic_memory WHERE username = ? AND topic IS NOT NULL ORDER BY RANDOM() LIMIT 3",
+                (username,),
+            )
+            if username
+            else []
+        )
+        topics = [row["topic"] for row in topic_rows] if topic_rows else []
+
+        user_prompt = {
+            "role": "user",
+            "content": (
+                "Create one short (max 8 words) German sentence for a beginner. "
+                f"Use some of these words: {', '.join(vocab_list)}. "
+                f"Topics to consider: {', '.join(topics)}. "
+                "Only return the sentence."
+            ),
+        }
+
+        payload = {
+            "model": "mistral-medium",
+            "messages": [
+                {"role": "system", "content": "You are a helpful German teacher."},
+                user_prompt,
+            ],
+            "temperature": 0.7,
+        }
+
+        resp = requests.post(
+            MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10
+        )
+        if resp.status_code == 200:
+            sentence = resp.json()["choices"][0]["message"]["content"].strip()
+            return sentence.strip('"')
+    except Exception as e:
+        print("AI sentence generation failed:", e)
+    return None
 
 
 def split_and_clean(text):
