@@ -31,22 +31,31 @@ FALLBACK_EXERCISE_BLOCK = {
   "instructions": "Fill in the blanks or translate the sentences.",
   "level": "A1",
   "exercises": [
-    {"id": "ex1", "type": "gap-fill", "question": "Ich ___ müde.", "options": ["bist", "bin", "ist", "seid"], "correctAnswer": "bin", "explanation": "'Ich' uses 'bin' in present tense."},
-    {"id": "ex2", "type": "gap-fill", "question": "Du ___ mein Freund.", "options": ["bin", "bist", "ist", "seid"], "correctAnswer": "bist", "explanation": "'Du' requires 'bist'."},
-    {"id": "ex3", "type": "translation", "question": "Translate to German: He is tired.", "correctAnswer": "Er ist müde.", "explanation": "Use 'er ist' for 'he is'."},
-    {"id": "ex4", "type": "gap-fill", "question": "Wir ___ in Berlin.", "options": ["seid", "bin", "ist", "sind"], "correctAnswer": "sind", "explanation": "'Wir' uses 'sind' for the plural form."},
-    {"id": "ex5", "type": "translation", "question": "Translate to German: They are students.", "correctAnswer": "Sie sind Studenten.", "explanation": "Use plural 'sie sind'."}
+    {
+      "id": "ex1",
+      "type": "gap-fill",
+      "question": "Ich ___ müde.",
+      "options": ["bist", "bin", "ist", "seid"],
+      "correctAnswer": "bin",
+      "explanation": "'Ich' uses 'bin' in present tense."
+    },
+    {
+      "id": "ex2",
+      "type": "gap-fill",
+      "question": "Du ___ mein Freund.",
+      "options": ["bin", "bist", "ist", "seid"],
+      "correctAnswer": "bist",
+      "explanation": "'Du' requires 'bist'."
+    },
+    {
+      "id": "ex3",
+      "type": "translation",
+      "question": "Translate to German: He is tired.",
+      "correctAnswer": "Er ist müde.",
+      "explanation": "Use 'er ist' for 'he is'."
+    }
   ],
   "feedbackPrompt": "Good start! You sometimes mix up plural forms. Remember 'wir sind' and 'sie sind'.",
-  "nextInstructions": "More practice with 'sein'. Fill or translate the following.",
-  "nextExercises": [
-    {"id": "ex6", "type": "gap-fill", "question": "Er ___ Student.", "options": ["ist", "sind", "bist", "seid"], "correctAnswer": "ist", "explanation": "'Er' pairs with 'ist'."},
-    {"id": "ex7", "type": "gap-fill", "question": "Ihr ___ müde.", "options": ["ist", "bist", "seid", "sind"], "correctAnswer": "seid", "explanation": "'Ihr' uses 'seid'."},
-    {"id": "ex8", "type": "translation", "question": "Translate to German: I am late.", "correctAnswer": "Ich bin spät.", "explanation": "Use 'bin' with 'ich'."},
-    {"id": "ex9", "type": "translation", "question": "Translate to German: She is at home.", "correctAnswer": "Sie ist zu Hause.", "explanation": "Use 'sie ist' with 'zu Hause'."},
-    {"id": "ex10", "type": "gap-fill", "question": "Sie (they) ___ Lehrer.", "options": ["bist", "ist", "seid", "sind"], "correctAnswer": "sind", "explanation": "Plural 'sie' uses 'sind'."}
-  ],
-  "nextFeedbackPrompt": "Great! Keep paying attention to pronouns and word order.",
   "vocabHelp": [
     {"word": "sein", "meaning": "to be"},
     {"word": "müde", "meaning": "tired"},
@@ -108,9 +117,10 @@ def _ensure_schema(exercise_block: dict) -> dict:
             fixed["options"] = ex.get("options", ["bin", "bist", "ist", "sind"])
         return fixed
 
-    for key in ["exercises", "nextExercises"]:
-        if key in exercise_block:
-            exercise_block[key] = [fix_exercise(ex, i) for i, ex in enumerate(exercise_block[key])]
+    if "exercises" in exercise_block:
+        exercise_block["exercises"] = [
+            fix_exercise(ex, i) for i, ex in enumerate(exercise_block["exercises"])
+        ]
 
     return exercise_block
 
@@ -147,13 +157,10 @@ Here is the required JSON structure — you must follow it **exactly**:
      - `correctAnswer`: the correct German translation
    - `explanation`: one-line grammar explanation
 
-2. The overall JSON must contain:
+ 2. The overall JSON must contain:
    - `lessonId`, `title`, `instructions`, `level`
-   - `exercises`: list of 5 total exercises (mix of both types)
+   - `exercises`: list of 3 total exercises (mix of both types)
    - `feedbackPrompt`
-   - `nextInstructions`
-   - `nextExercises`: list of 5 total, same format
-   - `nextFeedbackPrompt`
    - `vocabHelp`: list of vocab entries with:
        - `word`, `meaning`
 

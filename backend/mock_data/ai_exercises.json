@@ -26,66 +26,9 @@
       "question": "Translate to German: He is tired.",
       "correctAnswer": "Er ist müde.",
       "explanation": "Use 'er ist' for 'he is'."
-    },
-    {
-      "id": "ex4",
-      "type": "gap-fill",
-      "question": "Wir ___ in Berlin.",
-      "options": ["seid", "bin", "ist", "sind"],
-      "correctAnswer": "sind",
-      "explanation": "'Wir' uses 'sind' for the plural form."
-    },
-    {
-      "id": "ex5",
-      "type": "translation",
-      "question": "Translate to German: They are students.",
-      "correctAnswer": "Sie sind Studenten.",
-      "explanation": "Use plural 'sie sind'."
     }
   ],
   "feedbackPrompt": "Good start! You sometimes mix up plural forms. Remember 'wir sind' and 'sie sind'.",
-  "nextInstructions": "More practice with 'sein'. Fill or translate the following.",
-  "nextExercises": [
-    {
-      "id": "ex6",
-      "type": "gap-fill",
-      "question": "Er ___ Student.",
-      "options": ["ist", "sind", "bist", "seid"],
-      "correctAnswer": "ist",
-      "explanation": "'Er' pairs with 'ist'."
-    },
-    {
-      "id": "ex7",
-      "type": "gap-fill",
-      "question": "Ihr ___ müde.",
-      "options": ["ist", "bist", "seid", "sind"],
-      "correctAnswer": "seid",
-      "explanation": "'Ihr' uses 'seid'."
-    },
-    {
-      "id": "ex8",
-      "type": "translation",
-      "question": "Translate to German: I am late.",
-      "correctAnswer": "Ich bin spät.",
-      "explanation": "Use 'bin' with 'ich'."
-    },
-    {
-      "id": "ex9",
-      "type": "translation",
-      "question": "Translate to German: She is at home.",
-      "correctAnswer": "Sie ist zu Hause.",
-      "explanation": "Use 'sie ist' with 'zu Hause'."
-    },
-    {
-      "id": "ex10",
-      "type": "gap-fill",
-      "question": "Sie (they) ___ Lehrer.",
-      "options": ["bist", "ist", "seid", "sind"],
-      "correctAnswer": "sind",
-      "explanation": "Plural 'sie' uses 'sind'."
-    }
-  ],
-  "nextFeedbackPrompt": "Great! Keep paying attention to pronouns and word order.",
   "vocabHelp": [
     {"word": "sein", "meaning": "to be"},
     {"word": "müde", "meaning": "tired"},

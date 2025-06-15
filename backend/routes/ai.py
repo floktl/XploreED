@@ -21,9 +21,6 @@ EXERCISE_TEMPLATE = {
     "level": "A1",
     "exercises": [],
     "feedbackPrompt": "",
-    "nextInstructions": "",
-    "nextExercises": [],
-    "nextFeedbackPrompt": "",
     "vocabHelp": [],
 }
 
@@ -84,7 +81,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         print("❌ Missing exercise block for processing", flush=True)
         return
 
-    all_exercises = exercise_block.get("exercises", []) + exercise_block.get("nextExercises", [])
+    all_exercises = exercise_block.get("exercises", [])
     exercise_map = {str(e.get("id")): e for e in all_exercises}
 
     results = []
@@ -169,7 +166,7 @@ def get_ai_exercises():
 
     exercises = ai_block.get("exercises", [])
     random.shuffle(exercises)
-    ai_block["exercises"] = exercises[:5]
+    ai_block["exercises"] = exercises[:3]
 
     return jsonify(ai_block)
 
@@ -263,9 +260,7 @@ def generate_ai_feedback():
     print("Feedback generation data:", data, flush=True)
 
     if exercise_block:
-        all_exercises = exercise_block.get("exercises", []) + exercise_block.get(
-            "nextExercises", []
-        )
+        all_exercises = exercise_block.get("exercises", [])
         ex_map = {str(e.get("id")): e for e in all_exercises}
 
         total = 0
@@ -362,7 +357,7 @@ def get_training_exercises():
 
     exercises = ai_block.get("exercises", [])
     random.shuffle(exercises)
-    ai_block["exercises"] = exercises[:5]
+    ai_block["exercises"] = exercises[:3]
     print("Returning new training exercises", flush=True)
 
     return jsonify(ai_block)
