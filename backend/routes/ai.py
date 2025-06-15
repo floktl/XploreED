@@ -270,6 +270,7 @@ def generate_ai_feedback():
 
         total = 0
         correct = 0
+        mistakes = []
         for ex_id, ans in answers.items():
             ex = ex_map.get(str(ex_id))
             if not ex:
@@ -277,8 +278,16 @@ def generate_ai_feedback():
             total += 1
             if str(ans).strip().lower() == str(ex.get("correctAnswer", "")).strip().lower():
                 correct += 1
+            else:
+                mistakes.append(
+                    {
+                        "question": ex.get("question"),
+                        "your_answer": ans,
+                        "correct_answer": ex.get("correctAnswer"),
+                    }
+                )
 
-        summary = {"correct": correct, "total": total}
+        summary = {"correct": correct, "total": total, "mistakes": mistakes}
         feedback_prompt = generate_feedback_prompt(summary)
         return jsonify({"feedbackPrompt": feedback_prompt})
 
