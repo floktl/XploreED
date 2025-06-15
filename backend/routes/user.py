@@ -170,3 +170,24 @@ def save_vocab_words():
         save_vocab(user, word, context=context, exercise=exercise)
 
     return jsonify({"saved": len(words)})
+
+
+@user_bp.route("/topic-memory", methods=["GET"])
+def get_topic_memory():
+    """Return all topic memory entries for the logged in user."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    rows = fetch_custom(
+        """
+        SELECT id, topic, skill_type, lesson_content_id, ease_factor,
+               intervall, next_repeat, repetitions, last_review
+        FROM topic_memory
+        WHERE username = ?
+        ORDER BY datetime(next_repeat) ASC
+        """,
+        (user,),
+    )
+
+    return jsonify(rows if rows else [])
