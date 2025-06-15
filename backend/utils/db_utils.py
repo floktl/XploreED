@@ -24,6 +24,14 @@ DB = os.getenv("DB_FILE")
 if not DB:
     raise RuntimeError("\u274c DB_FILE is not set in .env or environment variables.")
 
+# Ensure the directory for the database exists. sqlite3 will create the file
+# if the directory is present, but attempting to connect when the path does
+# not exist raises an OperationalError.
+db_path = Path(DB)
+db_path.parent.mkdir(parents=True, exist_ok=True)
+if not db_path.exists():
+    db_path.touch()
+    
 def get_connection():
     return sqlite3.connect(DB)
 
