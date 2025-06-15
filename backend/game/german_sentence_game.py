@@ -183,20 +183,45 @@ def get_scrambled_sentence(sentence):
     return words
 
 
-def evaluate_order(user_answer, correct_sentence):
+from mock_data.script import generate_feedback_prompt
+from colorama import Fore, Style
+
+def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None):
     user_words = user_answer.strip().split()
     correct_words = correct_sentence.strip().split()
 
     if user_words == correct_words:
         return True, "✅ Deine Reihenfolge ist korrekt!"
 
-    feedback = []
+    # Prepare mistakes data
+    mistakes = []
+    for i, word in enumerate(user_words):
+        correct_word = correct_words[i] if i < len(correct_words) else None
+        if word != correct_word:
+            mistakes.append({
+                "question": f"Wort {i+1}: {correct_word}",
+                "your_answer": word,
+                "correct_answer": correct_word
+            })
+
+    summary = {
+        "correct": sum(1 for i, word in enumerate(user_words) if i < len(correct_words) and word == correct_words[i]),
+        "total": len(correct_words),
+        "mistakes": mistakes
+    }
+
+    ai_feedback = generate_feedback_prompt(summary, vocab=vocab, topic_memory=topic_memory)
+
+    # Optional visual feedback
+    visual = []
     for i, word in enumerate(user_words):
         if i < len(correct_words) and word == correct_words[i]:
-            feedback.append(Fore.GREEN + word + Style.RESET_ALL)
+            visual.append(Fore.GREEN + word + Style.RESET_ALL)
         else:
-            feedback.append(Fore.RED + word + Style.RESET_ALL)
-    return False, "📝 Feedback: " + " ".join(feedback)
+            visual.append(Fore.RED + word + Style.RESET_ALL)
+
+    return False, f"📝 Feedback:\n{ai_feedback}\n\n🔍 Visual: {' '.join(visual)}"
+
 
 
 def get_feedback(student_version, correct_version):

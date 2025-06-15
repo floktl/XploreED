@@ -40,7 +40,8 @@ export default function VocabTrainer() {
   };
 
   return (
-    <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>\n      <Container>
+    <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+    <Container>
         <Title>🎯 Train Vocabulary</Title>
         {loading ? (
           <Alert type="info">Loading...</Alert>
