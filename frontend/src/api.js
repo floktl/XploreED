@@ -521,3 +521,11 @@ export const submitExerciseAnswers = async (
     return res.json();
 };
 
+export const getAiLesson = async () => {
+    const res = await fetch(`${BASE_URL}/api/ai-lesson`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI lesson");
+    return res.json();
+};
+
