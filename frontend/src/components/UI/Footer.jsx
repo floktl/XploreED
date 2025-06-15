@@ -100,13 +100,6 @@ export default function Footer() {
                                 </button>
                             </>
                         )}
-
-                        {isAdmin && (
-                            <button onClick={() => navigate("/admin-panel")} className={buttonBase}>
-                                <PanelTop className={iconStyle} />
-                                Admin Panel
-                            </button>
-                        )}
                         <button onClick={handleLogout} className={buttonBase}>
                             <LogOut className={iconStyle} />
                             Logout

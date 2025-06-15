@@ -153,7 +153,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 Here is an example:
 {json.dumps(example_exercise_block, indent=2)}
 
-Based on the following memory data:
+Based on the following memory data. Sometimes add new topic and vocabulary:
 Vocabulary:
 {json.dumps(vocabular, indent=2)}
 
