@@ -258,7 +258,38 @@ def generate_ai_feedback():
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
-    print("Feedback generation data (placeholder):", data, flush=True)
+    answers = data.get("answers", {})
+    exercise_block = data.get("exercise_block")
+    print("Feedback generation data:", data, flush=True)
+
+    if exercise_block:
+        all_exercises = exercise_block.get("exercises", []) + exercise_block.get(
+            "nextExercises", []
+        )
+        ex_map = {str(e.get("id")): e for e in all_exercises}
+
+        total = 0
+        correct = 0
+        mistakes = []
+        for ex_id, ans in answers.items():
+            ex = ex_map.get(str(ex_id))
+            if not ex:
+                continue
+            total += 1
+            if str(ans).strip().lower() == str(ex.get("correctAnswer", "")).strip().lower():
+                correct += 1
+            else:
+                mistakes.append(
+                    {
+                        "question": ex.get("question"),
+                        "your_answer": ans,
+                        "correct_answer": ex.get("correctAnswer"),
+                    }
+                )
+
+        summary = {"correct": correct, "total": total, "mistakes": mistakes}
+        feedback_prompt = generate_feedback_prompt(summary)
+        return jsonify({"feedbackPrompt": feedback_prompt})
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:

@@ -203,26 +203,29 @@ Create a new exercise block using the **same structure** and **same field names*
 # === Generate Feedback Prompt using Mistral ===
 
 def generate_feedback_prompt(summary: dict) -> str:
+    """Return a short paragraph of feedback in German."""
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
+    mistakes = summary.get("mistakes", [])
 
     if total == 0:
         return "Keine Antworten wurden eingereicht."
 
+    mistakes_text = "\n".join(
+        f"- Frage: {m['question']} | Deine Antwort: {m['your_answer']} | Richtig: {m['correct_answer']}"
+        for m in mistakes[:3]
+    )
+
     user_prompt = {
         "role": "user",
         "content": f"""
-You are a friendly German teacher AI. Based on the student's performance:
+Du bist ein freundlicher Deutschlehrer. Hier sind die Ergebnisse des Schülers:
 
-Correct answers: {correct}
-Total questions: {total}
+Richtige Antworten: {correct} von {total}
 
-Write one short feedback sentence (in German) that motivates the student and gives a hint on what to improve.
-Example outputs:
-- "Super gemacht! Achte noch ein bisschen auf die Artikel."
-- "Gut gestartet, aber pass auf die Wortstellung auf."
+{mistakes_text}
 
-Only return the feedback sentence, no JSON, no explanation.
+Gib ein kurzes Feedback auf Deutsch (2-3 Sätze). Erwähne, was gut lief und was noch verbessert werden kann. Vorschläge sollen motivierend sein.
 """
     }
 
