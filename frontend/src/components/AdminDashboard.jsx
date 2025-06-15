@@ -20,7 +20,8 @@ import {
   saveLesson,
   togglePublishLesson,
   deleteLesson,
-  fetchSupportFeedback
+  fetchSupportFeedback,
+  getAiLesson
 } from "../api";
 
 export default function AdminDashboard() {
@@ -387,7 +388,16 @@ export default function AdminDashboard() {
               variant="secondary"
               size="sm"
               className="py-1 px-3 text-sm flex-shrink-0"
-              onClick={() => {
+              onClick={async () => {
+                try {
+                  const data = await getAiLesson();
+                  if (data && data.html) {
+                    setNewContent(data.html);
+                    return;
+                  }
+                } catch (err) {
+                  console.error("Failed to load AI lesson", err);
+                }
                 const samples = [
                   "<h2>AI Generated Lesson</h2><p>This is a random AI-generated lesson block. 🚀</p>",
                   "<ul><li>AI Point 1</li><li>AI Point 2</li></ul>",
