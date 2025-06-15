@@ -199,3 +199,45 @@ Create a new exercise block using the **same structure** and **same field names*
     else:
         print(f"❌ API request failed: {response.status_code} - {response.text}", flush=True)
         return None
+
+# === Generate Feedback Prompt using Mistral ===
+
+def generate_feedback_prompt(summary: dict) -> str:
+    correct = summary.get("correct", 0)
+    total = summary.get("total", 0)
+
+    if total == 0:
+        return "Keine Antworten wurden eingereicht."
+
+    user_prompt = {
+        "role": "user",
+        "content": f"""
+You are a friendly German teacher AI. Based on the student's performance:
+
+Correct answers: {correct}
+Total questions: {total}
+
+Write one short feedback sentence (in German) that motivates the student and gives a hint on what to improve.
+Example outputs:
+- "Super gemacht! Achte noch ein bisschen auf die Artikel."
+- "Gut gestartet, aber pass auf die Wortstellung auf."
+
+Only return the feedback sentence, no JSON, no explanation.
+"""
+    }
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {"role": "system", "content": "Du bist ein freundlicher Deutschlehrer, der personalisiertes Feedback gibt."},
+            user_prompt
+        ],
+        "temperature": 0.5
+    }
+
+    response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
+    if response.status_code == 200:
+        return response.json()["choices"][0]["message"]["content"].strip()
+    else:
+        return "Feedback konnte nicht generiert werden."
+

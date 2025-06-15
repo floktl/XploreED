@@ -4,7 +4,7 @@ import random
 import datetime
 from pathlib import Path
 from game.german_sentence_game import split_and_clean, save_vocab
-from mock_data.script import generate_new_exercises
+from mock_data.script import generate_new_exercises, generate_feedback_prompt
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
