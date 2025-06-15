@@ -84,3 +84,25 @@
   }
 }
 }
+
+/* @keyframes feedback-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.feedback-fade-in-up {
+  animation: feedback-fade-in-up 0.22s cubic-bezier(.4,0,.2,1);
+} */
+
+@keyframes feedback-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.feedback-fade-in {
+  animation: feedback-fade-in 0.15s ease;
+}
