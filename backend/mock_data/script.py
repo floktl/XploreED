@@ -17,10 +17,9 @@ HEADERS = {
 }
 
 SYSTEM_PROMPT = """
-You are an expert German language teacher AI.
-Your task is to generate new grammar and vocabulary exercises in JSON format.
-Use provided memory data to tailor difficulty and topic focus.
-Use the example structure to maintain consistency.
+Your task is to generate new exercises in JSON format.
+Use provided memory data to tailor difficulty.
+Use the example structure.
 """
 
 # === FALLBACK DATA ===
@@ -38,28 +37,11 @@ FALLBACK_EXERCISE_BLOCK = {
       "options": ["bist", "bin", "ist", "seid"],
       "correctAnswer": "bin",
       "explanation": "'Ich' uses 'bin' in present tense."
-    },
-    {
-      "id": "ex2",
-      "type": "gap-fill",
-      "question": "Du ___ mein Freund.",
-      "options": ["bin", "bist", "ist", "seid"],
-      "correctAnswer": "bist",
-      "explanation": "'Du' requires 'bist'."
-    },
-    {
-      "id": "ex3",
-      "type": "translation",
-      "question": "Translate to German: He is tired.",
-      "correctAnswer": "Er ist müde.",
-      "explanation": "Use 'er ist' for 'he is'."
     }
   ],
   "feedbackPrompt": "Good start! You sometimes mix up plural forms. Remember 'wir sind' and 'sie sind'.",
   "vocabHelp": [
-    {"word": "sein", "meaning": "to be"},
-    {"word": "müde", "meaning": "tired"},
-    {"word": "Student", "meaning": "student"}
+    {"word": "sein", "meaning": "to be"}
   ]
 }
 
@@ -159,7 +141,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 
  2. The overall JSON must contain:
    - `lessonId`, `title`, `instructions`, `level`
-   - `exercises`: list of 3 total exercises (mix of both types)
+   - `exercises`: list of 2 total exercises (mix of both types)
    - `feedbackPrompt`
    - `vocabHelp`: list of vocab entries with:
        - `word`, `meaning`
@@ -188,7 +170,7 @@ Create a new exercise block using the **same structure** and **same field names*
             {"role": "system", "content": SYSTEM_PROMPT},
             user_prompt
         ],
-        "temperature": 0.3
+        "temperature": 0.7
     }
 
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
@@ -275,18 +257,19 @@ If a topic was answered incorrectly multiple times:
 Use these vocabulary items in short example sentences:
 {examples_text}
 
-Write a short feedback in English (2–3 sentences). Mention what went well and what could be improved. Suggestions should be encouraging.
+Write a short ecouraging one line feedback in English. Mention what went well and what could be improved.
 """
     }
 
     payload = {
         "model": "mistral-medium",
         "messages": [
-            {"role": "system", "content": "You are a friendly German teacher who provides personalized feedback."},
+            {"role": "system", "content": "Write a short ecouraging one line feedback in English. Mention what went well and what could be improved."},
             user_prompt
         ],
         "temperature": 0.5
     }
+
 
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:

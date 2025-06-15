@@ -58,7 +58,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   if (loadingInit) {
     return (
       <Card className="text-center py-4">
-        <p>Loading AI exercises...</p>
+        <p>Loading personalized AI exercises...</p>
       </Card>
     );
   }
