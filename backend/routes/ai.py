@@ -7,6 +7,7 @@ import datetime
 from pathlib import Path
 from utils.vocab_utils import split_and_clean, save_vocab
 from mock_data.script import generate_new_exercises, generate_feedback_prompt
+from utils.grammar_utils import detect_language_topics
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
@@ -66,9 +67,9 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     answered incorrectly are returned.
     """
     query = (
-        "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, "
-        "next_repeat, repetitions, last_review, correct FROM topic_memory "
-        "WHERE username = ?"
+        "SELECT topic, skill_type, context, lesson_content_id, ease_factor, "
+        "intervall, next_repeat, repetitions, last_review, correct FROM "
+        "topic_memory WHERE username = ?"
     )
     params = [username]
     if not include_correct:
@@ -101,10 +102,12 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
         ef, reps, interval = sm2(quality)
+        features = detect_language_topics(f"{ex.get('question', '')} {correct_ans}")
         entry = {
             "topic_memory": {
-                "topic": ex.get("question", ""),
+                "topic": ", ".join(features) if features else "unknown",
                 "skill_type": ex.get("type", ""),
+                "context": ex.get("question", ""),
                 "lesson_content_id": block_id,
                 "ease_factor": ef,
                 "intervall": interval,
