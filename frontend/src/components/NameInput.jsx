@@ -7,6 +7,7 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
 import { login, signup, getMe, getRole } from "../api";
+import PlacementTest from "./PlacementTest";
 
 export default function NameInput() {
   const [name, setName] = useState("");
@@ -15,6 +16,7 @@ export default function NameInput() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSignup, setIsSignup] = useState(false);
+  const [showTest, setShowTest] = useState(false);
   const navigate = useNavigate();
 
   const setUsername = useAppStore((state) => state.setUsername);
@@ -48,7 +50,7 @@ export default function NameInput() {
         setUsername(me.username);
         setIsAdmin(role.is_admin);
         localStorage.setItem("username", me.username);
-        navigate("/placement-test");
+        setShowTest(true);
         return;
       } else {
         res = await login(trimmed, pw);
@@ -76,6 +78,10 @@ export default function NameInput() {
     if (pw.match(/[A-Z]/) && pw.match(/[0-9]/) && pw.length >= 8) return "Strong 🟢";
     return "Moderate 🟡";
   };
+
+  if (showTest) {
+    return <PlacementTest onComplete={() => navigate("/menu")} />;
+  }
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>

@@ -7,7 +7,7 @@ import Button from "./UI/Button";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
 
-export default function PlacementTest() {
+export default function PlacementTest({ onComplete }) {
   const [index, setIndex] = useState(0);
   const [scrambled, setScrambled] = useState([]);
   const [sentence, setSentence] = useState("");
@@ -37,7 +37,11 @@ export default function PlacementTest() {
       const finalScore = correct + (result.correct ? 1 : 0);
       await setUserLevel(finalScore);
       setCurrentLevel(finalScore);
-      navigate("/menu");
+      if (onComplete) {
+        onComplete(finalScore);
+      } else {
+        navigate("/menu");
+      }
     }
   };
 
