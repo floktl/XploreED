@@ -27,4 +27,79 @@ def detect_grammar_case(text: str) -> str:
             return "nominative"
     return "unknown"
 
-__all__ = ["detect_grammar_case"]
+PRONOUNS = {
+    "ich",
+    "du",
+    "er",
+    "sie",
+    "es",
+    "wir",
+    "ihr",
+    "sie",
+    "sie"  # formal Sie lowercased
+}
+
+SEIN_FORMS = {
+    "bin",
+    "bist",
+    "ist",
+    "sind",
+    "seid",
+    "war",
+    "warst",
+    "wart",
+    "waren",
+    "gewesen",
+}
+
+MODAL_VERB_FORMS = {
+    "dürfen",
+    "darf",
+    "darfst",
+    "dürft",
+    "dürfen",
+    "können",
+    "kann",
+    "kannst",
+    "könnt",
+    "mögen",
+    "mag",
+    "magst",
+    "mögt",
+    "müssen",
+    "muss",
+    "musst",
+    "müsst",
+    "sollen",
+    "soll",
+    "sollst",
+    "sollt",
+    "wollen",
+    "will",
+    "willst",
+    "wollt",
+}
+
+
+def detect_language_topics(text: str) -> list[str]:
+    """Return a list of language features found in the text."""
+    tokens = re.findall(r"\b\w+\b", text.lower())
+    features = set()
+
+    case = detect_grammar_case(text)
+    if case != "unknown":
+        features.add(f"case:{case}")
+
+    if any(tok in SEIN_FORMS for tok in tokens):
+        features.add("sein")
+
+    if any(tok in MODAL_VERB_FORMS for tok in tokens):
+        features.add("modal verb")
+
+    if any(tok in PRONOUNS for tok in tokens):
+        features.add("pronoun")
+
+    return sorted(features)
+
+
+__all__ = ["detect_grammar_case", "detect_language_topics"]
