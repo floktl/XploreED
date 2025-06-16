@@ -281,6 +281,7 @@ if "context" not in topic_cols:
 else:
     print("ℹ️ 'context' column already exists in 'topic_memory'.")
 
+
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
 columns = [col[1] for col in cursor.fetchall()]
