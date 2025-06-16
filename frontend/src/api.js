@@ -555,3 +555,11 @@ export const getAiLesson = async () => {
     return res.text();
 };
 
+export const getWeaknessLesson = async () => {
+    const res = await fetch(`${BASE_URL}/api/weakness-lesson`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch AI lesson");
+    return res.text();
+};
+
