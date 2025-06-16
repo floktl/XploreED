@@ -1,4 +1,5 @@
 # utils/setup/migration_script.py
+"""Database migration script executed on container startup."""
 
 import os
 from pathlib import Path

@@ -1,3 +1,5 @@
+"""Basic profile information for the logged in user."""
+
 from utils.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])

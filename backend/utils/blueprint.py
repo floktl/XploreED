@@ -1,4 +1,5 @@
 # utils/blueprint.py
+"""Central definition of all Flask blueprints used by the API."""
 
 from flask import Blueprint
 

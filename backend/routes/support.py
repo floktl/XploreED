@@ -1,3 +1,5 @@
+"""Endpoints allowing users to send feedback messages."""
+
 from utils.imports.imports import *
 
 @support_bp.route('/feedback', methods=['POST'])

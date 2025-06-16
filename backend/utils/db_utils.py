@@ -1,4 +1,4 @@
-# === utils/db_utils.py ===
+"""SQLite helper functions used across the backend."""
 
 import os
 import sqlite3
