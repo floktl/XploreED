@@ -1,4 +1,6 @@
 # utils/auto_fix_blocks.py
+"""One-off helper to add missing block IDs to lesson HTML."""
+
 import sqlite3
 from bs4 import BeautifulSoup
 

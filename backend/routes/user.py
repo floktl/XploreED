@@ -1,3 +1,5 @@
+"""User account and vocabulary related routes."""
+
 from utils.imports.imports import *
 
 

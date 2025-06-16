@@ -1,4 +1,5 @@
 # utils/imports/imports.py
+"""Centralised import lists to keep route modules short."""
 
 # ✅ Common imports used in most route files
 from flask import Blueprint, request, jsonify, make_response, current_app
@@ -39,12 +40,10 @@ from game.german_sentence_game import (
     get_scrambled_sentence,
     evaluate_order,
     save_result,
-    translate_to_german,
     get_feedback,
-    save_vocab,
-    split_and_clean,
     generate_ai_sentence,
 )
+from utils.vocab_utils import split_and_clean, save_vocab, translate_to_german
 from utils.algorithm import sm2
 
 # ✅ Route-specific grouped imports

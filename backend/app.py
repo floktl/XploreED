@@ -1,4 +1,4 @@
-# === app.py ===
+"""Flask application setup and route registration."""
 
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -23,7 +23,6 @@ env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # === Now import modules that rely on env vars ===
-from game.german_sentence_game import init_db
 import routes.auth  # noqa: F401
 import routes.admin
 import routes.debug
@@ -72,13 +71,6 @@ CORS(app, origins=allowed_origin, supports_credentials=True)
 
 # === Init limiter and database ===
 limiter.init_app(app)
-def init_db():
-    try:
-        with get_connection() as conn:
-            ...
-        print("✅ Database initialized successfully")
-    except Exception as e:
-        print(f"❌ DB init error: {e}")
 
 # === Debug registered routes ===
 print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
