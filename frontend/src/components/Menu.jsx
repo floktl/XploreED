@@ -79,7 +79,7 @@ export default function Menu() {
 
             <Button type="button" variant="secondary" onClick={() => navigate("/ai-feedback")} className="justify-start gap-3">
               <Bot className="w-5 h-5" />
-              AI Lessons
+              AI Training Exercises
             </Button>
 
             <Button type="button" variant="secondary" onClick={() => navigate("/topic-memory")} className="justify-start gap-3">

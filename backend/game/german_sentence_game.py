@@ -8,15 +8,22 @@ from datetime import datetime
 import os
 import re
 
-API_KEY = os.getenv("DEEPL_API_KEY")
-if not API_KEY:
+DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
+if not DEEPL_API_KEY:
     try:
         with open("DEEPL_API_KEY") as f:
-            API_KEY = f.read().strip()
+            DEEPL_API_KEY = f.read().strip()
     except Exception:
-        API_KEY = None
+        DEEPL_API_KEY = None
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY") or "WPu0KpNOAUFviCzNgnbWQuRbz7Zpwyde"
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+if not MISTRAL_API_KEY:
+    try:
+        with open("MISTRAL_API_KEY") as f:
+            MISTRAL_API_KEY = f.read().strip()
+    except Exception:
+        MISTRAL_API_KEY = None
+
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 HEADERS = {
     "Authorization": f"Bearer {MISTRAL_API_KEY}",
@@ -179,7 +186,7 @@ def vocab_exists(username, german_word):
 
 
 def save_vocab(username, german_word, context=None, exercise=None):
-    if german_word in ["?", "!", ",", "."] or not API_KEY:
+    if german_word in ["?", "!", ",", "."] or not DEEPL_API_KEY:
         return
 
     if vocab_exists(username, german_word):
@@ -187,7 +194,7 @@ def save_vocab(username, german_word, context=None, exercise=None):
 
     url = "https://api-free.deepl.com/v2/translate"
     data = {
-        "auth_key": API_KEY,
+        "auth_key": DEEPL_API_KEY,
         "text": german_word,
         "source_lang": "DE",
         "target_lang": "EN",
@@ -211,11 +218,11 @@ def save_vocab(username, german_word, context=None, exercise=None):
 
 
 def translate_to_german(english_sentence, username=None):
-    if not API_KEY:
+    if not DEEPL_API_KEY:
         return "❌ DeepL key is empty."
 
     url = "https://api-free.deepl.com/v2/translate"
-    data = {"auth_key": API_KEY, "text": english_sentence, "target_lang": "DE"}
+    data = {"auth_key": DEEPL_API_KEY, "text": english_sentence, "target_lang": "DE"}
 
     try:
         response = requests.post(url, data=data)

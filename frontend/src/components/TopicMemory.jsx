@@ -46,7 +46,7 @@ export default function TopicMemory() {
           🧠 Topic Memory — <span className="text-blue-600">{username || "anonymous"}</span>
           <Badge type="default">Student</Badge>
         </Title>
-        <p className={`mb-6 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>All topics saved from your exercises</p>
+        <p className={`mb-6 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
 
         {topics.length === 0 ? (
           <Alert type="info">No topic memory saved yet.</Alert>
