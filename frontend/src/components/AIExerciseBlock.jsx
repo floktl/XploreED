@@ -8,7 +8,7 @@ import {
   submitExerciseAnswers,
 } from "../api";
 
-export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
+export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
   const [loadingInit, setLoadingInit] = useState(
     mode === "student" && (!data || !Array.isArray(data.exercises))
