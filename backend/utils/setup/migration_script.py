@@ -248,6 +248,7 @@ with get_connection() as conn:
             username TEXT NOT NULL,
             topic TEXT,
             skill_type TEXT,
+            context TEXT,
             lesson_content_id TEXT,
             ease_factor REAL,
             intervall INTEGER,
@@ -270,6 +271,15 @@ if "correct" not in topic_cols:
     print("✅ 'correct' column added to 'topic_memory'.")
 else:
     print("ℹ️ 'correct' column already exists in 'topic_memory'.")
+
+# ✅ Add context column if missing
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
+if "context" not in topic_cols:
+    cursor.execute("ALTER TABLE topic_memory ADD COLUMN context TEXT;")
+    print("✅ 'context' column added to 'topic_memory'.")
+else:
+    print("ℹ️ 'context' column already exists in 'topic_memory'.")
 
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
