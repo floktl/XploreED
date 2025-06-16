@@ -10,6 +10,7 @@ from mock_data.script import generate_new_exercises, generate_feedback_prompt
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
+import requests
 
 
 FEEDBACK_FILE = (
@@ -24,6 +25,13 @@ EXERCISE_TEMPLATE = {
     "exercises": [],
     "feedbackPrompt": "",
     "vocabHelp": [],
+}
+
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
+HEADERS = {
+    "Authorization": f"Bearer {MISTRAL_API_KEY}",
+    "Content-Type": "application/json",
 }
 
 
@@ -440,3 +448,58 @@ def create_ai_lesson():
 
 
     return Response(html, mimetype="text/html")
+
+
+@ai_bp.route("/weakness-lesson", methods=["GET"])
+def ai_weakness_lesson():
+    """Return a short HTML lesson focused on the user's weakest topic."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    row = fetch_one_custom(
+        "SELECT topic, skill_type FROM topic_memory WHERE username = ? "
+        "ORDER BY ease_factor ASC, repetitions DESC LIMIT 1",
+        (username,),
+    )
+
+    topic = row.get("topic") if row else None
+    skill = row.get("skill_type") if row else None
+    if not topic:
+        topic = "Modalverben"
+        skill = "grammar"
+
+    user_prompt = {
+        "role": "user",
+        "content": (
+            "Create a short HTML lesson in English for a German learner. "
+            f"Explain the topic '{topic}' ({skill}) and give three training tips." 
+            "Return only valid HTML."
+        ),
+    }
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {"role": "system", "content": "You are a helpful German teacher."},
+            user_prompt,
+        ],
+        "temperature": 0.7,
+    }
+
+    try:
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        if resp.status_code == 200:
+            html = resp.json()["choices"][0]["message"]["content"].strip()
+            return Response(html, mimetype="text/html")
+    except Exception as e:
+        current_app.logger.error("Failed to generate weakness lesson: %s", e)
+
+    fallback = (
+        f"<h2>Focus Topic: {topic}</h2>"
+        "<p>This area needs more practice. Remember the rules and try creating your own sentences.</p>"
+        "<ul><li>Review example sentences</li><li>Write your own short texts</li><li>Practice regularly</li></ul>"
+    )
+    return Response(fallback, mimetype="text/html")

@@ -94,6 +94,11 @@ export default function Menu() {
               AI Training Exercises
             </Button>
 
+            <Button type="button" variant="secondary" onClick={() => navigate("/weakness-lesson")} className="justify-start gap-3">
+              <Bot className="w-5 h-5" />
+              AI Weakness Lesson
+            </Button>
+
             <Button type="button" variant="secondary" onClick={() => navigate("/topic-memory")} className="justify-start gap-3">
               <BrainCircuit className="w-5 h-5" />
               Topic Memory
