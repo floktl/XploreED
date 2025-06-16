@@ -1,4 +1,6 @@
 # session_manager.py
+"""SQLite backed session management for the API."""
+
 import uuid
 import sqlite3
 from ..db_utils import get_connection

@@ -1,4 +1,6 @@
 # utils/repair_blocks.py
+"""Script fixing broken lesson block references in the database."""
+
 import sqlite3
 from bs4 import BeautifulSoup
 

@@ -1,3 +1,5 @@
+"""Endpoints serving lessons and lesson metadata."""
+
 from utils.imports.imports import *
 from utils.db_utils import fetch_custom  # Needed for raw SQL queries
 
