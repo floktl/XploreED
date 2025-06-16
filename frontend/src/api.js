@@ -547,6 +547,21 @@ export const submitExerciseAnswers = async (
     return res.json();
 };
 
+export const argueExerciseAnswers = async (
+    blockId,
+    answers = {},
+    exerciseBlock = null
+) => {
+    const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/argue`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ answers, exercise_block: exerciseBlock }),
+    });
+    if (!res.ok) throw new Error("Failed to argue answers");
+    return res.json();
+};
+
 export const getAiLesson = async () => {
     const res = await fetch(`${BASE_URL}/api/ai-lesson`, {
         credentials: "include",
