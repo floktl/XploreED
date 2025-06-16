@@ -7,7 +7,7 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import TextToSpeechBox from "./TextToSpeechBox";
 import { Container, Title, Input } from "./UI/UI";
-import { fetchLevelData, submitLevelAnswer } from "../api";
+import { fetchLevelData, submitLevelAnswer, getUserLevel } from "../api";
 import useAppStore from "../store/useAppStore";
 import axios from "axios";
 
@@ -29,7 +29,23 @@ export default function LevelGame() {
 
   const username = useAppStore((state) => state.username);
   const darkMode = useAppStore((state) => state.darkMode);
+  const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadLevel = async () => {
+      try {
+        const data = await getUserLevel();
+        if (data.level !== undefined) {
+          setLevel(data.level);
+          setCurrentLevel(data.level);
+        }
+      } catch (e) {
+        console.error("[LevelGame] failed to load user level", e);
+      }
+    };
+    loadLevel();
+  }, []);
 
   // ElevenLabs API Key - replace with your actual key
   const ELEVENLABS_API_KEY = "sk_7ee62fb46781e4c799b9e0e0ea2d48e2fce51b431bd3d8a8";
