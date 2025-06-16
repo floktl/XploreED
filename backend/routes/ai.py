@@ -6,7 +6,11 @@ import random
 import datetime
 from pathlib import Path
 from utils.vocab_utils import split_and_clean, save_vocab
-from mock_data.script import generate_new_exercises, generate_feedback_prompt
+from mock_data.script import (
+    generate_new_exercises,
+    generate_feedback_prompt,
+    _extract_json,
+)
 from utils.grammar_utils import detect_language_topics
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
@@ -34,6 +38,64 @@ HEADERS = {
     "Authorization": f"Bearer {MISTRAL_API_KEY}",
     "Content-Type": "application/json",
 }
+
+
+def evaluate_answers_with_ai(
+    exercises: list, answers: dict, mode: str = "strict"
+) -> dict | None:
+    """Ask Mistral to evaluate student answers and return JSON results."""
+    formatted = [
+        {
+            "id": ex.get("id"),
+            "question": ex.get("question"),
+            "type": ex.get("type"),
+            "answer": answers.get(str(ex.get("id"))) or "",
+        }
+        for ex in exercises
+    ]
+
+    instructions = (
+        "Evaluate these answers for a German exercise. "
+        "Return JSON with 'pass' (true/false) and a 'results' list. "
+        "Each result must include 'id' and 'correct_answer'. "
+        "Mark pass true only if all answers are fully correct."
+    )
+    if mode == "argue":
+        instructions = (
+            "Reevaluate the student's answers carefully. "
+            "Consider possible alternative correct solutions. "
+            + instructions
+        )
+
+    user_prompt = {
+        "role": "user",
+        "content": instructions + "\n" + json.dumps(formatted, ensure_ascii=False),
+    }
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {
+                "role": "system",
+                "content": (
+                    "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher."
+                ),
+            },
+            user_prompt,
+        ],
+        "temperature": 0.3,
+    }
+
+    try:
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        if resp.status_code == 200:
+            content = resp.json()["choices"][0]["message"]["content"]
+            parsed = _extract_json(content)
+            return parsed
+    except Exception as e:
+        current_app.logger.error("AI evaluation failed: %s", e)
+
+    return None
 
 
 @ai_bp.route("/tts", methods=["POST"])
@@ -220,6 +282,10 @@ def get_ai_exercises():
     random.shuffle(exercises)
     ai_block["exercises"] = exercises[:3]
 
+    # remove solutions before sending to client
+    for ex in ai_block.get("exercises", []):
+        ex.pop("correctAnswer", None)
+
     return jsonify(ai_block)
 
 
@@ -235,12 +301,52 @@ def submit_ai_exercise(block_id):
     data = request.get_json() or {}
     print("Received submission data:", data, flush=True)
     answers = data.get("answers", {})
-    exercise_block = data.get("exercise_block")
+    exercise_block = data.get("exercise_block") or {}
+    exercises = exercise_block.get("exercises", [])
 
-    # Process answers with SM2 spaced repetition algorithm
-    process_ai_answers(username, str(block_id), answers, exercise_block)
+    evaluation = evaluate_answers_with_ai(exercises, answers)
+    if not evaluation:
+        return jsonify({"msg": "Evaluation failed"}), 500
 
-    #raw adata, not important for now
+    id_map = {str(r.get("id")): r.get("correct_answer") for r in evaluation.get("results", [])}
+    for ex in exercises:
+        cid = str(ex.get("id"))
+        if cid in id_map:
+            ex["correctAnswer"] = id_map[cid]
+
+    mistakes = []
+    correct = 0
+    for ex in exercises:
+        cid = str(ex.get("id"))
+        user_ans = answers.get(cid, "")
+        correct_ans = id_map.get(cid, "")
+        if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
+            correct += 1
+        else:
+            mistakes.append({
+                "question": ex.get("question"),
+                "your_answer": user_ans,
+                "correct_answer": correct_ans,
+            })
+
+    summary = {"correct": correct, "total": len(exercises), "mistakes": mistakes}
+
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation FROM vocab_log WHERE username = ?",
+        (username,),
+    )
+    vocab_data = [
+        {"word": row["vocab"], "translation": row.get("translation")}
+        for row in vocab_rows
+    ] if vocab_rows else []
+
+    topic_rows = fetch_topic_memory(username)
+    topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+
+    feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+
+    process_ai_answers(username, str(block_id), answers, {"exercises": exercises})
+
     try:
         insert_row(
             "exercise_submissions",
@@ -255,7 +361,33 @@ def submit_ai_exercise(block_id):
         current_app.logger.error("Failed to save exercise submission: %s", e)
         return jsonify({"msg": "Error"}), 500
 
-    return jsonify({"status": "ok"})
+    return jsonify({
+        "feedbackPrompt": feedback_prompt,
+        "pass": bool(evaluation.get("pass")),
+        "summary": summary,
+        "results": evaluation.get("results", []),
+    })
+
+
+@ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])
+def argue_ai_exercise(block_id):
+    """Reevaluate answers when the student wants to argue with the AI."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    answers = data.get("answers", {})
+    exercise_block = data.get("exercise_block") or {}
+    exercises = exercise_block.get("exercises", [])
+
+    evaluation = evaluate_answers_with_ai(exercises, answers, mode="argue")
+    if not evaluation:
+        return jsonify({"msg": "Evaluation failed"}), 500
+
+    return jsonify(evaluation)
 
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
@@ -410,6 +542,10 @@ def get_training_exercises():
     exercises = ai_block.get("exercises", [])
     random.shuffle(exercises)
     ai_block["exercises"] = exercises[:3]
+
+    for ex in ai_block.get("exercises", []):
+        ex.pop("correctAnswer", None)
+
     print("Returning new training exercises", flush=True)
 
     return jsonify(ai_block)
