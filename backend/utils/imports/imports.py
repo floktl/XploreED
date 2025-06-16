@@ -44,6 +44,7 @@ from game.german_sentence_game import (
     generate_ai_sentence,
 )
 from utils.vocab_utils import split_and_clean, save_vocab, translate_to_german
+from utils.translation_utils import evaluate_translation_ai
 from utils.algorithm import sm2
 
 # ✅ Route-specific grouped imports
@@ -89,7 +90,8 @@ class Imports:
 
     translate = [
         "translate_bp", "request", "jsonify",
-        "session_manager", "translate_to_german", "get_feedback"
+        "session_manager", "translate_to_german",
+        "get_feedback", "evaluate_translation_ai"
     ]
 
     user = [

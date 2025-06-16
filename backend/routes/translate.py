@@ -17,10 +17,8 @@ def translate():
     if not isinstance(german, str) or "❌" in german:
         return jsonify({"german": german, "feedback": "❌ Translation failed."})
 
-    correct, feedback = get_feedback(student_input, german)
-    feedback = feedback.replace("\x1b[31m", '<span style="color:red;">')\
-                       .replace("\x1b[32m", '<span style="color:green;">')\
-                       .replace("\x1b[33m", '<span style="color:orange;">')\
-                       .replace("\x1b[0m", '</span>')
+    correct, reason = evaluate_translation_ai(english, german, student_input)
+    prefix = "✅" if correct else "❌"
+    feedback = f"{prefix} {reason}"
 
     return jsonify({"german": german, "feedback": feedback})
