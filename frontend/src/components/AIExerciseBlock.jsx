@@ -6,6 +6,7 @@ import {
   getAiExercises,
   saveVocabWords,
   submitExerciseAnswers,
+  argueExerciseAnswers,
 } from "../api";
 
 export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
@@ -20,6 +21,8 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [loading, setLoading] = useState(false);
   const [evaluation, setEvaluation] = useState({});
   const [passed, setPassed] = useState(false);
+  const [arguing, setArguing] = useState(false);
+
 
   const exercises = current?.exercises || [];
   const instructions = current?.instructions;
@@ -102,6 +105,27 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     }
   };
 
+  const handleArgue = async () => {
+    setArguing(true);
+    try {
+      const result = await argueExerciseAnswers(blockId, answers, current);
+      if (result?.results) {
+        const map = {};
+        result.results.forEach((r) => {
+          map[r.id] = r.correct_answer;
+        });
+        setEvaluation(map);
+      }
+      if (result?.pass) {
+        setPassed(true);
+      }
+    } catch (err) {
+      console.error("Argue failed:", err);
+    } finally {
+      setArguing(false);
+    }
+  };
+
   const handleNext = async () => {
     if (passed) return;
     setLoading(true);
@@ -113,6 +137,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       setSubmitted(false);
       setEvaluation({});
       setPassed(false);
+      setArguing(false);
     } catch (err) {
       alert("Failed to load AI exercises");
     } finally {
@@ -201,7 +226,15 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
           </div>
         )}
         {submitted && !passed && (
-          <div className="mt-4">
+          <div className="mt-4 flex gap-2">
+            <Button
+              type="button"
+              variant="danger"
+              onClick={handleArgue}
+              disabled={arguing}
+            >
+              {arguing ? "Thinking..." : "Argue with AI"}
+            </Button>
             <Button
               type="button"
               variant="secondary"
