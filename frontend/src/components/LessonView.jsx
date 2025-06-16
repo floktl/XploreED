@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import Container from "./Container";
-import Title from "./Title";
-import Card from "./Card";
-import Button from "./Button";
-import Footer from "./Footer";
+import { Container, Title } from "./UI/UI";
+import Card from "./UI/Card";
+import Button from "./UI/Button";
+import Footer from "./UI/Footer";
 import ErrorPage from "./ErrorPage";
 import BlockContentRenderer from "./BlockContentRenderer";
 import AIExerciseBlock from "./AIExerciseBlock";
-import { useAppStore } from "../store";
+import useAppStore from "../store/useAppStore";
 import {
   getLesson,
   getLessonProgress,
@@ -113,7 +112,7 @@ export default function LessonView() {
     setGenerating(true);
     setGeneratedLesson(null);
     try {
-      const response = await fetch("/api/generate_lesson", {
+      const response = await fetch("http://localhost:5050/generate_lesson", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
