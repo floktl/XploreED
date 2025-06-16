@@ -353,7 +353,7 @@ def generate_ai_feedback():
         topic_data = [dict(row) for row in topic_rows] if topic_rows else []
 
         feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
-        return jsonify({"feedbackPrompt": feedback_prompt})
+        return jsonify({"feedbackPrompt": feedback_prompt, "summary": summary})
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
