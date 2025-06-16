@@ -247,19 +247,20 @@ def generate_feedback_prompt(
     user_prompt = {
         "role": "user",
         "content": f"""
-You are a friendly German teacher. Here are the student’s results:
+You are a friendly German teacher. Summarise this placement test result for the new student.
 
 Correct answers: {correct} out of {total}
 
+List each mistake in the following format:
 {mistakes_text}
 
-If a topic was answered incorrectly multiple times:
+If a topic was answered incorrectly multiple times also mention it:
 {repeated_text}
 
 Use these vocabulary items in short example sentences:
 {examples_text}
 
-Write a short ecouraging one line feedback in English. Mention what went well and what could be improved.
+End with two short sentences explaining that this platform will generate custom exercises focusing on the student's weak areas so they can improve.
 """
     }
 
