@@ -23,6 +23,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [passed, setPassed] = useState(false);
   const [arguing, setArguing] = useState(false);
 
+
   const exercises = current?.exercises || [];
   const instructions = current?.instructions;
   const feedbackPrompt = current?.feedbackPrompt;
