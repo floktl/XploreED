@@ -213,7 +213,8 @@ def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None)
 
 
 
-def get_feedback(student_version, correct_version):
+def get_feedback(student_version, correct_version, vocab=None, topic_memory=None):
+    """Return visual diff plus short AI comment."""
     student_words = student_version.strip().split()
     correct_words = correct_version.strip().split()
 
@@ -239,6 +240,8 @@ def get_feedback(student_version, correct_version):
     is_w_question = is_question and first_word in w_question_words
     is_yesno_question = is_question and not is_w_question and first_word.isalpha()
 
+    mistakes = []
+
     if sorted([w.lower() for w in student_words]) == sorted(
         [w.lower() for w in correct_words]
     ) and [w.lower() for w in student_words] != [w.lower() for w in correct_words]:
@@ -249,8 +252,18 @@ def get_feedback(student_version, correct_version):
                 output.append(Fore.GREEN + word + Style.RESET_ALL)
             elif word.lower() in [w.lower() for w in correct_words]:
                 output.append(Fore.RED + word + Style.RESET_ALL)
+                mistakes.append({
+                    "question": f"Wort {idx+1}: {correct_word}",
+                    "your_answer": word,
+                    "correct_answer": correct_word,
+                })
             else:
                 output.append(Fore.YELLOW + word + Style.RESET_ALL)
+                mistakes.append({
+                    "question": f"Wort {idx+1}: {correct_word}",
+                    "your_answer": word,
+                    "correct_answer": correct_word,
+                })
 
         user_version_html = (
             "<p><strong>🧩 Deine Version:</strong><br><span style='font-family: monospace;'>"
@@ -286,17 +299,44 @@ def get_feedback(student_version, correct_version):
             for w1, w2 in zip(correct_words[i1:i2], student_words[j1:j2]):
                 output.append(Fore.RED + w2 + Style.RESET_ALL)
                 explanation.append(f"❌ '{w2}' sollte '{w1}' sein.")
+                mistakes.append({
+                    "question": w1,
+                    "your_answer": w2,
+                    "correct_answer": w1,
+                })
         elif tag == "delete":
             for w in correct_words[i1:i2]:
                 output.append(Fore.RED + "___" + Style.RESET_ALL)
                 explanation.append(f"❌ Es fehlt das Wort '{w}'.")
+                mistakes.append({
+                    "question": w,
+                    "your_answer": "",
+                    "correct_answer": w,
+                })
         elif tag == "insert":
             for w in student_words[j1:j2]:
                 output.append(Fore.YELLOW + w + Style.RESET_ALL)
                 explanation.append(f"🟡 Zusätzliches Wort: '{w}'")
+                mistakes.append({
+                    "question": "Zusätzliches Wort",
+                    "your_answer": w,
+                    "correct_answer": "",
+                })
+
+    summary = {
+        "correct": sum(
+            1
+            for i, w in enumerate(student_words)
+            if i < len(correct_words) and w == correct_words[i]
+        ),
+        "total": len(correct_words),
+        "mistakes": mistakes,
+    }
+
+    ai_comment = generate_feedback_prompt(summary, vocab=vocab, topic_memory=topic_memory)
 
     if not explanation:
-        return True, "✅ Deine Übersetzung ist korrekt!"
+        return True, f"✅ Deine Übersetzung ist korrekt!<br>{ai_comment}"
 
     feedback_text = (
         "<p><strong>🧩 Deine Version:</strong><br><span style='font-family: monospace;'>"
@@ -304,6 +344,7 @@ def get_feedback(student_version, correct_version):
         + "</span></p>"
     )
     feedback_text += "<p>📘 Erklärungen:<br>" + "<br>".join(explanation) + "</p>"
+    feedback_text += f"<p>{ai_comment}</p>"
     return False, feedback_text
 
 
