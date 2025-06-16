@@ -16,6 +16,7 @@ import Badge from "./UI/Badge";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
+import { getUserLevel } from "../api";
 
 export default function Menu() {
   const navigate = useNavigate();
@@ -24,12 +25,23 @@ export default function Menu() {
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
   const isLoading = useAppStore((state) => state.isLoading);
+  const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     if (!username && storedUsername) {
       setUsername(storedUsername);
     }
+
+    const fetchLevel = async () => {
+      try {
+        const data = await getUserLevel();
+        if (data.level !== undefined) setCurrentLevel(data.level);
+      } catch (e) {
+        console.error("[Menu] failed to load level", e);
+      }
+    };
+    fetchLevel();
 
     if (!isLoading && !username) {
       navigate("/");

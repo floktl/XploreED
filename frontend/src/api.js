@@ -83,6 +83,23 @@ export const getProfile = async () => {
     }
 };
 
+export const getUserLevel = async () => {
+    const res = await fetch(`${BASE_URL}/api/user-level`, {
+        credentials: "include",
+    });
+    return await res.json();
+};
+
+export const setUserLevel = async (level) => {
+    const res = await fetch(`${BASE_URL}/api/user-level`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level }),
+    });
+    return await res.json();
+};
+
 export async function getUserResults() {
     const res = await fetch(`${BASE_URL}/api/profile`, {
         credentials: "include",
