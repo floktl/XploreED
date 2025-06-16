@@ -11,8 +11,12 @@ def level_game():
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    data = request.get_json()
-    level = int(data.get("level", 0))
+    data = request.get_json() or {}
+    level = data.get("level")
+    if level is None:
+        row = fetch_one("users", "WHERE username = ?", (username,))
+        level = row.get("skill_level", 0) if row else 0
+    level = int(level)
     sentence = generate_ai_sentence(username)
     if not sentence:
         sentence = LEVELS[level % len(LEVELS)]
