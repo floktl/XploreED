@@ -21,6 +21,7 @@ import LessonEdit from "./components/LessonEdit";
 import AIFeedback from "./components/AIFeedback";
 import AIFeedbackView from "./components/AIFeedbackView";
 import TopicMemory from "./components/TopicMemory";
+import AIWeaknessLesson from "./components/AIWeaknessLesson";
 import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
 
@@ -75,7 +76,8 @@ const router = createBrowserRouter(
     { path: "/settings", element: <Settings />, errorElement: <ErrorPage /> },
     { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
     { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
-    { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> }
+    { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> },
+    { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> }
   ],
   {
     future: {
