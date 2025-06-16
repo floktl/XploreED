@@ -517,7 +517,7 @@ def ai_weakness_lesson():
         "role": "user",
         "content": (
             "Create a short HTML lesson in English for a German learner. "
-            f"Explain the topic '{topic}' ({skill}) and give three training tips." 
+            f"Explain the topic '{topic}' ({skill}) and give three training tips."
             "Return only valid HTML."
         ),
     }
@@ -532,7 +532,7 @@ def ai_weakness_lesson():
     }
 
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
         if resp.status_code == 200:
             html = resp.json()["choices"][0]["message"]["content"].strip()
             return Response(html, mimetype="text/html")

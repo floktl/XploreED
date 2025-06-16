@@ -68,7 +68,7 @@ export default function LevelGame() {
         setCurrentOrder([]);
       }
     };
-  
+
     loadData();
   }, [level]);
 
@@ -77,19 +77,19 @@ export default function LevelGame() {
       // Clear previous text when starting new recording
       setTypedAnswer("");
       setStatus("Starting microphone...");
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           sampleRate: 16000,
           channelCount: 1,
           echoCancellation: true
-        } 
+        }
       });
 
       setStatus("Recording... Speak in German");
       audioChunksRef.current = [];
       setIsRecording(true);
-      
+
       mediaRecorderRef.current = new MediaRecorder(stream);
 
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -103,7 +103,7 @@ export default function LevelGame() {
           if (audioChunksRef.current.length === 0) {
             throw new Error("No audio recorded");
           }
-          
+
           const audioBlob = new Blob(audioChunksRef.current);
           await processAudio(audioBlob);
         } catch (error) {
@@ -114,7 +114,7 @@ export default function LevelGame() {
       };
 
       mediaRecorderRef.current.start(100);
-      
+
       setTimeout(() => {
         if (isRecording) {
           stopRecording();
@@ -168,16 +168,16 @@ export default function LevelGame() {
       if (response.data?.text) {
         // Remove any trailing punctuation (including full stops)
         let cleanedText = response.data.text.trim();
-        cleanedText = cleanedText.replace(/[.,;!?]+$/, '');
-        
+        cleanedText = cleanedText.replace(/[.,;]+$/, '');
+
         setTypedAnswer(cleanedText);
         setStatus("German transcription complete");
       } else {
         throw new Error("No text in response");
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail?.message || 
-                      error.response?.data?.message || 
+      const errorMsg = error.response?.data?.detail?.message ||
+                      error.response?.data?.message ||
                       error.message;
       setStatus(`API Error: ${errorMsg}`);
       console.error('API Error:', error.response?.data);
@@ -217,7 +217,7 @@ export default function LevelGame() {
   const handleDrop = (e, dropIndex) => {
     e.preventDefault();
     const dragIndex = Number(e.dataTransfer.getData("text/plain"));
-    
+
     if (dragIndex !== dropIndex) {
       const newOrder = [...currentOrder];
       const [removed] = newOrder.splice(dragIndex, 1);
@@ -239,11 +239,11 @@ export default function LevelGame() {
   const handleTouchMove = (e) => {
     if (draggedItem === null) return;
     e.preventDefault();
-    
+
     const touch = e.touches[0];
     const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
     const wordElement = elements.find(el => el.classList.contains('word-item'));
-    
+
     if (wordElement) {
       const index = Number(wordElement.dataset.index);
       setHoverIndex(index);
@@ -252,19 +252,19 @@ export default function LevelGame() {
 
   const handleTouchEnd = (e) => {
     if (draggedItem === null) return;
-    
+
     const element = document.querySelector('.word-item.dragging');
     if (element) {
       element.classList.remove("dragging", "invisible");
     }
-    
+
     if (hoverIndex !== null && draggedItem !== hoverIndex) {
       const newOrder = [...currentOrder];
       const [removed] = newOrder.splice(draggedItem, 1);
       newOrder.splice(hoverIndex, 0, removed);
       setCurrentOrder(newOrder);
     }
-    
+
     setDraggedItem(null);
     setHoverIndex(null);
   };
@@ -329,12 +329,12 @@ export default function LevelGame() {
                   onDragEnd={handleDragEnd}
                   onDrop={(e) => handleDrop(e, i)}
                   className={`word-item px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
-                    draggedItem === i 
-                      ? "bg-blue-600 text-white shadow-lg z-10" 
-                      : hoverIndex === i 
-                        ? "bg-blue-400 text-white" 
-                        : darkMode 
-                          ? "bg-gray-700 hover:bg-gray-600 text-white" 
+                    draggedItem === i
+                      ? "bg-blue-600 text-white shadow-lg z-10"
+                      : hoverIndex === i
+                        ? "bg-blue-400 text-white"
+                        : darkMode
+                          ? "bg-gray-700 hover:bg-gray-600 text-white"
                           : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                   } cursor-ew-resize select-none flex items-center justify-center`}
                   style={{ height: "42px" }}
@@ -354,10 +354,10 @@ export default function LevelGame() {
                 onClick={toggleRecording}
                 disabled={!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE"}
                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 ${
-                  isRecording 
-                    ? "bg-red-500 animate-pulse" 
-                    : darkMode 
-                      ? "bg-gray-600 hover:bg-gray-500" 
+                  isRecording
+                    ? "bg-red-500 animate-pulse"
+                    : darkMode
+                      ? "bg-gray-600 hover:bg-gray-500"
                       : "bg-gray-200 hover:bg-gray-300"
                 } transition-all`}
                 title={isRecording ? "Stop recording" : "Start recording (German)"}
