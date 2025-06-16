@@ -63,6 +63,7 @@ FALLBACK_TOPIC_MEMORY = [
     {
         "topic": "sein",
         "skill_type": "grammar",
+        "context": "example",
         "lesson_content_id": "1.1",
         "ease_factor": 2.2,
         "intervall": 3,
@@ -228,19 +229,15 @@ def generate_feedback_prompt(
                 examples.append(f"Example: {word}.")
     examples_text = "\n".join(examples)
 
-    # Identify topics that repeatedly appear in the topic memory
+    # Identify grammar cases that repeatedly appear in topic memory
     repeated_topics = []
-    if topic_memory and mistakes:
+    if topic_memory:
         topic_counts = {}
         for entry in topic_memory:
             topic = entry.get("topic")
             if topic:
                 topic_counts[topic] = topic_counts.get(topic, 0) + 1
-        for m in mistakes:
-            topic = m.get("question")
-            if topic and topic_counts.get(topic, 0) > 1:
-                repeated_topics.append(topic)
-        repeated_topics = list(dict.fromkeys(repeated_topics))
+        repeated_topics = [t for t, c in topic_counts.items() if c > 1]
     repeated_text = "\n".join(f"- {t}" for t in repeated_topics[:3])
 
     user_prompt = {
