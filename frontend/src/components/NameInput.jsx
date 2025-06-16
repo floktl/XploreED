@@ -43,6 +43,13 @@ export default function NameInput() {
         if (res.error) throw new Error(res.error);
         res = await login(trimmed, pw);
         if (res.error) throw new Error(res.error);
+        const me = await getMe();
+        const role = await getRole();
+        setUsername(me.username);
+        setIsAdmin(role.is_admin);
+        localStorage.setItem("username", me.username);
+        navigate("/placement-test");
+        return;
       } else {
         res = await login(trimmed, pw);
         if (res.error) throw new Error(res.error);

@@ -193,3 +193,21 @@ def get_topic_memory():
     )
 
     return jsonify(rows if rows else [])
+
+
+@user_bp.route("/user-level", methods=["GET", "POST"])
+def user_level():
+    """Get or update the logged in user's skill level."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    if request.method == "GET":
+        row = fetch_one("users", "WHERE username = ?", (user,))
+        level = row.get("skill_level", 0) if row else 0
+        return jsonify({"level": level})
+
+    data = request.get_json() or {}
+    level = int(data.get("level", 0))
+    update_row("users", {"skill_level": level}, "username = ?", (user,))
+    return jsonify({"msg": "updated", "level": level})
