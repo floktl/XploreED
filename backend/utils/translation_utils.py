@@ -2,6 +2,10 @@ import os
 import json
 import re
 import requests
+import datetime
+from utils.grammar_utils import detect_language_topics
+from utils.db_utils import insert_row, update_row, fetch_one_custom
+from utils.algorithm import sm2
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
@@ -60,3 +64,62 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
         print("AI translation evaluation failed:", e)
 
     return False, "Could not evaluate translation."
+ 
+
+def update_topic_memory_translation(username: str, german: str, correct: bool):
+    """Update the topic_memory table based on a translation result."""
+    features = detect_language_topics(german)
+    topic = ", ".join(features) if features else "unknown"
+    skill = "translation"
+    quality = 5 if correct else 2
+
+    existing = fetch_one_custom(
+        "SELECT id, ease_factor, intervall, repetitions FROM topic_memory "
+        "WHERE username = ? AND topic = ? AND skill_type = ?",
+        (username, topic, skill),
+    )
+
+    if existing:
+        ef, reps, interval = sm2(
+            quality,
+            existing.get("ease_factor") or 2.5,
+            existing.get("repetitions") or 0,
+            existing.get("intervall") or 1,
+        )
+        update_row(
+            "topic_memory",
+            {
+                "ease_factor": ef,
+                "repetitions": reps,
+                "intervall": interval,
+                "next_repeat": (
+                    datetime.datetime.now()
+                    + datetime.timedelta(days=interval)
+                ).isoformat(),
+                "last_review": datetime.datetime.now().isoformat(),
+                "correct": int(correct),
+            },
+            "id = ?",
+            (existing["id"],),
+        )
+    else:
+        ef, reps, interval = sm2(quality)
+        insert_row(
+            "topic_memory",
+            {
+                "username": username,
+                "topic": topic,
+                "skill_type": skill,
+                "context": german,
+                "lesson_content_id": "translation_practice",
+                "ease_factor": ef,
+                "intervall": interval,
+                "next_repeat": (
+                    datetime.datetime.now()
+                    + datetime.timedelta(days=interval)
+                ).isoformat(),
+                "repetitions": reps,
+                "last_review": datetime.datetime.now().isoformat(),
+                "correct": int(correct),
+            },
+        )
