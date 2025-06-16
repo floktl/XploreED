@@ -68,8 +68,8 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     """
     query = (
         "SELECT topic, skill_type, context, lesson_content_id, ease_factor, "
-        "intervall, next_repeat, repetitions, last_review, correct FROM "
-        "topic_memory WHERE username = ?"
+        "intervall, next_repeat, repetitions, last_review, correct "
+        "FROM topic_memory WHERE username = ?"
     )
     params = [username]
     if not include_correct:
@@ -101,36 +101,77 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         user_ans = str(user_ans).strip().lower()
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
-        ef, reps, interval = sm2(quality)
         features = detect_language_topics(f"{ex.get('question', '')} {correct_ans}")
-        entry = {
-            "topic_memory": {
-                "topic": ", ".join(features) if features else "unknown",
-                "skill_type": ex.get("type", ""),
-                "context": ex.get("question", ""),
-                "lesson_content_id": block_id,
-                "ease_factor": ef,
-                "intervall": interval,
-                "next_repeat": (
-                    datetime.datetime.now()
-                    + datetime.timedelta(days=interval)
-                ).isoformat(),
-                "repetitions": reps,
-                "last_review": datetime.datetime.now().isoformat(),
-                "correct": is_correct,
-            }
-        }
-        results.append(entry)
-        try:
-            insert_row(
+        topic = ", ".join(features) if features else "unknown"
+        skill = ex.get("type", "")
+
+        existing = fetch_one_custom(
+            "SELECT id, ease_factor, intervall, repetitions FROM topic_memory WHERE username = ? AND topic = ? AND skill_type = ?",
+            (
+                username,
+                topic,
+                skill,
+            ),
+        )
+
+        if existing:
+            ef, reps, interval = sm2(
+                quality,
+                existing.get("ease_factor") or 2.5,
+                existing.get("repetitions") or 0,
+                existing.get("intervall") or 1,
+            )
+            update_row(
                 "topic_memory",
                 {
-                    "username": username,
-                    **entry["topic_memory"],
+                    "ease_factor": ef,
+                    "repetitions": reps,
+                    "intervall": interval,
+                    "next_repeat": (
+                        datetime.datetime.now()
+                        + datetime.timedelta(days=interval)
+                    ).isoformat(),
+                    "last_review": datetime.datetime.now().isoformat(),
+                    "correct": is_correct,
                 },
+                "id = ?",
+                (existing["id"],),
             )
-        except Exception as e:
-            current_app.logger.error("Failed to insert topic memory: %s", e)
+        else:
+            ef, reps, interval = sm2(quality)
+            try:
+                insert_row(
+                    "topic_memory",
+                    {
+                        "username": username,
+                        "topic": topic,
+                        "skill_type": skill,
+                        "context": ex.get("question", ""),
+                        "lesson_content_id": block_id,
+                        "ease_factor": ef,
+                        "intervall": interval,
+                        "next_repeat": (
+                            datetime.datetime.now()
+                            + datetime.timedelta(days=interval)
+                        ).isoformat(),
+                        "repetitions": reps,
+                        "last_review": datetime.datetime.now().isoformat(),
+                        "correct": is_correct,
+                    },
+                )
+            except Exception as e:
+                current_app.logger.error("Failed to save topic memory: %s", e)
+
+        results.append(
+            {
+                "topic_memory": {
+                    "topic": topic,
+                    "skill_type": skill,
+                    "quality": quality,
+                    "correct": is_correct,
+                }
+            }
+        )
 
     print("AI submission results:", results, flush=True)
 
