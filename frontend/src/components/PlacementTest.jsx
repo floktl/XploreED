@@ -51,7 +51,6 @@ export default function PlacementTest({ onComplete }) {
     if (res.correct) setCorrect((c) => c + 1);
     const id = `ex${index + 1}`;
     setAnswers((a) => ({ ...a, [id]: answer.trim() }));
-
     if (index < 9) {
       setIndex(index + 1);
     } else {
