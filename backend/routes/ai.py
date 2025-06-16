@@ -40,7 +40,9 @@ HEADERS = {
 }
 
 
-def evaluate_answers_with_ai(exercises: list, answers: dict) -> dict | None:
+def evaluate_answers_with_ai(
+    exercises: list, answers: dict, mode: str = "strict"
+) -> dict | None:
     """Ask Mistral to evaluate student answers and return JSON results."""
     formatted = [
         {
@@ -52,21 +54,33 @@ def evaluate_answers_with_ai(exercises: list, answers: dict) -> dict | None:
         for ex in exercises
     ]
 
+    instructions = (
+        "Evaluate these answers for a German exercise. "
+        "Return JSON with 'pass' (true/false) and a 'results' list. "
+        "Each result must include 'id' and 'correct_answer'. "
+        "Mark pass true only if all answers are fully correct."
+    )
+    if mode == "argue":
+        instructions = (
+            "Reevaluate the student's answers carefully. "
+            "Consider possible alternative correct solutions. "
+            + instructions
+        )
+
     user_prompt = {
         "role": "user",
-        "content": (
-            "Evaluate these answers for a German exercise. "
-            "Return JSON with 'pass' (true/false) and a 'results' list. "
-            "Each result must include 'id' and 'correct_answer'."\
-            " Mark pass true only if all answers are fully correct.\n"+
-            json.dumps(formatted, ensure_ascii=False)
-        ),
+        "content": instructions + "\n" + json.dumps(formatted, ensure_ascii=False),
     }
 
     payload = {
         "model": "mistral-medium",
         "messages": [
-            {"role": "system", "content": "You are a strict German teacher."},
+            {
+                "role": "system",
+                "content": (
+                    "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher."
+                ),
+            },
             user_prompt,
         ],
         "temperature": 0.3,
@@ -353,6 +367,27 @@ def submit_ai_exercise(block_id):
         "summary": summary,
         "results": evaluation.get("results", []),
     })
+
+
+@ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])
+def argue_ai_exercise(block_id):
+    """Reevaluate answers when the student wants to argue with the AI."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    answers = data.get("answers", {})
+    exercise_block = data.get("exercise_block") or {}
+    exercises = exercise_block.get("exercises", [])
+
+    evaluation = evaluate_answers_with_ai(exercises, answers, mode="argue")
+    if not evaluation:
+        return jsonify({"msg": "Evaluation failed"}), 500
+
+    return jsonify(evaluation)
 
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
