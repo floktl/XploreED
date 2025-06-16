@@ -1,3 +1,5 @@
+"""Endpoints for the sentence ordering game."""
+
 from utils.imports.imports import *
 
 

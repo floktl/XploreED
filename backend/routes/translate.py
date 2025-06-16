@@ -1,3 +1,5 @@
+"""Simple translation exercise endpoints."""
+
 from utils.imports.imports import *
 
 @translate_bp.route("/translate", methods=["POST"])
