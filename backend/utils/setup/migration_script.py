@@ -179,6 +179,12 @@ with get_connection() as conn:
     else:
         print("ℹ️ 'created_at' column already exists.")
 
+    if "skill_level" not in user_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN skill_level INTEGER DEFAULT 0;")
+        print("✅ 'skill_level' column added.")
+    else:
+        print("ℹ️ 'skill_level' column already exists.")
+
     # ✅ Create lesson_progress table
     cursor.execute(
         """
