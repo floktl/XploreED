@@ -229,7 +229,6 @@ def generate_feedback_prompt(
                 examples.append(f"Example: {word}.")
     examples_text = "\n".join(examples)
 
-    # Identify language features that repeatedly appear in topic memory
     repeated_topics = []
     if topic_memory:
         topic_counts = {}
