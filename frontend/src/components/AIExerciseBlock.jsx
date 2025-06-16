@@ -6,7 +6,6 @@ import {
   getAiExercises,
   saveVocabWords,
   submitExerciseAnswers,
-  generateAiFeedback,
 } from "../api";
 
 export default function AIExerciseBlock({ data, blockId, completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
@@ -19,15 +18,12 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [evaluation, setEvaluation] = useState({});
+  const [passed, setPassed] = useState(false);
 
   const exercises = current?.exercises || [];
   const instructions = current?.instructions;
   const feedbackPrompt = current?.feedbackPrompt;
-  const allCorrect = exercises.every(
-    (ex) =>
-      String(answers[ex.id]).trim().toLowerCase() ===
-      String(ex.correctAnswer).trim().toLowerCase()
-  );
 
   useEffect(() => {
     setIsComplete(completed);
@@ -45,11 +41,11 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   }, [mode, fetchExercisesFn]);
 
   useEffect(() => {
-    if (mode === "student" && submitted && allCorrect && !isComplete) {
+    if (mode === "student" && submitted && passed && !isComplete) {
       setIsComplete(true);
       onComplete?.();
     }
-  }, [submitted, allCorrect, isComplete, onComplete, mode]);
+  }, [submitted, passed, isComplete, onComplete, mode]);
 
   if (mode !== "student") {
     return (
@@ -83,13 +79,23 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   const handleSubmit = async () => {
     setSubmitted(true);
     try {
-      await submitExerciseAnswers(blockId, answers, current);
-      if (allCorrect && mode === "student") {
-        await saveVocabWords(exercises.map((ex) => ex.correctAnswer));
+      const result = await submitExerciseAnswers(blockId, answers, current);
+      if (result?.results) {
+        const map = {};
+        result.results.forEach((r) => {
+          map[r.id] = r.correct_answer;
+        });
+        setEvaluation(map);
       }
-      const result = await generateAiFeedback({ answers, exercise_block: current });
-      if (result && result.feedbackPrompt) {
+      if (result?.feedbackPrompt) {
         setCurrent((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
+      }
+      if (result?.pass) {
+        setPassed(true);
+        if (mode === "student" && Array.isArray(result.results)) {
+          const words = result.results.map((r) => r.correct_answer);
+          await saveVocabWords(words);
+        }
       }
     } catch (e) {
       console.error("Submission failed:", e);
@@ -97,7 +103,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
   };
 
   const handleNext = async () => {
-    if (allCorrect) return;
+    if (passed) return;
     setLoading(true);
     try {
       const newData = await fetchExercisesFn({ answers });
@@ -105,6 +111,8 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
       setStage((s) => s + 1);
       setAnswers({});
       setSubmitted(false);
+      setEvaluation({});
+      setPassed(false);
     } catch (err) {
       alert("Failed to load AI exercises");
     } finally {
@@ -170,11 +178,11 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
             {submitted && (
               <div className="mt-2">
                 {String(answers[ex.id]).trim().toLowerCase() ===
-                String(ex.correctAnswer).trim().toLowerCase() ? (
+                String(evaluation[ex.id]).trim().toLowerCase() ? (
                   <span className="text-green-600">✅ Correct!</span>
                 ) : (
                   <span className="text-red-600">
-                    ❌ Incorrect. Correct answer: <b>{ex.correctAnswer}</b>
+                    ❌ Incorrect. Correct answer: <b>{evaluation[ex.id]}</b>
                   </span>
                 )}
                 <div className="text-xs text-gray-500 mt-1">{ex.explanation}</div>
@@ -192,7 +200,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
             {feedbackPrompt}
           </div>
         )}
-        {submitted && !allCorrect && (
+        {submitted && !passed && (
           <div className="mt-4">
             <Button
               type="button"
@@ -204,7 +212,7 @@ export default function AIExerciseBlock({ data, blockId, completed = false, onCo
             </Button>
           </div>
         )}
-        {submitted && allCorrect && (
+        {submitted && passed && (
           <div className="mt-4 text-green-700">All exercises correct!</div>
         )}
       </div>
