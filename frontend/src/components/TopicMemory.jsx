@@ -57,6 +57,7 @@ export default function TopicMemory() {
                 <tr>
                   <th className="px-4 py-2 text-left">Topic</th>
                   <th className="px-4 py-2 text-left">Skill</th>
+                  <th className="px-4 py-2 text-left">Context</th>
                   <th className="px-4 py-2 text-left">Ease</th>
                   <th className="px-4 py-2 text-left">Interval</th>
                   <th className="px-4 py-2 text-left">Next</th>
@@ -68,6 +69,7 @@ export default function TopicMemory() {
                   <tr key={t.id} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
                     <td className="px-4 py-2 font-medium">{t.topic}</td>
                     <td className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{t.skill_type}</td>
+                    <td className="px-4 py-2 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis">{t.context}</td>
                     <td className="px-4 py-2">{Number(t.ease_factor).toFixed(2)}</td>
                     <td className="px-4 py-2">{t.intervall}</td>
                     <td className="px-4 py-2">{t.next_repeat ? new Date(t.next_repeat).toLocaleDateString() : ""}</td>

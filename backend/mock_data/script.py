@@ -61,7 +61,7 @@ FALLBACK_VOCAB_DATA = [
 
 FALLBACK_TOPIC_MEMORY = [
     {
-        "topic": "sein",
+        "topic": "sein, pronoun, case:nominative",
         "skill_type": "grammar",
         "context": "example",
         "lesson_content_id": "1.1",
@@ -229,14 +229,18 @@ def generate_feedback_prompt(
                 examples.append(f"Example: {word}.")
     examples_text = "\n".join(examples)
 
-    # Identify grammar cases that repeatedly appear in topic memory
     repeated_topics = []
     if topic_memory:
         topic_counts = {}
         for entry in topic_memory:
             topic = entry.get("topic")
-            if topic:
-                topic_counts[topic] = topic_counts.get(topic, 0) + 1
+            if not topic:
+                continue
+            for t in str(topic).split(','):
+                t = t.strip()
+                if not t:
+                    continue
+                topic_counts[t] = topic_counts.get(t, 0) + 1
         repeated_topics = [t for t, c in topic_counts.items() if c > 1]
     repeated_text = "\n".join(f"- {t}" for t in repeated_topics[:3])
 
