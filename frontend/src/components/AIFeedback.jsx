@@ -28,7 +28,7 @@ export default function AIFeedback() {
       }`}
     >
       <Container>
-        <Title>🤖 {username}'s AI Lessons</Title>
+        <Title>🤖 {username}'s AI Training Exercises</Title>
         <p
           className={`text-center mb-6 ${
             darkMode ? "text-gray-300" : "text-gray-600"
