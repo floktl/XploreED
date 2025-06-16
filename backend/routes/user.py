@@ -184,7 +184,7 @@ def get_topic_memory():
     rows = fetch_custom(
         """
         SELECT id, topic, skill_type, lesson_content_id, ease_factor,
-               intervall, next_repeat, repetitions, last_review
+               intervall, next_repeat, repetitions, last_review, correct
         FROM topic_memory
         WHERE username = ?
         ORDER BY datetime(next_repeat) ASC

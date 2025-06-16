@@ -68,7 +68,8 @@ FALLBACK_TOPIC_MEMORY = [
         "intervall": 3,
         "next_repeat": "2025-06-13",
         "repetitions": 2,
-        "last_review": "2025-06-10"
+        "last_review": "2025-06-10",
+        "correct": 0
     }
 ]
 

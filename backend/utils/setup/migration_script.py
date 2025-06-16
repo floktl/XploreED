@@ -253,11 +253,23 @@ with get_connection() as conn:
             intervall INTEGER,
             next_repeat DATETIME,
             repetitions INTEGER,
-            last_review DATETIME
+            last_review DATETIME,
+            correct INTEGER DEFAULT 0
         );
         """
     )
     print("✅ 'topic_memory' table created (if not exists).")
+
+# ✅ Add correct column if missing
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
+if "correct" not in topic_cols:
+    cursor.execute(
+        "ALTER TABLE topic_memory ADD COLUMN correct INTEGER DEFAULT 0;"
+    )
+    print("✅ 'correct' column added to 'topic_memory'.")
+else:
+    print("ℹ️ 'correct' column already exists in 'topic_memory'.")
 
 # ✅ Add num_blocks column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
