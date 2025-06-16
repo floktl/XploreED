@@ -59,25 +59,22 @@ def tts():
         return jsonify({"error": str(e)}), 500
 
 
-def fetch_topic_memory(username: str) -> list:
-    """Retrieve topic memory rows for a user if the table exists."""
-    try:
-        rows = fetch_custom(
-            "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review FROM topic_memory WHERE username = ?",
-            (username,),
-        )
-        return rows if rows else []
-    except Exception:
-        # Table might not exist yet
-        return []
+def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
+    """Retrieve topic memory rows for a user.
 
-def fetch_topic_memory(username: str) -> list:
-    """Retrieve topic memory rows for a user if the table exists."""
+    If ``include_correct`` is ``False`` (default), only entries that were
+    answered incorrectly are returned.
+    """
+    query = (
+        "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, "
+        "next_repeat, repetitions, last_review, correct FROM topic_memory "
+        "WHERE username = ?"
+    )
+    params = [username]
+    if not include_correct:
+        query += " AND (correct IS NULL OR correct = 0)"
     try:
-        rows = fetch_custom(
-            "SELECT topic, skill_type, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review FROM topic_memory WHERE username = ?",
-            (username,),
-        )
+        rows = fetch_custom(query, tuple(params))
         return rows if rows else []
     except Exception:
         # Table might not exist yet
@@ -101,35 +98,36 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             continue
         correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
         user_ans = str(user_ans).strip().lower()
-        quality = 5 if user_ans == correct_ans else 2
+        is_correct = int(user_ans == correct_ans)
+        quality = 5 if is_correct else 2
         ef, reps, interval = sm2(quality)
-        if user_ans != correct_ans:
-            entry = {
-                "topic_memory": {
-                    "topic": ex.get("question", ""),
-                    "skill_type": ex.get("type", ""),
-                    "lesson_content_id": block_id,
-                    "ease_factor": ef,
-                    "intervall": interval,
-                    "next_repeat": (
-                        datetime.datetime.now()
-                        + datetime.timedelta(days=interval)
-                    ).isoformat(),
-                    "repetitions": reps,
-                    "last_review": datetime.datetime.now().isoformat(),
-                }
+        entry = {
+            "topic_memory": {
+                "topic": ex.get("question", ""),
+                "skill_type": ex.get("type", ""),
+                "lesson_content_id": block_id,
+                "ease_factor": ef,
+                "intervall": interval,
+                "next_repeat": (
+                    datetime.datetime.now()
+                    + datetime.timedelta(days=interval)
+                ).isoformat(),
+                "repetitions": reps,
+                "last_review": datetime.datetime.now().isoformat(),
+                "correct": is_correct,
             }
-            results.append(entry)
-            try:
-                insert_row(
-                    "topic_memory",
-                    {
-                        "username": username,
-                        **entry["topic_memory"],
-                    },
-                )
-            except Exception as e:
-                current_app.logger.error("Failed to insert topic memory: %s", e)
+        }
+        results.append(entry)
+        try:
+            insert_row(
+                "topic_memory",
+                {
+                    "username": username,
+                    **entry["topic_memory"],
+                },
+            )
+        except Exception as e:
+            current_app.logger.error("Failed to insert topic memory: %s", e)
 
     print("AI submission results:", results, flush=True)
 
