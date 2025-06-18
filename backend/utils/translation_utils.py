@@ -133,3 +133,13 @@ def update_topic_memory_translation(username: str, german: str, correct: bool) -
     features = detect_language_topics(german) or ["unknown"]
     for feature in features:
         _update_single_topic(username, feature, "translation", german, correct)
+
+
+def update_topic_memory_reading(username: str, text: str, correct: bool) -> None:
+    """Update spaced repetition entries for reading comprehension."""
+    features = detect_language_topics(text) or ["unknown"]
+    for feature in features:
+        _update_single_topic(username, feature, "reading", text, correct)
+
+
+__all__.append("update_topic_memory_reading")
