@@ -22,6 +22,12 @@ Use provided memory data to tailor difficulty.
 Use the example structure.
 """
 
+# Mapping from numeric level (0-10) to CEFR code
+CEFR_LEVELS = [
+    "A1", "A1", "A2", "A2", "B1",
+    "B1", "B2", "B2", "C1", "C1", "C2"
+]
+
 # === FALLBACK DATA ===
 
 FALLBACK_EXERCISE_BLOCK = {
@@ -110,7 +116,12 @@ def _ensure_schema(exercise_block: dict) -> dict:
 
 # === MAIN FUNCTION ===
 
-def generate_new_exercises(vocabular=None, topic_memory=None, example_exercise_block=None, level=None):
+def generate_new_exercises(
+    vocabular=None,
+    topic_memory=None,
+    example_exercise_block=None,
+    level=None,
+):
     if not vocabular:
         print("⚠️ No vocabulary data found. Using fallback vocab.", flush=True)
         vocabular = FALLBACK_VOCAB_DATA
@@ -121,12 +132,20 @@ def generate_new_exercises(vocabular=None, topic_memory=None, example_exercise_b
         print("⚠️ No example block provided. Using fallback block.", flush=True)
         example_exercise_block = FALLBACK_EXERCISE_BLOCK
 
+    level_val = int(level or 0)
+    level_val = max(0, min(level_val, 10))
+    cefr_level = CEFR_LEVELS[level_val]
+
+    example_exercise_block["level"] = cefr_level
+
     print("🧠 Sending request to Mistral AI...", flush=True)
 
     user_prompt = {
         "role": "user",
         "content": f"""
 You are generating structured grammar and translation exercises for a German learner.
+The student's level is {level_val}/10 (CEFR {cefr_level}).
+Adjust sentence complexity and vocabulary accordingly.
 
 Here is the required JSON structure — you must follow it **exactly**:
 
@@ -162,7 +181,7 @@ Vocabulary:
 Topic Memory:
 {json.dumps(topic_memory, indent=2)}
 
-Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses.
+Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
 """
     }
 
@@ -182,6 +201,7 @@ Create a new exercise block using the **same structure** and **same field names*
         if parsed is not None:
             print("✅ Successfully parsed exercise block from AI.", flush=True)
             parsed = _ensure_schema(parsed)
+            parsed["level"] = cefr_level
             print(json.dumps(parsed, indent=2), flush=True)
             return parsed
         print("❌ Failed to parse JSON. Raw content:", flush=True)

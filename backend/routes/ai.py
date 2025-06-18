@@ -274,7 +274,12 @@ def get_ai_exercises():
     topic_rows = fetch_topic_memory(username)
     topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
 
-    ai_block = generate_new_exercises(vocab_data, topic_memory, example_block)
+    row = fetch_one("users", "WHERE username = ?", (username,))
+    level = row.get("skill_level", 0) if row else 0
+
+    ai_block = generate_new_exercises(
+        vocab_data, topic_memory, example_block, level=level
+    )
     if not ai_block:
         ai_block = example_block.copy()
 
@@ -535,7 +540,12 @@ def get_training_exercises():
     topic_rows = fetch_topic_memory(username)
     topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
 
-    ai_block = generate_new_exercises(vocab_data, topic_memory, example_block)
+    row = fetch_one("users", "WHERE username = ?", (username,))
+    level = row.get("skill_level", 0) if row else 0
+
+    ai_block = generate_new_exercises(
+        vocab_data, topic_memory, example_block, level=level
+    )
     if not ai_block:
         ai_block = example_block.copy()
 
