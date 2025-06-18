@@ -87,7 +87,6 @@ export default function PlacementTest({ onComplete }) {
     <>
       {showFeedback ? (
         <PlacementFeedback
-          feedback={feedbackText}
           summary={feedbackSummary}
           onDone={() => {
             if (onComplete) {
