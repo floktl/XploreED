@@ -12,7 +12,7 @@ from mock_data.script import (
     _extract_json,
 )
 from utils.grammar_utils import detect_language_topics
-from utils.translation_utils import _update_single_topic
+from utils.translation_utils import _update_single_topic, update_topic_memory_reading
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
