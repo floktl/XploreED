@@ -142,4 +142,8 @@ def update_topic_memory_reading(username: str, text: str, correct: bool) -> None
         _update_single_topic(username, feature, "reading", text, correct)
 
 
-__all__.append("update_topic_memory_reading")
+__all__ = [
+    "evaluate_translation_ai",
+    "update_topic_memory_translation",
+    "update_topic_memory_reading",
+]
