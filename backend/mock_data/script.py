@@ -110,7 +110,7 @@ def _ensure_schema(exercise_block: dict) -> dict:
 
 # === MAIN FUNCTION ===
 
-def generate_new_exercises(vocabular=None, topic_memory=None, example_exercise_block=None):
+def generate_new_exercises(vocabular=None, topic_memory=None, example_exercise_block=None, level=None):
     if not vocabular:
         print("⚠️ No vocabulary data found. Using fallback vocab.", flush=True)
         vocabular = FALLBACK_VOCAB_DATA
@@ -133,7 +133,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 1. Each exercise must include:
    - `id`: a unique ID like `"ex1"`
    - `type`: either `"gap-fill"` or `"translation"`
-   - `question`: a string (either a sentence with a blank, or a translation task)
+   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task)
    - For "gap-fill":
      - `options`: list of 4 strings
      - `correctAnswer`: the correct string
@@ -155,7 +155,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 Here is an example:
 {json.dumps(example_exercise_block, indent=2)}
 
-Based on the following memory data. Sometimes add new topic and vocabulary:
+Based on the following memory data. Sometimes add new topic and vocabulary, don't ask the same questions as in the topic memory, focus on topic and skill:
 Vocabulary:
 {json.dumps(vocabular, indent=2)}
 

@@ -26,15 +26,15 @@ export default function Profile() {
       try {
         const data = await getMe();
         setUsername(data.username);
-  
+
         const roleData = await getRole();
         setIsAdmin(roleData.is_admin);
-  
+
         if (roleData.is_admin) {
           navigate("/admin-panel");
           return;
         }
-  
+
         const profileResults = await fetchProfileResults();
         setResults(profileResults);
       } catch (err) {
@@ -42,10 +42,10 @@ export default function Profile() {
         navigate("/");
       }
     };
-  
+
     checkSession();
   }, [navigate, setUsername, setIsAdmin]);
-  
+
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
@@ -79,7 +79,7 @@ export default function Profile() {
                     <td className="px-4 py-2 font-medium">{r.level === -1 ? "Free" : r.level}</td>
                     <td className="px-4 py-2">
                       <Badge type={r.correct ? "success" : "error"}>
-                        {r.correct ? "✅" : "❌"}
+                        {r.correct ? "  " : "  "}
                       </Badge>
                     </td>
                     <td className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>{r.answer}</td>
