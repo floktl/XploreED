@@ -99,6 +99,11 @@ export default function Menu() {
               AI Weakness Lesson
             </Button>
 
+            <Button type="button" variant="secondary" onClick={() => navigate("/reading-exercise")} className="justify-start gap-3">
+              <Book className="w-5 h-5" />
+              AI Reading Exercise
+            </Button>
+
             <Button type="button" variant="secondary" onClick={() => navigate("/topic-memory")} className="justify-start gap-3">
               <BrainCircuit className="w-5 h-5" />
               Topic Memory

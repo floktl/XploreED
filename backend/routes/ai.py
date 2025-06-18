@@ -33,12 +33,35 @@ EXERCISE_TEMPLATE = {
     "vocabHelp": [],
 }
 
+READING_TEMPLATE = {
+    "lessonId": "ai-reading",
+    "style": "story",
+    "text": "Guten Morgen!",
+    "questions": [],
+    "feedbackPrompt": "",
+    "vocabHelp": [],
+}
+
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 HEADERS = {
     "Authorization": f"Bearer {MISTRAL_API_KEY}",
     "Content-Type": "application/json",
 }
+
+CEFR_LEVELS = [
+    "A1",
+    "A1",
+    "A2",
+    "A2",
+    "B1",
+    "B1",
+    "B2",
+    "B2",
+    "C1",
+    "C1",
+    "C2",
+]
 
 
 def store_user_ai_data(username: str, data: dict):
@@ -164,6 +187,44 @@ def evaluate_answers_with_ai(
         current_app.logger.error("AI evaluation failed: %s", e)
 
     return None
+
+
+def generate_reading_exercise(style: str, level: int) -> dict:
+    """Create a short reading text with questions using Mistral."""
+    example = READING_TEMPLATE.copy()
+    cefr_level = CEFR_LEVELS[max(0, min(level, 10))]
+    example["level"] = cefr_level
+    example["style"] = style
+
+    user_prompt = {
+        "role": "user",
+        "content": (
+            "Create a short "
+            f"{style} in German for level {cefr_level}. "
+            "Return JSON with keys 'text', 'questions' (each with id, question, options, correctAnswer)."
+        ),
+    }
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {"role": "system", "content": "You are a helpful German teacher."},
+            user_prompt,
+        ],
+        "temperature": 0.7,
+    }
+
+    try:
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
+        if resp.status_code == 200:
+            content = resp.json()["choices"][0]["message"]["content"]
+            parsed = _extract_json(content)
+            if parsed:
+                return parsed
+    except Exception as e:
+        current_app.logger.error("Failed to generate reading exercise: %s", e)
+
+    return example
 
 
 @ai_bp.route("/tts", methods=["POST"])
@@ -709,3 +770,91 @@ def ai_weakness_lesson():
         },
     )
     return Response(fallback, mimetype="text/html")
+
+
+@ai_bp.route("/reading-exercise", methods=["POST"])
+def ai_reading_exercise():
+    """Return a short reading exercise based on the user's level."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    style = data.get("style", "story")
+
+    row = fetch_one("users", "WHERE username = ?", (username,))
+    level = row.get("skill_level", 0) if row else 0
+
+    block = generate_reading_exercise(style, level)
+    for q in block.get("questions", []):
+        q.pop("correctAnswer", None)
+    return jsonify(block)
+
+
+@ai_bp.route("/reading-exercise/submit", methods=["POST"])
+def submit_reading_exercise():
+    """Evaluate reading answers and update memory."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    answers = data.get("answers", {})
+    exercise = data.get("exercise") or {}
+    text = exercise.get("text", "")
+    questions = exercise.get("questions", [])
+
+    correct = 0
+    results = []
+    for q in questions:
+        qid = str(q.get("id"))
+        sol = str(q.get("correctAnswer", "")).strip().lower()
+        ans = str(answers.get(qid, "")).strip().lower()
+        if ans == sol:
+            correct += 1
+        results.append({"id": qid, "correct_answer": q.get("correctAnswer")})
+
+    summary = {"correct": correct, "total": len(questions), "mistakes": []}
+    for q in questions:
+        qid = str(q.get("id"))
+        if str(answers.get(qid, "")).strip().lower() != str(q.get("correctAnswer", "")).strip().lower():
+            summary["mistakes"].append(
+                {
+                    "question": q.get("question"),
+                    "your_answer": answers.get(qid, ""),
+                    "correct_answer": q.get("correctAnswer"),
+                }
+            )
+
+    for word in split_and_clean(text):
+        save_vocab(username, word, context=text, exercise="reading")
+
+    update_topic_memory_reading(username, text, True)
+    for q in questions:
+        is_correct = str(answers.get(str(q.get("id")), "")).strip().lower() == str(q.get("correctAnswer", "")).strip().lower()
+        features = detect_language_topics(f"{q.get('question','')} {q.get('correctAnswer','')}") or ["unknown"]
+        for feat in features:
+            _update_single_topic(username, feat, "reading", q.get("question",""), is_correct)
+
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation FROM vocab_log WHERE username = ?",
+        (username,),
+    )
+    vocab_data = [
+        {"word": row["vocab"], "translation": row.get("translation")}
+        for row in vocab_rows
+    ] if vocab_rows else []
+
+    topic_rows = fetch_topic_memory(username)
+    topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+
+    feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+
+    return jsonify({
+        "feedbackPrompt": feedback_prompt,
+        "pass": correct == len(questions),
+        "summary": summary,
+        "results": results,
+    })
