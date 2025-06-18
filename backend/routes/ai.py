@@ -40,6 +40,73 @@ HEADERS = {
 }
 
 
+def store_user_ai_data(username: str, data: dict):
+    """Insert or update cached AI data for a user."""
+    exists = fetch_one_custom(
+        "SELECT username FROM ai_user_data WHERE username = ?",
+        (username,),
+    )
+    if exists:
+        update_row("ai_user_data", data, "username = ?", (username,))
+    else:
+        data_with_user = {"username": username, **data}
+        insert_row("ai_user_data", data_with_user)
+
+
+def generate_training_exercises(username: str) -> dict:
+    """Generate a new exercise block for the given user."""
+    example_block = EXERCISE_TEMPLATE.copy()
+
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+        "FROM vocab_log WHERE username = ?",
+        (username,),
+    )
+    vocab_data = [
+        {
+            "type": "string",
+            "word": row["vocab"],
+            "translation": row.get("translation"),
+            "sm2_interval": row.get("interval_days"),
+            "sm2_due_date": row.get("next_review"),
+            "sm2_ease": row.get("ef"),
+            "repetitions": row.get("repetitions"),
+            "sm2_last_review": row.get("created_at"),
+            "quality": 0,
+        }
+        for row in vocab_rows
+    ] if vocab_rows else []
+
+    topic_rows = fetch_topic_memory(username)
+    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+
+    row = fetch_one("users", "WHERE username = ?", (username,))
+    level = row.get("skill_level", 0) if row else 0
+
+    ai_block = generate_new_exercises(
+        vocab_data, topic_memory, example_block, level=level
+    )
+    if not ai_block:
+        ai_block = example_block.copy()
+
+    exercises = ai_block.get("exercises", [])
+    random.shuffle(exercises)
+    ai_block["exercises"] = exercises[:3]
+
+    for ex in ai_block.get("exercises", []):
+        ex.pop("correctAnswer", None)
+
+    store_user_ai_data(
+        username,
+        {
+            "exercises": json.dumps(ai_block),
+            "exercises_updated_at": datetime.datetime.now().isoformat(),
+        },
+    )
+
+    return ai_block
+
+
 def evaluate_answers_with_ai(
     exercises: list, answers: dict, mode: str = "strict"
 ) -> dict | None:
@@ -366,9 +433,13 @@ def submit_ai_exercise(block_id):
         current_app.logger.error("Failed to save exercise submission: %s", e)
         return jsonify({"msg": "Error"}), 500
 
+    passed = bool(evaluation.get("pass"))
+    if passed:
+        generate_training_exercises(username)
+
     return jsonify({
         "feedbackPrompt": feedback_prompt,
-        "pass": bool(evaluation.get("pass")),
+        "pass": passed,
         "summary": summary,
         "results": evaluation.get("results", []),
     })
@@ -518,49 +589,19 @@ def get_training_exercises():
     answers = data.get("answers", {})
     print("Training answers received:", answers, flush=True)
 
-    example_block = EXERCISE_TEMPLATE.copy()
+    if not answers:
+        cached = fetch_one_custom(
+            "SELECT exercises FROM ai_user_data WHERE username = ?",
+            (username,),
+        )
+        if cached and cached.get("exercises"):
+            try:
+                return jsonify(json.loads(cached["exercises"]))
+            except Exception:
+                pass
 
-    vocab_rows = fetch_custom(
-        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
-        "FROM vocab_log WHERE username = ?",
-        (username,),
-    )
-    vocab_data = [
-        {
-            "type": "string",
-            "word": row["vocab"],
-            "translation": row.get("translation"),
-            "sm2_interval": row.get("interval_days"),
-            "sm2_due_date": row.get("next_review"),
-            "sm2_ease": row.get("ef"),
-            "repetitions": row.get("repetitions"),
-            "sm2_last_review": row.get("created_at"),
-            "quality": 0,
-        }
-        for row in vocab_rows
-    ] if vocab_rows else []
-
-    topic_rows = fetch_topic_memory(username)
-    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
-
-    row = fetch_one("users", "WHERE username = ?", (username,))
-    level = row.get("skill_level", 0) if row else 0
-
-    ai_block = generate_new_exercises(
-        vocab_data, topic_memory, example_block, level=level
-    )
-    if not ai_block:
-        ai_block = example_block.copy()
-
-    exercises = ai_block.get("exercises", [])
-    random.shuffle(exercises)
-    ai_block["exercises"] = exercises[:3]
-
-    for ex in ai_block.get("exercises", []):
-        ex.pop("correctAnswer", None)
-
+    ai_block = generate_training_exercises(username)
     print("Returning new training exercises", flush=True)
-
     return jsonify(ai_block)
 
 
@@ -680,10 +721,25 @@ def ai_weakness_lesson():
         "temperature": 0.7,
     }
 
+    cached = fetch_one_custom(
+        "SELECT weakness_lesson, weakness_topic FROM ai_user_data WHERE username = ?",
+        (username,),
+    )
+    if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == topic:
+        return Response(cached["weakness_lesson"], mimetype="text/html")
+
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
         if resp.status_code == 200:
             html = resp.json()["choices"][0]["message"]["content"].strip()
+            store_user_ai_data(
+                username,
+                {
+                    "weakness_lesson": html,
+                    "weakness_topic": topic,
+                    "lesson_updated_at": datetime.datetime.now().isoformat(),
+                },
+            )
             return Response(html, mimetype="text/html")
     except Exception as e:
         current_app.logger.error("Failed to generate weakness lesson: %s", e)
@@ -692,5 +748,13 @@ def ai_weakness_lesson():
         f"<h2>Focus Topic: {topic}</h2>"
         "<p>This area needs more practice. Remember the rules and try creating your own sentences.</p>"
         "<ul><li>Review example sentences</li><li>Write your own short texts</li><li>Practice regularly</li></ul>"
+    )
+    store_user_ai_data(
+        username,
+        {
+            "weakness_lesson": fallback,
+            "weakness_topic": topic,
+            "lesson_updated_at": datetime.datetime.now().isoformat(),
+        },
     )
     return Response(fallback, mimetype="text/html")

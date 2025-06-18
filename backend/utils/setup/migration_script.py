@@ -240,6 +240,21 @@ with get_connection() as conn:
     )
     print("✅ 'exercise_submissions' table created (if not exists).")
 
+    # ✅ Create ai_user_data table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS ai_user_data (
+            username TEXT PRIMARY KEY,
+            exercises TEXT,
+            exercises_updated_at DATETIME,
+            weakness_lesson TEXT,
+            weakness_topic TEXT,
+            lesson_updated_at DATETIME
+        );
+        """
+    )
+    print("✅ 'ai_user_data' table created (if not exists).")
+
     # ✅ Create topic_memory table
     cursor.execute(
         """

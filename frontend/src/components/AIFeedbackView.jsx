@@ -143,7 +143,6 @@ export default function AIFeedbackView() {
                             ) : null}
                           </span>
                         )}
-                        <div className="text-xs text-gray-500 mt-1">{ex.explanation}</div>
                       </div>
                     )}
                   </div>
