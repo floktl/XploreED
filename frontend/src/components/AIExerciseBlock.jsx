@@ -9,6 +9,7 @@ import {
   submitExerciseAnswers,
   argueExerciseAnswers,
 } from "../api";
+import diffWords from "../utils/diffWords";
 
 export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
@@ -207,27 +208,23 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
             )}
                {submitted && evaluation[ex.id] !== undefined && (
                 <div className="mt-2">
-                    {String(answers[ex.id]).trim().toLowerCase() ===
-                    String(evaluation[ex.id]).trim().toLowerCase() ? (
+                  {String(answers[ex.id]).trim().toLowerCase() ===
+                  String(evaluation[ex.id]).trim().toLowerCase() ? (
                     <span className="text-green-600">✅ Correct!</span>
-                    ) : (
-                    <span className="text-red-600">
-                        ❌ Incorrect. Correct answer: <b>{evaluation[ex.id]}</b>
-                    </span>
-                    )}
+                  ) : (
+                    <>
+                      <span className="text-red-600">❌ Incorrect.</span>
+                      <div className="mt-1">{diffWords(answers[ex.id], evaluation[ex.id])}</div>
+                    </>
+                  )}
                 </div>
-                )}
+               )}
                         </div>
         ))}
         {!submitted && (
           <Button type="button" variant="success" onClick={handleSubmit}>
             Submit Answers
           </Button>
-        )}
-        {submitted && feedbackPrompt && (
-          <div className="mt-4 italic text-blue-700 dark:text-blue-300">
-            {feedbackPrompt}
-          </div>
         )}
         {submitted && !passed && (
           submitting ? (
