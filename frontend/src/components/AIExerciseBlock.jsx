@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
+import Spinner from "./UI/Spinner";
 import { Input } from "./UI/UI";
 import {
   getAiExercises,
@@ -22,6 +23,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [evaluation, setEvaluation] = useState({});
   const [passed, setPassed] = useState(false);
   const [arguing, setArguing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
 
   const exercises = current?.exercises || [];
@@ -80,6 +82,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   };
 
   const handleSubmit = async () => {
+    setSubmitting(true);
     setSubmitted(true);
     try {
       const result = await submitExerciseAnswers(blockId, answers, current);
@@ -102,6 +105,8 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       }
     } catch (e) {
       console.error("Submission failed:", e);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -225,24 +230,31 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
           </div>
         )}
         {submitted && !passed && (
-          <div className="mt-4 flex gap-2">
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleArgue}
-              disabled={arguing}
-            >
-              {arguing ? "Thinking..." : "Argue with AI"}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleNext}
-              disabled={loading || arguing}
-            >
-              {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
-            </Button>
-          </div>
+          submitting ? (
+            <div className="mt-4 flex items-center gap-2">
+              <Spinner />
+              <span className="italic">AI thinking...</span>
+            </div>
+          ) : (
+            <div className="mt-4 flex gap-2">
+              <Button
+                type="button"
+                variant="danger"
+                onClick={handleArgue}
+                disabled={arguing}
+              >
+                {arguing ? "Thinking..." : "Argue with AI"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleNext}
+                disabled={loading || arguing}
+              >
+                {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
+              </Button>
+            </div>
+          )
         )}
         {submitted && passed && (
           <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-green-700">
