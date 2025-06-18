@@ -12,6 +12,7 @@ from mock_data.script import (
     _extract_json,
 )
 from utils.grammar_utils import detect_language_topics
+from utils.translation_utils import _update_single_topic
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
@@ -227,77 +228,30 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         user_ans = str(user_ans).strip().lower()
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
-        features = detect_language_topics(f"{ex.get('question', '')} {correct_ans}")
-        topic = ", ".join(features) if features else "unknown"
+        features = detect_language_topics(
+            f"{ex.get('question', '')} {correct_ans}"
+        ) or ["unknown"]
         skill = ex.get("type", "")
 
-        existing = fetch_one_custom(
-            "SELECT id, ease_factor, intervall, repetitions FROM topic_memory WHERE username = ? AND topic = ? AND skill_type = ?",
-            (
+        for feature in features:
+            _update_single_topic(
                 username,
-                topic,
+                feature,
                 skill,
-            ),
-        )
-
-        if existing:
-            ef, reps, interval = sm2(
-                quality,
-                existing.get("ease_factor") or 2.5,
-                existing.get("repetitions") or 0,
-                existing.get("intervall") or 1,
+                ex.get("question", ""),
+                bool(is_correct),
             )
-            update_row(
-                "topic_memory",
+
+            results.append(
                 {
-                    "ease_factor": ef,
-                    "repetitions": reps,
-                    "intervall": interval,
-                    "next_repeat": (
-                        datetime.datetime.now()
-                        + datetime.timedelta(days=interval)
-                    ).isoformat(),
-                    "last_review": datetime.datetime.now().isoformat(),
-                    "correct": is_correct,
-                },
-                "id = ?",
-                (existing["id"],),
-            )
-        else:
-            ef, reps, interval = sm2(quality)
-            try:
-                insert_row(
-                    "topic_memory",
-                    {
-                        "username": username,
-                        "topic": topic,
+                    "topic_memory": {
+                        "topic": feature,
                         "skill_type": skill,
-                        "context": ex.get("question", ""),
-                        "lesson_content_id": block_id,
-                        "ease_factor": ef,
-                        "intervall": interval,
-                        "next_repeat": (
-                            datetime.datetime.now()
-                            + datetime.timedelta(days=interval)
-                        ).isoformat(),
-                        "repetitions": reps,
-                        "last_review": datetime.datetime.now().isoformat(),
+                        "quality": quality,
                         "correct": is_correct,
-                    },
-                )
-            except Exception as e:
-                current_app.logger.error("Failed to save topic memory: %s", e)
-
-        results.append(
-            {
-                "topic_memory": {
-                    "topic": topic,
-                    "skill_type": skill,
-                    "quality": quality,
-                    "correct": is_correct,
+                    }
                 }
-            }
-        )
+            )
 
     print("AI submission results:", results, flush=True)
 
