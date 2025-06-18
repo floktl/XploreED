@@ -126,8 +126,8 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     }
   };
 
-  const handleNext = async () => {
-    if (passed) return;
+  const handleNext = async (force = false) => {
+    if (passed && !force) return;
     setLoading(true);
     try {
       const newData = await fetchExercisesFn({ answers });
@@ -159,20 +159,20 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
             {ex.type === "gap-fill" ? (
               <>
                 <div className="mb-2 font-medium">
-                  {(() => {
-                    const parts = String(ex.question).split("___");
-                    return (
-                      <>
-                        {parts[0]}
-                        {answers[ex.id] ? (
-                          <span className="text-blue-600">{answers[ex.id]}</span>
-                        ) : (
-                          <span className="text-gray-400">___</span>
+                  {String(ex.question)
+                    .split("___")
+                    .map((part, idx, arr) => (
+                      <React.Fragment key={idx}>
+                        {part}
+                        {idx < arr.length - 1 && (
+                          answers[ex.id] ? (
+                            <span className="text-blue-600">{answers[ex.id]}</span>
+                          ) : (
+                            <span className="text-gray-400">___</span>
+                          )
                         )}
-                        {parts[1]}
-                      </>
-                    );
-                  })()}
+                      </React.Fragment>
+                    ))}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {ex.options.map((opt) => (
@@ -245,7 +245,17 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
           </div>
         )}
         {submitted && passed && (
-          <div className="mt-4 text-green-700">All exercises correct!</div>
+          <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-green-700">
+            <span>All exercises correct!</span>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => handleNext(true)}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "More Exercises"}
+            </Button>
+          </div>
         )}
       </div>
       {showVocab && current.vocabHelp && current.vocabHelp.length > 0 && (

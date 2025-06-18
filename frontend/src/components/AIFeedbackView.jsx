@@ -90,19 +90,20 @@ export default function AIFeedbackView() {
                     {ex.type === "gap-fill" ? (
                       <>
                         <div className="mb-2 font-medium">
-                          {(() => {
-                            const parts = String(ex.question).split("___");
-                            return (
-                              <>
-                                {parts[0]}
-                                {answers[ex.id]
-                                  ? <span className="text-blue-600">{answers[ex.id]}</span>
-                                  : <span className="text-gray-400">___</span>
-                                }
-                                {parts[1]}
-                              </>
-                            );
-                          })()}
+                          {String(ex.question)
+                            .split("___")
+                            .map((part, idx, arr) => (
+                              <React.Fragment key={idx}>
+                                {part}
+                                {idx < arr.length - 1 && (
+                                  answers[ex.id] ? (
+                                    <span className="text-blue-600">{answers[ex.id]}</span>
+                                  ) : (
+                                    <span className="text-gray-400">___</span>
+                                  )
+                                )}
+                              </React.Fragment>
+                            ))}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {ex.options.map(opt => (
