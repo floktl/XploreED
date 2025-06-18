@@ -65,7 +65,6 @@ export default function PlacementTest({ onComplete }) {
         exercises: SENTENCES.map((s, i) => ({
           id: `ex${i + 1}`,
           question: s,
-          correctAnswer: s,
         })),
       };
 

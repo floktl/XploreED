@@ -9,7 +9,6 @@
       "type": "gap-fill",
       "question": "Ich ___ müde.",
       "options": ["bist", "bin", "ist", "seid"],
-      "correctAnswer": "bin",
       "explanation": "'Ich' uses 'bin' in present tense."
     },
     {
@@ -17,14 +16,12 @@
       "type": "gap-fill",
       "question": "Du ___ mein Freund.",
       "options": ["bin", "bist", "ist", "seid"],
-      "correctAnswer": "bist",
       "explanation": "'Du' requires 'bist'."
     },
     {
       "id": "ex3",
       "type": "translation",
       "question": "Translate to German: He is tired.",
-      "correctAnswer": "Er ist müde.",
       "explanation": "Use 'er ist' for 'he is'."
     }
   ],

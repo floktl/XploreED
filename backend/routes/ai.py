@@ -450,28 +450,27 @@ def generate_ai_feedback():
 
     if exercise_block:
         all_exercises = exercise_block.get("exercises", [])
-        ex_map = {str(e.get("id")): e for e in all_exercises}
+        evaluation = evaluate_answers_with_ai(all_exercises, answers)
+        id_map = {
+            str(r.get("id")): r.get("correct_answer")
+            for r in evaluation.get("results", [])
+        } if evaluation else {}
 
-        total = 0
-        correct = 0
-        mistakes = []
-        for ex_id, ans in answers.items():
-            ex = ex_map.get(str(ex_id))
-            if not ex:
-                continue
-            total += 1
-            if str(ans).strip().lower() == str(ex.get("correctAnswer", "")).strip().lower():
-                correct += 1
+        summary = {"correct": 0, "total": len(all_exercises), "mistakes": []}
+        for ex in all_exercises:
+            cid = str(ex.get("id"))
+            user_ans = answers.get(cid, "")
+            correct_ans = id_map.get(cid, "")
+            if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
+                summary["correct"] += 1
             else:
-                mistakes.append(
+                summary["mistakes"].append(
                     {
                         "question": ex.get("question"),
-                        "your_answer": ans,
-                        "correct_answer": ex.get("correctAnswer"),
+                        "your_answer": user_ans,
+                        "correct_answer": correct_ans,
                     }
                 )
-
-        summary = {"correct": correct, "total": total, "mistakes": mistakes}
 
         vocab_rows = fetch_custom(
             "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
@@ -490,7 +489,11 @@ def generate_ai_feedback():
         topic_data = [dict(row) for row in topic_rows] if topic_rows else []
 
         feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
-        return jsonify({"feedbackPrompt": feedback_prompt, "summary": summary})
+        return jsonify({
+            "feedbackPrompt": feedback_prompt,
+            "summary": summary,
+            "results": evaluation.get("results", []),
+        })
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
