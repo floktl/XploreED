@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getTopicMemory } from "../api";
+import { getTopicMemory, clearTopicMemory } from "../api";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import Badge from "./UI/Badge";
+import Modal from "./UI/Modal";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 
 export default function TopicMemory() {
   const [topics, setTopics] = useState([]);
+  const [showClear, setShowClear] = useState(false);
+  const [error, setError] = useState("");
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
@@ -38,6 +41,18 @@ export default function TopicMemory() {
         });
     }
   }, [username, isAdmin]);
+
+  const handleClear = async () => {
+    try {
+      await clearTopicMemory();
+      setTopics([]);
+      setShowClear(false);
+      setError("");
+    } catch (err) {
+      console.error("Failed to clear topic memory:", err);
+      setError("❌ Could not clear topic memory.");
+    }
+  };
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
@@ -80,12 +95,27 @@ export default function TopicMemory() {
             </table>
           </Card>
         )}
-
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex justify-center gap-4">
+          <Button variant="danger" size="md" onClick={() => setShowClear(true)}>
+            🗑️ Clear Memory
+          </Button>
           <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
         </div>
       </Container>
       <Footer />
+      {showClear && (
+        <Modal onClose={() => setShowClear(false)}>
+          <h2 className="text-lg font-bold mb-2">Delete Topic Memory</h2>
+          <p className="mb-4">Are you sure you want to delete all saved topic memory?</p>
+          {error && <Alert type="error" className="mb-2">{error}</Alert>}
+          <div className="flex justify-end gap-2">
+            <Button variant="danger" onClick={handleClear}>Delete</Button>
+            <Button variant="secondary" onClick={() => setShowClear(false)}>
+              Cancel
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
