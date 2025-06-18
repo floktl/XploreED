@@ -4,8 +4,9 @@ import Card from "./UI/Card";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
+import diffWords from "../utils/diffWords";
 
-export default function PlacementFeedback({ feedback, summary, onDone }) {
+export default function PlacementFeedback({ summary, onDone }) {
   const darkMode = useAppStore((s) => s.darkMode);
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
@@ -21,7 +22,7 @@ export default function PlacementFeedback({ feedback, summary, onDone }) {
                   <ul className="list-disc pl-5 space-y-1">
                     {summary.mistakes.map((m, i) => (
                       <li key={i}>
-                        <span className="font-medium">{m.question}</span> – your answer: {m.your_answer || "—"}, correct: {m.correct_answer}
+                        <span className="font-medium">{m.question}</span> – {diffWords(m.your_answer, m.correct_answer)}
                       </li>
                     ))}
                   </ul>
@@ -29,7 +30,6 @@ export default function PlacementFeedback({ feedback, summary, onDone }) {
               )}
             </div>
           )}
-          {feedback && <p>{feedback}</p>}
         </Card>
         <div className="text-center mt-6">
           <Button variant="primary" type="button" onClick={onDone}>Continue</Button>

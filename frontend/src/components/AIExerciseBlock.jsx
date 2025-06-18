@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
+import Spinner from "./UI/Spinner";
 import { Input } from "./UI/UI";
 import {
   getAiExercises,
@@ -8,6 +9,7 @@ import {
   submitExerciseAnswers,
   argueExerciseAnswers,
 } from "../api";
+import diffWords from "../utils/diffWords";
 
 export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
@@ -22,6 +24,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [evaluation, setEvaluation] = useState({});
   const [passed, setPassed] = useState(false);
   const [arguing, setArguing] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
 
   const exercises = current?.exercises || [];
@@ -80,6 +83,7 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   };
 
   const handleSubmit = async () => {
+    setSubmitting(true);
     setSubmitted(true);
     try {
       const result = await submitExerciseAnswers(blockId, answers, current);
@@ -102,6 +106,8 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       }
     } catch (e) {
       console.error("Submission failed:", e);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -202,16 +208,17 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
             )}
                {submitted && evaluation[ex.id] !== undefined && (
                 <div className="mt-2">
-                    {String(answers[ex.id]).trim().toLowerCase() ===
-                    String(evaluation[ex.id]).trim().toLowerCase() ? (
+                  {String(answers[ex.id]).trim().toLowerCase() ===
+                  String(evaluation[ex.id]).trim().toLowerCase() ? (
                     <span className="text-green-600">✅ Correct!</span>
-                    ) : (
-                    <span className="text-red-600">
-                        ❌ Incorrect. Correct answer: <b>{evaluation[ex.id]}</b>
-                    </span>
-                    )}
+                  ) : (
+                    <>
+                      <span className="text-red-600">❌ Incorrect.</span>
+                      <div className="mt-1">{diffWords(answers[ex.id], evaluation[ex.id])}</div>
+                    </>
+                  )}
                 </div>
-                )}
+               )}
                         </div>
         ))}
         {!submitted && (
@@ -219,30 +226,32 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
             Submit Answers
           </Button>
         )}
-        {submitted && feedbackPrompt && (
-          <div className="mt-4 italic text-blue-700 dark:text-blue-300">
-            {feedbackPrompt}
-          </div>
-        )}
         {submitted && !passed && (
-          <div className="mt-4 flex gap-2">
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleArgue}
-              disabled={arguing}
-            >
-              {arguing ? "Thinking..." : "Argue with AI"}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleNext}
-              disabled={loading || arguing}
-            >
-              {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
-            </Button>
-          </div>
+          submitting ? (
+            <div className="mt-4 flex items-center gap-2">
+              <Spinner />
+              <span className="italic">AI thinking...</span>
+            </div>
+          ) : (
+            <div className="mt-4 flex gap-2">
+              <Button
+                type="button"
+                variant="danger"
+                onClick={handleArgue}
+                disabled={arguing}
+              >
+                {arguing ? "Thinking..." : "Argue with AI"}
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleNext}
+                disabled={loading || arguing}
+              >
+                {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
+              </Button>
+            </div>
+          )
         )}
         {submitted && passed && (
           <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-green-700">
