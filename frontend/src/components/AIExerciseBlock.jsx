@@ -90,7 +90,14 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       if (result?.results) {
         const map = {};
         result.results.forEach((r) => {
-          map[r.id] = r.correct_answer;
+          map[r.id] = {
+            correct: r.correct_answer,
+            alternatives:
+              r.alternatives ||
+              r.other_solutions ||
+              r.other_answers ||
+              []
+          };
         });
         setEvaluation(map);
       }
@@ -118,7 +125,14 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       if (result?.results) {
         const map = {};
         result.results.forEach((r) => {
-          map[r.id] = r.correct_answer;
+          map[r.id] = {
+            correct: r.correct_answer,
+            alternatives:
+              r.alternatives ||
+              r.other_solutions ||
+              r.other_answers ||
+              []
+          };
         });
         setEvaluation(map);
       }
@@ -209,14 +223,22 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                {submitted && evaluation[ex.id] !== undefined && (
                 <div className="mt-2">
                   {String(answers[ex.id]).trim().toLowerCase() ===
-                  String(evaluation[ex.id]).trim().toLowerCase() ? (
+                  String(evaluation[ex.id]?.correct).trim().toLowerCase() ? (
                     <span className="text-green-600">✅ Correct!</span>
                   ) : (
                     <>
                       <span className="text-red-600">❌ Incorrect.</span>
-                      <div className="mt-1">{diffWords(answers[ex.id], evaluation[ex.id])}</div>
+                      <div className="mt-1">
+                        {diffWords(answers[ex.id], evaluation[ex.id]?.correct)}
+                      </div>
                     </>
                   )}
+                  {evaluation[ex.id]?.alternatives &&
+                    evaluation[ex.id].alternatives.length > 0 && (
+                      <div className="text-sm mt-1 text-blue-600 dark:text-blue-300">
+                        Other ways to say it: {evaluation[ex.id].alternatives.join(', ')}
+                      </div>
+                    )}
                 </div>
                )}
                         </div>
