@@ -185,7 +185,9 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                       <React.Fragment key={idx}>
                         {part}
                         {idx < arr.length - 1 && (
-                          answers[ex.id] ? (
+                          submitted ? (
+                            <span className="text-gray-400">___</span>
+                          ) : answers[ex.id] ? (
                             <span className="text-blue-600">{answers[ex.id]}</span>
                           ) : (
                             <span className="text-gray-400">___</span>
@@ -221,13 +223,16 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
               </>
             )}
                {submitted && evaluation[ex.id] !== undefined && (
-                <div className="mt-2">
+                <div className="mt-2 text-sm">
                   {String(answers[ex.id]).trim().toLowerCase() ===
                   String(evaluation[ex.id]?.correct).trim().toLowerCase() ? (
                     <span className="text-green-600">✅ Correct!</span>
                   ) : (
                     <>
                       <span className="text-red-600">❌ Incorrect.</span>
+                      <div className="mt-1 text-gray-700 dark:text-gray-300">
+                        {ex.explanation}
+                      </div>
                       <div className="mt-1">
                         {diffWords(answers[ex.id], evaluation[ex.id]?.correct)}
                       </div>
