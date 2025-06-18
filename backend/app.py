@@ -1,6 +1,6 @@
 """Flask application setup and route registration."""
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 from pathlib import Path
 import os
@@ -71,6 +71,12 @@ CORS(app, origins=allowed_origin, supports_credentials=True)
 
 # === Init limiter and database ===
 limiter.init_app(app)
+
+
+@app.errorhandler(500)
+def server_error(_):
+    """Return custom 500 error page."""
+    return render_template("500.html"), 500
 
 # === Debug registered routes ===
 print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
