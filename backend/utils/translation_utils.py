@@ -6,6 +6,7 @@ import datetime
 from utils.grammar_utils import detect_language_topics
 from utils.db_utils import insert_row, update_row, fetch_one_custom
 from utils.algorithm import sm2
+from utils.vocab_utils import translate_to_german
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
@@ -143,6 +144,7 @@ def update_topic_memory_reading(username: str, text: str, correct: bool) -> None
 
 
 __all__ = [
+    "translate_to_german",
     "evaluate_translation_ai",
     "update_topic_memory_translation",
     "update_topic_memory_reading",
