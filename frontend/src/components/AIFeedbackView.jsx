@@ -43,6 +43,21 @@ export default function AIFeedbackView() {
       if (result && result.feedbackPrompt) {
         setFeedback((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
       }
+      if (result && Array.isArray(result.results)) {
+        const map = {};
+        result.results.forEach((r) => {
+          map[r.id] = r.correct_answer;
+        });
+        setFeedback((prev) => ({
+          ...prev,
+          exercises: Array.isArray(prev?.exercises)
+            ? prev.exercises.map((ex) => ({
+                ...ex,
+                correctAnswer: map[ex.id],
+              }))
+            : prev?.exercises,
+        }));
+      }
     } catch (err) {
       console.error("Failed to generate AI feedback", err);
     } finally {
@@ -119,11 +134,13 @@ export default function AIFeedbackView() {
                     {submitted && (
                       <div className="mt-2">
                         {String(answers[ex.id]).trim().toLowerCase() ===
-                        String(ex.correctAnswer).trim().toLowerCase() ? (
+                        String(ex.correctAnswer || "").trim().toLowerCase() ? (
                           <span className="text-green-600">✅ Correct!</span>
                         ) : (
                           <span className="text-red-600">
-                            ❌ Incorrect. Correct answer: <b>{ex.correctAnswer}</b>
+                            ❌ Incorrect{ex.correctAnswer ? (
+                              <>. Correct answer: <b>{ex.correctAnswer}</b></>
+                            ) : null}
                           </span>
                         )}
                         <div className="text-xs text-gray-500 mt-1">{ex.explanation}</div>

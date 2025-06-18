@@ -41,7 +41,6 @@ FALLBACK_EXERCISE_BLOCK = {
       "type": "gap-fill",
       "question": "Ich ___ müde.",
       "options": ["bist", "bin", "ist", "seid"],
-      "correctAnswer": "bin",
       "explanation": "'Ich' uses 'bin' in present tense."
     }
   ],
@@ -100,7 +99,6 @@ def _ensure_schema(exercise_block: dict) -> dict:
             "id": ex.get("id", f"ex{idx+1}"),
             "type": ex.get("type"),
             "question": ex.get("question") or ex.get("sentence") or "Missing question",
-            "correctAnswer": ex.get("correctAnswer") or ex.get("answer") or "Missing",
             "explanation": ex.get("explanation") or ex.get("hint") or "No explanation."
         }
         if fixed["type"] == "gap-fill":
