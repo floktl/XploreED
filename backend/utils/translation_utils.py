@@ -64,7 +64,7 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
         print("AI translation evaluation failed:", e)
 
     return False, "Could not evaluate translation."
- 
+
 
 def update_topic_memory_translation(username: str, german: str, correct: bool):
     """Update the topic_memory table based on a translation result."""
