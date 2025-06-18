@@ -239,9 +239,9 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
               type="button"
               variant="secondary"
               onClick={handleNext}
-              disabled={loading}
+              disabled={loading || arguing}
             >
-              {loading ? "Loading..." : "Continue"}
+              {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
             </Button>
           </div>
         )}
