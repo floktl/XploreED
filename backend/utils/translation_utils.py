@@ -66,11 +66,14 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
     return False, "Could not evaluate translation."
 
 
-def update_topic_memory_translation(username: str, german: str, correct: bool):
-    """Update the topic_memory table based on a translation result."""
-    features = detect_language_topics(german)
-    topic = ", ".join(features) if features else "unknown"
-    skill = "translation"
+def _update_single_topic(
+    username: str,
+    topic: str,
+    skill: str,
+    context: str,
+    correct: bool,
+) -> None:
+    """Insert or update a single topic_memory entry."""
     quality = 5 if correct else 2
 
     existing = fetch_one_custom(
@@ -110,7 +113,7 @@ def update_topic_memory_translation(username: str, german: str, correct: bool):
                 "username": username,
                 "topic": topic,
                 "skill_type": skill,
-                "context": german,
+                "context": context,
                 "lesson_content_id": "translation_practice",
                 "ease_factor": ef,
                 "intervall": interval,
@@ -123,3 +126,10 @@ def update_topic_memory_translation(username: str, german: str, correct: bool):
                 "correct": int(correct),
             },
         )
+
+
+def update_topic_memory_translation(username: str, german: str, correct: bool) -> None:
+    """Update spaced repetition entries for each detected topic."""
+    features = detect_language_topics(german) or ["unknown"]
+    for feature in features:
+        _update_single_topic(username, feature, "translation", german, correct)
