@@ -200,19 +200,19 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
             />
               </>
             )}
-                {submitted && (
-                  <div className="mt-2">
+               {submitted && evaluation[ex.id] !== undefined && (
+                <div className="mt-2">
                     {String(answers[ex.id]).trim().toLowerCase() ===
                     String(evaluation[ex.id]).trim().toLowerCase() ? (
-                      <span className="text-green-600">✅ Correct!</span>
+                    <span className="text-green-600">✅ Correct!</span>
                     ) : (
-                      <span className="text-red-600">
+                    <span className="text-red-600">
                         ❌ Incorrect. Correct answer: <b>{evaluation[ex.id]}</b>
-                      </span>
+                    </span>
                     )}
-                  </div>
+                </div>
                 )}
-          </div>
+                        </div>
         ))}
         {!submitted && (
           <Button type="button" variant="success" onClick={handleSubmit}>
