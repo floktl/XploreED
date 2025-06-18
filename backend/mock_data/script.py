@@ -150,7 +150,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 1. Each exercise must include:
    - `id`: a unique ID like `"ex1"`
    - `type`: either `"gap-fill"` or `"translation"`
-   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task)
+   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)
    - For "gap-fill":
      - `options`: list of 4 strings
      - `correctAnswer`: the correct string
@@ -173,9 +173,10 @@ Here is an example:
 {json.dumps(example_exercise_block, indent=2)}
 
 Based on the following memory data. Sometimes add new topic and vocabulary, don't ask the same questions as in the topic memory, focus on topic and skill:
-Vocabulary:
+Vocabulary, add vocabulary wih the next possible due date first:
 {json.dumps(vocabular, indent=2)}
 
+Check, which topic has the next due date, they have higher priority, and don't forget to make sometimes new topics based on the student level, to test all the grammar of the german language.
 Topic Memory:
 {json.dumps(topic_memory, indent=2)}
 
