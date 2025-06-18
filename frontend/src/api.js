@@ -609,3 +609,22 @@ export const submitReadingAnswers = async (answers = {}, exercise = null) => {
     return res.json();
 };
 
+export const getProgressTest = async () => {
+    const res = await fetch(`${BASE_URL}/api/progress-test`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch progress test");
+    return res.json();
+};
+
+export const submitProgressTest = async (payload) => {
+    const res = await fetch(`${BASE_URL}/api/progress-test/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to submit progress test");
+    return res.json();
+};
+

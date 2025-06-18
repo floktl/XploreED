@@ -104,6 +104,11 @@ export default function Menu() {
               AI Reading Exercise
             </Button>
 
+            <Button type="button" variant="secondary" onClick={() => navigate("/progress-test")} className="justify-start gap-3">
+              <Target className="w-5 h-5" />
+              Progress Test
+            </Button>
+
             <Button type="button" variant="secondary" onClick={() => navigate("/topic-memory")} className="justify-start gap-3">
               <BrainCircuit className="w-5 h-5" />
               Topic Memory
