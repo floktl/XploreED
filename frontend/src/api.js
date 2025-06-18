@@ -170,6 +170,15 @@ export async function getTopicMemory() {
     return res.json();
 }
 
+export async function clearTopicMemory() {
+    const res = await fetch(`${BASE_URL}/api/topic-memory`, {
+        method: "DELETE",
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to clear topic memory");
+    return res.json();
+}
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
