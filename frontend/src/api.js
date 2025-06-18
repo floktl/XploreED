@@ -587,3 +587,25 @@ export const getWeaknessLesson = async () => {
     return res.text();
 };
 
+export const getReadingExercise = async (style = "story") => {
+    const res = await fetch(`${BASE_URL}/api/reading-exercise`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ style }),
+    });
+    if (!res.ok) throw new Error("Failed to fetch reading exercise");
+    return res.json();
+};
+
+export const submitReadingAnswers = async (answers = {}, exercise = null) => {
+    const res = await fetch(`${BASE_URL}/api/reading-exercise/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ answers, exercise }),
+    });
+    if (!res.ok) throw new Error("Failed to submit answers");
+    return res.json();
+};
+
