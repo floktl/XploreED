@@ -195,6 +195,17 @@ def get_topic_memory():
     return jsonify(rows if rows else [])
 
 
+@user_bp.route("/topic-memory", methods=["DELETE"])
+def clear_topic_memory_route():
+    """Delete all topic memory entries for the logged in user."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    delete_rows("topic_memory", "WHERE username = ?", (user,))
+    return jsonify({"msg": "cleared"})
+
+
 @user_bp.route("/user-level", methods=["GET", "POST"])
 def user_level():
     """Get or update the logged in user's skill level."""
