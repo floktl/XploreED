@@ -25,6 +25,21 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [passed, setPassed] = useState(false);
   const [arguing, setArguing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [nextExercise, setNextExercise] = useState(null);
+  const [loadingNext, setLoadingNext] = useState(false);
+
+  const fetchNext = async (payload = {}) => {
+    setLoadingNext(true);
+    try {
+      const next = await fetchExercisesFn(payload);
+      setNextExercise(next);
+    } catch (err) {
+      console.error("Failed to prefetch AI exercises", err);
+      setNextExercise(null);
+    } finally {
+      setLoadingNext(false);
+    }
+  };
 
 
   const exercises = current?.exercises || [];
@@ -40,9 +55,14 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     if (!current || !Array.isArray(current.exercises)) {
       setLoadingInit(true);
       fetchExercisesFn()
-        .then((d) => setCurrent(d))
+        .then((d) => {
+          setCurrent(d);
+          fetchNext();
+        })
         .catch(() => setCurrent(null))
         .finally(() => setLoadingInit(false));
+    } else {
+      fetchNext();
     }
   }, [mode, fetchExercisesFn]);
 
@@ -115,6 +135,9 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
       console.error("Submission failed:", e);
     } finally {
       setSubmitting(false);
+      if (mode === "student") {
+        fetchNext({ answers });
+      }
     }
   };
 
@@ -148,20 +171,33 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
 
   const handleNext = async (force = false) => {
     if (passed && !force) return;
-    setLoading(true);
-    try {
-      const newData = await fetchExercisesFn({ answers });
-      setCurrent(newData);
+    if (nextExercise) {
+      setCurrent(nextExercise);
+      setNextExercise(null);
       setStage((s) => s + 1);
       setAnswers({});
       setSubmitted(false);
       setEvaluation({});
       setPassed(false);
       setArguing(false);
-    } catch (err) {
-      alert("Failed to load AI exercises");
-    } finally {
-      setLoading(false);
+      fetchNext();
+    } else {
+      setLoading(true);
+      try {
+        const newData = await fetchExercisesFn({ answers });
+        setCurrent(newData);
+        setStage((s) => s + 1);
+        setAnswers({});
+        setSubmitted(false);
+        setEvaluation({});
+        setPassed(false);
+        setArguing(false);
+      } catch (err) {
+        alert("Failed to load AI exercises");
+      } finally {
+        setLoading(false);
+        fetchNext();
+      }
     }
   };
 
