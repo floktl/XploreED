@@ -34,6 +34,7 @@ from utils.blueprint import (
     ai_bp,
     support_bp,
     settings_bp,
+    progress_test_bp,
 )
 from game.german_sentence_game import (
     LEVELS,
@@ -114,3 +115,12 @@ class Imports:
         "generate_password_hash", "check_password_hash", "fetch_one",
         "update_row", "delete_rows"
     ]
+
+    progress_test = [
+        "progress_test_bp", "request", "jsonify", "session_manager",
+        "generate_ai_sentence", "get_scrambled_sentence", "evaluate_order",
+        "generate_training_exercises", "evaluate_answers_with_ai",
+        "generate_reading_exercise", "translate_to_german",
+        "evaluate_translation_ai", "fetch_one", "update_row", "random", "LEVELS"
+    ]
+

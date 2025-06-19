@@ -33,3 +33,4 @@ registered_blueprints = [
     settings_bp,
     progress_test_bp,
 ]
+
