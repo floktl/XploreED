@@ -92,8 +92,8 @@ class Imports:
     translate = [
         "translate_bp", "request", "jsonify",
         "session_manager", "translate_to_german",
-        "get_feedback", "evaluate_translation_ai",
-        "update_topic_memory_translation"
+        "get_feedback", "evaluate_translation_ai", "evaluate_topic_qualities_ai",
+        "update_topic_memory_translation", "compare_topic_qualities"
     ]
 
     user = [
