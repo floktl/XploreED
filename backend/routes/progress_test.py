@@ -14,8 +14,6 @@ ENGLISH_SENTENCES = [
     "Tomorrow I will visit my friend.",
 ]
 
-progress_test_bp = Blueprint("progress_test", __name__, url_prefix="/api")
-
 @progress_test_bp.route("/progress-test", methods=["GET"])
 def get_progress_test():
     session_id = request.cookies.get("session_id")
