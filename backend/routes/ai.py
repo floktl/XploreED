@@ -78,8 +78,8 @@ def store_user_ai_data(username: str, data: dict):
         insert_row("ai_user_data", data_with_user)
 
 
-def generate_training_exercises(username: str) -> dict:
-    """Generate a new exercise block for the given user."""
+def _create_ai_block(username: str) -> dict:
+    """Create a single AI exercise block for the user."""
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
@@ -121,15 +121,36 @@ def generate_training_exercises(username: str) -> dict:
     for ex in ai_block.get("exercises", []):
         ex.pop("correctAnswer", None)
 
+    return ai_block
+
+
+def generate_training_exercises(username: str) -> dict:
+    """Generate current and next exercise blocks and store them."""
+
+    ai_block = _create_ai_block(username)
+    next_block = _create_ai_block(username)
+
     store_user_ai_data(
         username,
         {
             "exercises": json.dumps(ai_block),
+            "next_exercises": json.dumps(next_block),
             "exercises_updated_at": datetime.datetime.now().isoformat(),
         },
     )
 
     return ai_block
+
+
+def prefetch_next_exercises(username: str) -> None:
+    """Generate and store a new next exercise block asynchronously."""
+    next_block = _create_ai_block(username)
+    store_user_ai_data(
+        username,
+        {
+            "next_exercises": json.dumps(next_block),
+        },
+    )
 
 
 def evaluate_answers_with_ai(
@@ -448,8 +469,7 @@ def submit_ai_exercise(block_id):
         return jsonify({"msg": "Error"}), 500
 
     passed = bool(evaluation.get("pass"))
-    if passed:
-        generate_training_exercises(username)
+    run_in_background(prefetch_next_exercises, username)
 
     return jsonify({
         "feedbackPrompt": feedback_prompt,
@@ -603,16 +623,41 @@ def get_training_exercises():
     answers = data.get("answers", {})
     print("Training answers received:", answers, flush=True)
 
-    if not answers:
+    if answers:
         cached = fetch_one_custom(
-            "SELECT exercises FROM ai_user_data WHERE username = ?",
+            "SELECT next_exercises FROM ai_user_data WHERE username = ?",
             (username,),
         )
-        if cached and cached.get("exercises"):
+        if cached and cached.get("next_exercises"):
             try:
-                return jsonify(json.loads(cached["exercises"]))
+                ai_block = json.loads(cached["next_exercises"])
             except Exception:
-                pass
+                ai_block = generate_training_exercises(username)
+        else:
+            ai_block = generate_training_exercises(username)
+
+        store_user_ai_data(
+            username,
+            {
+                "exercises": json.dumps(ai_block),
+                "exercises_updated_at": datetime.datetime.now().isoformat(),
+            },
+        )
+        run_in_background(prefetch_next_exercises, username)
+        print("Returned preloaded training exercises", flush=True)
+        return jsonify(ai_block)
+
+    cached = fetch_one_custom(
+        "SELECT exercises, next_exercises FROM ai_user_data WHERE username = ?",
+        (username,),
+    )
+    if cached and cached.get("exercises"):
+        if not cached.get("next_exercises"):
+            run_in_background(prefetch_next_exercises, username)
+        try:
+            return jsonify(json.loads(cached["exercises"]))
+        except Exception:
+            pass
 
     ai_block = generate_training_exercises(username)
     print("Returning new training exercises", flush=True)

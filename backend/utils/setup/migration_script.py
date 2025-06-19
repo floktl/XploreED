@@ -246,6 +246,7 @@ with get_connection() as conn:
         CREATE TABLE IF NOT EXISTS ai_user_data (
             username TEXT PRIMARY KEY,
             exercises TEXT,
+            next_exercises TEXT,
             exercises_updated_at DATETIME,
             weakness_lesson TEXT,
             weakness_topic TEXT,
@@ -254,6 +255,15 @@ with get_connection() as conn:
         """
     )
     print("✅ 'ai_user_data' table created (if not exists).")
+
+    # ✅ Add next_exercises column if missing
+    cursor.execute("PRAGMA table_info(ai_user_data);")
+    ai_cols = [col[1] for col in cursor.fetchall()]
+    if "next_exercises" not in ai_cols:
+        cursor.execute("ALTER TABLE ai_user_data ADD COLUMN next_exercises TEXT;")
+        print("✅ 'next_exercises' column added to 'ai_user_data'.")
+    else:
+        print("ℹ️ 'next_exercises' column already exists in 'ai_user_data'.")
 
     # ✅ Create topic_memory table
     cursor.execute(
