@@ -271,6 +271,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     except Exception:
         # Table might not exist yet
         return []
+
 def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
     if not exercise_block:

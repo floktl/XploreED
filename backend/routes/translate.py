@@ -1,6 +1,7 @@
 """Simple translation exercise endpoints."""
 
 from utils.imports.imports import *
+from utils.translation_utils import evaluate_topic_qualities_ai
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
@@ -19,7 +20,7 @@ def translate():
 
     correct, reason = evaluate_translation_ai(english, german, student_input)
     qualities = evaluate_topic_qualities_ai(english, german, student_input)
-    update_topic_memory_translation(username, german, correct, qualities)
+    update_topic_memory_translation(username, german, qualities)
     prefix = "✅" if correct else "❌"
     feedback = f"{prefix} {reason}"
 
