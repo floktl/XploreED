@@ -2,6 +2,7 @@
 
 from utils.imports.imports import *
 from utils.translation_utils import evaluate_topic_qualities_ai
+from utils.helper import run_in_background
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
@@ -19,8 +20,12 @@ def translate():
         return jsonify({"german": german, "feedback": "❌ Translation failed."})
 
     correct, reason = evaluate_translation_ai(english, german, student_input)
-    qualities = evaluate_topic_qualities_ai(english, german, student_input)
-    update_topic_memory_translation(username, german, qualities)
+
+    def _background_save():
+        qualities = evaluate_topic_qualities_ai(english, german, student_input)
+        update_topic_memory_translation(username, german, qualities)
+
+    run_in_background(_background_save)
     prefix = "✅" if correct else "❌"
     feedback = f"{prefix} {reason}"
 
