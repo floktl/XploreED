@@ -5,6 +5,7 @@ import os
 import json
 import re
 from dotenv import load_dotenv
+import datetime
 
 load_dotenv()
 
@@ -66,9 +67,9 @@ FALLBACK_VOCAB_DATA = [
 
 FALLBACK_TOPIC_MEMORY = [
     {
-        "topic": "sein, pronoun, case:nominative",
-        "skill_type": "grammar",
-        "context": "example",
+        "topic": "gender",
+        "skill_type": "gap-fill",
+        "context": "This example is great",
         "lesson_content_id": "1.1",
         "ease_factor": 2.2,
         "intervall": 3,
@@ -120,15 +121,43 @@ def generate_new_exercises(
     example_exercise_block=None,
     level=None,
 ):
+    print('Generate new exercises!!!!!!!!', flush=True)
+    print(topic_memory, flush=True)
+
     if not vocabular:
         print("⚠️ No vocabulary data found. Using fallback vocab.", flush=True)
         vocabular = FALLBACK_VOCAB_DATA
+
     if not topic_memory:
         print("⚠️ No topic memory found. Using fallback topic.", flush=True)
         topic_memory = FALLBACK_TOPIC_MEMORY
+
     if not example_exercise_block:
         print("⚠️ No example block provided. Using fallback block.", flush=True)
         example_exercise_block = FALLBACK_EXERCISE_BLOCK
+
+    # ✅ Filter the 5 soonest repeat entries and strip context
+    try:
+        now = datetime.datetime.now()
+        upcoming = sorted(
+            (entry for entry in topic_memory if entry.get("next_repeat")),
+            key=lambda x: x["next_repeat"]
+        )
+
+        filtered_topic_memory = []
+        for entry in upcoming:
+            try:
+                if datetime.datetime.fromisoformat(entry["next_repeat"]) <= now:
+                    stripped_entry = {k: v for k, v in entry.items() if k != "context"}
+                    filtered_topic_memory.append(stripped_entry)
+            except Exception as e:
+                print("❌ Error parsing next_repeat:", e, flush=True)
+
+            if len(filtered_topic_memory) >= 5:
+                break
+    except Exception as e:
+        print("❌ Failed to filter topic_memory:", e, flush=True)
+        filtered_topic_memory = topic_memory  # fallback to full
 
     level_val = int(level or 0)
     level_val = max(0, min(level_val, 10))
@@ -166,19 +195,19 @@ Here is the required JSON structure — you must follow it **exactly**:
        - `word`, `meaning`
 
 ⚠️ Do not change field names or format.
-⚠️ Do not include other types like "conjugation", "sentenceCreation", "prompt", or "hint".
+⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".
 ⚠️ All keys must match the example exactly.
 
 Here is an example:
 {json.dumps(example_exercise_block, indent=2)}
 
 Based on the following memory data. Sometimes add new topic and vocabulary, don't ask the same questions as in the topic memory, focus on topic and skill:
-Vocabulary, add vocabulary wih the next possible due date first:
+Vocabulary, add vocabulary wih the next possible repeat date first:
 {json.dumps(vocabular, indent=2)}
 
-Check, which topic has the next due date, they have higher priority, and don't forget to make sometimes new topics based on the student level, to test all the grammar of the german language.
+Check, which entry from the Topic memeory has the next repeat date, they have higher priority, and don't forget to make sometimes new topics based on the student level, to test all the grammar of the german language.
 Topic Memory:
-{json.dumps(topic_memory, indent=2)}
+{json.dumps(filtered_topic_memory, indent=2)}
 
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
 """
