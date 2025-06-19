@@ -210,8 +210,9 @@ def update_topic_memory_translation(
     print(f"Updating translation memory for user '{username}'...", flush=True)
     features = detect_language_topics(german) or ["unknown"]
     print("Detected translation features:", features, flush=True)
+    qualities = qualities or {}
     for feature in features:
-        quality = qualities.get(feature)
+        quality = qualities.get(feature, 3)
         print(f"Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "translation", german, quality)
 
@@ -225,8 +226,9 @@ def update_topic_memory_reading(
     print(f"Updating reading memory for user '{username}'...", flush=True)
     features = detect_language_topics(text) or ["unknown"]
     print("Detected reading features:", features, flush=True)
+    qualities = qualities or {}
     for feature in features:
-        quality = qualities.get(feature)
+        quality = qualities.get(feature, 3)
         print(f"Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "reading", text, quality)
 
