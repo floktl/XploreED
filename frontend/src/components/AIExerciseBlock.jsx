@@ -209,6 +209,16 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
         <h3 className="text-xl font-semibold">{current.title}</h3>
       )}
       {instructions && <p>{instructions}</p>}
+      <div className="flex justify-end">
+        <Button
+          type="button"
+          size="auto"
+          variant="secondary"
+          onClick={() => handleNext(true)}
+        >
+          ➕ New Exercise
+        </Button>
+      </div>
       <div className="space-y-6">
         {exercises.map((ex) => (
           <div key={ex.id} className="mb-4">

@@ -879,7 +879,9 @@ def submit_reading_exercise():
         save_vocab(username, word, context=text, exercise="reading")
 
     def _background_save():
-        update_topic_memory_reading(username, text, True)
+        features = detect_language_topics(text) or ["unknown"]
+        qualities = {feat: 5 for feat in features}
+        update_topic_memory_reading(username, text, qualities)
         for q in questions:
             is_correct = str(answers.get(str(q.get("id")), "")).strip().lower() == str(q.get("correctAnswer", "")).strip().lower()
             features = detect_language_topics(f"{q.get('question','')} {q.get('correctAnswer','')}") or ["unknown"]
