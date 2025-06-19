@@ -8,6 +8,17 @@ import Spinner from "./UI/Spinner";
 import useAppStore from "../store/useAppStore";
 import { getReadingExercise, submitReadingAnswers } from "../api";
 
+function makeSnippet(text: string, answer: string, range = 20): string {
+  const index = text.toLowerCase().indexOf(answer.toLowerCase());
+  if (index === -1) return "";
+  const start = Math.max(0, index - range);
+  const end = Math.min(text.length, index + answer.length + range);
+  const snippet = text.slice(start, end);
+  const escapedAnswer = answer.replace(/([.*+?^${}()|[\]\\])/g, "\\$1");
+  const regex = new RegExp(escapedAnswer, "i");
+  return snippet.replace(regex, (match) => `<strong class='text-green-600'>${match}</strong>`);
+}
+
 interface Question {
   id: string;
   question: string;
@@ -28,6 +39,8 @@ export default function AIReading() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const darkMode = useAppStore((s) => s.darkMode);
 
@@ -53,8 +66,18 @@ export default function AIReading() {
     setSubmitted(true);
     try {
       const result = await submitReadingAnswers(answers, data);
-      if (result?.feedbackPrompt) {
-        setData({ ...data, feedbackPrompt: result.feedbackPrompt });
+      if (result?.results) {
+        const map: Record<string, string> = {};
+        result.results.forEach((r: { id: string; correct_answer: string }) => {
+          map[r.id] = r.correct_answer;
+        });
+        setResults(map);
+        const fb: Record<string, string> = {};
+        data.questions.forEach((q) => {
+          const ans = map[q.id];
+          fb[q.id] = makeSnippet(data.text, ans);
+        });
+        setFeedback(fb);
       }
     } catch {
       // ignore
@@ -96,15 +119,38 @@ export default function AIReading() {
           {data.questions.map((q) => (
             <div key={q.id} className="space-y-2">
               <p className="font-medium">{q.question}</p>
-              {q.options.map((opt) => (
-                <Button key={opt} type="button" variant={answers[q.id] === opt ? "primary" : "secondary"} onClick={() => handleSelect(q.id, opt)} disabled={submitted}>
-                  {opt}
-                </Button>
-              ))}
+              {q.options.map((opt) => {
+                const isCorrect = results[q.id] === opt;
+                const isSelected = answers[q.id] === opt;
+                let variant = "secondary";
+                if (!submitted) {
+                  variant = isSelected ? "primary" : "secondary";
+                } else {
+                  if (isCorrect) variant = "successBright";
+                  else if (isSelected) variant = "danger";
+                }
+                return (
+                  <Button key={opt} type="button" variant={variant} onClick={() => handleSelect(q.id, opt)} disabled={submitted}>
+                    {opt}
+                  </Button>
+                );
+              })}
+              {submitted && feedback[q.id] && (
+                <p className="text-sm" dangerouslySetInnerHTML={{ __html: `Find it here: ...${feedback[q.id]}...` }} />
+              )}
             </div>
           ))}
-          {!submitted && <Button onClick={handleSubmit} variant="success">Submit Answers</Button>}
-          {submitted && data.feedbackPrompt && <div dangerouslySetInnerHTML={{ __html: data.feedbackPrompt }} />}
+          {!submitted && (
+            <Button onClick={handleSubmit} variant="success">
+              Submit Answers
+            </Button>
+          )}
+          {submitted && loading && (
+            <div className="flex flex-col items-center gap-2">
+              <Spinner />
+              <p>AI is thinking...</p>
+            </div>
+          )}
         </Card>
         <div className="mt-6 text-center">
           <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
