@@ -19,6 +19,18 @@ function makeSnippet(text: string, answer: string, range = 20): string {
   return snippet.replace(regex, (match) => `<strong class='text-green-600'>${match}</strong>`);
 }
 
+function guessCorrectAnswers(text: string, questions: Question[]): Record<string, string> {
+  const lowered = text.toLowerCase();
+  const map: Record<string, string> = {};
+  questions.forEach((q) => {
+    const found = q.options.find((opt) => lowered.includes(opt.toLowerCase()));
+    if (found) {
+      map[q.id] = found;
+    }
+  });
+  return map;
+}
+
 interface Question {
   id: string;
   question: string;
@@ -46,6 +58,10 @@ export default function AIReading() {
 
   const startExercise = async () => {
     setLoading(true);
+    setAnswers({});
+    setResults({});
+    setFeedback({});
+    setSubmitted(false);
     try {
       const d = await getReadingExercise(style);
       setData(d);
@@ -66,19 +82,26 @@ export default function AIReading() {
     setSubmitted(true);
     try {
       const result = await submitReadingAnswers(answers, data);
+      let map: Record<string, string> = {};
       if (result?.results) {
-        const map: Record<string, string> = {};
         result.results.forEach((r: { id: string; correct_answer: string }) => {
-          map[r.id] = r.correct_answer;
+          if (r.correct_answer) {
+            map[r.id] = r.correct_answer;
+          }
         });
-        setResults(map);
-        const fb: Record<string, string> = {};
-        data.questions.forEach((q) => {
-          const ans = map[q.id];
-          fb[q.id] = makeSnippet(data.text, ans);
-        });
-        setFeedback(fb);
       }
+      if (Object.keys(map).length === 0) {
+        map = guessCorrectAnswers(data.text, data.questions);
+      }
+      setResults(map);
+      const fb: Record<string, string> = {};
+      data.questions.forEach((q) => {
+        const ans = map[q.id];
+        if (ans) {
+          fb[q.id] = makeSnippet(data.text, ans);
+        }
+      });
+      setFeedback(fb);
     } catch {
       // ignore
     } finally {
