@@ -270,7 +270,8 @@ with get_connection() as conn:
             next_repeat DATETIME,
             repetitions INTEGER,
             last_review DATETIME,
-            correct INTEGER DEFAULT 0
+            correct INTEGER DEFAULT 0,
+            quality INTEGER DEFAULT 0
         );
         """
     )
@@ -295,6 +296,15 @@ if "context" not in topic_cols:
     print("✅ 'context' column added to 'topic_memory'.")
 else:
     print("ℹ️ 'context' column already exists in 'topic_memory'.")
+
+# ✅ Add quality column if missing
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
+if "quality" not in topic_cols:
+    cursor.execute("ALTER TABLE topic_memory ADD COLUMN quality INTEGER DEFAULT 0;")
+    print("✅ 'quality' column added to 'topic_memory'.")
+else:
+    print("ℹ️ 'quality' column already exists in 'topic_memory'.")
 
 
 # ✅ Add num_blocks column if missing
