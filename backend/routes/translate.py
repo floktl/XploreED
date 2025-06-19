@@ -18,7 +18,8 @@ def translate():
         return jsonify({"german": german, "feedback": "❌ Translation failed."})
 
     correct, reason = evaluate_translation_ai(english, german, student_input)
-    update_topic_memory_translation(username, german, correct)
+    qualities = evaluate_topic_qualities_ai(english, german, student_input)
+    update_topic_memory_translation(username, german, correct, qualities)
     prefix = "✅" if correct else "❌"
     feedback = f"{prefix} {reason}"
 

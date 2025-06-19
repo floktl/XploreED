@@ -259,7 +259,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     """
     query = (
         "SELECT topic, skill_type, context, lesson_content_id, ease_factor, "
-        "intervall, next_repeat, repetitions, last_review, correct "
+        "intervall, next_repeat, repetitions, last_review, correct, quality "
         "FROM topic_memory WHERE username = ?"
     )
     params = [username]
@@ -300,7 +300,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
                 feature,
                 skill,
                 ex.get("question", ""),
-                bool(is_correct),
+                quality,
             )
 
             results.append(
@@ -836,7 +836,8 @@ def submit_reading_exercise():
         is_correct = str(answers.get(str(q.get("id")), "")).strip().lower() == str(q.get("correctAnswer", "")).strip().lower()
         features = detect_language_topics(f"{q.get('question','')} {q.get('correctAnswer','')}") or ["unknown"]
         for feat in features:
-            _update_single_topic(username, feat, "reading", q.get("question",""), is_correct)
+            quality = 5 if is_correct else 2
+            _update_single_topic(username, feat, "reading", q.get("question",""), quality)
 
     vocab_rows = fetch_custom(
         "SELECT vocab, translation FROM vocab_log WHERE username = ?",
