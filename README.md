@@ -13,7 +13,7 @@ The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` f
 - **support_feedback** – user feedback messages
 - **exercise_submissions** – submissions of lesson exercises
  - **topic_memory** – spaced repetition data for grammar and topics
-- **ai_user_data** – caches AI exercises and weakness lesson per user
+- **ai_user_data** – caches AI exercises, the next exercise block and weakness lesson per user
  
 The schema creation queries can be found around lines 33‑258 of the migration script.
 
