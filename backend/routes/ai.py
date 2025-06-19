@@ -13,6 +13,7 @@ from mock_data.script import (
 )
 from utils.grammar_utils import detect_language_topics
 from utils.translation_utils import _update_single_topic, update_topic_memory_reading
+from utils.helper import run_in_background
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
 import os
@@ -832,13 +833,16 @@ def submit_reading_exercise():
     for word in split_and_clean(text):
         save_vocab(username, word, context=text, exercise="reading")
 
-    update_topic_memory_reading(username, text, True)
-    for q in questions:
-        is_correct = str(answers.get(str(q.get("id")), "")).strip().lower() == str(q.get("correctAnswer", "")).strip().lower()
-        features = detect_language_topics(f"{q.get('question','')} {q.get('correctAnswer','')}") or ["unknown"]
-        for feat in features:
-            quality = 5 if is_correct else 2
-            _update_single_topic(username, feat, "reading", q.get("question",""), quality)
+    def _background_save():
+        update_topic_memory_reading(username, text, True)
+        for q in questions:
+            is_correct = str(answers.get(str(q.get("id")), "")).strip().lower() == str(q.get("correctAnswer", "")).strip().lower()
+            features = detect_language_topics(f"{q.get('question','')} {q.get('correctAnswer','')}") or ["unknown"]
+            for feat in features:
+                quality = 5 if is_correct else 2
+                _update_single_topic(username, feat, "reading", q.get("question",""), quality)
+
+    run_in_background(_background_save)
 
     vocab_rows = fetch_custom(
         "SELECT vocab, translation FROM vocab_log WHERE username = ?",
