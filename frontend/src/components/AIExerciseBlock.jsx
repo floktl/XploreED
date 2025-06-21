@@ -50,21 +50,28 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     setIsComplete(completed);
   }, [completed]);
 
-  useEffect(() => {
-    if (mode !== "student") return;
-    if (!current || !Array.isArray(current.exercises)) {
-      setLoadingInit(true);
-      fetchExercisesFn()
-        .then((d) => {
-          setCurrent(d);
-          fetchNext();
-        })
-        .catch(() => setCurrent(null))
-        .finally(() => setLoadingInit(false));
-    } else {
-      fetchNext();
-    }
-  }, [mode, fetchExercisesFn]);
+useEffect(() => {
+  if (mode !== "student") return;
+  if (!current || !Array.isArray(current.exercises)) {
+    setLoadingInit(true);
+    fetchExercisesFn()
+      .then((d) => {
+        if (!d || !Array.isArray(d.exercises)) {
+          throw new Error("Mistral API returned null or invalid exercises.");
+        }
+        setCurrent(d);
+        fetchNext();
+      })
+      .catch((err) => {
+        console.error("Mistral API error:", err);
+        setCurrent("API_ERROR_500"); // sentinel value
+      })
+      .finally(() => setLoadingInit(false));
+  } else {
+    fetchNext();
+  }
+}, [mode, fetchExercisesFn]);
+
 
   useEffect(() => {
     if (mode === "student" && submitted && passed && !isComplete) {
@@ -89,13 +96,22 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     );
   }
 
-  if (!current || !Array.isArray(current.exercises)) {
-    return (
-      <Card className="bg-red-100 text-red-800">
-        <p>Failed to load AI exercise.</p>
-      </Card>
-    );
-  }
+ if (current === "API_ERROR_500") {
+  return (
+    <Card className="bg-red-100 text-red-800">
+      <p>🚨 500: Mistral API Error. Please try again later.</p>
+    </Card>
+  );
+}
+
+if (!current || !Array.isArray(current.exercises)) {
+  return (
+    <Card className="bg-red-100 text-red-800">
+      <p>Failed to load AI exercise.</p>
+    </Card>
+  );
+}
+
 
 
   const handleSelect = (exId, value) => {

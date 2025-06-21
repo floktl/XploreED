@@ -115,6 +115,10 @@ def _ensure_schema(exercise_block: dict) -> dict:
 
 # === MAIN FUNCTION ===
 
+import json
+import datetime
+import requests
+
 def generate_new_exercises(
     vocabular=None,
     topic_memory=None,
@@ -159,6 +163,15 @@ def generate_new_exercises(
         print("❌ Failed to filter topic_memory:", e, flush=True)
         filtered_topic_memory = topic_memory  # fallback to full
 
+    # ✅ Also strip context from vocabular
+    try:
+        vocabular = [
+            {k: v for k, v in entry.items() if k != "context"}
+            for entry in vocabular
+        ]
+    except Exception as e:
+        print("❌ Error stripping context from vocabular:", e, flush=True)
+
     level_val = int(level or 0)
     level_val = max(0, min(level_val, 10))
     cefr_level = CEFR_LEVELS[level_val]
@@ -197,16 +210,16 @@ Here is the required JSON structure — you must follow it **exactly**:
 ⚠️ Do not change field names or format.
 ⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".
 ⚠️ All keys must match the example exactly.
+⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.
+⚠️ Always generate new, unique sentences that were not seen in earlier exercises.
 
-Here is an example:
+Here is an example structure for reference (do not reuse content!):
 {json.dumps(example_exercise_block, indent=2)}
 
-Based on the following memory data. Sometimes add new topic and vocabulary, don't ask the same questions as in the topic memory, focus on topic and skill:
-Vocabulary, add vocabulary wih the next possible repeat date first:
+Here is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
 {json.dumps(vocabular, indent=2)}
 
-Check, which entry from the Topic memeory has the next repeat date, they have higher priority, and don't forget to make sometimes new topics based on the student level, to test all the grammar of the german language.
-Topic Memory:
+Here is the topic memory (prioritize these themes or test new related ones):
 {json.dumps(filtered_topic_memory, indent=2)}
 
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
