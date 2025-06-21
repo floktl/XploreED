@@ -28,10 +28,14 @@ def get_progress_test():
     scrambled = get_scrambled_sentence(sentence)
 
     exercise_block = generate_training_exercises(username)
+    if not exercise_block:
+        return jsonify({"error": "Mistral error"}), 500
     for ex in exercise_block.get("exercises", []):
         ex.pop("correctAnswer", None)
 
     reading = generate_reading_exercise("story", level)
+    if not reading or not reading.get("questions"):
+        return jsonify({"error": "Mistral error"}), 500
     for q in reading.get("questions", []):
         q.pop("correctAnswer", None)
 

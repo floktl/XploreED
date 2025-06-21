@@ -78,8 +78,11 @@ def store_user_ai_data(username: str, data: dict):
         insert_row("ai_user_data", data_with_user)
 
 
-def _create_ai_block(username: str) -> dict:
-    """Create a single AI exercise block for the user."""
+def _create_ai_block(username: str) -> dict | None:
+    """Create a single AI exercise block for the user.
+
+    Returns ``None`` if the Mistral API did not return a valid block.
+    """
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
@@ -111,8 +114,8 @@ def _create_ai_block(username: str) -> dict:
     ai_block = generate_new_exercises(
         vocab_data, topic_memory, example_block, level=level
     )
-    if not ai_block:
-        ai_block = example_block.copy()
+    if not ai_block or not ai_block.get("exercises"):
+        return None
 
     exercises = ai_block.get("exercises", [])
     random.shuffle(exercises)
@@ -124,17 +127,22 @@ def _create_ai_block(username: str) -> dict:
     return ai_block
 
 
-def generate_training_exercises(username: str) -> dict:
-    """Generate current and next exercise blocks and store them."""
+def generate_training_exercises(username: str) -> dict | None:
+    """Generate current and next exercise blocks and store them.
+
+    Returns ``None`` if a valid exercise block could not be generated.
+    """
 
     ai_block = _create_ai_block(username)
+    if not ai_block:
+        return None
     next_block = _create_ai_block(username)
 
     store_user_ai_data(
         username,
         {
             "exercises": json.dumps(ai_block),
-            "next_exercises": json.dumps(next_block),
+            "next_exercises": json.dumps(next_block or {}),
             "exercises_updated_at": datetime.datetime.now().isoformat(),
         },
     )
@@ -145,6 +153,8 @@ def generate_training_exercises(username: str) -> dict:
 def prefetch_next_exercises(username: str) -> None:
     """Generate and store a new next exercise block asynchronously."""
     next_block = _create_ai_block(username)
+    if not next_block:
+        return
     store_user_ai_data(
         username,
         {
@@ -382,8 +392,8 @@ def get_ai_exercises():
     ai_block = generate_new_exercises(
         vocab_data, topic_memory, example_block, level=level
     )
-    if not ai_block:
-        ai_block = example_block.copy()
+    if not ai_block or not ai_block.get("exercises"):
+        return jsonify({"error": "Mistral error"}), 500
 
     exercises = ai_block.get("exercises", [])
     random.shuffle(exercises)
@@ -636,6 +646,9 @@ def get_training_exercises():
         else:
             ai_block = generate_training_exercises(username)
 
+        if not ai_block:
+            return jsonify({"error": "Mistral error"}), 500
+
         store_user_ai_data(
             username,
             {
@@ -660,6 +673,8 @@ def get_training_exercises():
             pass
 
     ai_block = generate_training_exercises(username)
+    if not ai_block:
+        return jsonify({"error": "Mistral error"}), 500
     print("Returning new training exercises", flush=True)
     return jsonify(ai_block)
 
@@ -802,21 +817,7 @@ def ai_weakness_lesson():
             return Response(html, mimetype="text/html")
     except Exception as e:
         current_app.logger.error("Failed to generate weakness lesson: %s", e)
-
-    fallback = (
-        f"<h2>Focus Topic: {topic}</h2>"
-        "<p>This area needs more practice. Remember the rules and try creating your own sentences.</p>"
-        "<ul><li>Review example sentences</li><li>Write your own short texts</li><li>Practice regularly</li></ul>"
-    )
-    store_user_ai_data(
-        username,
-        {
-            "weakness_lesson": fallback,
-            "weakness_topic": topic,
-            "lesson_updated_at": datetime.datetime.now().isoformat(),
-        },
-    )
-    return Response(fallback, mimetype="text/html")
+    return jsonify({"error": "Mistral error"}), 500
 
 
 @ai_bp.route("/reading-exercise", methods=["POST"])
@@ -834,6 +835,8 @@ def ai_reading_exercise():
     level = row.get("skill_level", 0) if row else 0
 
     block = generate_reading_exercise(style, level)
+    if not block or not block.get("text") or not block.get("questions"):
+        return jsonify({"error": "Mistral error"}), 500
     for q in block.get("questions", []):
         q.pop("correctAnswer", None)
     return jsonify(block)
