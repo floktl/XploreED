@@ -52,15 +52,22 @@ export default function PlacementTest({ onComplete }) {
   }, [index]);
 
   const handleNext = async () => {
-    const res = await submitLevelAnswer(index, answer.trim(), sentence);
-    if (res.correct) setCorrect((c) => c + 1);
+    const trimmed = answer.trim();
+    const locallyCorrect = trimmed === sentence;
+
+    // fire-and-forget submission to keep UI responsive
+    submitLevelAnswer(index, trimmed, sentence).catch((e) =>
+      console.error("[PlacementTest] submit failed", e)
+    );
+
+    if (locallyCorrect) setCorrect((c) => c + 1);
     const id = `ex${index + 1}`;
-    setAnswers((a) => ({ ...a, [id]: answer.trim() }));
+    setAnswers((a) => ({ ...a, [id]: trimmed }));
     if (index < 9) {
       setIndex(index + 1);
     } else {
-      const score = correct + (res.correct ? 1 : 0);
-      const finalAnswers = { ...answers, [id]: answer.trim() };
+      const score = correct + (locallyCorrect ? 1 : 0);
+      const finalAnswers = { ...answers, [id]: trimmed };
       const exerciseBlock = {
         exercises: SENTENCES.map((s, i) => ({
           id: `ex${i + 1}`,
