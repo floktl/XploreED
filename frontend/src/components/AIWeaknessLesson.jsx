@@ -32,7 +32,7 @@ export default function AIWeaknessLesson() {
       .then(setHtml)
       .catch((err) => {
         console.error("Failed to load lesson", err);
-        setError("Could not load lesson.");
+        setError("🚨 500: Mistral API Error. Please try again later.");
       });
   }, []);
 

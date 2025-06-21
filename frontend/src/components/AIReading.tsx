@@ -66,7 +66,7 @@ export default function AIReading() {
       const d = await getReadingExercise(style);
       setData(d);
     } catch {
-      setData(null);
+      setData("API_ERROR_500" as any);
     } finally {
       setLoading(false);
     }
@@ -108,6 +108,23 @@ export default function AIReading() {
       setLoading(false);
     }
   };
+
+  if (data === "API_ERROR_500") {
+    return (
+      <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+        <Container>
+          <Title>📖 AI Reading Exercise</Title>
+          <Card className="bg-red-100 text-red-800 text-center p-4">
+            <p>🚨 500: Mistral API Error. Please try again later.</p>
+          </Card>
+          <div className="mt-6 text-center">
+            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
+          </div>
+        </Container>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!data) {
     return (
