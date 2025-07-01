@@ -20,6 +20,7 @@ import os
 import requests
 
 
+
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
@@ -290,7 +291,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     answered incorrectly are returned.
     """
     query = (
-        "SELECT topic, skill_type, context, lesson_content_id, ease_factor, "
+        "SELECT grammar, topic, skill_type, context, lesson_content_id, ease_factor, "
         "intervall, next_repeat, repetitions, last_review, correct, quality "
         "FROM topic_memory WHERE username = ?"
     )
@@ -339,7 +340,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             results.append(
                 {
                     "topic_memory": {
-                        "topic": feature,
+                        "grammar": feature,
                         "skill_type": skill,
                         "quality": quality,
                         "correct": is_correct,
@@ -689,7 +690,7 @@ def create_ai_lesson():
         return jsonify({"msg": "Unauthorized"}), 401
 
     topic_rows = fetch_topic_memory(username)
-    topics = [row.get("topic") for row in topic_rows if row.get("topic")] if topic_rows else []
+    topics = [row.get("grammar") for row in topic_rows if row.get("grammar")] if topic_rows else []
 
     if topics:
         items = "".join(f"<li>{t}</li>" for t in topics[:5])
@@ -766,22 +767,22 @@ def ai_weakness_lesson():
         return jsonify({"msg": "Unauthorized"}), 401
 
     row = fetch_one_custom(
-        "SELECT topic, skill_type FROM topic_memory WHERE username = ? "
+        "SELECT grammar, skill_type FROM topic_memory WHERE username = ? "
         "ORDER BY ease_factor ASC, repetitions DESC LIMIT 1",
         (username,),
     )
 
-    topic = row.get("topic") if row else None
+    grammar = row.get("grammar") if row else None
     skill = row.get("skill_type") if row else None
-    if not topic:
-        topic = "Modalverben"
+    if not grammar:
+        grammar = "Modalverben"
         skill = "grammar"
 
     user_prompt = {
         "role": "user",
         "content": (
             "Create a short HTML lesson in English for a German learner. "
-            f"Explain the topic '{topic}' ({skill}) and give three training tips."
+            f"Explain the topic '{grammar}' ({skill}) and give three training tips."
             "Return only valid HTML."
         ),
     }
@@ -799,7 +800,7 @@ def ai_weakness_lesson():
         "SELECT weakness_lesson, weakness_topic FROM ai_user_data WHERE username = ?",
         (username,),
     )
-    if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == topic:
+    if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == grammar:
         return Response(cached["weakness_lesson"], mimetype="text/html")
 
     try:
@@ -810,7 +811,7 @@ def ai_weakness_lesson():
                 username,
                 {
                     "weakness_lesson": html,
-                    "weakness_topic": topic,
+                    "weakness_topic": grammar,
                     "lesson_updated_at": datetime.datetime.now().isoformat(),
                 },
             )
