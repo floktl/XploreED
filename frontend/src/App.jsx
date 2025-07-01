@@ -9,6 +9,7 @@ import Menu from "./components/Menu";
 import Translator from "./components/Translator";
 import LevelGame from "./components/LevelGame";
 import PlacementTest from "./components/PlacementTest";
+import LevelGuess from "./components/LevelGuess";
 import Profile from "./components/Profile";
 import Vocabulary from "./components/Vocabulary";
 import VocabTrainer from "./components/VocabTrainer";
@@ -62,6 +63,7 @@ const router = createBrowserRouter(
   [
     { path: "/", element: <NameInput />, errorElement: <ErrorPage /> },
     { path: "/placement-test", element: <PlacementTest />, errorElement: <ErrorPage /> },
+    { path: "/select-level", element: <LevelGuess />, errorElement: <ErrorPage /> },
     { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
     { path: "/translate", element: <Translator />, errorElement: <ErrorPage /> },
     { path: "/level-game", element: <LevelGame />, errorElement: <ErrorPage /> },

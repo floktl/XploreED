@@ -8,6 +8,7 @@ import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
 import { login, signup, getMe, getRole } from "../api";
 import PlacementTest from "./PlacementTest";
+import LevelGuess from "./LevelGuess";
 
 export default function NameInput() {
   const [name, setName] = useState("");
@@ -17,6 +18,8 @@ export default function NameInput() {
   const [error, setError] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [showTest, setShowTest] = useState(false);
+  const [showChoice, setShowChoice] = useState(false);
+  const [showLevelSelect, setShowLevelSelect] = useState(false);
   const navigate = useNavigate();
 
   const setUsername = useAppStore((state) => state.setUsername);
@@ -50,7 +53,7 @@ export default function NameInput() {
         setUsername(me.username);
         setIsAdmin(role.is_admin);
         localStorage.setItem("username", me.username);
-        setShowTest(true);
+        setShowChoice(true);
         return;
       } else {
         res = await login(trimmed, pw);
@@ -81,6 +84,28 @@ export default function NameInput() {
 
   if (showTest) {
     return <PlacementTest onComplete={() => navigate("/menu")} />;
+  }
+
+  if (showLevelSelect) {
+    return <LevelGuess />;
+  }
+
+  if (showChoice) {
+    return (
+      <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+        <Container>
+          <Title>Set Your Level</Title>
+          <Card className="space-y-4 p-4 text-center">
+            <p>Would you like to take a placement test or choose a level manually?</p>
+            <div className="flex flex-col gap-4">
+              <Button variant="primary" onClick={() => setShowTest(true)}>Take Placement Test</Button>
+              <Button variant="secondary" onClick={() => setShowLevelSelect(true)}>Choose Level</Button>
+            </div>
+          </Card>
+        </Container>
+        <Footer />
+      </div>
+    );
   }
 
   return (
