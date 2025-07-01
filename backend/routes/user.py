@@ -183,7 +183,7 @@ def get_topic_memory():
 
     rows = fetch_custom(
         """
-        SELECT id, topic, skill_type, context, lesson_content_id, ease_factor,
+        SELECT id, grammar, topic, skill_type, context, lesson_content_id, ease_factor,
                intervall, next_repeat, repetitions, last_review, correct,
                quality
         FROM topic_memory
