@@ -63,6 +63,7 @@ def ensure_default_topics(username: str) -> None:
         )
 
 
+
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
 )
