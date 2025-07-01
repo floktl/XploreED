@@ -19,6 +19,49 @@ from elevenlabs.client import ElevenLabs
 import os
 import requests
 
+DEFAULT_TOPICS = [
+    "dogs",
+    "living",
+    "family",
+    "work",
+    "shopping",
+    "travel",
+    "sports",
+    "food",
+    "hobbies",
+    "weather",
+]
+
+
+def ensure_default_topics(username: str) -> None:
+    """Insert default topic rows if the user has none."""
+    existing = fetch_custom(
+        "SELECT id FROM topic_memory WHERE username = ? AND topic IS NOT NULL",
+        (username,),
+    )
+    if existing:
+        return
+    now = datetime.datetime.now().isoformat()
+    for t in DEFAULT_TOPICS:
+        insert_row(
+            "topic_memory",
+            {
+                "username": username,
+                "grammar": None,
+                "topic": t,
+                "skill_type": "theme",
+                "context": "",
+                "lesson_content_id": "topic_seed",
+                "ease_factor": 2.5,
+                "intervall": 1,
+                "next_repeat": now,
+                "repetitions": 0,
+                "last_review": now,
+                "correct": 0,
+                "quality": 0,
+            },
+        )
+
 
 
 FEEDBACK_FILE = (
@@ -84,6 +127,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     Returns ``None`` if the Mistral API did not return a valid block.
     """
+    ensure_default_topics(username)
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
