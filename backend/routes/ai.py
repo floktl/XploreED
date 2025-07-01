@@ -19,6 +19,49 @@ from elevenlabs.client import ElevenLabs
 import os
 import requests
 
+DEFAULT_TOPICS = [
+    "dogs",
+    "living",
+    "family",
+    "work",
+    "shopping",
+    "travel",
+    "sports",
+    "food",
+    "hobbies",
+    "weather",
+]
+
+
+def ensure_default_topics(username: str) -> None:
+    """Insert default topic rows if the user has none."""
+    existing = fetch_custom(
+        "SELECT id FROM topic_memory WHERE username = ? AND topic IS NOT NULL",
+        (username,),
+    )
+    if existing:
+        return
+    now = datetime.datetime.now().isoformat()
+    for t in DEFAULT_TOPICS:
+        insert_row(
+            "topic_memory",
+            {
+                "username": username,
+                "grammar": None,
+                "topic": t,
+                "skill_type": "theme",
+                "context": "",
+                "lesson_content_id": "topic_seed",
+                "ease_factor": 2.5,
+                "intervall": 1,
+                "next_repeat": now,
+                "repetitions": 0,
+                "last_review": now,
+                "correct": 0,
+                "quality": 0,
+            },
+        )
+
 
 FEEDBACK_FILE = (
     Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
@@ -83,6 +126,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     Returns ``None`` if the Mistral API did not return a valid block.
     """
+    ensure_default_topics(username)
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
@@ -290,7 +334,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     answered incorrectly are returned.
     """
     query = (
-        "SELECT topic, skill_type, context, lesson_content_id, ease_factor, "
+        "SELECT grammar, topic, skill_type, context, lesson_content_id, ease_factor, "
         "intervall, next_repeat, repetitions, last_review, correct, quality "
         "FROM topic_memory WHERE username = ?"
     )
@@ -339,7 +383,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             results.append(
                 {
                     "topic_memory": {
-                        "topic": feature,
+                        "grammar": feature,
                         "skill_type": skill,
                         "quality": quality,
                         "correct": is_correct,
@@ -689,7 +733,7 @@ def create_ai_lesson():
         return jsonify({"msg": "Unauthorized"}), 401
 
     topic_rows = fetch_topic_memory(username)
-    topics = [row.get("topic") for row in topic_rows if row.get("topic")] if topic_rows else []
+    topics = [row.get("grammar") for row in topic_rows if row.get("grammar")] if topic_rows else []
 
     if topics:
         items = "".join(f"<li>{t}</li>" for t in topics[:5])
@@ -766,22 +810,22 @@ def ai_weakness_lesson():
         return jsonify({"msg": "Unauthorized"}), 401
 
     row = fetch_one_custom(
-        "SELECT topic, skill_type FROM topic_memory WHERE username = ? "
+        "SELECT grammar, skill_type FROM topic_memory WHERE username = ? "
         "ORDER BY ease_factor ASC, repetitions DESC LIMIT 1",
         (username,),
     )
 
-    topic = row.get("topic") if row else None
+    grammar = row.get("grammar") if row else None
     skill = row.get("skill_type") if row else None
-    if not topic:
-        topic = "Modalverben"
+    if not grammar:
+        grammar = "Modalverben"
         skill = "grammar"
 
     user_prompt = {
         "role": "user",
         "content": (
             "Create a short HTML lesson in English for a German learner. "
-            f"Explain the topic '{topic}' ({skill}) and give three training tips."
+            f"Explain the topic '{grammar}' ({skill}) and give three training tips."
             "Return only valid HTML."
         ),
     }
@@ -799,7 +843,7 @@ def ai_weakness_lesson():
         "SELECT weakness_lesson, weakness_topic FROM ai_user_data WHERE username = ?",
         (username,),
     )
-    if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == topic:
+    if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == grammar:
         return Response(cached["weakness_lesson"], mimetype="text/html")
 
     try:
@@ -810,7 +854,7 @@ def ai_weakness_lesson():
                 username,
                 {
                     "weakness_lesson": html,
-                    "weakness_topic": topic,
+                    "weakness_topic": grammar,
                     "lesson_updated_at": datetime.datetime.now().isoformat(),
                 },
             )

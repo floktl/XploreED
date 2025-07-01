@@ -70,6 +70,7 @@ export default function TopicMemory() {
             <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
               <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
                 <tr>
+                  <th className="px-4 py-2 text-left">Grammar</th>
                   <th className="px-4 py-2 text-left">Topic</th>
                   <th className="px-4 py-2 text-left">Skill</th>
                   <th className="px-4 py-2 text-left">Context</th>
@@ -82,7 +83,8 @@ export default function TopicMemory() {
               <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
                 {topics.map((t) => (
                   <tr key={t.id} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
-                    <td className="px-4 py-2 font-medium">{t.topic}</td>
+                    <td className="px-4 py-2 font-medium">{t.grammar || "-"}</td>
+                    <td className="px-4 py-2">{t.topic || "-"}</td>
                     <td className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{t.skill_type}</td>
                     <td className="px-4 py-2 whitespace-nowrap max-w-xs overflow-hidden text-ellipsis">{t.context}</td>
                     <td className="px-4 py-2">{Number(t.ease_factor).toFixed(2)}</td>

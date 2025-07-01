@@ -133,19 +133,19 @@ def evaluate_topic_qualities_ai(
 
 def _update_single_topic(
     username: str,
-    topic: str,
+    grammar: str,
     skill: str,
     context: str,
     quality: int,
 ) -> None:
     """Insert or update a single topic_memory entry."""
-    print(f"Updating single topic: {username=}, {topic=}, {skill=}, {quality=}", flush=True)
+    print(f"Updating single topic: {username=}, {grammar=}, {skill=}, {quality=}", flush=True)
     correct = quality == 5
 
     existing = fetch_one_custom(
         "SELECT id, ease_factor, intervall, repetitions FROM topic_memory "
-        "WHERE username = ? AND topic = ? AND skill_type = ?",
-        (username, topic, skill),
+        "WHERE username = ? AND grammar = ? AND skill_type = ?",
+        (username, grammar, skill),
     )
     print("Existing topic entry:", existing, flush=True)
 
@@ -182,7 +182,8 @@ def _update_single_topic(
             "topic_memory",
             {
                 "username": username,
-                "topic": topic,
+                "grammar": grammar,
+                "topic": None,
                 "skill_type": skill,
                 "context": context,
                 "lesson_content_id": "translation_practice",
