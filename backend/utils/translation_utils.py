@@ -7,6 +7,21 @@ from utils.grammar_utils import detect_language_topics
 from utils.db_utils import insert_row, update_row, fetch_one_custom
 from utils.algorithm import sm2
 from utils.vocab_utils import translate_to_german
+import random
+
+# Default conversation topics used when creating new topic memory rows
+DEFAULT_TOPICS = [
+    "dogs",
+    "living",
+    "family",
+    "work",
+    "shopping",
+    "travel",
+    "sports",
+    "food",
+    "hobbies",
+    "weather",
+]
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
@@ -143,7 +158,7 @@ def _update_single_topic(
     correct = quality == 5
 
     existing = fetch_one_custom(
-        "SELECT id, ease_factor, intervall, repetitions FROM topic_memory "
+        "SELECT id, topic, ease_factor, intervall, repetitions FROM topic_memory "
         "WHERE username = ? AND grammar = ? AND skill_type = ?",
         (username, grammar, skill),
     )
@@ -157,23 +172,21 @@ def _update_single_topic(
             existing.get("intervall") or 1,
         )
         print(f"Updated EF: {ef}, reps: {reps}, interval: {interval}", flush=True)
-        update_row(
-            "topic_memory",
-            {
-                "ease_factor": ef,
-                "repetitions": reps,
-                "intervall": interval,
-                "next_repeat": (
-                    datetime.datetime.now()
-                    + datetime.timedelta(days=interval)
-                ).isoformat(),
-                "last_review": datetime.datetime.now().isoformat(),
-                "correct": int(correct),
-                "quality": quality,
-            },
-            "id = ?",
-            (existing["id"],),
-        )
+        update_data = {
+            "ease_factor": ef,
+            "repetitions": reps,
+            "intervall": interval,
+            "next_repeat": (
+                datetime.datetime.now()
+                + datetime.timedelta(days=interval)
+            ).isoformat(),
+            "last_review": datetime.datetime.now().isoformat(),
+            "correct": int(correct),
+            "quality": quality,
+        }
+        if not existing.get("topic"):
+            update_data["topic"] = random.choice(DEFAULT_TOPICS)
+        update_row("topic_memory", update_data, "id = ?", (existing["id"],))
         print("Topic memory row updated.", flush=True)
     else:
         ef, reps, interval = sm2(quality)
@@ -183,7 +196,7 @@ def _update_single_topic(
             {
                 "username": username,
                 "grammar": grammar,
-                "topic": None,
+                "topic": random.choice(DEFAULT_TOPICS),
                 "skill_type": skill,
                 "context": context,
                 "lesson_content_id": "translation_practice",

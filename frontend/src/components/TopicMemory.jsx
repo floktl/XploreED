@@ -7,13 +7,19 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import Badge from "./UI/Badge";
 import Modal from "./UI/Modal";
-import { Container, Title } from "./UI/UI";
+import { Container, Title, Input } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 
 export default function TopicMemory() {
   const [topics, setTopics] = useState([]);
   const [showClear, setShowClear] = useState(false);
   const [error, setError] = useState("");
+  const [filters, setFilters] = useState({
+    grammar: "",
+    topic: "",
+    skill: "",
+    context: "",
+  });
   const username = useAppStore((state) => state.username);
   const setUsername = useAppStore((state) => state.setUsername);
   const darkMode = useAppStore((state) => state.darkMode);
@@ -54,6 +60,13 @@ export default function TopicMemory() {
     }
   };
 
+  const filteredTopics = topics.filter((t) =>
+    (t.grammar || "").toLowerCase().includes(filters.grammar.toLowerCase()) &&
+    (t.topic || "").toLowerCase().includes(filters.topic.toLowerCase()) &&
+    (t.skill_type || "").toLowerCase().includes(filters.skill.toLowerCase()) &&
+    (t.context || "").toLowerCase().includes(filters.context.toLowerCase())
+  );
+
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
@@ -79,9 +92,51 @@ export default function TopicMemory() {
                   <th className="px-4 py-2 text-left">Next</th>
                   <th className="px-4 py-2 text-left">Reps</th>
                 </tr>
+                <tr>
+                  <th className="px-2 py-1">
+                    <Input
+                      value={filters.grammar}
+                      onChange={(e) =>
+                        setFilters({ ...filters, grammar: e.target.value })
+                      }
+                      placeholder="filter"
+                      className="text-xs"
+                    />
+                  </th>
+                  <th className="px-2 py-1">
+                    <Input
+                      value={filters.topic}
+                      onChange={(e) =>
+                        setFilters({ ...filters, topic: e.target.value })
+                      }
+                      placeholder="filter"
+                      className="text-xs"
+                    />
+                  </th>
+                  <th className="px-2 py-1">
+                    <Input
+                      value={filters.skill}
+                      onChange={(e) =>
+                        setFilters({ ...filters, skill: e.target.value })
+                      }
+                      placeholder="filter"
+                      className="text-xs"
+                    />
+                  </th>
+                  <th className="px-2 py-1" colSpan="5">
+                    <Input
+                      value={filters.context}
+                      onChange={(e) =>
+                        setFilters({ ...filters, context: e.target.value })
+                      }
+                      placeholder="filter context"
+                      className="text-xs"
+                    />
+                  </th>
+                </tr>
               </thead>
               <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-                {topics.map((t) => (
+                {filteredTopics.map((t) => (
                   <tr key={t.id} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
                     <td className="px-4 py-2 font-medium">{t.grammar || "-"}</td>
                     <td className="px-4 py-2">{t.topic || "-"}</td>
@@ -98,6 +153,9 @@ export default function TopicMemory() {
           </Card>
         )}
         <div className="mt-6 flex justify-center gap-4">
+          <Button variant="secondary" size="md" onClick={() => setFilters({ grammar: "", topic: "", skill: "", context: "" })}>
+            Reset Filters
+          </Button>
           <Button variant="danger" size="md" onClick={() => setShowClear(true)}>
             🗑️ Clear Memory
           </Button>
