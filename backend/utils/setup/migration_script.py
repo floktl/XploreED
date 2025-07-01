@@ -271,6 +271,7 @@ with get_connection() as conn:
         CREATE TABLE IF NOT EXISTS topic_memory (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
+            grammar TEXT,
             topic TEXT,
             skill_type TEXT,
             context TEXT,
@@ -286,6 +287,25 @@ with get_connection() as conn:
         """
     )
     print("✅ 'topic_memory' table created (if not exists).")
+
+# ✅ Rename 'topic' column to 'grammar'
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
+if "grammar" not in topic_cols and "topic" in topic_cols:
+    try:
+        cursor.execute("ALTER TABLE topic_memory RENAME COLUMN topic TO grammar;")
+        print("✅ 'topic' column renamed to 'grammar'.")
+    except Exception:
+        print("⚠️ Failed to rename column 'topic' to 'grammar'.")
+
+# ✅ Add new 'topic' column if missing
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
+if "topic" not in topic_cols:
+    cursor.execute("ALTER TABLE topic_memory ADD COLUMN topic TEXT;")
+    print("✅ 'topic' column added to 'topic_memory'.")
+else:
+    print("ℹ️ 'topic' column already exists in 'topic_memory'.")
 
 # ✅ Add correct column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
