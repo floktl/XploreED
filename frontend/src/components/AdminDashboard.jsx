@@ -170,6 +170,11 @@ export default function AdminDashboard() {
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
         <Title>📊 Admin Dashboard</Title>
+        <div className="mb-4 text-right">
+          <Link to="/admin-users" className="text-blue-600 hover:underline">
+            Manage Users →
+          </Link>
+        </div>
 
         {error && <Alert type="danger">{error}</Alert>}
 
