@@ -65,8 +65,11 @@ export default function Footer() {
 
     return (
         <footer
-            className={`fixed bottom-0 w-full z-50 border-t backdrop-blur-sm ${darkMode ? "bg-gray-900/80 border-gray-700 text-white" : "bg-white/80 border-gray-200 text-gray-800"}
-                `}
+            className={`fixed bottom-0 w-full z-50 border-t backdrop-blur-sm ${
+                darkMode
+                    ? "bg-gray-900/80 border-gray-700 text-white"
+                    : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-indigo-500"
+            }`}
         >
             <div className="max-w-5xl mx-auto flex flex-wrap justify-center sm:justify-between items-center px-4 py-3 gap-3">
                 {!isNameInputPage && (
