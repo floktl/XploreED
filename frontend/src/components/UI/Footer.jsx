@@ -73,10 +73,6 @@ export default function Footer() {
                     <div className="flex flex-wrap gap-3 items-center">
                         {!isAdmin && (
                             <>
-                                <button onClick={() => navigate("/profile")} className={buttonBase}>
-                                    <User className={iconStyle} />
-                                    Profile
-                                </button>
                                 <button onClick={() => navigate("/settings")} className={buttonBase}>
                                     <Settings className={iconStyle} />
                                     Settings
