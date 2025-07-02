@@ -10,7 +10,11 @@ export default function Header() {
   const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
 
   return (
-      className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${darkMode ? "bg-gray-800/80 text-white" : "bg-white/80 text-gray-800"}`}
+      className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${
+        darkMode
+          ? "bg-gray-800/80 text-white"
+          : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white"
+      }`}
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
         <h1
