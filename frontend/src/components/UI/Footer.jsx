@@ -65,18 +65,14 @@ export default function Footer() {
 
     return (
         <footer
-            className={`fixed bottom-0 w-full z-50 border-t ${darkMode ? "bg-gray-900 border-gray-700 text-white" : "bg-white border-gray-200 text-gray-800"
-                }`}
+            className={`fixed bottom-0 w-full z-50 border-t backdrop-blur-sm ${darkMode ? "bg-gray-900/80 border-gray-700 text-white" : "bg-white/80 border-gray-200 text-gray-800"}
+                `}
         >
             <div className="max-w-5xl mx-auto flex flex-wrap justify-center sm:justify-between items-center px-4 py-3 gap-3">
                 {!isNameInputPage && (
                     <div className="flex flex-wrap gap-3 items-center">
                         {!isAdmin && (
                             <>
-                                <button onClick={() => navigate("/profile")} className={buttonBase}>
-                                    <User className={iconStyle} />
-                                    Profile
-                                </button>
                                 <button onClick={() => navigate("/settings")} className={buttonBase}>
                                     <Settings className={iconStyle} />
                                     Settings
