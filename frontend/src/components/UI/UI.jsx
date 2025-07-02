@@ -43,7 +43,13 @@ export const Container = ({ children, className }) => {
     <>
       <Header />
       <div className="pt-20 flex flex-col items-center px-4 pb-8">
-        <div className={clsx("w-full max-w-2xl p-6", darkMode ? "bg-gray-900" : "bg-white", className)}>
+        <div
+          className={clsx(
+            "w-full max-w-3xl p-6 rounded-xl shadow-lg",
+            darkMode ? "bg-gray-900/90" : "bg-white/90",
+            className
+          )}
+        >
           {children}
         </div>
       </div>
