@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import useAppStore from "../../store/useAppStore";
+import Header from "./Header";
 
 export const Input = ({ className, ...props }) => {
   const darkMode = useAppStore((state) => state.darkMode);
@@ -39,20 +40,13 @@ export const Container = ({ children, className }) => {
   const darkMode = useAppStore((state) => state.darkMode);
 
   return (
-    <div
-      className={clsx(
-        "min-h-screen flex flex-col items-center px-4 py-8"
-      )}
-    >
-      <div
-        className={clsx(
-          "w-full max-w-2xl p-6",
-          darkMode ? "bg-gray-900" : "bg-white",
-          className
-        )}
-      >
-        {children}
+    <>
+      <Header />
+      <div className="pt-20 flex flex-col items-center px-4 pb-8">
+        <div className={clsx("w-full max-w-2xl p-6", darkMode ? "bg-gray-900" : "bg-white", className)}>
+          {children}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
