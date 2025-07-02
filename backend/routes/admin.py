@@ -257,3 +257,63 @@ def get_individual_lesson_progress(lesson_id):
         ]
 
     return jsonify(result)
+
+
+@admin_bp.route("/users", methods=["GET"])
+def list_users():
+    if not is_admin():
+        return jsonify({"error": "unauthorized"}), 401
+    rows = fetch_custom(
+        "SELECT username, created_at, skill_level FROM users ORDER BY username"
+    )
+    return jsonify(rows)
+
+
+@admin_bp.route("/users/<string:username>", methods=["PUT"])
+def update_user(username):
+    if not is_admin():
+        return jsonify({"error": "unauthorized"}), 401
+
+    data = request.get_json() or {}
+    new_username = data.get("username", username).strip()
+    new_password = data.get("password")
+    skill = data.get("skill_level")
+
+    if new_username != username and user_exists(new_username):
+        return jsonify({"error": "username taken"}), 400
+
+    if new_username != username:
+        update_row("users", {"username": new_username}, "username = ?", (username,))
+        update_row("results", {"username": new_username}, "username = ?", (username,))
+        update_row("vocab_log", {"username": new_username}, "username = ?", (username,))
+        update_row("lesson_progress", {"user_id": new_username}, "user_id = ?", (username,))
+        update_row("topic_memory", {"username": new_username}, "username = ?", (username,))
+        update_row("ai_user_data", {"username": new_username}, "username = ?", (username,))
+        update_row("exercise_submissions", {"username": new_username}, "username = ?", (username,))
+        session_manager.destroy_user_sessions(username)
+        username = new_username
+
+    if new_password:
+        hashed = generate_password_hash(new_password)
+        update_row("users", {"password": hashed}, "username = ?", (username,))
+
+    if skill is not None:
+        update_row("users", {"skill_level": int(skill)}, "username = ?", (username,))
+
+    return jsonify({"status": "updated"})
+
+
+@admin_bp.route("/users/<string:username>", methods=["DELETE"])
+def delete_user(username):
+    if not is_admin():
+        return jsonify({"error": "unauthorized"}), 401
+
+    delete_rows("results", "WHERE username = ?", (username,))
+    delete_rows("vocab_log", "WHERE username = ?", (username,))
+    delete_rows("topic_memory", "WHERE username = ?", (username,))
+    delete_rows("ai_user_data", "WHERE username = ?", (username,))
+    delete_rows("exercise_submissions", "WHERE username = ?", (username,))
+    delete_rows("lesson_progress", "WHERE user_id = ?", (username,))
+    delete_rows("users", "WHERE username = ?", (username,))
+    session_manager.destroy_user_sessions(username)
+    return jsonify({"status": "deleted"})
