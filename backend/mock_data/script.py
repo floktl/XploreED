@@ -140,41 +140,25 @@ def generate_new_exercises(
         print("⚠️ No example block provided. Using fallback block.", flush=True)
         example_exercise_block = FALLBACK_EXERCISE_BLOCK
 
-    # ✅ Filter to max 5 due topics and keep only essential fields
     try:
-        now = datetime.datetime.now()
         upcoming = sorted(
-            (entry for entry in topic_memory if entry.get("next_repeat")),
-            key=lambda x: x["next_repeat"],
-        )
+            (entry for entry in topic_memory if "next_repeat" in entry),
+            key=lambda x: datetime.datetime.fromisoformat(x["next_repeat"])
+        )[:5]
 
-        filtered_topic_memory = []
-        for entry in upcoming:
-            try:
-                if datetime.datetime.fromisoformat(entry["next_repeat"]) <= now:
-                    stripped_entry = {
-                        "grammar": entry.get("grammar"),
-                        "topic": entry.get("topic"),
-                        "skill_type": entry.get("skill_type"),
-                        "next_repeat": entry.get("next_repeat"),
-                    }
-                    filtered_topic_memory.append(stripped_entry)
-            except Exception as e:
-                print("❌ Error parsing next_repeat:", e, flush=True)
-
-            if len(filtered_topic_memory) >= 5:
-                break
-    except Exception as e:
-        print("❌ Failed to filter topic_memory:", e, flush=True)
         filtered_topic_memory = [
             {
                 "grammar": entry.get("grammar"),
                 "topic": entry.get("topic"),
                 "skill_type": entry.get("skill_type"),
+                "context": entry.get("context"),
                 "next_repeat": entry.get("next_repeat"),
             }
-            for entry in topic_memory
+            for entry in upcoming
         ]
+    except Exception as e:
+        print("❌ Failed to filter topic_memory:", e, flush=True)
+        filtered_topic_memory = []
 
     # ✅ Keep only essential vocab fields
     try:
@@ -239,7 +223,8 @@ Here is the learner’s vocabulary list (prioritize vocab with next_repeat due s
 
 Here is the topic memory (prioritize these themes or test new related ones):
 {json.dumps(filtered_topic_memory, indent=2)}
-
+When you create new sentences, do never use the same sentences from the context in topic memory, use them only to see where the student has a weakness on what context.
+Create new sentences with new words and topics.
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
 """
     }
@@ -252,7 +237,7 @@ Create a new exercise block using the **same structure** and **same field names*
         ],
         "temperature": 0.7
     }
-
+    print(user_prompt, flush=True)
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
@@ -351,7 +336,6 @@ End with two short sentences explaining that this platform will generate custom 
         ],
         "temperature": 0.5
     }
-
 
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
