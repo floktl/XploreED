@@ -15,6 +15,7 @@ import Vocabulary from "./components/Vocabulary";
 import VocabTrainer from "./components/VocabTrainer";
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminUserManagement from "./components/AdminUserManagement";
 import Lessons from "./components/Lessons";
 import ProfileStats from "./components/ProfileStats";
 import LessonView from "./components/LessonView";
@@ -74,6 +75,7 @@ const router = createBrowserRouter(
     { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
     { path: "/admin-login", element: <AdminLogin />, errorElement: <ErrorPage /> },
     { path: "/admin-panel", element: <AdminDashboard />, errorElement: <ErrorPage /> },
+    { path: "/admin-users", element: <AdminUserManagement />, errorElement: <ErrorPage /> },
     { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
     { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
     { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },

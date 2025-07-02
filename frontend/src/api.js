@@ -340,6 +340,33 @@ export const deleteLesson = async (lessonId) => {
     return res.ok;
 };
 
+// -------- Users --------
+export const fetchUsers = async () => {
+    const res = await fetch(`${BASE_URL}/api/admin/users`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch users");
+    return res.json();
+};
+
+export const updateUserAccount = async (username, payload) => {
+    const res = await fetch(`${BASE_URL}/api/admin/users/${encodeURIComponent(username)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    return res.json();
+};
+
+export const deleteUserAccount = async (username) => {
+    const res = await fetch(`${BASE_URL}/api/admin/users/${encodeURIComponent(username)}`, {
+        method: "DELETE",
+        credentials: "include",
+    });
+    return res.json();
+};
+
 // Refresh lessons
 export const getLessons = async () => {
     const res = await fetch(`${BASE_URL}/api/admin/lesson-content`, {
