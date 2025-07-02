@@ -140,19 +140,24 @@ def generate_new_exercises(
         print("⚠️ No example block provided. Using fallback block.", flush=True)
         example_exercise_block = FALLBACK_EXERCISE_BLOCK
 
-    # ✅ Filter the 5 soonest repeat entries and strip context
+    # ✅ Filter to max 5 due topics and keep only essential fields
     try:
         now = datetime.datetime.now()
         upcoming = sorted(
             (entry for entry in topic_memory if entry.get("next_repeat")),
-            key=lambda x: x["next_repeat"]
+            key=lambda x: x["next_repeat"],
         )
 
         filtered_topic_memory = []
         for entry in upcoming:
             try:
                 if datetime.datetime.fromisoformat(entry["next_repeat"]) <= now:
-                    stripped_entry = {k: v for k, v in entry.items() if k != "context"}
+                    stripped_entry = {
+                        "grammar": entry.get("grammar"),
+                        "topic": entry.get("topic"),
+                        "skill_type": entry.get("skill_type"),
+                        "next_repeat": entry.get("next_repeat"),
+                    }
                     filtered_topic_memory.append(stripped_entry)
             except Exception as e:
                 print("❌ Error parsing next_repeat:", e, flush=True)
@@ -161,16 +166,29 @@ def generate_new_exercises(
                 break
     except Exception as e:
         print("❌ Failed to filter topic_memory:", e, flush=True)
-        filtered_topic_memory = topic_memory  # fallback to full
+        filtered_topic_memory = [
+            {
+                "grammar": entry.get("grammar"),
+                "topic": entry.get("topic"),
+                "skill_type": entry.get("skill_type"),
+                "next_repeat": entry.get("next_repeat"),
+            }
+            for entry in topic_memory
+        ]
 
-    # ✅ Also strip context from vocabular
+    # ✅ Keep only essential vocab fields
     try:
         vocabular = [
-            {k: v for k, v in entry.items() if k != "context"}
+            {
+                "word": entry.get("word") or entry.get("vocab"),
+                "translation": entry.get("translation"),
+                "sm2_due_date": entry.get("sm2_due_date")
+                or entry.get("next_review"),
+            }
             for entry in vocabular
         ]
     except Exception as e:
-        print("❌ Error stripping context from vocabular:", e, flush=True)
+        print("❌ Error stripping vocabulary fields:", e, flush=True)
 
     level_val = int(level or 0)
     level_val = max(0, min(level_val, 10))
