@@ -113,11 +113,6 @@ export default function Menu() {
               <BrainCircuit className="w-5 h-5" />
               Topic Memory
             </Button>
-
-            <Button type="button" variant="secondary" onClick={() => navigate("/profile")} className="justify-start gap-3">
-              <BarChart3 className="w-5 h-5" />
-              My Progress
-            </Button>
           </div>
         </Card>
       </Container>
