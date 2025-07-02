@@ -32,3 +32,26 @@ The backend service runs a small migration script on start to ensure the
 database schema has all required columns.
 
 
+
+## Packaging as an iOS app
+
+The Vue frontend can be wrapped with Capacitor to create an iOS build.
+Inside the `frontend` directory run:
+
+```bash
+npm install --save @capacitor/core
+npm install --save-dev @capacitor/cli @capacitor/ios
+npx cap init
+```
+
+The generated `frontend/capacitor.config.ts` contains the app ID, name and `dist`
+folder where the built files are placed. After building with `npm run build`, add
+the iOS platform:
+
+```bash
+npx cap add ios
+```
+
+Then open `ios/App/App.xcworkspace` in Xcode to run or archive the app. Set
+`VITE_API_BASE_URL` in your `.env` to point at the deployed Flask backend so the
+mobile app can reach the API.
