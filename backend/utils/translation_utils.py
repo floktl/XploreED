@@ -109,10 +109,18 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
             f"English sentence: '{english}'\n"
             f"Reference translation: '{reference}'\n"
             f"Student translation: '{student}'\n\n"
-            "Provide JSON mapping each listed language topic to an integer quality"
-            " score from 0 to 5. Topics: " + ", ".join(topics)
+            "Return a JSON object where each grammar topic is a key (all lowercase, spaces only), "
+            "and its value is an integer from 0 to 5 representing the quality of usage.\n\n"
+            "For example:\n"
+            "{\n"
+            "  \"adjective\": 5,\n"
+            "  \"nominative case\": 4,\n"
+            "  \"modal verb\": 3\n"
+            "}\n\n"
+            "Topics: " + ", ".join(topics)
         ),
     }
+
 
     payload = {
         "model": "mistral-medium",
@@ -177,7 +185,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
         print("[_update_single_topic] Topic memory row updated.", flush=True)
     else:
         ef, reps, interval = sm2(quality)
-        print(f"[_update_single_topic] New EF={ef}, reps={reps}, interval={interval}", flush=True)
+        print(f"[_update_single_topic] New EF={ef}, reps={reps}, interval={0}", flush=True)
         insert_row(
             "topic_memory",
             {
@@ -188,8 +196,8 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                 "context": context,
                 "lesson_content_id": "translation_practice",
                 "ease_factor": ef,
-                "intervall": interval,
-                "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat(),
+                "intervall": 0,
+                "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=0)).isoformat(),
                 "repetitions": reps,
                 "last_review": datetime.datetime.now().isoformat(),
                 "correct": int(correct),
