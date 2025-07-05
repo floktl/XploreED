@@ -63,6 +63,8 @@ with get_connection() as conn:
             username TEXT,
             vocab TEXT,
             translation TEXT,
+            word_type TEXT,
+            article TEXT,
             repetitions INTEGER DEFAULT 0,
             interval_days INTEGER DEFAULT 1,
             ef REAL DEFAULT 2.5,
@@ -129,6 +131,18 @@ with get_connection() as conn:
         print("✅ 'exercise' column added.")
     else:
         print("ℹ️ 'exercise' column already exists.")
+
+    if "word_type" not in vocab_cols:
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN word_type TEXT;")
+        print("✅ 'word_type' column added.")
+    else:
+        print("ℹ️ 'word_type' column already exists.")
+
+    if "article" not in vocab_cols:
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN article TEXT;")
+        print("✅ 'article' column added.")
+    else:
+        print("ℹ️ 'article' column already exists.")
 
     # ✅ Create lesson_content table
     cursor.execute(
