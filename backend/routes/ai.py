@@ -853,6 +853,39 @@ def ai_weakness_lesson():
     return jsonify({"error": "Mistral error"}), 500
 
 
+@ai_bp.route("/ask-ai", methods=["POST"])
+def ask_ai():
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+
+    if not username:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    question = data.get("question", "").strip()
+    if not question:
+        return jsonify({"error": "Question required"}), 400
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {"role": "system", "content": "You are a helpful German teacher."},
+            {"role": "user", "content": question},
+        ],
+        "temperature": 0.3,
+    }
+
+    try:
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        if resp.status_code == 200:
+            answer = resp.json()["choices"][0]["message"]["content"].strip()
+            return jsonify({"answer": answer})
+    except Exception as e:
+        print("[ask_ai] Error:", e, flush=True)
+
+    return jsonify({"error": "AI error"}), 500
+
+
 @ai_bp.route("/reading-exercise", methods=["POST"])
 def ai_reading_exercise():
     """Return a short reading exercise based on the user's level."""
