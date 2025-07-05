@@ -5,7 +5,7 @@ import json
 import random
 import datetime
 from pathlib import Path
-from utils.vocab_utils import split_and_clean, save_vocab
+from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word
 from mock_data.script import (
     generate_new_exercises,
     generate_feedback_prompt,
@@ -360,6 +360,13 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
                 }
             )
 
+        words = set(
+            split_and_clean(ex.get("question", ""))
+            + split_and_clean(correct_ans)
+        )
+        for vocab in words:
+            review_vocab_word(username, vocab, quality)
+
     print("AI submission results:", results, flush=True)
 
 
@@ -520,6 +527,9 @@ def argue_ai_exercise(block_id):
     if not evaluation:
         return jsonify({"msg": "Evaluation failed"}), 500
 
+    # Update topic memory using SM2 with the reevaluated results
+    process_ai_answers(username, str(block_id), answers, {"exercises": exercises})
+
     return jsonify(evaluation)
 
 
@@ -617,6 +627,15 @@ def generate_ai_feedback():
         topic_data = [dict(row) for row in topic_rows] if topic_rows else []
 
         feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+
+        # Update topic memory with the final evaluation results
+        process_ai_answers(
+            username,
+            str(exercise_block.get("lessonId", "feedback")),
+            answers,
+            {"exercises": all_exercises},
+        )
+
         return jsonify({
             "feedbackPrompt": feedback_prompt,
             "summary": summary,

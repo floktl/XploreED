@@ -7,7 +7,9 @@ from typing import Optional
 
 import requests
 
-from .db_utils import get_connection
+from .db_utils import get_connection, update_row, fetch_one_custom
+from .algorithm import sm2
+import datetime
 
 # Load DeepL API key from environment or optional file
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
@@ -82,3 +84,39 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
     except Exception as e:
         print("❌ Error calling DeepL:", e)
         return "❌ API failure"
+
+
+def review_vocab_word(username: str, word: str, quality: int) -> None:
+    """Update spaced repetition data for a vocab word using SM2."""
+    if not word or not word.isalpha():
+        return
+
+    row = fetch_one_custom(
+        "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
+        (username, word),
+    )
+
+    if not row:
+        save_vocab(username, word, exercise="ai")
+        ef = 2.5
+        reps = 0
+        interval = 1
+    else:
+        ef = row.get("ef", 2.5)
+        reps = row.get("repetitions", 0)
+        interval = row.get("interval_days", 1)
+
+    ef, reps, interval = sm2(quality, ef, reps, interval)
+    next_review = (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat()
+
+    update_row(
+        "vocab_log",
+        {
+            "ef": ef,
+            "repetitions": reps,
+            "interval_days": interval,
+            "next_review": next_review,
+        },
+        "username = ? AND vocab = ?",
+        (username, word),
+    )
