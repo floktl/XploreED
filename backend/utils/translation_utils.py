@@ -139,7 +139,11 @@ def evaluate_topic_qualities_ai(
             data = _extract_json(content)
             if isinstance(data, dict):
                 print("Parsed topic quality result:", data, flush=True)
-                return {t: int(data.get(t, 0)) for t in topics}
+                sanitized = {
+                    k.replace("_", " ").strip(): int(v)
+                    for k, v in data.items()
+                }
+                return {t: sanitized.get(t, 0) for t in topics}
     except Exception as e:
         print("AI topic quality evaluation failed:", e, flush=True)
 
@@ -222,11 +226,17 @@ def update_topic_memory_translation(
 ) -> None:
     """Update spaced repetition entries for each detected topic."""
     print(f"Updating translation memory for user '{username}'...", flush=True)
-    features = detect_language_topics(german) or ["unknown"]
+    if qualities:
+        sanitized = {
+            k.replace("_", " ").strip(): v for k, v in qualities.items()
+        }
+        features = list(sanitized.keys())
+    else:
+        sanitized = {}
+        features = detect_language_topics(german) or ["unknown"]
     print("Detected translation features:", features, flush=True)
-    qualities = qualities or {}
     for feature in features:
-        quality = qualities.get(feature, 3)
+        quality = sanitized.get(feature, 3)
         print(f"Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "translation", german, quality)
 
@@ -238,11 +248,15 @@ def update_topic_memory_reading(
 ) -> None:
     """Update spaced repetition entries for reading comprehension."""
     print(f"Updating reading memory for user '{username}'...", flush=True)
-    features = detect_language_topics(text) or ["unknown"]
+    if qualities:
+        sanitized = {k.replace("_", " ").strip(): v for k, v in qualities.items()}
+        features = list(sanitized.keys())
+    else:
+        sanitized = {}
+        features = detect_language_topics(text) or ["unknown"]
     print("Detected reading features:", features, flush=True)
-    qualities = qualities or {}
     for feature in features:
-        quality = qualities.get(feature, 3)
+        quality = sanitized.get(feature, 3)
         print(f"Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "reading", text, quality)
 
