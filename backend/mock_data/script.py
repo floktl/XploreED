@@ -199,7 +199,7 @@ Here is the required JSON structure — you must follow it **exactly**:
    - `type`: either `"gap-fill"` or `"translation"`
    - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)
    - For "gap-fill":
-     - `options`: list of 4 strings
+     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.
      - `correctAnswer`: the correct string
    - For "translation":
      - `correctAnswer`: the correct German translation
