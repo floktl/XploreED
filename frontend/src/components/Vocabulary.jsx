@@ -76,6 +76,7 @@ export default function Vocabulary() {
                                 <tr>
                                     <th className="px-4 py-2 text-left">German Word</th>
                                     <th className="px-4 py-2 text-left">English Translation</th>
+                                    <th className="px-4 py-2 text-left">Type</th>
                                     <th className="px-4 py-2 text-left">Due</th>
                                 </tr>
                             </thead>
@@ -96,12 +97,15 @@ export default function Vocabulary() {
                                         }
                                         onClick={() => setSelected(v)}
                                     >
-                                        <td className="px-4 py-2 font-medium">{v.vocab}</td>
+                                        <td className="px-4 py-2 font-medium">
+                                            {v.article ? `${v.article} ${v.vocab}` : v.vocab}
+                                        </td>
                                         <td
                                             className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}
                                         >
                                             {v.translation}
                                         </td>
+                                        <td className="px-4 py-2 capitalize">{v.word_type || ""}</td>
                                         <td className="px-4 py-2">
                                             {v.next_review
                                                 ? new Date(v.next_review).toLocaleDateString()
@@ -123,10 +127,17 @@ export default function Vocabulary() {
             <Footer />
             {selected && (
                 <Modal onClose={() => setSelected(null)}>
-                    <h2 className="text-xl font-semibold mb-4">{selected.vocab}</h2>
+                    <h2 className="text-xl font-semibold mb-4">
+                        {selected.article ? `${selected.article} ${selected.vocab}` : selected.vocab}
+                    </h2>
                     <p className="mb-2">
                         <strong>Translation:</strong> {selected.translation}
                     </p>
+                    {selected.word_type && (
+                        <p className="mb-2 capitalize">
+                            <strong>Type:</strong> {selected.word_type}
+                        </p>
+                    )}
                     {selected.created_at && (
                         <p className="mb-2">
                             <strong>Learned:</strong>{" "}

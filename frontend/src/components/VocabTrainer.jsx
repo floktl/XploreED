@@ -49,7 +49,9 @@ export default function VocabTrainer() {
           <Alert type="success">No cards due right now!</Alert>
         ) : (
           <Card className="text-center space-y-4">
-            <p className="text-2xl font-semibold">{card.vocab}</p>
+            <p className="text-2xl font-semibold">
+              {card.article ? `${card.article} ${card.vocab}` : card.vocab}
+            </p>
             {show ? (
               <p className="mb-4">{card.translation}</p>
             ) : (

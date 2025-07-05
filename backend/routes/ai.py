@@ -5,7 +5,7 @@ import json
 import random
 import datetime
 from pathlib import Path
-from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word
+from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
 from mock_data.script import (
     generate_new_exercises,
     generate_feedback_prompt,
@@ -361,8 +361,8 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             )
 
         words = set(
-            split_and_clean(ex.get("question", ""))
-            + split_and_clean(correct_ans)
+            [w for w, _ in extract_words(ex.get("question", ""))]
+            + [w for w, _ in extract_words(correct_ans)]
         )
         for vocab in words:
             review_vocab_word(username, vocab, quality)
@@ -1016,8 +1016,8 @@ def submit_reading_exercise():
                 }
             )
 
-    for word in split_and_clean(text):
-        save_vocab(username, word, context=text, exercise="reading")
+    for word, art in extract_words(text):
+        save_vocab(username, word, context=text, exercise="reading", article=art)
 
     def _background_save():
         features = detect_language_topics(text) or ["unknown"]

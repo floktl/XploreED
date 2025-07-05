@@ -44,7 +44,7 @@ from game.german_sentence_game import (
     get_feedback,
     generate_ai_sentence,
 )
-from utils.vocab_utils import split_and_clean, save_vocab, translate_to_german
+from utils.vocab_utils import split_and_clean, save_vocab, translate_to_german, extract_words
 from utils.translation_utils import evaluate_translation_ai, update_topic_memory_translation
 from utils.algorithm import sm2
 
@@ -70,7 +70,7 @@ class Imports:
     game = [
         "game_bp", "request", "jsonify",
         "session_manager", "os", "LEVELS", "get_scrambled_sentence",
-        "evaluate_order", "save_result", "save_vocab", "split_and_clean",
+        "evaluate_order", "save_result", "save_vocab", "extract_words",
         "generate_ai_sentence"
     ]
 
@@ -98,7 +98,7 @@ class Imports:
 
     user = [
         "user_bp", "request", "jsonify", "session_manager", "fetch_all",
-        "get_current_user", "fetch_custom", "save_vocab", "split_and_clean",
+        "get_current_user", "fetch_custom", "save_vocab", "extract_words",
         "sm2"
     ]
 
