@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProgressRing from "./UI/ProgressRing";
 import { useNavigate } from "react-router-dom";
 import { getTopicMemory, clearTopicMemory } from "../api";
 import Button from "./UI/Button";
@@ -14,6 +15,7 @@ export default function TopicMemory() {
     const [topics, setTopics] = useState([]);
     const [showClear, setShowClear] = useState(false);
     const [error, setError] = useState("");
+    const [weakness, setWeakness] = useState({ grammar: "", percent: 0 });
     const [filters, setFilters] = useState({
         grammar: "",
         topic: "",
@@ -48,6 +50,29 @@ export default function TopicMemory() {
         }
     }, [username, isAdmin]);
 
+    useEffect(() => {
+        if (!topics.length) return;
+        const scores = {};
+        topics.forEach((t) => {
+            const g = t.grammar || "unknown";
+            const q = Number(t.quality) || 0;
+            if (!scores[g]) scores[g] = { sum: 0, count: 0 };
+            scores[g].sum += q;
+            scores[g].count += 1;
+        });
+        let max = -1;
+        let worst = "";
+        Object.entries(scores).forEach(([g, { sum, count }]) => {
+            const avg = sum / count;
+            const percent = Math.round((1 - avg / 5) * 100);
+            if (percent > max) {
+                max = percent;
+                worst = g;
+            }
+        });
+        setWeakness({ grammar: worst, percent: max });
+    }, [topics]);
+
     const handleClear = async () => {
         try {
             await clearTopicMemory();
@@ -74,7 +99,13 @@ export default function TopicMemory() {
                     🧠 Topic Memory — <span className="text-blue-600">{username || "anonymous"}</span>
                     <Badge type="default">Student</Badge>
                 </Title>
-                <p className={`mb-6 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
+                <p className={`mb-4 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
+                {weakness.grammar && (
+                    <div className="mb-6 flex flex-col items-center gap-2">
+                        <ProgressRing percentage={weakness.percent} />
+                        <p className="text-sm">Weakest topic: <strong>{weakness.grammar}</strong></p>
+                    </div>
+                )}
 
                 {topics.length === 0 ? (
                     <Alert type="info">No topic memory saved yet.</Alert>
