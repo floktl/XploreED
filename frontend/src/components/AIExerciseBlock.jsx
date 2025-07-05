@@ -221,10 +221,6 @@ if (!current || !Array.isArray(current.exercises)) {
 
   return (
     <Card className="space-y-4">
-      {stage === 1 && current.title && (
-        <h3 className="text-xl font-semibold">{current.title}</h3>
-      )}
-      {instructions && <p>{instructions}</p>}
       <div className="flex justify-end">
         <Button
           type="button"
@@ -235,6 +231,10 @@ if (!current || !Array.isArray(current.exercises)) {
           ➕ New Exercise
         </Button>
       </div>
+      {stage === 1 && current.title && (
+        <h3 className="text-xl font-semibold">{current.title}</h3>
+      )}
+      {instructions && <p>{instructions}</p>}
       <div className="space-y-6">
         {exercises.map((ex) => (
           <div key={ex.id} className="mb-4">
