@@ -41,12 +41,13 @@ def submit_level():
     save_result(username, level, correct, user_answer)
 
     if correct:
-        for word in split_and_clean(sentence):
+        for word, art in extract_words(sentence):
             save_vocab(
                 username,
                 word,
                 context=sentence,
                 exercise=f"game_level_{level}",
+                article=art,
             )
 
     def ansi_to_html(text):

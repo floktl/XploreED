@@ -3,7 +3,7 @@
 import os
 import re
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 
@@ -19,9 +19,153 @@ if not DEEPL_API_KEY:
     except Exception:
         DEEPL_API_KEY = None
 
+ARTICLES = {
+    "der",
+    "die",
+    "das",
+    "den",
+    "dem",
+    "des",
+    "ein",
+    "eine",
+    "einen",
+    "einem",
+    "einer",
+    "eines",
+}
+
+PRONOUNS = {
+    "ich",
+    "du",
+    "er",
+    "sie",
+    "es",
+    "wir",
+    "ihr",
+    "sie",
+    "mir",
+    "dir",
+    "ihm",
+    "ihr",
+    "uns",
+    "euch",
+}
+
+CONJUNCTIONS = {"und", "oder", "aber", "denn", "weil", "dass"}
+
+PREPOSITIONS = {
+    "in",
+    "im",
+    "am",
+    "an",
+    "auf",
+    "bei",
+    "mit",
+    "nach",
+    "seit",
+    "von",
+    "zu",
+}
+
+ADVERBS = {"gern", "nicht", "nie", "immer", "oft"}
+
+
 def split_and_clean(text: str) -> list[str]:
     """Split a text into lowercase word tokens."""
-    return re.findall(r"\b\w+\b", text)
+    return re.findall(r"[A-Za-zÄÖÜäöüß]+", text)
+
+
+def extract_words(text: str) -> list[tuple[str, Optional[str]]]:
+    """Return a list of (word, article) tuples from a German text."""
+    tokens = re.findall(r"[A-Za-zÄÖÜäöüß]+", text)
+    result: list[tuple[str, Optional[str]]] = []
+    i = 0
+    while i < len(tokens):
+        tok = tokens[i]
+        lower = tok.lower()
+        if lower in ARTICLES and i + 1 < len(tokens):
+            next_tok = tokens[i + 1]
+            if next_tok and next_tok[0].isupper():
+                result.append((next_tok, lower))
+                i += 2
+                continue
+        result.append((tok, None))
+        i += 1
+    return result
+
+
+def _normalize_verb(word: str) -> str:
+    """Very small heuristic to convert a verb to its infinitive."""
+    if word.endswith("en"):
+        return word
+    if word.endswith("st"):
+        return word[:-2] + "en"
+    if word.endswith("t"):
+        return word[:-1] + "en"
+    if word.endswith("e"):
+        return word[:-1] + "en"
+    return word
+
+
+def _guess_article(word: str) -> str:
+    """Guess the article for a noun using simple endings."""
+    lower = word.lower()
+    if lower.endswith(("ung", "keit", "heit", "schaft", "tät", "tion", "ik")):
+        return "die"
+    if lower.endswith(("chen", "lein", "ment", "tum", "ma", "um")):
+        return "das"
+    return "der"
+
+
+def _singularize(noun: str) -> str:
+    """Very small heuristic to get the singular form of a noun."""
+    lower = noun.lower()
+    if lower.endswith("nen"):
+        return noun[:-3] + "ne"
+    if lower.endswith("en") and not lower.endswith(("chen", "lein")):
+        return noun[:-2]
+    if lower.endswith("e") and len(noun) > 3:
+        return noun[:-1]
+    if lower.endswith("n") and len(noun) > 3:
+        return noun[:-1]
+    return noun
+
+
+def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, Optional[str]]:
+    """Return the normalized form, detected type and article."""
+    if not word:
+        return word, "unknown", article
+
+    raw = word
+    candidate = word.lower()
+
+    if article:
+        base = _singularize(raw.capitalize())
+        return base, "noun", article
+
+    if candidate in ARTICLES:
+        return candidate, "article", candidate
+    if candidate in PRONOUNS:
+        return candidate, "pronoun", None
+    if candidate in CONJUNCTIONS:
+        return candidate, "conjunction", None
+    if candidate in PREPOSITIONS:
+        return candidate, "preposition", None
+    if candidate in ADVERBS:
+        return candidate, "adverb", None
+
+    if raw[0].isupper():
+        article_guess = _guess_article(raw)
+        base = _singularize(raw.capitalize())
+        return base, "noun", article_guess
+
+    if candidate.endswith(("en", "st", "t", "e")):
+        return _normalize_verb(candidate), "verb", None
+
+    if candidate.endswith(("ig", "lich", "isch", "bar")):
+        return candidate, "adjective", None
+
+    return candidate, "unknown", None
 
 
 def vocab_exists(username: str, german_word: str) -> bool:
@@ -34,11 +178,21 @@ def vocab_exists(username: str, german_word: str) -> bool:
         return cursor.fetchone() is not None
 
 
-def save_vocab(username: str, german_word: str, context: Optional[str] = None, exercise: Optional[str] = None) -> None:
+def save_vocab(
+    username: str,
+    german_word: str,
+    context: Optional[str] = None,
+    exercise: Optional[str] = None,
+    article: Optional[str] = None,
+) -> None:
     """Store a new vocabulary word for spaced repetition."""
     if german_word in ["?", "!", ",", "."] or not DEEPL_API_KEY:
         return
-    if vocab_exists(username, german_word):
+
+    normalized, word_type, art = normalize_word(german_word, article)
+    if article is None:
+        article = art
+    if vocab_exists(username, normalized):
         return
 
     url = "https://api-free.deepl.com/v2/translate"
@@ -60,8 +214,18 @@ def save_vocab(username: str, german_word: str, context: Optional[str] = None, e
     now = datetime.now().isoformat()
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO vocab_log (username, vocab, translation, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (username, german_word, english_word, context, exercise, now, now),
+            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                username,
+                normalized,
+                english_word,
+                word_type,
+                article,
+                context,
+                exercise,
+                now,
+                now,
+            ),
         )
 
 
@@ -76,9 +240,14 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
         response = requests.post(url, data=data)
         german_text = response.json()["translations"][0]["text"]
         if username:
-            german_words = split_and_clean(german_text)
-            for de_word in german_words:
-                save_vocab(username, de_word, context=german_text, exercise="translation")
+            for word, art in extract_words(german_text):
+                save_vocab(
+                    username,
+                    word,
+                    context=german_text,
+                    exercise="translation",
+                    article=art,
+                )
         return german_text
     except Exception as e:
         print("❌ Error calling DeepL:", e)
@@ -90,9 +259,11 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
     if not word or not word.isalpha():
         return
 
+    normalized, *_ = normalize_word(word)
+
     row = fetch_one_custom(
         "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
-        (username, word),
+        (username, normalized),
     )
 
     if not row:
@@ -117,5 +288,5 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
             "next_review": next_review,
         },
         "username = ? AND vocab = ?",
-        (username, word),
+        (username, normalized),
     )
