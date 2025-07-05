@@ -5,7 +5,7 @@ import os
 import json
 import re
 from dotenv import load_dotenv
-import datetime
+from datetime import datetime, date
 
 load_dotenv()
 
@@ -115,9 +115,7 @@ def _ensure_schema(exercise_block: dict) -> dict:
 
 # === MAIN FUNCTION ===
 
-import json
-import datetime
-import requests
+from datetime import datetime, date
 
 def generate_new_exercises(
     vocabular=None,
@@ -142,7 +140,7 @@ def generate_new_exercises(
     try:
         upcoming = sorted(
             (entry for entry in topic_memory if "next_repeat" in entry),
-            key=lambda x: datetime.datetime.fromisoformat(x["next_repeat"])
+            key=lambda x: datetime.fromisoformat(x["next_repeat"])
         )[:5]
 
         filtered_topic_memory = [
@@ -158,16 +156,18 @@ def generate_new_exercises(
         print("❌ Failed to filter topic_memory:", e, flush=True)
         filtered_topic_memory = []
 
-    # ✅ Keep only essential vocab fields
     try:
         vocabular = [
             {
                 "word": entry.get("word") or entry.get("vocab"),
                 "translation": entry.get("translation"),
-                "sm2_due_date": entry.get("sm2_due_date")
-                or entry.get("next_review"),
+                "sm2_due_date": entry.get("sm2_due_date") or entry.get("next_review"),
             }
             for entry in vocabular
+            if (
+                (entry.get("sm2_due_date") or entry.get("next_review")) and
+                datetime.fromisoformat(entry.get("sm2_due_date") or entry.get("next_review")).date() <= date.today()
+            )
         ]
     except Exception as e:
         print("❌ Error stripping vocabulary fields:", e, flush=True)
@@ -177,6 +177,11 @@ def generate_new_exercises(
     cefr_level = CEFR_LEVELS[level_val]
 
     example_exercise_block["level"] = cefr_level
+
+    print("🧠 Sending request to Mistral AI...", flush=True)
+
+    # ... keep the rest of your function unchanged ...
+
 
     print("🧠 Sending request to Mistral AI...", flush=True)
 
@@ -235,7 +240,8 @@ Create a new exercise block using the **same structure** and **same field names*
         "temperature": 0.7
     }
     print('User prompt:::', flush=True)
-    print(user_prompt, flush=True)
+    content_str = payload["messages"][1]["content"]
+    print(content_str.encode().decode("unicode_escape"))
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
