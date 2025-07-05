@@ -2,16 +2,20 @@ import React, { useState } from "react";
 import Modal from "./UI/Modal";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
-import { askAiQuestion } from "../api";
 import { streamAiAnswer } from "../utils/streamAi";
 
 interface Props {
   onClose: () => void;
 }
 
+interface AnswerBlock {
+  type: string;
+  text: string;
+}
+
 export default function AskAiModal({ onClose }: Props) {
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,12 +26,13 @@ export default function AskAiModal({ onClose }: Props) {
     }
     try {
       setLoading(true);
-      setAnswer("");
+      setAnswerBlocks([]);
       await streamAiAnswer(question.trim(), (chunk) => {
-        setAnswer((prev) => prev + chunk);
+        setAnswerBlocks((prev) => [...prev, chunk]);
       });
       setError("");
     } catch (err) {
+      console.error("❌ AI streaming error:", err);
       setError("Failed to get answer.");
     } finally {
       setLoading(false);
@@ -39,6 +44,7 @@ export default function AskAiModal({ onClose }: Props) {
       <h2 className="text-lg font-bold mb-2">Ask AI</h2>
       <textarea
         className="w-full h-28 p-2 rounded border dark:bg-gray-800 dark:text-white mb-3"
+        placeholder="Ask a question in English or German..."
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
       />
@@ -48,9 +54,23 @@ export default function AskAiModal({ onClose }: Props) {
           <Spinner /> <span className="italic">AI thinking...</span>
         </div>
       )}
-      {answer && (
-        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded mb-2 whitespace-pre-wrap">
-          {answer}
+      {answerBlocks.length > 0 && (
+        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded mb-2 space-y-2">
+          {answerBlocks.map((block, idx) => (
+            block.type === "heading" ? (
+              <h3 key={idx} className="text-xl font-bold mt-4">{block.text}</h3>
+            ) : block.type === "tip" ? (
+              <div key={idx} className="bg-yellow-100 border-l-4 border-yellow-500 p-2 text-sm italic">
+                💡 {block.text}
+              </div>
+            ) : block.type === "quote" ? (
+              <blockquote key={idx} className="border-l-4 border-blue-400 pl-3 italic text-gray-600">
+                “{block.text}”
+              </blockquote>
+            ) : (
+              <p key={idx} className="whitespace-pre-wrap">{block.text}</p>
+            )
+          ))}
         </div>
       )}
       <div className="flex justify-end gap-2">

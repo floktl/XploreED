@@ -918,6 +918,7 @@ def ask_ai_stream():
                 stream=True,
                 timeout=20,
             ) as resp:
+                buffer = ""
                 for line in resp.iter_lines(decode_unicode=True):
                     if not line:
                         continue
@@ -933,9 +934,23 @@ def ask_ai_stream():
                             .get("content")
                         )
                         if chunk:
-                            yield f"data: {chunk}\n\n"
+                            buffer += chunk
+
+                            # ✨ Simple Markdown: Convert "**text**" to bold
+                            buffer = buffer.replace("**", "")
+
+                            # ✨ Flush as paragraph on sentence end
+                            if buffer.endswith((".", "!", "?")):
+                                structured = {
+                                    "type": "paragraph",
+                                    "text": buffer.strip()
+                                }
+                                yield f"data: {json.dumps(structured, ensure_ascii=False)}\n\n"
+                                buffer = ""
                     except Exception:
                         continue
+                if buffer.strip():
+                    yield f"data: {json.dumps({ 'type': 'paragraph', 'text': buffer.strip() }, ensure_ascii=False)}\n\n"
         except Exception as e:
             current_app.logger.error("Streaming error: %s", e)
         yield "data: [DONE]\n\n"
