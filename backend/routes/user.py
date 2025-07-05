@@ -162,18 +162,17 @@ def save_vocab_words():
     context = data.get("context")
     exercise = data.get("exercise")
 
+    tokens = []
     if isinstance(words, str):
-        words = split_and_clean(words)
+        tokens = extract_words(words)
     else:
-        collected = []
         for w in words:
-            collected.extend(split_and_clean(str(w)))
-        words = collected
+            tokens.extend(extract_words(str(w)))
 
-    for word in words:
-        save_vocab(user, word, context=context, exercise=exercise)
+    for word, art in tokens:
+        save_vocab(user, word, context=context, exercise=exercise, article=art)
 
-    return jsonify({"saved": len(words)})
+    return jsonify({"saved": len(tokens)})
 
 
 @user_bp.route("/topic-memory", methods=["GET"])
