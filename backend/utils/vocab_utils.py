@@ -191,19 +191,6 @@ def _guess_article(word: str) -> str:
     return "der"
 
 
-def normalize_word(word: str) -> Tuple[str, str, Optional[str]]:
-    """Return the normalized form, detected type and article."""
-    if not word:
-        return word, "other", None
-    if word[0].isupper():
-        article = _guess_article(word)
-        return word.capitalize(), "noun", article
-    candidate = word.lower()
-    if candidate.endswith("en") or candidate.endswith("st") or candidate.endswith("t") or candidate.endswith("e"):
-        return _normalize_verb(candidate), "verb", None
-    return candidate, "other", None
-
-
 def vocab_exists(username: str, german_word: str) -> bool:
     """Check if a vocab entry already exists for a user."""
     with get_connection() as conn:
