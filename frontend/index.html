@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>German Sentence Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -9,6 +10,20 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <style>
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0.2; /* adjust for subtlety */
+        z-index: -1;
+      }
+    </style>
   </head>
   <body
     class="min-h-screen font-sans bg-gradient-to-br from-indigo-400 via-purple-300 to-pink-300 bg-fixed bg-cover dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 text-gray-900 dark:text-white"
