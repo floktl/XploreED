@@ -125,8 +125,8 @@ export default function Vocabulary() {
         )}
 
         <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")}>
+            🔙 Back to Profile
           </Button>
         </div>
       </Container>
