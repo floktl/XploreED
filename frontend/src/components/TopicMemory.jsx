@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ProgressRing from "./UI/ProgressRing";
 import { useNavigate } from "react-router-dom";
-import { getTopicMemory, clearTopicMemory } from "../api";
+import { getTopicMemory, clearTopicMemory, getTopicWeaknesses } from "../api";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -15,7 +15,7 @@ export default function TopicMemory() {
     const [topics, setTopics] = useState([]);
     const [showClear, setShowClear] = useState(false);
     const [error, setError] = useState("");
-    const [weakness, setWeakness] = useState({ grammar: "", percent: 0 });
+    const [weaknesses, setWeaknesses] = useState([]);
     const [filters, setFilters] = useState({
         grammar: "",
         topic: "",
@@ -51,32 +51,19 @@ export default function TopicMemory() {
     }, [username, isAdmin]);
 
     useEffect(() => {
-        if (!topics.length) return;
-        const scores = {};
-        topics.forEach((t) => {
-            const g = t.grammar || "unknown";
-            const q = Number(t.quality) || 0;
-            if (!scores[g]) scores[g] = { sum: 0, count: 0 };
-            scores[g].sum += q;
-            scores[g].count += 1;
-        });
-        let max = -1;
-        let worst = "";
-        Object.entries(scores).forEach(([g, { sum, count }]) => {
-            const avg = sum / count;
-            const percent = Math.round((1 - avg / 5) * 100);
-            if (percent > max) {
-                max = percent;
-                worst = g;
-            }
-        });
-        setWeakness({ grammar: worst, percent: max });
-    }, [topics]);
+        if (isAdmin) return;
+        getTopicWeaknesses()
+            .then(setWeaknesses)
+            .catch((err) => {
+                console.error("Failed to load weaknesses:", err);
+            });
+    }, [isAdmin]);
 
     const handleClear = async () => {
         try {
             await clearTopicMemory();
             setTopics([]);
+            setWeaknesses([]);
             setShowClear(false);
             setError("");
         } catch (err) {
@@ -100,10 +87,17 @@ export default function TopicMemory() {
                     <Badge type="default">Student</Badge>
                 </Title>
                 <p className={`mb-4 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
-                {weakness.grammar && (
-                    <div className="mb-6 flex flex-col items-center gap-2">
-                        <ProgressRing percentage={weakness.percent} />
-                        <p className="text-sm">Weakest topic: <strong>{weakness.grammar}</strong></p>
+                {weaknesses.length > 0 && (
+                    <div className="mb-6 flex flex-col items-center gap-4">
+                        <p className="text-sm">Biggest weaknesses</p>
+                        <div className="flex gap-4">
+                            {weaknesses.map((w) => (
+                                <div key={w.grammar} className="flex flex-col items-center">
+                                    <ProgressRing percentage={w.percent} size={70} />
+                                    <p className="mt-1 text-xs">{w.grammar}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 

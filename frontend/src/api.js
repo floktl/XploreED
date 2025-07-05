@@ -179,6 +179,14 @@ export async function clearTopicMemory() {
     return res.json();
 }
 
+export async function getTopicWeaknesses() {
+    const res = await fetch(`${BASE_URL}/api/topic-weaknesses`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch topic weaknesses");
+    return res.json();
+}
+
 // ---------- Game ----------
 export async function getLevel(level) {
     const res = await fetch(`${BASE_URL}/api/level`, {
