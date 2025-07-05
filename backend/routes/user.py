@@ -207,6 +207,35 @@ def clear_topic_memory_route():
     return jsonify({"msg": "cleared"})
 
 
+@user_bp.route("/topic-weaknesses", methods=["GET"])
+def topic_weaknesses():
+    """Return the three weakest grammar topics for the logged in user."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    rows = fetch_custom(
+        """
+        SELECT grammar, AVG(quality) AS avg_q
+        FROM topic_memory
+        WHERE username = ?
+        GROUP BY grammar
+        ORDER BY avg_q ASC
+        LIMIT 3
+        """,
+        (user,),
+    )
+
+    weaknesses = [
+        {
+            "grammar": row.get("grammar") or "unknown",
+            "percent": round((1 - (row.get("avg_q") or 0) / 5) * 100),
+        }
+        for row in rows
+    ] if rows else []
+    return jsonify(weaknesses)
+
+
 @user_bp.route("/user-level", methods=["GET", "POST"])
 def user_level():
     """Get or update the logged in user's skill level."""
