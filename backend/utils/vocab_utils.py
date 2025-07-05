@@ -2,14 +2,13 @@
 
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import requests
 
 from .db_utils import get_connection, update_row, fetch_one_custom
 from .algorithm import sm2
-import datetime
 
 # Load DeepL API key from environment or optional file
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
@@ -107,7 +106,7 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
         interval = row.get("interval_days", 1)
 
     ef, reps, interval = sm2(quality, ef, reps, interval)
-    next_review = (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat()
+    next_review = (datetime.now() + timedelta(days=interval)).isoformat()
 
     update_row(
         "vocab_log",
