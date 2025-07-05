@@ -67,7 +67,7 @@ def vocabulary():
 
     rows = fetch_custom(
         """
-        SELECT rowid as id, vocab, translation, next_review, created_at, context, exercise
+        SELECT rowid as id, vocab, translation, word_type, article, next_review, created_at, context, exercise
         FROM vocab_log
         WHERE username = ?
         ORDER BY datetime(next_review) ASC
@@ -82,6 +82,8 @@ def vocabulary():
                     "id": row["id"],
                     "vocab": row["vocab"],
                     "translation": row["translation"],
+                    "word_type": row.get("word_type"),
+                    "article": row.get("article"),
                     "next_review": row.get("next_review"),
                     "created_at": row.get("created_at"),
                     "context": row.get("context"),
@@ -103,7 +105,7 @@ def vocab_train():
 
     if request.method == "GET":
         row = fetch_one_custom(
-            "SELECT rowid as id, vocab, translation FROM vocab_log "
+            "SELECT rowid as id, vocab, translation, word_type, article FROM vocab_log "
             "WHERE username = ? AND datetime(next_review) <= datetime('now') "
             "ORDER BY next_review ASC LIMIT 1",
             (user,),
