@@ -3,6 +3,7 @@ import Modal from "./UI/Modal";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
 import { askAiQuestion } from "../api";
+import { streamAiAnswer } from "../utils/streamAi";
 
 interface Props {
   onClose: () => void;
@@ -21,8 +22,10 @@ export default function AskAiModal({ onClose }: Props) {
     }
     try {
       setLoading(true);
-      const data = await askAiQuestion(question.trim());
-      setAnswer(data.answer || "");
+      setAnswer("");
+      await streamAiAnswer(question.trim(), (chunk) => {
+        setAnswer((prev) => prev + chunk);
+      });
       setError("");
     } catch (err) {
       setError("Failed to get answer.");
