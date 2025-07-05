@@ -3,7 +3,6 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
 import { Input } from "./UI/UI";
-import Modal from "./UI/Modal";
 import {
     getAiExercises,
     saveVocabWords,
@@ -13,6 +12,7 @@ import {
 } from "../api";
 import diffWords from "../utils/diffWords";
 import AskAiModal from "./AskAiModal";
+import ReportExerciseModal from "./ReportExerciseModal";
 
 export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
     const [current, setCurrent] = useState(data || null);
@@ -31,10 +31,8 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
     const [nextExercise, setNextExercise] = useState(null);
     const [loadingNext, setLoadingNext] = useState(false);
     const [showAsk, setShowAsk] = useState(false);
-    const [showReport, setShowReport] = useState(false);
-    const [reportMsg, setReportMsg] = useState("");
-    const [reportError, setReportError] = useState("");
-    const [reportSuccess, setReportSuccess] = useState(false);
+    const [reportExerciseId, setReportExerciseId] = useState(null);
+    const [replacingId, setReplacingId] = useState(null);
 
     const fetchNext = async (payload = {}) => {
         setLoadingNext(true);
@@ -225,19 +223,45 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
         }
     };
 
-    const handleSendReport = async () => {
-        if (!reportMsg.trim()) {
-            setReportError("Please describe the issue.");
-            return;
-        }
+    const replaceExercise = async (exerciseId) => {
+        setReplacingId(exerciseId);
         try {
-            await sendSupportFeedback(`AI Exercise Error: ${reportMsg}`);
-            setReportSuccess(true);
-            setReportError("");
-            handleNext(true);
+            const fresh = await fetchExercisesFn();
+            const newEx = fresh?.exercises?.[0];
+            if (newEx) {
+                setCurrent((cur) => {
+                    const updated = cur.exercises.map((ex) =>
+                        ex.id === exerciseId ? newEx : ex
+                    );
+                    return { ...cur, exercises: updated };
+                });
+                setAnswers((a) => {
+                    const na = { ...a };
+                    delete na[exerciseId];
+                    return na;
+                });
+                setEvaluation((e) => {
+                    const ne = { ...e };
+                    delete ne[exerciseId];
+                    return ne;
+                });
+            }
         } catch (err) {
-            setReportError("Failed to send report.");
+            console.error("Failed to replace exercise", err);
+        } finally {
+            setReplacingId(null);
         }
+    };
+
+    const handleSendReport = async (exerciseId, message) => {
+        const ex = current.exercises.find((e) => e.id === exerciseId);
+        const userAns = answers[exerciseId] || "";
+        const aiAns = evaluation[exerciseId]?.correct || "";
+        const content =
+            `Exercise Report\nID: ${exerciseId}\nQuestion: ${ex?.question}\n` +
+            `User Answer: ${userAns}\nAI Answer: ${aiAns}\nMessage: ${message}`;
+        await sendSupportFeedback(content);
+        await replaceExercise(exerciseId);
     };
 
     const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
@@ -330,6 +354,20 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                                                 Other ways to say it: {evaluation[ex.id].alternatives.join(', ')}
                                             </div>
                                         )}
+                                    {String(answers[ex.id]).trim().toLowerCase() !==
+                                        String(evaluation[ex.id]?.correct).trim().toLowerCase() && (
+                                            <div className="mt-2">
+                                                <Button
+                                                    variant="danger"
+                                                    size="sm"
+                                                    type="button"
+                                                    onClick={() => setReportExerciseId(ex.id)}
+                                                    disabled={replacingId === ex.id}
+                                                >
+                                                    {replacingId === ex.id ? 'Loading...' : 'Report Error'}
+                                                </Button>
+                                            </div>
+                                        )}
                                 </div>
                             )}
                         </div>
@@ -399,47 +437,27 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                         </Button>
                         {Object.entries(evaluation).some(([id, ev]) => {
                             const userAnswer = answers[id];
-                            return userAnswer && ev?.correct &&
-                                userAnswer.trim().toLowerCase() !== ev.correct.trim().toLowerCase();
-                        }) && (
-                                <Button
-                                    variant="danger"
-                                    type="button"
-                                    onClick={() => setShowReport(true)}
-                                >
-                                    Report Error
-                                </Button>
-                            )}
+                            return (
+                                userAnswer &&
+                                ev?.correct &&
+                                userAnswer.trim().toLowerCase() !==
+                                    ev.correct.trim().toLowerCase()
+                            );
+                        }) && null}
                     </div>
                 )}
 
             </Card>
             {showAsk && <AskAiModal onClose={() => setShowAsk(false)} />}
-            {
-                showReport && (
-                    <Modal onClose={() => { setShowReport(false); setReportMsg(""); setReportError(""); setReportSuccess(false); }}>
-                        <h2 className="text-lg font-bold mb-2">Report Exercise Error</h2>
-                        <textarea
-                            className="w-full h-32 p-2 rounded border dark:bg-gray-800 dark:text-white mb-3"
-                            value={reportMsg}
-                            onChange={(e) => setReportMsg(e.target.value)}
-                        />
-                        {reportError && <p className="text-red-600 text-sm mb-2">{reportError}</p>}
-                        {reportSuccess && (
-                            <p className="text-green-600 text-sm mb-2">Thank you for reporting!</p>
-                        )}
-                        <div className="flex justify-end gap-2">
-                            <Button variant="secondary" onClick={() => setShowReport(false)}>Cancel</Button>
-                            <Button
-                                variant="primary"
-                                onClick={handleSendReport}
-                            >
-                                Send
-                            </Button>
-                        </div>
-                    </Modal>
-                )
-            }
+            {submitted && reportExerciseId !== null && (
+                <ReportExerciseModal
+                    exercise={current.exercises.find((e) => e.id === reportExerciseId)}
+                    userAnswer={answers[reportExerciseId] || ""}
+                    correctAnswer={evaluation[reportExerciseId]?.correct || ""}
+                    onSend={(msg) => handleSendReport(reportExerciseId, msg)}
+                    onClose={() => setReportExerciseId(null)}
+                />
+            )}
         </>
     );
 }
