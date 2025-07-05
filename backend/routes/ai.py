@@ -367,7 +367,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         for vocab in words:
             review_vocab_word(username, vocab, quality)
 
-    print("AI submission results:", results, flush=True)
+    print("AI submission results (HJSON):\n", json.dumps(results, indent=2), flush=True)
 
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
@@ -436,7 +436,8 @@ def submit_ai_exercise(block_id):
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
-    print("Received submission data:", data, flush=True)
+    print("Received submission data (HJSON):\n", json.dumps(data, indent=2), flush=True)
+
     answers = data.get("answers", {})
     exercise_block = data.get("exercise_block") or {}
     exercises = exercise_block.get("exercises", [])
