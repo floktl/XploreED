@@ -55,3 +55,7 @@ npx cap add ios
 Then open `ios/App/App.xcworkspace` in Xcode to run or archive the app. Set
 `VITE_API_BASE_URL` in your `.env` to point at the deployed Flask backend so the
 mobile app can reach the API.
+
+## Live AI answers
+
+The `Ask AI` dialog streams responses from the backend using Server-Sent Events. The backend exposes `/api/ask-ai-stream` which sends answer chunks as they are generated. The frontend uses `streamAiAnswer()` to display text incrementally.
