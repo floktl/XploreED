@@ -10,7 +10,6 @@ import {
 
 import Button from "./UI/Button";
 import Card from "./UI/Card";
-import Badge from "./UI/Badge";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
@@ -53,13 +52,7 @@ export default function Menu() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title className="text-3xl font-bold mb-2">
-          Welcome, {username || "User"} <Badge type="default">Student</Badge>
-        </Title>
-
-        <p className={`text-center text-sm mb-2 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-          Current Level: {useAppStore.getState().currentLevel ?? 0}
-        </p>
+        <Title className="text-3xl font-bold mb-2">Main Menu</Title>
 
         <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
           Choose one of the modes below to begin your practice:
