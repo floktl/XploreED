@@ -520,6 +520,9 @@ def argue_ai_exercise(block_id):
     if not evaluation:
         return jsonify({"msg": "Evaluation failed"}), 500
 
+    # Update topic memory using SM2 with the reevaluated results
+    process_ai_answers(username, str(block_id), answers, {"exercises": exercises})
+
     return jsonify(evaluation)
 
 
@@ -617,6 +620,15 @@ def generate_ai_feedback():
         topic_data = [dict(row) for row in topic_rows] if topic_rows else []
 
         feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+
+        # Update topic memory with the final evaluation results
+        process_ai_answers(
+            username,
+            str(exercise_block.get("lessonId", "feedback")),
+            answers,
+            {"exercises": all_exercises},
+        )
+
         return jsonify({
             "feedbackPrompt": feedback_prompt,
             "summary": summary,
