@@ -78,11 +78,9 @@ export default function Footer() {
                             <>
                                 <button onClick={() => navigate("/settings")} className={buttonBase}>
                                     <Settings className={iconStyle} />
-                                    Settings
                                 </button>
                                 <button onClick={() => navigate("/menu")} className={buttonBase}>
                                   <Menu className={iconStyle} />
-                                  Menu
                                 </button>
                             </>
                         )}
@@ -95,13 +93,11 @@ export default function Footer() {
                                 </button>
                                 <button onClick={() => navigate("/menu")} className={buttonBase}>
                                     <Menu className={iconStyle} />
-                                    Menu
                                 </button>
                             </>
                         )}
                         <button onClick={handleLogout} className={buttonBase}>
                             <LogOut className={iconStyle} />
-                            Logout
                         </button>
                     </div>
                 )}
@@ -110,7 +106,6 @@ export default function Footer() {
                 <div className="flex gap-2 items-center ml-auto">
                     <button onClick={toggleDarkMode} className={buttonBase}>
                         {darkMode ? <Sun className={iconStyle} /> : <Moon className={iconStyle} />}
-                        {darkMode ? "Light Mode" : "Dark Mode"}
                     </button>
                     <button onClick={() => { setShowFeedback(true); setFbError(""); setFbSuccess(""); }} className={buttonBase}>
                         <Mail className={iconStyle} />
