@@ -30,9 +30,9 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-
 def _extract_json(text: str):
-    print("Extracting JSON...", flush=True)
+    print("[_extract_json] Extracting JSON from text...", flush=True)
+    print("[_extract_json] Raw text:", text, flush=True)
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -41,13 +41,14 @@ def _extract_json(text: str):
             try:
                 return json.loads(match.group(0))
             except json.JSONDecodeError:
+                print("[_extract_json] Failed to parse matched JSON.", flush=True)
                 pass
+    print("[_extract_json] Returning None.", flush=True)
     return None
 
-
 def evaluate_translation_ai(english: str, reference: str, student: str):
-    """Check if student's translation conveys the same meaning using Mistral."""
-    print("Evaluating translation using Mistral...", flush=True)
+    print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
+    print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     user_prompt = {
         "role": "user",
@@ -73,40 +74,32 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("Mistral response received.", flush=True)
+        print("[evaluate_translation_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("Raw response content:", content, flush=True)
+            print("[evaluate_translation_ai] Raw response content:", content, flush=True)
             data = _extract_json(content)
+            print("[evaluate_translation_ai] Parsed result:", data, flush=True)
             if isinstance(data, dict):
-                print("Parsed JSON result:", data, flush=True)
                 return bool(data.get("correct")), str(data.get("reason", ""))
     except Exception as e:
-        print("AI translation evaluation failed:", e, flush=True)
+        print("[evaluate_translation_ai] AI translation evaluation failed:", e, flush=True)
 
     return False, "Could not evaluate translation."
 
-
-def evaluate_topic_qualities_ai(
-    english: str, reference: str, student: str
-) -> dict[str, int]:
-    """Return quality scores 0-5 for grammar topics using the Mistral API."""
-
-    print("🧠 evaluate_translation_ai called with:", flush=True)
-    print("  English:", english, flush=True)
-    print("  Reference:", reference, flush=True)
-    print("  Student:", student, flush=True)
-    print("Evaluating topic qualities using Mistral...", flush=True)
+def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> dict[str, int]:
+    print("[evaluate_topic_qualities_ai] Start", flush=True)
+    print(f"[evaluate_topic_qualities_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     topics = sorted(
         set(detect_language_topics(reference) or ["unknown"]) |
         set(detect_language_topics(student) or ["unknown"])
     )
 
-    print("Detected topics:", topics, flush=True)
+    print("[evaluate_topic_qualities_ai] Detected topics:", topics, flush=True)
 
     if not topics:
-        print("No topics found.", flush=True)
+        print("[evaluate_topic_qualities_ai] No topics found.", flush=True)
         return {}
 
     user_prompt = {
@@ -132,33 +125,26 @@ def evaluate_topic_qualities_ai(
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("Mistral response received for topic quality.", flush=True)
+        print("[evaluate_topic_qualities_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("Raw quality response content:", content, flush=True)
+            print("[evaluate_topic_qualities_ai] Raw quality response:", content, flush=True)
             data = _extract_json(content)
+            print("[evaluate_topic_qualities_ai] Parsed quality result:", data, flush=True)
             if isinstance(data, dict):
-                print("Parsed topic quality result:", data, flush=True)
                 sanitized = {
                     k.replace("_", " ").strip(): int(v)
                     for k, v in data.items()
                 }
                 return {t: sanitized.get(t, 0) for t in topics}
     except Exception as e:
-        print("AI topic quality evaluation failed:", e, flush=True)
+        print("[evaluate_topic_qualities_ai] AI topic quality evaluation failed:", e, flush=True)
 
     return compare_topic_qualities(reference, student)
 
-
-def _update_single_topic(
-    username: str,
-    grammar: str,
-    skill: str,
-    context: str,
-    quality: int,
-) -> None:
-    """Insert or update a single topic_memory entry."""
-    print(f"Updating single topic: {username=}, {grammar=}, {skill=}, {quality=}", flush=True)
+def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int) -> None:
+    print("[_update_single_topic] Start", flush=True)
+    print(f"[_update_single_topic] Inputs: username={username}, grammar={grammar}, skill={skill}, context={context}, quality={quality}", flush=True)
     correct = quality == 5
 
     existing = fetch_one_custom(
@@ -166,7 +152,7 @@ def _update_single_topic(
         "WHERE username = ? AND grammar = ? AND skill_type = ?",
         (username, grammar, skill),
     )
-    print("Existing topic entry:", existing, flush=True)
+    print("[_update_single_topic] Existing DB row:", existing, flush=True)
 
     if existing:
         ef, reps, interval = sm2(
@@ -175,15 +161,12 @@ def _update_single_topic(
             existing.get("repetitions") or 0,
             existing.get("intervall") or 1,
         )
-        print(f"Updated EF: {ef}, reps: {reps}, interval: {interval}", flush=True)
+        print(f"[_update_single_topic] Updated EF={ef}, reps={reps}, interval={interval}", flush=True)
         update_data = {
             "ease_factor": ef,
             "repetitions": reps,
             "intervall": interval,
-            "next_repeat": (
-                datetime.datetime.now()
-                + datetime.timedelta(days=interval)
-            ).isoformat(),
+            "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat(),
             "last_review": datetime.datetime.now().isoformat(),
             "correct": int(correct),
             "quality": quality,
@@ -191,10 +174,10 @@ def _update_single_topic(
         if not existing.get("topic"):
             update_data["topic"] = random.choice(DEFAULT_TOPICS)
         update_row("topic_memory", update_data, "id = ?", (existing["id"],))
-        print("Topic memory row updated.", flush=True)
+        print("[_update_single_topic] Topic memory row updated.", flush=True)
     else:
         ef, reps, interval = sm2(quality)
-        print(f"New EF: {ef}, reps: {reps}, interval: {interval}", flush=True)
+        print(f"[_update_single_topic] New EF={ef}, reps={reps}, interval={interval}", flush=True)
         insert_row(
             "topic_memory",
             {
@@ -206,72 +189,55 @@ def _update_single_topic(
                 "lesson_content_id": "translation_practice",
                 "ease_factor": ef,
                 "intervall": interval,
-                "next_repeat": (
-                    datetime.datetime.now()
-                    + datetime.timedelta(days=interval)
-                ).isoformat(),
+                "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=interval)).isoformat(),
                 "repetitions": reps,
                 "last_review": datetime.datetime.now().isoformat(),
                 "correct": int(correct),
                 "quality": quality,
             },
         )
-        print("New topic memory row inserted.", flush=True)
+        print("[_update_single_topic] New topic memory row inserted.", flush=True)
 
-
-def update_topic_memory_translation(
-    username: str,
-    german: str,
-    qualities: dict[str, int] | None = None,
-) -> None:
-    """Update spaced repetition entries for each detected topic."""
-    print(f"Updating translation memory for user '{username}'...", flush=True)
+def update_topic_memory_translation(username: str, german: str, qualities: dict[str, int] | None = None) -> None:
+    print("[update_topic_memory_translation] Start", flush=True)
+    print(f"[update_topic_memory_translation] username={username}, german={german}, qualities={qualities}", flush=True)
     if qualities:
-        sanitized = {
-            k.replace("_", " ").strip(): v for k, v in qualities.items()
-        }
+        sanitized = {k.replace("_", " ").strip(): v for k, v in qualities.items()}
         features = list(sanitized.keys())
     else:
         sanitized = {}
         features = detect_language_topics(german) or ["unknown"]
-    print("Detected translation features:", features, flush=True)
+    print("[update_topic_memory_translation] Detected features:", features, flush=True)
     for feature in features:
         quality = sanitized.get(feature, 3)
-        print(f"Updating feature '{feature}' with quality {quality}", flush=True)
+        print(f"[update_topic_memory_translation] Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "translation", german, quality)
 
-
-def update_topic_memory_reading(
-    username: str,
-    text: str,
-    qualities: dict[str, int] | None = None,
-) -> None:
-    """Update spaced repetition entries for reading comprehension."""
-    print(f"Updating reading memory for user '{username}'...", flush=True)
+def update_topic_memory_reading(username: str, text: str, qualities: dict[str, int] | None = None) -> None:
+    print("[update_topic_memory_reading] Start", flush=True)
+    print(f"[update_topic_memory_reading] username={username}, text={text}, qualities={qualities}", flush=True)
     if qualities:
         sanitized = {k.replace("_", " ").strip(): v for k, v in qualities.items()}
         features = list(sanitized.keys())
     else:
         sanitized = {}
         features = detect_language_topics(text) or ["unknown"]
-    print("Detected reading features:", features, flush=True)
+    print("[update_topic_memory_reading] Detected features:", features, flush=True)
     for feature in features:
         quality = sanitized.get(feature, 3)
-        print(f"Updating feature '{feature}' with quality {quality}", flush=True)
+        print(f"[update_topic_memory_reading] Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "reading", text, quality)
 
-
 def compare_topic_qualities(reference: str, student: str) -> dict[str, int]:
-    """Return quality scores for each detected topic comparing two sentences."""
-    print("Comparing topic qualities heuristically...", flush=True)
+    print("[compare_topic_qualities] Start", flush=True)
     ref_features = set(detect_language_topics(reference) or ["unknown"])
     student_features = set(detect_language_topics(student) or ["unknown"])
-    print("Reference features:", ref_features, flush=True)
-    print("Student features:", student_features, flush=True)
+    print("[compare_topic_qualities] Reference features:", ref_features, flush=True)
+    print("[compare_topic_qualities] Student features:", student_features, flush=True)
     qualities: dict[str, int] = {}
     for feat in ref_features | student_features:
         qualities[feat] = 5 if feat in ref_features and feat in student_features else 2
-        print(f"Topic '{feat}': assigned quality {qualities[feat]}", flush=True)
+        print(f"[compare_topic_qualities] Topic '{feat}': assigned quality {qualities[feat]}", flush=True)
     return qualities
 
 __all__ = [

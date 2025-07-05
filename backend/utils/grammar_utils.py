@@ -21,8 +21,8 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-
 def _extract_json(text: str):
+    print("[_extract_json] Raw input:", text, flush=True)
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -31,31 +31,36 @@ def _extract_json(text: str):
             try:
                 return json.loads(match.group(0))
             except json.JSONDecodeError:
+                print("[_extract_json] Failed to parse matched JSON.", flush=True)
                 pass
+    print("[_extract_json] Returning None.", flush=True)
     return None
 
-
 def detect_grammar_case(text: str) -> str:
-    """Guess the grammar case based on articles and prepositions."""
+    print("[detect_grammar_case] Input text:", text, flush=True)
     tokens = re.findall(r"\b\w+\b", text.lower())
+    print("[detect_grammar_case] Tokens:", tokens, flush=True)
     for tok in tokens:
         if tok in GEN_PREPS or tok in GEN_ARTICLES:
+            print("[detect_grammar_case] Matched genitive:", tok, flush=True)
             return "genitive"
     for tok in tokens:
         if tok in DAT_PREPS or tok in DAT_ARTICLES:
+            print("[detect_grammar_case] Matched dative:", tok, flush=True)
             return "dative"
     for tok in tokens:
         if tok in ACC_PREPS or tok in ACC_ARTICLES:
+            print("[detect_grammar_case] Matched accusative:", tok, flush=True)
             return "accusative"
     for tok in tokens:
         if tok in NOM_ARTICLES:
+            print("[detect_grammar_case] Matched nominative:", tok, flush=True)
             return "nominative"
+    print("[detect_grammar_case] Case unknown.", flush=True)
     return "unknown"
 
-
 def detect_language_topics(text: str) -> list[str]:
-    """Return a list of grammar topics used in the sentence using Mistral AI."""
-    print("🔍 detect_language_topics input:", text, flush=True)
+    print("[detect_language_topics] 🔍 Input:", text, flush=True)
 
     user_prompt = {
         "role": "user",
@@ -80,71 +85,59 @@ Return only a JSON list of strings such as:
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("✅ Mistral response received for grammar topics.", flush=True)
+        print("[detect_language_topics] ✅ Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("📦 Raw Mistral output:", content, flush=True)
+            print("[detect_language_topics] 📦 Raw Mistral output:", content, flush=True)
             topics = _extract_json(content)
             if isinstance(topics, list):
                 cleaned = [t.strip().lower() for t in topics if isinstance(t, str)]
-                print("✅ Parsed grammar topics:", cleaned, flush=True)
+                print("[detect_language_topics] ✅ Parsed grammar topics:", cleaned, flush=True)
                 return sorted(set(cleaned))
     except Exception as e:
-        print("⚠️ Mistral topic detection failed:", e, flush=True)
+        print("[detect_language_topics] ⚠️ Mistral topic detection failed:", e, flush=True)
 
-    # fallback if Mistral fails
-    print("🔁 Falling back to rule-based detection...", flush=True)
+    print("[detect_language_topics] 🔁 Falling back to rule-based detection...", flush=True)
     return _rule_based_detection(text)
 
-
 def _rule_based_detection(text: str) -> list[str]:
+    print("[_rule_based_detection] Fallback triggered for:", text, flush=True)
     tokens = re.findall(r"\b\w+\b", text.lower())
+    print("[_rule_based_detection] Tokens:", tokens, flush=True)
     features = set()
 
     case = detect_grammar_case(text)
+    print("[_rule_based_detection] Detected case:", case, flush=True)
     if case != "unknown":
         features.add(f"case:{case}")
 
-    if any(tok in SEIN_FORMS for tok in tokens):
-        features.add("sein")
-    if any(tok in HABEN_FORMS for tok in tokens):
-        features.add("haben auxiliary")
-    if any(tok in WERDEN_FORMS for tok in tokens):
-        features.add("werden auxiliary")
-    if any(tok in REFLEXIVE_PRONOUNS for tok in tokens):
-        features.add("reflexive pronoun")
-    if any(tok in POSSESSIVE_PRONOUNS for tok in tokens):
-        features.add("possessive pronoun")
-    if any(tok in DIRECT_OBJ_PRONOUNS for tok in tokens):
-        features.add("accusative pronoun")
-    if any(tok in INDIRECT_OBJ_PRONOUNS for tok in tokens):
-        features.add("dative pronoun")
-    if any(tok in NEGATION_WORDS for tok in tokens):
-        features.add("negation")
-    if any(tok in QUESTION_WORDS for tok in tokens):
-        features.add("question word")
-    if any(tok in INTERJECTIONS for tok in tokens):
-        features.add("interjection")
-    if any(tok in COORD_CONJUNCTIONS for tok in tokens):
-        features.add("coordinating conjunction")
-    if any(tok in TWO_WAY_PREPS for tok in tokens):
-        features.add("two-way preposition")
-    if any(tok in TIME_PREPS for tok in tokens):
-        features.add("time preposition")
-    if any(tok in CONTRACTIONS for tok in tokens):
-        features.add("contraction")
-    if any(tok in PAST_SIMPLE_STRONG for tok in tokens):
-        features.add("simple past strong")
-    if any(re.match(r".+te$", tok) for tok in tokens):
-        features.add("simple past weak")
-    if any(tok in SUBJUNCTIVE_FORMS for tok in tokens):
-        features.add("subjunctive")
-    if any(tok in MODAL_VERB_FORMS for tok in tokens):
-        features.add("modal verb")
-    if any(tok in SUB_CONJUNCTIONS for tok in tokens):
-        features.add("subordinating conjunction")
-    if any(tok in PRONOUNS for tok in tokens):
-        features.add("pronoun")
+    checks = [
+        (SEIN_FORMS, "sein"),
+        (HABEN_FORMS, "haben auxiliary"),
+        (WERDEN_FORMS, "werden auxiliary"),
+        (REFLEXIVE_PRONOUNS, "reflexive pronoun"),
+        (POSSESSIVE_PRONOUNS, "possessive pronoun"),
+        (DIRECT_OBJ_PRONOUNS, "accusative pronoun"),
+        (INDIRECT_OBJ_PRONOUNS, "dative pronoun"),
+        (NEGATION_WORDS, "negation"),
+        (QUESTION_WORDS, "question word"),
+        (INTERJECTIONS, "interjection"),
+        (COORD_CONJUNCTIONS, "coordinating conjunction"),
+        (TWO_WAY_PREPS, "two-way preposition"),
+        (TIME_PREPS, "time preposition"),
+        (CONTRACTIONS, "contraction"),
+        (PAST_SIMPLE_STRONG, "simple past strong"),
+        (SUBJUNCTIVE_FORMS, "subjunctive"),
+        (MODAL_VERB_FORMS, "modal verb"),
+        (SUB_CONJUNCTIONS, "subordinating conjunction"),
+        (PRONOUNS, "pronoun")
+    ]
+
+    for wordlist, label in checks:
+        if any(tok in wordlist for tok in tokens):
+            print(f"[_rule_based_detection] Matched {label}.", flush=True)
+            features.add(label)
+
     if "!" in text:
         features.add("imperative")
     if "?" in text:
@@ -155,17 +148,9 @@ def _rule_based_detection(text: str) -> list[str]:
         features.add("comparative")
     if any(re.match(r"ge\w+(t|en)$", tok) for tok in tokens):
         features.add("past participle")
-    if any(
-        tok.startswith(prefix) and len(tok) > len(prefix) + 2
-        for tok in tokens
-        for prefix in SEPARABLE_PREFIXES
-    ):
+    if any(tok.startswith(prefix) and len(tok) > len(prefix) + 2 for tok in tokens for prefix in SEPARABLE_PREFIXES):
         features.add("separable prefix verb")
-    if any(
-        tok.startswith(prefix) and len(tok) > len(prefix) + 2
-        for tok in tokens
-        for prefix in INSEPARABLE_PREFIXES
-    ):
+    if any(tok.startswith(prefix) and len(tok) > len(prefix) + 2 for tok in tokens for prefix in INSEPARABLE_PREFIXES):
         features.add("inseparable prefix verb")
     for i, tok in enumerate(tokens[:-1]):
         if tok == "zu" and tokens[i + 1].endswith("en"):
@@ -173,7 +158,7 @@ def _rule_based_detection(text: str) -> list[str]:
     if any(ORDINAL_RE.match(tok) for tok in tokens):
         features.add("ordinal number")
 
+    print("[_rule_based_detection] Final detected features:", features, flush=True)
     return sorted(features)
-
 
 __all__ = ["detect_grammar_case", "detect_language_topics"]
