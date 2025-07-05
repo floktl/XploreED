@@ -126,7 +126,6 @@ def generate_new_exercises(
     level=None,
 ):
     print('Generate new exercises!!!!!!!!', flush=True)
-    print(topic_memory, flush=True)
 
     if not vocabular:
         print("⚠️ No vocabulary data found. Using fallback vocab.", flush=True)
@@ -151,7 +150,6 @@ def generate_new_exercises(
                 "grammar": entry.get("grammar"),
                 "topic": entry.get("topic"),
                 "skill_type": entry.get("skill_type"),
-                "context": entry.get("context"),
                 "next_repeat": entry.get("next_repeat"),
             }
             for entry in upcoming
@@ -223,7 +221,6 @@ Here is the learner’s vocabulary list (prioritize vocab with next_repeat due s
 
 Here is the topic memory (prioritize these themes or test new related ones):
 {json.dumps(filtered_topic_memory, indent=2)}
-When you create new sentences, do never use the same sentences from the context in topic memory, use them only to see where the student has a weakness on what context.
 Create new sentences with new words and topics.
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
 """
@@ -237,13 +234,14 @@ Create a new exercise block using the **same structure** and **same field names*
         ],
         "temperature": 0.7
     }
+    print('User prompt:::', flush=True)
     print(user_prompt, flush=True)
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
         parsed = _extract_json(content)
         if parsed is not None:
-            print("✅ Successfully parsed exercise block from AI.", flush=True)
+            print("✅ Successfully parsed exercise block from AI./n/n", flush=True)
             parsed = _ensure_schema(parsed)
             parsed["level"] = cefr_level
             print(json.dumps(parsed, indent=2), flush=True)
