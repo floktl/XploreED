@@ -21,7 +21,7 @@ export default function Header() {
                     className="text-xl font-semibold tracking-wide cursor-pointer"
                     onClick={() => navigate("/menu")}
                 >
-                    RealWorldLearn.com
+                    Flo's-Lessons.com
                 </h1>
                 {!isAdmin && username && (
                     <button
