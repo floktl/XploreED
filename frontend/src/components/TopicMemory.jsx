@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
+import ProgressRing from "./UI/ProgressRing";
 import { useNavigate } from "react-router-dom";
-import { getTopicMemory, clearTopicMemory } from "../api";
+import { getTopicMemory, clearTopicMemory, getTopicWeaknesses } from "../api";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -14,6 +15,7 @@ export default function TopicMemory() {
     const [topics, setTopics] = useState([]);
     const [showClear, setShowClear] = useState(false);
     const [error, setError] = useState("");
+    const [weaknesses, setWeaknesses] = useState([]);
     const [filters, setFilters] = useState({
         grammar: "",
         topic: "",
@@ -48,10 +50,20 @@ export default function TopicMemory() {
         }
     }, [username, isAdmin]);
 
+    useEffect(() => {
+        if (isAdmin) return;
+        getTopicWeaknesses()
+            .then(setWeaknesses)
+            .catch((err) => {
+                console.error("Failed to load weaknesses:", err);
+            });
+    }, [isAdmin]);
+
     const handleClear = async () => {
         try {
             await clearTopicMemory();
             setTopics([]);
+            setWeaknesses([]);
             setShowClear(false);
             setError("");
         } catch (err) {
@@ -74,7 +86,20 @@ export default function TopicMemory() {
                     🧠 Topic Memory — <span className="text-blue-600">{username || "anonymous"}</span>
                     <Badge type="default">Student</Badge>
                 </Title>
-                <p className={`mb-6 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
+                <p className={`mb-4 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
+                {weaknesses.length > 0 && (
+                    <div className="mb-6 flex flex-col items-center gap-4">
+                        <p className="text-sm">Biggest weaknesses</p>
+                        <div className="flex gap-4">
+                            {weaknesses.map((w) => (
+                                <div key={w.grammar} className="flex flex-col items-center">
+                                    <ProgressRing percentage={w.percent} size={70} />
+                                    <p className="mt-1 text-xs">{w.grammar}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {topics.length === 0 ? (
                     <Alert type="info">No topic memory saved yet.</Alert>
