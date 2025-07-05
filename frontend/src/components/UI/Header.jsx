@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../../store/useAppStore";
+import Badge from "./Badge";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function Header() {
     const darkMode = useAppStore((state) => state.darkMode);
     const isAdmin = useAppStore((state) => state.isAdmin);
     const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
+    const currentLevel = useAppStore((state) => state.currentLevel);
 
     return (
         <header
@@ -23,14 +25,20 @@ export default function Header() {
                 >
                     RealWorldLearn.com
                 </h1>
-                {!isAdmin && username && (
-                    <button
-                        onClick={() => navigate("/profile")}
-                        className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"
-                    >
-                        {avatarLetter}
-                    </button>
-                )}
+                <div className="flex items-center gap-2">
+                    {!isAdmin && <Badge type="default">Student</Badge>}
+                    {!isAdmin && (
+                        <span className="text-sm font-medium">Level {currentLevel ?? 0}</span>
+                    )}
+                    {!isAdmin && username && (
+                        <button
+                            onClick={() => navigate("/profile")}
+                            className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold"
+                        >
+                            {avatarLetter}
+                        </button>
+                    )}
+                </div>
             </div>
         </header>
     );
