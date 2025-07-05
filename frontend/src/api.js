@@ -663,3 +663,14 @@ export const submitProgressTest = async (payload) => {
     return res.json();
 };
 
+export const askAiQuestion = async (question) => {
+    const res = await fetch(`${BASE_URL}/api/ask-ai`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ question }),
+    });
+    if (!res.ok) throw new Error("Failed to get AI answer");
+    return res.json();
+};
+

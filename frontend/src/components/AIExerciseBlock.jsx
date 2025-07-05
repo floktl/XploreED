@@ -3,13 +3,16 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
 import { Input } from "./UI/UI";
+import Modal from "./UI/Modal";
 import {
   getAiExercises,
   saveVocabWords,
   submitExerciseAnswers,
   argueExerciseAnswers,
+  sendSupportFeedback,
 } from "../api";
 import diffWords from "../utils/diffWords";
+import AskAiModal from "./AskAiModal";
 
 export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
   const [current, setCurrent] = useState(data || null);
@@ -27,6 +30,11 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
   const [submitting, setSubmitting] = useState(false);
   const [nextExercise, setNextExercise] = useState(null);
   const [loadingNext, setLoadingNext] = useState(false);
+  const [showAsk, setShowAsk] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportMsg, setReportMsg] = useState("");
+  const [reportError, setReportError] = useState("");
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   const fetchNext = async (payload = {}) => {
     setLoadingNext(true);
@@ -217,6 +225,21 @@ if (!current || !Array.isArray(current.exercises)) {
     }
   };
 
+  const handleSendReport = async () => {
+    if (!reportMsg.trim()) {
+      setReportError("Please describe the issue.");
+      return;
+    }
+    try {
+      await sendSupportFeedback(`AI Exercise Error: ${reportMsg}`);
+      setReportSuccess(true);
+      setReportError("");
+      handleNext(true);
+    } catch (err) {
+      setReportError("Failed to send report.");
+    }
+  };
+
   const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
 
   return (
@@ -368,6 +391,46 @@ if (!current || !Array.isArray(current.exercises)) {
           </ul>
         </div>
       )}
+      {submitted && (
+        <div className="mt-4 flex gap-2">
+          <Button variant="ghost" type="button" onClick={() => setShowAsk(true)}>
+            Ask AI
+          </Button>
+          {Object.values(evaluation).some((v) => v?.correct == null) && (
+            <Button
+              variant="danger"
+              type="button"
+              onClick={() => setShowReport(true)}
+            >
+              Report Error
+            </Button>
+          )}
+        </div>
+      )}
     </Card>
+    {showAsk && <AskAiModal onClose={() => setShowAsk(false)} />}
+    {showReport && (
+      <Modal onClose={() => { setShowReport(false); setReportMsg(""); setReportError(""); setReportSuccess(false); }}>
+        <h2 className="text-lg font-bold mb-2">Report Exercise Error</h2>
+        <textarea
+          className="w-full h-32 p-2 rounded border dark:bg-gray-800 dark:text-white mb-3"
+          value={reportMsg}
+          onChange={(e) => setReportMsg(e.target.value)}
+        />
+        {reportError && <p className="text-red-600 text-sm mb-2">{reportError}</p>}
+        {reportSuccess && (
+          <p className="text-green-600 text-sm mb-2">Thank you for reporting!</p>
+        )}
+        <div className="flex justify-end gap-2">
+          <Button variant="secondary" onClick={() => setShowReport(false)}>Cancel</Button>
+          <Button
+            variant="primary"
+            onClick={handleSendReport}
+          >
+            Send
+          </Button>
+        </div>
+      </Modal>
+    )}
   );
 }
