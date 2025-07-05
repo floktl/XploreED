@@ -397,17 +397,22 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                         <Button variant="ghost" type="button" onClick={() => setShowAsk(true)}>
                             Ask AI
                         </Button>
-                        {Object.values(evaluation).some((v) => v?.correct == null) && (
-                            <Button
-                                variant="danger"
-                                type="button"
-                                onClick={() => setShowReport(true)}
-                            >
-                                Report Error
-                            </Button>
-                        )}
+                        {Object.entries(evaluation).some(([id, ev]) => {
+                            const userAnswer = answers[id];
+                            return userAnswer && ev?.correct &&
+                                userAnswer.trim().toLowerCase() !== ev.correct.trim().toLowerCase();
+                        }) && (
+                                <Button
+                                    variant="danger"
+                                    type="button"
+                                    onClick={() => setShowReport(true)}
+                                >
+                                    Report Error
+                                </Button>
+                            )}
                     </div>
                 )}
+
             </Card>
             {showAsk && <AskAiModal onClose={() => setShowAsk(false)} />}
             {
