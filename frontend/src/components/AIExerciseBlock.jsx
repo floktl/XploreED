@@ -43,23 +43,10 @@ export default function AIExerciseBlock({
     const [reportExerciseId, setReportExerciseId] = useState(null);
     const [replacingId, setReplacingId] = useState(null);
 
-    const fetchNext = async (payload = {}) => {
-        setLoadingNext(true);
-        try {
-            const next = await fetchExercisesFn(payload);
-            setNextExercise(next);
-        } catch (err) {
-            console.error("Failed to prefetch AI exercises", err);
-            setNextExercise(null);
-        } finally {
-            setLoadingNext(false);
-        }
-    };
-
-
     const exercises = current?.exercises || [];
     const instructions = current?.instructions;
     const feedbackPrompt = current?.feedbackPrompt;
+    const showVocab = stage > 1 && Array.isArray(current?.vocabHelp);
 
     useEffect(() => {
         setIsComplete(completed);
@@ -79,14 +66,13 @@ export default function AIExerciseBlock({
                 })
                 .catch((err) => {
                     console.error("Mistral API error:", err);
-                    setCurrent("API_ERROR_500"); // sentinel value
+                    setCurrent("API_ERROR_500");
                 })
                 .finally(() => setLoadingInit(false));
         } else {
             fetchNext();
         }
     }, [mode, fetchExercisesFn]);
-
 
     useEffect(() => {
         if (mode === "student" && submitted && passed && !isComplete) {
@@ -95,7 +81,6 @@ export default function AIExerciseBlock({
         }
     }, [submitted, passed, isComplete, onComplete, mode]);
 
-    // Update footer buttons based on exercise state
     useEffect(() => {
         if (!setFooterActions) return;
 
@@ -143,7 +128,7 @@ export default function AIExerciseBlock({
                             onClick={handleNext}
                             disabled={loading || arguing}
                         >
-                            {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
+                            {loading ? "Loading..." : "Continue"}
                         </Button>
                     </div>
                 );
@@ -165,41 +150,20 @@ export default function AIExerciseBlock({
         );
 
         return () => setFooterActions(null);
-    }, [submitted, passed, submitting, loading, arguing, setFooterActions]);
+    }, [submitted, passed, submitting, loading, arguing]);
 
-    if (mode !== "student") {
-        return (
-            <Card className="text-center py-4">
-                <p>🤖 AI Exercise</p>
-            </Card>
-        );
-    }
-
-    if (loadingInit) {
-        return (
-            <Card className="text-center py-4">
-                <p>Loading personalized AI exercises...</p>
-            </Card>
-        );
-    }
-
-    if (current === "API_ERROR_500") {
-        return (
-            <Card className="bg-red-100 text-red-800">
-                <p>🚨 500: Mistral API Error. Please try again later.</p>
-            </Card>
-        );
-    }
-
-    if (!current || !Array.isArray(current.exercises)) {
-        return (
-            <Card className="bg-red-100 text-red-800">
-                <p>Failed to load AI exercise.</p>
-            </Card>
-        );
-    }
-
-
+    const fetchNext = async (payload = {}) => {
+        setLoadingNext(true);
+        try {
+            const next = await fetchExercisesFn(payload);
+            setNextExercise(next);
+        } catch (err) {
+            console.error("Failed to prefetch AI exercises", err);
+            setNextExercise(null);
+        } finally {
+            setLoadingNext(false);
+        }
+    };
 
     const handleSelect = (exId, value) => {
         setAnswers((prev) => ({ ...prev, [exId]: value }));
@@ -219,7 +183,7 @@ export default function AIExerciseBlock({
                             r.alternatives ||
                             r.other_solutions ||
                             r.other_answers ||
-                            []
+                            [],
                     };
                 });
                 setEvaluation(map);
@@ -229,7 +193,7 @@ export default function AIExerciseBlock({
             }
             if (result?.pass) {
                 setPassed(true);
-                if (mode === "student" && Array.isArray(result.results)) {
+                if (Array.isArray(result.results)) {
                     const words = result.results.map((r) => r.correct_answer);
                     await saveVocabWords(words);
                 }
@@ -238,9 +202,7 @@ export default function AIExerciseBlock({
             console.error("Submission failed:", e);
         } finally {
             setSubmitting(false);
-            if (mode === "student") {
-                fetchNext({ answers });
-            }
+            fetchNext({ answers });
         }
     };
 
@@ -257,7 +219,7 @@ export default function AIExerciseBlock({
                             r.alternatives ||
                             r.other_solutions ||
                             r.other_answers ||
-                            []
+                            [],
                     };
                 });
                 setEvaluation(map);
@@ -345,7 +307,21 @@ export default function AIExerciseBlock({
         await replaceExercise(exerciseId);
     };
 
-    const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
+    if (mode !== "student") {
+        return <Card className="text-center py-4">🤖 AI Exercise</Card>;
+    }
+
+    if (loadingInit) {
+        return <Card className="text-center py-4">Loading personalized AI exercises...</Card>;
+    }
+
+    if (current === "API_ERROR_500") {
+        return <Card className="bg-red-100 text-red-800">🚨 500: Mistral API Error.</Card>;
+    }
+
+    if (!Array.isArray(exercises)) {
+        return <Card className="bg-red-100 text-red-800">Failed to load AI exercise.</Card>;
+    }
 
     return (
         <>
@@ -483,7 +459,7 @@ export default function AIExerciseBlock({
                                 userAnswer &&
                                 ev?.correct &&
                                 userAnswer.trim().toLowerCase() !==
-                                    ev.correct.trim().toLowerCase()
+                                ev.correct.trim().toLowerCase()
                             );
                         }) && null}
                     </div>
@@ -491,7 +467,7 @@ export default function AIExerciseBlock({
 
             </Card>
             {showAsk && <AskAiModal onClose={() => setShowAsk(false)} />}
-            {submitted && reportExerciseId !== null && (
+            {reportExerciseId !== null && (
                 <ReportExerciseModal
                     exercise={current.exercises.find((e) => e.id === reportExerciseId)}
                     userAnswer={answers[reportExerciseId] || ""}

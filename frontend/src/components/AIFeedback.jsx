@@ -9,56 +9,48 @@ import AIExerciseBlock from "./AIExerciseBlock";
 import { getTrainingExercises } from "../api";
 
 export default function AIFeedback() {
-  const navigate = useNavigate();
-  const darkMode = useAppStore((state) => state.darkMode);
-  const username = useAppStore((state) => state.username);
-  const isLoading = useAppStore((state) => state.isLoading);
-  const isAdmin = useAppStore((state) => state.isAdmin);
-  const [actions, setActions] = useState(null);
+    const navigate = useNavigate();
+    const darkMode = useAppStore((state) => state.darkMode);
+    const username = useAppStore((state) => state.username);
+    const isLoading = useAppStore((state) => state.isLoading);
+    const isAdmin = useAppStore((state) => state.isAdmin);
+    const [actions, setActions] = useState(null);
 
-  useEffect(() => {
-    if (!isLoading && (!username || isAdmin)) {
-      navigate(isAdmin ? "/admin-panel" : "/");
-    }
-  }, [username, isLoading, isAdmin, navigate]);
-
-
-  return (
-    <div
-      className={`relative min-h-screen pb-20 ${
-        darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
-      }`}
-    >
-      <Container
-        bottom={
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
+    useEffect(() => {
+        if (!isLoading && (!username || isAdmin)) {
+            navigate(isAdmin ? "/admin-panel" : "/");
         }
-      >
-        <Title>🤖 {username}'s AI Training Exercises</Title>
-        <AIExerciseBlock
-          blockId="training"
-          fetchExercisesFn={getTrainingExercises}
-          setFooterActions={setActions}
-        />
-      </Container>
-      <Footer>
-        <div className="flex gap-2">
-          {actions}
-          <Button
-            size="sm"
-            variant="ghost"
-            type="button"
-            onClick={() => navigate("/menu")}
-            className="gap-2 rounded-full"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
+    }, [username, isLoading, isAdmin, navigate]);
+
+
+    return (
+        <div
+            className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
+                }`}
+        >
+            <Container>
+                <Title>🤖 {username}'s AI Training Exercises</Title>
+                <AIExerciseBlock
+                    blockId="training"
+                    fetchExercisesFn={getTrainingExercises}
+                    setFooterActions={setActions}
+                />
+            </Container>
+            <Footer>
+                <div className="flex gap-2">
+                    {actions}
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        type="button"
+                        onClick={() => navigate("/menu")}
+                        className="gap-2 rounded-full"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Menu
+                    </Button>
+                </div>
+            </Footer>
         </div>
-      </Footer>
-    </div>
-  );
+    );
 }
