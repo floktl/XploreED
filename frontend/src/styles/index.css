@@ -3,16 +3,17 @@
 @tailwind utilities;
 
 @layer components {
+  /* 🎯 Base Buttons */
   .btn {
-    @apply font-semibold px-6 py-2 rounded-lg shadow-md transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply font-semibold px-5 py-2.5 rounded-xl shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 text-sm;
   }
 
   .btn-primary {
-    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-400;
+    @apply bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-400;
   }
 
   .btn-secondary {
-    @apply bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-400;
+    @apply bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-blue-300;
   }
 
   .btn-success {
@@ -31,74 +32,54 @@
     @apply w-full max-w-xs;
   }
 
-  /* 🧼 Refined interactive block styling */
+  /* 🧩 Cards / Blocks */
   .interactive-block {
-    @apply border border-blue-300 bg-blue-50 text-gray-900 
-          dark:border-blue-600 dark:bg-gray-800 dark:text-white 
-          p-5 text-base rounded-xl shadow-sm space-y-3 transition-all duration-200;
+    @apply border border-blue-200 bg-white dark:border-blue-700 dark:bg-gray-800
+           text-gray-900 dark:text-white p-5 rounded-2xl shadow-md space-y-4
+           transition-all duration-200 hover:shadow-lg;
   }
 
   .interactive-block:hover {
-    @apply shadow-md border-blue-400 dark:border-blue-500;
+    @apply border-blue-400 dark:border-blue-500;
   }
 
-  .dark .interactive-block {
-    /* Already handled in main rule, but left here for clarity */
-    @apply border-blue-600 bg-gray-800 text-white;
-  }
-
-
+  /* ✍️ Input Placeholder for contenteditable */
   .task-content:empty::before {
     content: attr(placeholder);
     @apply text-gray-400 dark:text-gray-500 italic;
     pointer-events: none;
   }
-  
 
-  /* ✅ Fix: make task block text not bold and properly colored */
   .task-content p {
     @apply text-gray-900 dark:text-white font-normal;
   }
 
-  /* Drag and drop styles */
-.word-item {
-  transition: all 0.2s ease;
-  user-select: none;
-  -webkit-user-drag: element;
-}
+  /* 🔡 Word Drag-and-Drop Items */
+  .word-item {
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-drag: element;
+    @apply bg-blue-100 hover:bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-white rounded-lg px-3 py-1 shadow-sm cursor-pointer;
+  }
 
-.word-item.dragging {
-  opacity: 0.9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
+  .word-item.dragging {
+    opacity: 0.8;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
 
-.word-item.invisible {
-  visibility: hidden;
-}
+  .word-item.invisible {
+    visibility: hidden;
+  }
 
-/* Mobile touch feedback */
-@media (pointer: coarse) {
-  .word-item:active {
-    background-color: var(--active-color) !important;
+  @media (pointer: coarse) {
+    .word-item:active {
+      background-color: #dbeafe !important;
+    }
   }
 }
-}
 
-/* @keyframes feedback-fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(32px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-.feedback-fade-in-up {
-  animation: feedback-fade-in-up 0.22s cubic-bezier(.4,0,.2,1);
-} */
-
+/* ✅ Feedback animations */
 @keyframes feedback-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
