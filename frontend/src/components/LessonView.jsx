@@ -104,7 +104,14 @@ export default function LessonView() {
 
   return (
     <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Container>
+      <Container
+        bottom={
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Lessons
+          </Button>
+        }
+      >
         <Title>📘 Lesson {lessonId}</Title>
 
         {entries.length > 0 && (
