@@ -388,9 +388,11 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
 def review_vocab_word(username: str, word: str, quality: int) -> None:
     """Update spaced repetition data for a vocab word using SM2."""
     if not word or not word.isalpha():
+        print(f"⚠️ Skipped invalid word: '{word}'", flush=True)
         return
 
     normalized, *_ = normalize_word(word)
+    print(f"\n🔁 Reviewing word '{normalized}' for user '{username}' with quality={quality}", flush=True)
 
     row = fetch_one_custom(
         "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
@@ -398,6 +400,7 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
     )
 
     if not row:
+        print(f"📘 No prior record found for '{normalized}'. Initializing new entry...", flush=True)
         save_vocab(username, word, exercise="ai")
         ef = 2.5
         reps = 0
@@ -406,9 +409,15 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
         ef = row.get("ef", 2.5)
         reps = row.get("repetitions", 0)
         interval = row.get("interval_days", 1)
+        print(f"📂 Retrieved from DB → EF: {ef}, Repetitions: {reps}, Interval: {interval} day(s)", flush=True)
 
+    # Apply SM2 algorithm
     ef, reps, interval = sm2(quality, ef, reps, interval)
+    print(f"📊 After SM2 → New EF: {ef:.2f}, Repetitions: {reps}, New Interval: {interval} day(s)", flush=True)
+
+    # Compute next due date
     next_review = (datetime.now() + timedelta(days=interval)).isoformat()
+    print(f"📅 Next review due on: {next_review}", flush=True)
 
     update_row(
         "vocab_log",
@@ -422,3 +431,5 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
         "username = ? AND vocab = ?",
         (username, normalized),
     )
+
+    print(f"✅ Vocab log updated for '{normalized}'", flush=True)
