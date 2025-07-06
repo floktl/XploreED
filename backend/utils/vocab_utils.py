@@ -145,11 +145,12 @@ def extract_words(text: str) -> list[tuple[str, Optional[str]]]:
         tok = tokens[i]
         lower = tok.lower()
         if lower in ARTICLES and i + 1 < len(tokens):
+            # Attach the article to the following token regardless of
+            # capitalization. This helps when users do not capitalize nouns.
             next_tok = tokens[i + 1]
-            if next_tok and next_tok[0].isupper():
-                result.append((next_tok, lower))
-                i += 2
-                continue
+            result.append((next_tok, lower))
+            i += 2
+            continue
         result.append((tok, None))
         i += 1
     return result
@@ -232,7 +233,27 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
         base = _singularize(raw.capitalize())
         return base, "noun", article_guess
 
-    if candidate.endswith(("en", "st", "t", "e")):
+    # Detect common noun endings even when the word is not capitalized.
+    noun_suffixes = (
+        "ung",
+        "keit",
+        "heit",
+        "schaft",
+        "tät",
+        "tion",
+        "ik",
+        "chen",
+        "lein",
+        "ment",
+        "tum",
+        "ma",
+        "um",
+    )
+    if candidate.endswith(noun_suffixes):
+        base = _singularize(raw.capitalize())
+        return base, "noun", _guess_article(raw)
+
+    if candidate.endswith(("en", "st", "t")):
         return _normalize_verb(candidate), "verb", None
 
     if candidate.endswith(("ig", "lich", "isch", "bar")):
