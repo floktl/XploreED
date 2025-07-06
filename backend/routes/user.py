@@ -170,10 +170,13 @@ def save_vocab_words():
         for w in words:
             tokens.extend(extract_words(str(w)))
 
+    seen: set[str] = set()
     for word, art in tokens:
-        save_vocab(user, word, context=context, exercise=exercise, article=art)
+        canonical = save_vocab(user, word, context=context, exercise=exercise, article=art)
+        if canonical:
+            seen.add(canonical)
 
-    return jsonify({"saved": len(tokens)})
+    return jsonify({"saved": len(seen)})
 
 
 @user_bp.route("/vocabulary/<int:vocab_id>", methods=["DELETE"])
