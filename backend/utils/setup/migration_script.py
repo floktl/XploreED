@@ -160,6 +160,18 @@ with get_connection() as conn:
     else:
         print("ℹ️ 'last_review' column already exists.")
 
+    # ✅ Remove duplicate vocab entries before enforcing uniqueness
+    cursor.execute(
+        "DELETE FROM vocab_log WHERE rowid NOT IN (SELECT MIN(rowid) FROM vocab_log GROUP BY username, vocab);"
+    )
+    print("✅ Duplicate vocab entries removed from 'vocab_log'.")
+
+    # ✅ Ensure unique constraint on (username, vocab)
+    cursor.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_vocab_unique ON vocab_log(username, vocab);"
+    )
+    print("✅ Unique index created on 'vocab_log'(username, vocab).")
+
     # ✅ Create lesson_content table
     cursor.execute(
         """

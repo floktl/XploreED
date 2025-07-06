@@ -130,11 +130,17 @@ def _singularize(noun: str) -> str:
 
 
 def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, Optional[str]]:
-    """Very basic normalization without grammar heuristics."""
+    """Normalize a word for duplicate checks."""
     if not word:
         return word, "other", article
 
-    normalized = word.lower()
+    normalized = word.lower().strip()
+
+    # Treat capitalized words or words with an article as nouns
+    if article or word[:1].isupper():
+        normalized = _singularize(normalized.capitalize()).lower()
+        return normalized, "noun", article
+
     return normalized, "other", article
 
 
