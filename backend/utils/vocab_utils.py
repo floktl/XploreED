@@ -2,6 +2,7 @@
 
 import os
 import re
+import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
@@ -18,6 +19,13 @@ if not DEEPL_API_KEY:
             DEEPL_API_KEY = f.read().strip()
     except Exception:
         DEEPL_API_KEY = None
+
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
+HEADERS = {
+    "Authorization": f"Bearer {MISTRAL_API_KEY}",
+    "Content-Type": "application/json",
+}
 
 ARTICLES = {
     "der",
@@ -70,6 +78,57 @@ PREPOSITIONS = {
 ADVERBS = {"gern", "nicht", "nie", "immer", "oft"}
 
 
+def _extract_json(text: str):
+    """Return parsed JSON object from Mistral output."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group(0))
+            except json.JSONDecodeError:
+                pass
+    return None
+
+
+def analyze_word_ai(word: str) -> Optional[dict]:
+    """Return analysis data for a German word using Mistral."""
+    if not MISTRAL_API_KEY or not word:
+        return None
+
+    user_prompt = {
+        "role": "user",
+        "content": (
+            "Give dictionary info for the German word '" + word + "'.\n"
+            "Return JSON with keys base_form, type, article, translation, info."
+            " Use null for article if not a noun."
+        ),
+    }
+
+    payload = {
+        "model": "mistral-medium",
+        "messages": [
+            {"role": "system", "content": "You are a helpful German linguist."},
+            user_prompt,
+        ],
+        "temperature": 0.3,
+    }
+
+    try:
+        resp = requests.post(
+            MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10
+        )
+        if resp.status_code == 200:
+            content = resp.json()["choices"][0]["message"]["content"].strip()
+            data = _extract_json(content)
+            if isinstance(data, dict):
+                return data
+    except Exception as e:
+        print("[analyze_word_ai] Mistral error:", e)
+    return None
+
+
 def split_and_clean(text: str) -> list[str]:
     """Split a text into lowercase word tokens."""
     return re.findall(r"[A-Za-zÄÖÜäöüß]+", text)
@@ -107,6 +166,18 @@ def _normalize_verb(word: str) -> str:
     return word
 
 
+def _normalize_adjective(word: str) -> str:
+    """Return the base form of an adjective by stripping common endings."""
+    lower = word.lower()
+    for suffix in ("eren", "erer", "eres", "erem"):
+        if lower.endswith(suffix):
+            return word[:-4]
+    for suffix in ("en", "em", "er", "es", "e"):
+        if lower.endswith(suffix) and len(word) - len(suffix) >= 2:
+            return word[: -len(suffix)]
+    return word
+
+
 def _guess_article(word: str) -> str:
     """Guess the article for a noun using simple endings."""
     lower = word.lower()
@@ -134,7 +205,7 @@ def _singularize(noun: str) -> str:
 def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, Optional[str]]:
     """Return the normalized form, detected type and article."""
     if not word:
-        return word, "unknown", article
+        return word, "other", article
 
     raw = word
     candidate = word.lower()
@@ -163,9 +234,9 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
         return _normalize_verb(candidate), "verb", None
 
     if candidate.endswith(("ig", "lich", "isch", "bar")):
-        return candidate, "adjective", None
+        return _normalize_adjective(candidate), "adjective", None
 
-    return candidate, "unknown", None
+    return candidate, "other", None
 
 
 def _normalize_verb(word: str) -> str:
@@ -209,41 +280,53 @@ def save_vocab(
     article: Optional[str] = None,
 ) -> None:
     """Store a new vocabulary word for spaced repetition."""
-    if german_word in ["?", "!", ",", "."] or not DEEPL_API_KEY:
+    if german_word in ["?", "!", ",", "."]:
         return
 
-    normalized, word_type, art = normalize_word(german_word, article)
-    if article is None:
-        article = art
+    analysis = analyze_word_ai(german_word)
+    if analysis:
+        normalized = analysis.get("base_form", german_word)
+        word_type = analysis.get("type", "other")
+        article = analysis.get("article") or article
+        english_word = analysis.get("translation", "")
+        details = analysis.get("info")
+    else:
+        normalized, word_type, art = normalize_word(german_word, article)
+        if word_type == "noun":
+            article = article or art
+        else:
+            article = None
+        details = None
+        url = "https://api-free.deepl.com/v2/translate"
+        data = {
+            "auth_key": DEEPL_API_KEY,
+            "text": german_word,
+            "source_lang": "DE",
+            "target_lang": "EN",
+        }
+
+        try:
+            response = requests.post(url, data=data)
+            english_word = response.json()["translations"][0]["text"]
+            if english_word.isalpha() and english_word.istitle():
+                english_word = english_word.lower()
+        except Exception:
+            english_word = "(error)"
+
     if vocab_exists(username, normalized):
         return
-
-    url = "https://api-free.deepl.com/v2/translate"
-    data = {
-        "auth_key": DEEPL_API_KEY,
-        "text": german_word,
-        "source_lang": "DE",
-        "target_lang": "EN",
-    }
-
-    try:
-        response = requests.post(url, data=data)
-        english_word = response.json()["translations"][0]["text"]
-        if english_word.isalpha() and english_word.istitle():
-            english_word = english_word.lower()
-    except Exception:
-        english_word = "(error)"
 
     now = datetime.now().isoformat()
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 username,
                 normalized,
                 english_word,
                 word_type,
                 article,
+                details,
                 context,
                 exercise,
                 now,

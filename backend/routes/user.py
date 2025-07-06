@@ -67,7 +67,7 @@ def vocabulary():
 
     rows = fetch_custom(
         """
-        SELECT rowid as id, vocab, translation, word_type, article, next_review, created_at, context, exercise
+        SELECT rowid as id, vocab, translation, word_type, article, details, next_review, created_at, context, exercise
         FROM vocab_log
         WHERE username = ?
         ORDER BY datetime(next_review) ASC
@@ -84,6 +84,7 @@ def vocabulary():
                     "translation": row["translation"],
                     "word_type": row.get("word_type"),
                     "article": row.get("article"),
+                    "details": row.get("details"),
                     "next_review": row.get("next_review"),
                     "created_at": row.get("created_at"),
                     "context": row.get("context"),
