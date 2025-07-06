@@ -108,7 +108,9 @@ export default function LevelUpTest() {
             )}
           </Card>
         </Container>
-        <Footer />
+        <Footer>
+          <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
+        </Footer>
       </div>
     );
   }

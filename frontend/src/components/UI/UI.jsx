@@ -42,7 +42,7 @@ export const Container = ({ children, bottom, className }) => {
   return (
     <>
       <Header />
-      <div className="pt-20 pb-24 px-4 h-[calc(100vh-4rem)] flex flex-col">
+      <div className="pt-20 pb-6 px-4 h-[calc(100vh-7rem)] flex flex-col">
         <div className="flex-1 overflow-auto flex flex-col items-center">
           <div
             className={clsx(

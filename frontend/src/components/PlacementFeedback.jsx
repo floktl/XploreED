@@ -36,7 +36,9 @@ export default function PlacementFeedback({ summary, onDone }) {
           )}
         </Card>
       </Container>
-      <Footer />
+      <Footer>
+        <Button variant="primary" type="button" onClick={onDone}>Continue</Button>
+      </Footer>
     </div>
   );
 }

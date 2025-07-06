@@ -131,7 +131,12 @@ export default function AIReading() {
             <p>🚨 500: Mistral API Error. Please try again later.</p>
           </Card>
         </Container>
-        <Footer />
+        <Footer>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        </Footer>
       </div>
     );
   }
@@ -164,7 +169,12 @@ export default function AIReading() {
             {loading && <Spinner />}
           </Card>
         </Container>
-        <Footer />
+        <Footer>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        </Footer>
       </div>
     );
   }
@@ -224,7 +234,12 @@ export default function AIReading() {
           )}
         </Card>
       </Container>
-      <Footer />
+      <Footer>
+        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Menu
+        </Button>
+      </Footer>
     </div>
   );
 }

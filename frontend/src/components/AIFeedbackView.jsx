@@ -4,6 +4,7 @@ import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import Footer from "./UI/Footer";
 import { getAiFeedbackItem, generateAiFeedback } from "../api";
 
 export default function AIFeedbackView() {
@@ -179,6 +180,9 @@ export default function AIFeedbackView() {
           </Card>
         )}
       </Container>
+      <Footer>
+        <Button variant="link" type="button" onClick={() => navigate("/ai-feedback")}>⬅ Back to AI Feedback</Button>
+      </Footer>
     </div>
   );
 }

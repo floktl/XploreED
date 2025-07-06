@@ -66,7 +66,12 @@ export default function AdminLogin() {
         </Card>
       </Container>
 
-      <Footer />
+      <Footer>
+        <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Student Login
+        </Button>
+      </Footer>
     </div>
   );
 }
