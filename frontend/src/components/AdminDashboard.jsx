@@ -179,7 +179,7 @@ export default function AdminDashboard() {
 
         {error && <Alert type="danger">{error}</Alert>}
 
-        <Card className="overflow-x-auto mb-10">
+        <Card fit className="overflow-x-auto mb-10">
           <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
               <tr>
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
           </table>
         </Card>
 
-        <Card>
+        <Card fit>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">📚 All Lessons</h2>
             <Button variant="success" onClick={() => {
@@ -335,7 +335,7 @@ export default function AdminDashboard() {
           </table>
         </Card>
 
-        <Card className="mt-8">
+        <Card fit className="mt-8">
           <h2 className="text-xl font-bold mb-4">📮 User Feedback</h2>
           {supportFeedback.length === 0 ? (
             <p>No feedback messages.</p>
