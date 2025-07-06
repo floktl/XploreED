@@ -526,21 +526,27 @@ def submit_ai_exercise(block_id):
 
     feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
 
-    process_ai_answers(username, str(block_id), answers, {"exercises": exercises})
+    def _background_save():
+        try:
+            process_ai_answers(
+                username,
+                str(block_id),
+                answers,
+                {"exercises": exercises},
+            )
+            insert_row(
+                "exercise_submissions",
+                {
+                    "username": username,
+                    "block_id": str(block_id),
+                    "answers": json.dumps(answers),
+                },
+            )
+            print("Successfully inserted submission", flush=True)
+        except Exception as e:
+            current_app.logger.error("Failed to save exercise submission: %s", e)
 
-    try:
-        insert_row(
-            "exercise_submissions",
-            {
-                "username": username,
-                "block_id": str(block_id),
-                "answers": json.dumps(answers),
-            },
-        )
-        print("Successfully inserted submission", flush=True)
-    except Exception as e:
-        current_app.logger.error("Failed to save exercise submission: %s", e)
-        return jsonify({"msg": "Error"}), 500
+    run_in_background(_background_save)
 
     passed = bool(evaluation.get("pass"))
     run_in_background(prefetch_next_exercises, username)
@@ -572,8 +578,14 @@ def argue_ai_exercise(block_id):
     if not evaluation:
         return jsonify({"msg": "Evaluation failed"}), 500
 
-    # Update topic memory using SM2 with the reevaluated results
-    process_ai_answers(username, str(block_id), answers, {"exercises": exercises})
+    # Update topic memory asynchronously with the reevaluated results
+    run_in_background(
+        process_ai_answers,
+        username,
+        str(block_id),
+        answers,
+        {"exercises": exercises},
+    )
 
     return jsonify(evaluation)
 
@@ -674,8 +686,9 @@ def generate_ai_feedback():
 
         feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
 
-        # Update topic memory with the final evaluation results
-        process_ai_answers(
+        # Update topic memory asynchronously with the final evaluation results
+        run_in_background(
+            process_ai_answers,
             username,
             str(exercise_block.get("lessonId", "feedback")),
             answers,
