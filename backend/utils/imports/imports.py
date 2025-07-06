@@ -98,7 +98,8 @@ class Imports:
 
     user = [
         "user_bp", "request", "jsonify", "session_manager", "fetch_all",
-        "get_current_user", "fetch_custom", "save_vocab", "extract_words",
+        "get_current_user", "fetch_custom", "fetch_one_custom",
+        "insert_row", "delete_rows", "save_vocab", "extract_words",
         "sm2"
     ]
 
