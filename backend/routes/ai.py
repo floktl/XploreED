@@ -413,7 +413,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         for vocab in words:
             review_vocab_word(username, vocab, quality)
 
-    print("AI submission results (HJSON):\n", json.dumps(results, indent=2), flush=True)
+    # print("AI submission results (HJSON):\n", json.dumps(results, indent=2), flush=True)
 
 
 @ai_bp.route("/ai-exercises", methods=["POST"])
