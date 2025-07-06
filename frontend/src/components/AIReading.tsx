@@ -113,7 +113,14 @@ export default function AIReading() {
   if (data === "API_ERROR_500") {
     return (
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-        <Container>
+        <Container
+          bottom={
+            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Menu
+            </Button>
+          }
+        >
           <Title>
             <div className="flex items-center gap-2">
               <BookOpen className="w-6 h-6" />
@@ -123,12 +130,6 @@ export default function AIReading() {
           <Card className="bg-red-100 text-red-800 text-center p-4">
             <p>🚨 500: Mistral API Error. Please try again later.</p>
           </Card>
-          <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Menu
-            </Button>
-          </div>
         </Container>
         <Footer />
       </div>
@@ -138,7 +139,14 @@ export default function AIReading() {
   if (!data) {
     return (
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-        <Container>
+        <Container
+          bottom={
+            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Menu
+            </Button>
+          }
+        >
           <Title>
             <div className="flex items-center gap-2">
               <BookOpen className="w-6 h-6" />
@@ -155,12 +163,6 @@ export default function AIReading() {
             <Button onClick={startExercise} variant="primary">Start</Button>
             {loading && <Spinner />}
           </Card>
-          <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Menu
-            </Button>
-          </div>
         </Container>
         <Footer />
       </div>
@@ -169,7 +171,14 @@ export default function AIReading() {
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container>
+      <Container
+        bottom={
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        }
+      >
         <Title>
           <div className="flex items-center gap-2">
             <BookOpen className="w-6 h-6" />
@@ -214,12 +223,6 @@ export default function AIReading() {
             </div>
           )}
         </Card>
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
-        </div>
       </Container>
       <Footer />
     </div>
