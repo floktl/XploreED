@@ -114,10 +114,6 @@ export default function Translator() {
               <Rocket className="w-4 h-4" />
               {loading ? "Translating..." : "Get Feedback"}
             </Button>
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
           </div>
         </form>
 
@@ -143,7 +139,12 @@ export default function Translator() {
         )}
       </Container>
 
-      <Footer />
+      <Footer>
+        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Menu
+        </Button>
+      </Footer>
     </div>
   );
 }
