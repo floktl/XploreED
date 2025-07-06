@@ -262,29 +262,6 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
     return candidate, "other", None
 
 
-def _normalize_verb(word: str) -> str:
-    """Very small heuristic to convert a verb to its infinitive."""
-    if word.endswith("en"):
-        return word
-    if word.endswith("st"):
-        return word[:-2] + "en"
-    if word.endswith("t"):
-        return word[:-1] + "en"
-    if word.endswith("e"):
-        return word[:-1] + "en"
-    return word
-
-
-def _guess_article(word: str) -> str:
-    """Guess the article for a noun using simple endings."""
-    lower = word.lower()
-    if lower.endswith(("ung", "keit", "heit", "schaft", "tät", "tion", "ik")):
-        return "die"
-    if lower.endswith(("chen", "lein", "ment", "tum", "ma", "um")):
-        return "das"
-    return "der"
-
-
 def vocab_exists(username: str, german_word: str) -> bool:
     """Check if a vocab entry already exists for a user."""
     with get_connection() as conn:
@@ -322,6 +299,11 @@ def save_vocab(
         article = analysis.get("article") or article
         english_word = analysis.get("translation", "")
         details = analysis.get("info")
+
+        if word_type == "noun":
+            normalized = _singularize(normalized.capitalize())
+        else:
+            normalized = normalized.lower()
     else:
         normalized, word_type, art = normalize_word(german_word, article)
         if word_type == "noun":
