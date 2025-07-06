@@ -117,11 +117,6 @@ def generate_new_exercises(
 
     print("🧠 Sending request to Mistral AI...", flush=True)
 
-    # ... keep the rest of your function unchanged ...
-
-
-    print("🧠 Sending request to Mistral AI...", flush=True)
-
     user_prompt = {
         "role": "user",
         "content": f"""
@@ -176,9 +171,9 @@ Create a new exercise block using the **same structure** and **same field names*
         ],
         "temperature": 0.7
     }
-    print('User prompt:::', flush=True)
+    # print('User prompt:::', flush=True)
     content_str = payload["messages"][1]["content"]
-    print(content_str.encode().decode("unicode_escape"))
+    # print(content_str.encode().decode("unicode_escape"))
     response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
@@ -187,7 +182,7 @@ Create a new exercise block using the **same structure** and **same field names*
             print("✅ Successfully parsed exercise block from AI./n/n", flush=True)
             parsed = _ensure_schema(parsed)
             parsed["level"] = cefr_level
-            print(json.dumps(parsed, indent=2), flush=True)
+            # print(json.dumps(parsed, indent=2), flush=True)
             return parsed
         print("❌ Failed to parse JSON. Raw content:", flush=True)
         print(content, flush=True)
