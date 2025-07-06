@@ -291,6 +291,13 @@ def save_vocab(
         print(Fore.YELLOW + "[save_vocab] Skipping punctuation." + Style.RESET_ALL, flush=True)
         return
 
+    # Early normalization for existence check
+    norm_check, *_ = normalize_word(german_word, article)
+    if vocab_exists(username, norm_check):
+        print(Fore.YELLOW + "[save_vocab] Word already exists, skipping." + Style.RESET_ALL, flush=True)
+        return
+
+    # AI analysis only needed if word is new
     analysis = analyze_word_ai(german_word)
     if analysis:
         print(Fore.CYAN + f"[save_vocab] AI analysis: {analysis}" + Style.RESET_ALL, flush=True)
@@ -311,6 +318,7 @@ def save_vocab(
         else:
             article = None
         details = None
+
         url = "https://api-free.deepl.com/v2/translate"
         data = {
             "auth_key": DEEPL_API_KEY,
@@ -329,12 +337,7 @@ def save_vocab(
             english_word = "(error)"
 
     if not analysis and english_word.lower() == german_word.lower():
-        # Likely an English word accidentally submitted as German
         print(Fore.YELLOW + "[save_vocab] Detected English word, skipping." + Style.RESET_ALL, flush=True)
-        return
-
-    if vocab_exists(username, normalized):
-        print(Fore.YELLOW + "[save_vocab] Word already exists, skipping." + Style.RESET_ALL, flush=True)
         return
 
     now = datetime.now().isoformat()

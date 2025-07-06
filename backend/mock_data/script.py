@@ -87,7 +87,6 @@ def generate_new_exercises(
                 "grammar": entry.get("grammar"),
                 "topic": entry.get("topic"),
                 "skill_type": entry.get("skill_type"),
-                "next_repeat": entry.get("next_repeat"),
             }
             for entry in upcoming
         ]
@@ -100,7 +99,6 @@ def generate_new_exercises(
             {
                 "word": entry.get("word") or entry.get("vocab"),
                 "translation": entry.get("translation"),
-                "sm2_due_date": entry.get("sm2_due_date") or entry.get("next_review"),
             }
             for entry in vocabular
             if (
@@ -163,7 +161,7 @@ Here is an example structure for reference (do not reuse content!):
 Here is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
 {json.dumps(vocabular, indent=2)}
 
-Here is the topic memory (prioritize these themes or test new ones, based on the students level):
+Here is the topic memory (form the exercises to train the weaknesses seen in the entries:):
 {json.dumps(filtered_topic_memory, indent=2)}
 Create new sentences with new words and topics.
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.

@@ -65,25 +65,24 @@ export default function Menu() {
               Sentence Order Game
             </Button>
 
+            <Button type="button" variant="secondary" onClick={() => navigate("/ai-feedback")} className="justify-start gap-3">
+              <Bot className="w-5 h-5" />
+              AI Training Exercises
+            </Button>
+
+            <Button type="button" variant="secondary" onClick={() => navigate("/reading-exercise")} className="justify-start gap-3">
+              <Book className="w-5 h-5" />
+              AI Reading Exercise
+            </Button>
 
             <Button type="button" variant="secondary" onClick={() => navigate("/lessons")} className="justify-start gap-3">
               <Library className="w-5 h-5" />
               {username ? `${username}'s Lessons` : "Your Lessons"}
             </Button>
 
-            <Button type="button" variant="secondary" onClick={() => navigate("/ai-feedback")} className="justify-start gap-3">
-              <Bot className="w-5 h-5" />
-              AI Training Exercises
-            </Button>
-
             <Button type="button" variant="secondary" onClick={() => navigate("/weakness-lesson")} className="justify-start gap-3">
               <Bot className="w-5 h-5" />
               AI Weakness Lesson
-            </Button>
-
-            <Button type="button" variant="secondary" onClick={() => navigate("/reading-exercise")} className="justify-start gap-3">
-              <Book className="w-5 h-5" />
-              AI Reading Exercise
             </Button>
 
           </div>

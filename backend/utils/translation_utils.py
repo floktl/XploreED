@@ -151,8 +151,8 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
     return compare_topic_qualities(reference, student)
 
 def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int) -> None:
-    print("[_update_single_topic] Start", flush=True)
-    print(f"[_update_single_topic] Inputs: username={username}, grammar={grammar}, skill={skill}, context={context}, quality={quality}", flush=True)
+    # print("[_update_single_topic] Start", flush=True)
+    # print(f"[_update_single_topic] Inputs: username={username}, grammar={grammar}, skill={skill}, context={context}, quality={quality}", flush=True)
     correct = quality == 5
 
     existing = fetch_one_custom(
@@ -160,7 +160,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
         "WHERE username = ? AND grammar = ? AND skill_type = ?",
         (username, grammar, skill),
     )
-    print("[_update_single_topic] Existing DB row:", existing, flush=True)
+    # print("[_update_single_topic] Existing DB row:", existing, flush=True)
 
     if existing:
         ef, reps, interval = sm2(
@@ -169,7 +169,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             existing.get("repetitions") or 0,
             existing.get("intervall") or 1,
         )
-        print(f"[_update_single_topic] Updated EF={ef}, reps={reps}, interval={interval}", flush=True)
+        # print(f"[_update_single_topic] Updated EF={ef}, reps={reps}, interval={interval}", flush=True)
         update_data = {
             "ease_factor": ef,
             "repetitions": reps,
@@ -182,10 +182,10 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
         if not existing.get("topic"):
             update_data["topic"] = random.choice(DEFAULT_TOPICS)
         update_row("topic_memory", update_data, "id = ?", (existing["id"],))
-        print("[_update_single_topic] Topic memory row updated.", flush=True)
+        # print("[_update_single_topic] Topic memory row updated.", flush=True)
     else:
         ef, reps, interval = sm2(quality)
-        print(f"[_update_single_topic] New EF={ef}, reps={reps}, interval={0}", flush=True)
+        # print(f"[_update_single_topic] New EF={ef}, reps={reps}, interval={0}", flush=True)
         insert_row(
             "topic_memory",
             {
@@ -204,21 +204,21 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                 "quality": quality,
             },
         )
-        print("[_update_single_topic] New topic memory row inserted.", flush=True)
+        # print("[_update_single_topic] New topic memory row inserted.", flush=True)
 
 def update_topic_memory_translation(username: str, german: str, qualities: dict[str, int] | None = None) -> None:
-    print("[update_topic_memory_translation] Start", flush=True)
-    print(f"[update_topic_memory_translation] username={username}, german={german}, qualities={qualities}", flush=True)
+    # print("[update_topic_memory_translation] Start", flush=True)
+    # print(f"[update_topic_memory_translation] username={username}, german={german}, qualities={qualities}", flush=True)
     if qualities:
         sanitized = {k.replace("_", " ").strip(): v for k, v in qualities.items()}
         features = list(sanitized.keys())
     else:
         sanitized = {}
         features = detect_language_topics(german) or ["unknown"]
-    print("[update_topic_memory_translation] Detected features:", features, flush=True)
+    # print("[update_topic_memory_translation] Detected features:", features, flush=True)
     for feature in features:
         quality = sanitized.get(feature, 3)
-        print(f"[update_topic_memory_translation] Updating feature '{feature}' with quality {quality}", flush=True)
+        # print(f"[update_topic_memory_translation] Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "translation", german, quality)
 
 def update_topic_memory_reading(username: str, text: str, qualities: dict[str, int] | None = None) -> None:
