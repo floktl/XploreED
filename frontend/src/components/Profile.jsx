@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
-import { Book, Target, BrainCircuit } from "lucide-react";
+import { Book, Target, BrainCircuit, User, Settings, Sun, Moon, ArrowLeft } from "lucide-react";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Badge from "./UI/Badge";
@@ -51,9 +51,12 @@ export default function Profile() {
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
         <Title>
-          👤 Profile {username && `(${username})`} <Badge type="default">Student</Badge>
+          <div className="flex items-center gap-2">
+            <User className="w-6 h-6" />
+            <span>Profile {username && `(${username})`}</span> <Badge type="default">Student</Badge>
+          </div>
         </Title>
-        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>📚 Your game results are listed below:</p>
+        <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your game results are listed below:</p>
 
         <Card className="mb-6">
           <div className="flex flex-col gap-4">
@@ -75,12 +78,17 @@ export default function Profile() {
         {error && <Alert type="error">{error}</Alert>}
 
         <div className="mt-6 flex justify-center gap-4">
-          <Button onClick={() => navigate("/settings")}>⚙️ Settings</Button>
-          <Button variant="secondary" onClick={toggleDarkMode}>
-            {darkMode ? "☀️ Light" : "🌙 Dark"}
+          <Button onClick={() => navigate("/settings")} className="gap-2">
+            <Settings className="w-4 h-4" />
+            Settings
           </Button>
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
+          <Button variant="secondary" onClick={toggleDarkMode} className="gap-2">
+            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {darkMode ? "Light" : "Dark"}
+          </Button>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
           </Button>
         </div>
       </Container>

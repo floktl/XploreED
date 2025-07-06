@@ -6,6 +6,7 @@ import AIExerciseBlock from "./AIExerciseBlock";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import { ArrowLeft } from "lucide-react";
 import Footer from "./UI/Footer";
 import ErrorPage from "./ErrorPage";
 import {
@@ -173,8 +174,9 @@ export default function LessonView() {
         )}
 
         <div className="text-center mt-8">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")}>
-            🔙 Back to Lessons
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Lessons
           </Button>
         </div>
       </Container>

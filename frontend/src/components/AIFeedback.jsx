@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import Button from "./UI/Button";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
@@ -34,8 +35,9 @@ export default function AIFeedback() {
           fetchExercisesFn={getTrainingExercises}
         />
         <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
           </Button>
         </div>
       </Container>

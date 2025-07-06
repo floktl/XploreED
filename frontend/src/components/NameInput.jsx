@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
+import { PenSquare, Lock, Rocket } from "lucide-react";
 import { login, signup, getMe, getRole } from "../api";
 import PlacementTest from "./PlacementTest";
 import LevelGuess from "./LevelGuess";
@@ -37,7 +38,7 @@ export default function NameInput() {
     }
 
     if (isSignup && pw !== pwConfirm) {
-      setError("❌ Passwords do not match.");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -69,7 +70,7 @@ export default function NameInput() {
       navigate("/menu");
     } catch (err) {
       console.error("[CLIENT] Auth failed:", err);
-      setError("❌ " + (err.message || "Could not log in. Try again."));
+      setError(err.message || "Could not log in. Try again.");
     }
   };
 
@@ -157,11 +158,20 @@ export default function NameInput() {
             {error && <Alert type="warning">{error}</Alert>}
 
             <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-              <Button variant="primary" type="submit" className="w-full sm:w-auto">
-                {isSignup ? "📝 Sign Up" : "🚀 Continue"}
+              <Button variant="primary" type="submit" className="w-full sm:w-auto gap-2">
+                {isSignup ? (
+                  <>
+                    <PenSquare className="w-4 h-4" /> Sign Up
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="w-4 h-4" /> Continue
+                  </>
+                )}
               </Button>
-              <Button variant="secondary" type="button" onClick={handleAdminRedirect} className="w-full sm:w-auto">
-                🔐 Admin Login
+              <Button variant="secondary" type="button" onClick={handleAdminRedirect} className="w-full sm:w-auto gap-2">
+                <Lock className="w-4 h-4" />
+                Admin Login
               </Button>
             </div>
 

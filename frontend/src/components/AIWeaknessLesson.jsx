@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import useAppStore from "../store/useAppStore";
 import { getWeaknessLesson } from "../api";
 import Card from "./UI/Card";
@@ -52,7 +53,10 @@ export default function AIWeaknessLesson() {
           </Card>
         )}
         <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
         </div>
       </Container>
       <Footer />
