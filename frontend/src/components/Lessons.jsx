@@ -26,7 +26,7 @@ export default function Lessons() {
   }, [username, isLoading, isAdmin, navigate]);
   useEffect(() => {
     if (!username) return;
-  
+
     const fetchLessons = async () => {
       try {
         const data = await getStudentLessons(); // ✅ use central API helper
@@ -36,21 +36,14 @@ export default function Lessons() {
         setError("Could not load lessons. Please try again later.");
       }
     };
-  
+
     fetchLessons();
   }, [username]);
-  
+
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container
-        bottom={
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
-        }
-      >
+      <Container>
         <Title>📚 {username}'s Lessons</Title>
         <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
           Overview of your past and upcoming lessons
