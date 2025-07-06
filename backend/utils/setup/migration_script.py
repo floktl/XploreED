@@ -65,6 +65,7 @@ with get_connection() as conn:
             translation TEXT,
             word_type TEXT,
             article TEXT,
+            details TEXT,
             repetitions INTEGER DEFAULT 0,
             interval_days INTEGER DEFAULT 1,
             ef REAL DEFAULT 2.5,
@@ -143,6 +144,12 @@ with get_connection() as conn:
         print("✅ 'article' column added.")
     else:
         print("ℹ️ 'article' column already exists.")
+
+    if "details" not in vocab_cols:
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN details TEXT;")
+        print("✅ 'details' column added.")
+    else:
+        print("ℹ️ 'details' column already exists.")
 
     # ✅ Create lesson_content table
     cursor.execute(
