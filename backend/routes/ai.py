@@ -448,8 +448,8 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
 def get_ai_exercises():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
-    print("Session ID:", session_id, flush=True)
-    print("Username:", username, flush=True)
+    # print("Session ID:", session_id, flush=True)
+    # print("Username:", username, flush=True)
 
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -508,7 +508,7 @@ def get_ai_exercises():
 def submit_ai_exercise(block_id):
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
-    print("Session ID:", session_id, "Username:", username, flush=True)
+    # print("Session ID:", session_id, "Username:", username, flush=True)
 
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -578,7 +578,7 @@ def submit_ai_exercise(block_id):
                     "answers": json.dumps(answers),
                 },
             )
-            print("Successfully inserted submission", flush=True)
+            # print("Successfully inserted submission", flush=True)
         except Exception as e:
             current_app.logger.error("Failed to save exercise submission: %s", e)
 
@@ -630,7 +630,7 @@ def argue_ai_exercise(block_id):
 def get_ai_feedback():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
-    print("Fetching AI feedback for:", username, flush=True)
+    # print("Fetching AI feedback for:", username, flush=True)
 
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -648,7 +648,7 @@ def get_ai_feedback():
 def get_ai_feedback_item(feedback_id):
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
-    print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
+    # print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
 
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -669,7 +669,7 @@ def get_ai_feedback_item(feedback_id):
 def generate_ai_feedback():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
-    print("Generating feedback for user:", username, flush=True)
+    # print("Generating feedback for user:", username, flush=True)
 
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -677,7 +677,7 @@ def generate_ai_feedback():
     data = request.get_json() or {}
     answers = data.get("answers", {})
     exercise_block = data.get("exercise_block")
-    print("Feedback generation data:", data, flush=True)
+    # print("Feedback generation data:", data, flush=True)
 
     if exercise_block:
         all_exercises = exercise_block.get("exercises", [])
@@ -758,7 +758,7 @@ def get_training_exercises():
 
     data = request.get_json() or {}
     answers = data.get("answers", {})
-    print("Training answers received:", answers, flush=True)
+    # print("Training answers received:", answers, flush=True)
 
     if answers:
         cached = fetch_one_custom(
@@ -784,7 +784,7 @@ def get_training_exercises():
             },
         )
         run_in_background(prefetch_next_exercises, username)
-        print("Returned preloaded training exercises", flush=True)
+        # print("Returned preloaded training exercises", flush=True)
         return jsonify(ai_block)
 
     cached = fetch_one_custom(
@@ -802,7 +802,7 @@ def get_training_exercises():
     ai_block = generate_training_exercises(username)
     if not ai_block:
         return jsonify({"error": "Mistral error"}), 500
-    print("Returning new training exercises", flush=True)
+    # print("Returning new training exercises", flush=True)
     return jsonify(ai_block)
 
 

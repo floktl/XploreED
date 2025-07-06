@@ -11,7 +11,7 @@ HEADERS = {
 }
 
 def _extract_json(text: str):
-    print("[_extract_json] Raw input:", text, flush=True)
+    # print("[_extract_json] Raw input:", text, flush=True)
     try:
         return json.loads(text)
     except json.JSONDecodeError:
