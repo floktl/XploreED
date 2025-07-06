@@ -123,14 +123,13 @@ export default function AIReading() {
           <Card className="bg-red-100 text-red-800 text-center p-4">
             <p>🚨 500: Mistral API Error. Please try again later.</p>
           </Card>
-          <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Menu
-            </Button>
-          </div>
         </Container>
-        <Footer />
+        <Footer>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        </Footer>
       </div>
     );
   }
@@ -155,14 +154,13 @@ export default function AIReading() {
             <Button onClick={startExercise} variant="primary">Start</Button>
             {loading && <Spinner />}
           </Card>
-          <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Menu
-            </Button>
-          </div>
         </Container>
-        <Footer />
+        <Footer>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        </Footer>
       </div>
     );
   }
@@ -214,14 +212,13 @@ export default function AIReading() {
             </div>
           )}
         </Card>
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
-        </div>
       </Container>
-      <Footer />
+      <Footer>
+        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Menu
+        </Button>
+      </Footer>
     </div>
   );
 }
