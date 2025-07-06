@@ -373,6 +373,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
     exercise_map = {str(e.get("id")): e for e in all_exercises}
 
     results = []
+    reviewed: set[str] = set()
     for ex_id, user_ans in answers.items():
         ex = exercise_map.get(str(ex_id))
         if not ex:
@@ -411,7 +412,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             + [w for w, _ in extract_words(correct_ans)]
         )
         for vocab in words:
-            review_vocab_word(username, vocab, quality)
+            review_vocab_word(username, vocab, quality, seen=reviewed)
 
     # print("AI submission results (HJSON):\n", json.dumps(results, indent=2), flush=True)
 
