@@ -73,7 +73,7 @@ export default function AdminUserManagement() {
           </Link>
         </div>
         {error && <Alert type="danger">{error}</Alert>}
-        <Card className="overflow-x-auto">
+        <Card fit className="overflow-x-auto">
           <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
             <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
               <tr>
