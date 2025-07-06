@@ -280,18 +280,45 @@ def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | N
     return evaluation
 
 
-def generate_reading_exercise(style: str, level: int) -> dict:
-    """Create a short reading text with questions using Mistral."""
+def generate_reading_exercise(
+    style: str,
+    level: int,
+    vocab: list | None = None,
+    topic_memory: list | None = None,
+) -> dict:
+    """Create a short reading text with questions using Mistral.
+
+    The text should reuse known vocabulary and explicitly train the learner's
+    weak grammar topics provided via ``topic_memory``.
+    """
     example = READING_TEMPLATE.copy()
     cefr_level = CEFR_LEVELS[max(0, min(level, 10))]
     example["level"] = cefr_level
     example["style"] = style
+
+    extra = ""
+    if vocab:
+        words = ", ".join(v.get("word") for v in vocab[:10])
+        extra += f"Use these vocabulary words: {words}. "
+    if topic_memory:
+        topics = {
+            row.get("grammar") or row.get("topic")
+            for row in topic_memory
+            if row.get("grammar") or row.get("topic")
+        }
+        if topics:
+            topics_str = ", ".join(list(topics)[:5])
+            extra += (
+                f"Focus on these weak topics: {topics_str}. "
+                "Questions should explicitly train these weaknesses. "
+            )
 
     user_prompt = {
         "role": "user",
         "content": (
             "Create a short "
             f"{style} in German for level {cefr_level}. "
+            f"{extra}"
             "Return JSON with keys 'text', 'questions' (each with id, question, options, correctAnswer)."
         ),
     }
@@ -1039,7 +1066,19 @@ def ai_reading_exercise():
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
 
-    block = generate_reading_exercise(style, level)
+    vocab_rows = fetch_custom(
+        "SELECT vocab, translation FROM vocab_log WHERE username = ?",
+        (username,),
+    )
+    vocab_data = [
+        {"word": row["vocab"], "translation": row.get("translation")}
+        for row in vocab_rows
+    ] if vocab_rows else []
+
+    topic_rows = fetch_topic_memory(username)
+    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+
+    block = generate_reading_exercise(style, level, vocab_data, topic_memory)
     if not block or not block.get("text") or not block.get("questions"):
         return jsonify({"error": "Mistral error"}), 500
     for q in block.get("questions", []):
