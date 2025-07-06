@@ -31,11 +31,10 @@ export default function PlacementFeedback({ summary, onDone }) {
             </div>
           )}
         </Card>
-        <div className="text-center mt-6">
-          <Button variant="primary" type="button" onClick={onDone}>Continue</Button>
-        </div>
       </Container>
-      <Footer />
+      <Footer>
+        <Button variant="primary" type="button" onClick={onDone}>Continue</Button>
+      </Footer>
     </div>
   );
 }

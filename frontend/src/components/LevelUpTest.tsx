@@ -27,6 +27,7 @@ export default function LevelUpTest() {
   const [translation, setTranslation] = useState("");
   const [readingAns, setReadingAns] = useState<Record<string, string>>({});
   const [result, setResult] = useState<boolean | null>(null);
+  const [actions, setActions] = useState<React.ReactNode>(null);
   const navigate = useNavigate();
   const darkMode = useAppStore((s) => s.darkMode);
 
@@ -103,11 +104,17 @@ export default function LevelUpTest() {
               </>
             )}
           </Card>
-          <div className="mt-6 text-center">
-            <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
-          </div>
         </Container>
-        <Footer />
+        <Footer>
+          <Button
+            variant="primary"
+            size="sm"
+            className="rounded-full"
+            onClick={() => navigate("/menu")}
+          >
+            Back to Menu
+          </Button>
+        </Footer>
       </div>
     );
   }
@@ -124,9 +131,12 @@ export default function LevelUpTest() {
               setAiPassed(true);
               setStage(1);
             }}
+            setFooterActions={setActions}
           />
         </Container>
-        <Footer />
+        <Footer>
+          <div className="flex gap-2">{actions}</div>
+        </Footer>
       </div>
     );
   }
@@ -138,11 +148,26 @@ export default function LevelUpTest() {
           <Title>Sentence Ordering</Title>
           <Card className="space-y-4 p-4">
             <p className="font-mono">{data.scrambled.join(" ")}</p>
-            <Input value={orderAnswer} onChange={(e) => setOrderAnswer(e.target.value)} placeholder="Type the correct sentence" />
-            <Button variant="primary" onClick={() => setStage(2)}>Next</Button>
+            <Input
+              value={orderAnswer}
+              onChange={(e) => setOrderAnswer(e.target.value)}
+              placeholder="Type the correct sentence"
+            />
           </Card>
         </Container>
-        <Footer />
+        <Footer>
+          <div className="flex gap-2">
+            {actions}
+            <Button
+              variant="primary"
+              size="sm"
+              className="rounded-full"
+              onClick={() => setStage(2)}
+            >
+              Next
+            </Button>
+          </div>
+        </Footer>
       </div>
     );
   }
@@ -154,11 +179,26 @@ export default function LevelUpTest() {
           <Title>Translate</Title>
           <Card className="space-y-4 p-4">
             <p>{data.english}</p>
-            <Input value={translation} onChange={(e) => setTranslation(e.target.value)} placeholder="German translation" />
-            <Button variant="primary" onClick={() => setStage(3)}>Next</Button>
+            <Input
+              value={translation}
+              onChange={(e) => setTranslation(e.target.value)}
+              placeholder="German translation"
+            />
           </Card>
         </Container>
-        <Footer />
+        <Footer>
+          <div className="flex gap-2">
+            {actions}
+            <Button
+              variant="primary"
+              size="sm"
+              className="rounded-full"
+              onClick={() => setStage(3)}
+            >
+              Next
+            </Button>
+          </div>
+        </Footer>
       </div>
     );
   }
@@ -184,10 +224,21 @@ export default function LevelUpTest() {
               ))}
             </div>
           ))}
-          <Button variant="success" onClick={handleSubmit}>Submit Test</Button>
         </Card>
       </Container>
-      <Footer />
+      <Footer>
+        <div className="flex gap-2">
+          {actions}
+          <Button
+            variant="success"
+            size="sm"
+            className="rounded-full"
+            onClick={handleSubmit}
+          >
+            Submit Test
+          </Button>
+        </div>
+      </Footer>
     </div>
   );
 }

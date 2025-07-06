@@ -15,7 +15,15 @@ import diffWords from "../utils/diffWords";
 import AskAiModal from "./AskAiModal";
 import ReportExerciseModal from "./ReportExerciseModal";
 
-export default function AIExerciseBlock({ data, blockId = "ai", completed = false, onComplete, mode = "student", fetchExercisesFn = getAiExercises }) {
+export default function AIExerciseBlock({
+    data,
+    blockId = "ai",
+    completed = false,
+    onComplete,
+    mode = "student",
+    fetchExercisesFn = getAiExercises,
+    setFooterActions,
+}) {
     const [current, setCurrent] = useState(data || null);
     const [loadingInit, setLoadingInit] = useState(
         mode === "student" && (!data || !Array.isArray(data.exercises))
@@ -267,6 +275,78 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
 
     const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
 
+    // Update footer buttons based on exercise state
+    useEffect(() => {
+        if (!setFooterActions) return;
+
+        if (!submitted) {
+            setFooterActions(
+                <Button
+                    type="button"
+                    variant="success"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={handleSubmit}
+                >
+                    Submit Answers
+                </Button>
+            );
+            return () => setFooterActions(null);
+        }
+
+        if (!passed) {
+            if (submitting) {
+                setFooterActions(
+                    <div className="flex items-center gap-2">
+                        <Spinner />
+                        <span className="italic">AI thinking...</span>
+                    </div>
+                );
+            } else {
+                setFooterActions(
+                    <div className="flex gap-2">
+                        <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            className="rounded-full"
+                            onClick={handleArgue}
+                            disabled={arguing}
+                        >
+                            {arguing ? "Thinking..." : "Argue with AI"}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="rounded-full"
+                            onClick={handleNext}
+                            disabled={loading || arguing}
+                        >
+                            {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
+                        </Button>
+                    </div>
+                );
+            }
+            return () => setFooterActions(null);
+        }
+
+        setFooterActions(
+            <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="rounded-full"
+                onClick={() => handleNext(true)}
+                disabled={loading}
+            >
+                {loading ? "Loading..." : "More Exercises"}
+            </Button>
+        );
+
+        return () => setFooterActions(null);
+    }, [submitted, passed, submitting, loading, arguing, setFooterActions]);
+
     return (
         <>
             <Card className="space-y-4">
@@ -379,51 +459,6 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                             )}
                         </div>
                     ))}
-                    {!submitted && (
-                        <Button type="button" variant="success" onClick={handleSubmit}>
-                            Submit Answers
-                        </Button>
-                    )}
-                    {submitted && !passed && (
-                        submitting ? (
-                            <div className="mt-4 flex items-center gap-2">
-                                <Spinner />
-                                <span className="italic">AI thinking...</span>
-                            </div>
-                        ) : (
-                            <div className="mt-4 flex gap-2">
-                                <Button
-                                    type="button"
-                                    variant="danger"
-                                    onClick={handleArgue}
-                                    disabled={arguing}
-                                >
-                                    {arguing ? "Thinking..." : "Argue with AI"}
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={handleNext}
-                                    disabled={loading || arguing}
-                                >
-                                    {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
-                                </Button>
-                            </div>
-                        )
-                    )}
-                    {submitted && passed && (
-                        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-green-700">
-                            <span>All exercises correct!</span>
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={() => handleNext(true)}
-                                disabled={loading}
-                            >
-                                {loading ? "Loading..." : "More Exercises"}
-                            </Button>
-                        </div>
-                    )}
                 </div>
                 {showVocab && current.vocabHelp && current.vocabHelp.length > 0 && (
                     <div className="mt-4">

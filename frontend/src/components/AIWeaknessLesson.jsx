@@ -52,14 +52,13 @@ export default function AIWeaknessLesson() {
             <div dangerouslySetInnerHTML={{ __html: html }} />
           </Card>
         )}
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
-        </div>
       </Container>
-      <Footer />
+      <Footer>
+        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Menu
+        </Button>
+      </Footer>
     </div>
   );
 }

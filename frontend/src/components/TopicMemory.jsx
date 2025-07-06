@@ -189,13 +189,14 @@ export default function TopicMemory() {
                         <Trash2 className="w-4 h-4" />
                         Clear Memory
                     </Button>
-                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to Profile
-                    </Button>
                 </div>
             </Container>
-            <Footer />
+            <Footer>
+                <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Profile
+                </Button>
+            </Footer>
             {showClear && (
                 <Modal onClose={() => setShowClear(false)}>
                     <h2 className="text-lg font-bold mb-2">Delete Topic Memory</h2>
