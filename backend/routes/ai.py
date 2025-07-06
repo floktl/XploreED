@@ -125,9 +125,13 @@ def _create_ai_block(username: str) -> dict | None:
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
 
-    ai_block = generate_new_exercises(
-        vocab_data, topic_memory, example_block, level=level
-    )
+    try:
+        ai_block = generate_new_exercises(
+            vocab_data, topic_memory, example_block, level=level
+        )
+    except ValueError as e:
+        print("[_create_ai_block]", e, flush=True)
+        return None
     if not ai_block or not ai_block.get("exercises"):
         return None
 
@@ -451,9 +455,13 @@ def get_ai_exercises():
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
 
-    ai_block = generate_new_exercises(
-        vocab_data, topic_memory, example_block, level=level
-    )
+    try:
+        ai_block = generate_new_exercises(
+            vocab_data, topic_memory, example_block, level=level
+        )
+    except ValueError as e:
+        print("[ai-exercise]", e, flush=True)
+        return jsonify({"error": "Mistral error"}), 500
     if not ai_block or not ai_block.get("exercises"):
         return jsonify({"error": "Mistral error"}), 500
 
