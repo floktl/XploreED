@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Button from "./UI/Button";
@@ -14,6 +14,7 @@ export default function AIFeedback() {
   const username = useAppStore((state) => state.username);
   const isLoading = useAppStore((state) => state.isLoading);
   const isAdmin = useAppStore((state) => state.isAdmin);
+  const [actions, setActions] = useState(null);
 
   useEffect(() => {
     if (!isLoading && (!username || isAdmin)) {
@@ -33,15 +34,24 @@ export default function AIFeedback() {
         <AIExerciseBlock
           blockId="training"
           fetchExercisesFn={getTrainingExercises}
+          setFooterActions={setActions}
         />
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+      </Container>
+      <Footer>
+        <div className="flex gap-2">
+          {actions}
+          <Button
+            size="sm"
+            variant="ghost"
+            type="button"
+            onClick={() => navigate("/menu")}
+            className="gap-2 rounded-full"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to Menu
           </Button>
         </div>
-      </Container>
-      <Footer />
+      </Footer>
     </div>
   );
 }

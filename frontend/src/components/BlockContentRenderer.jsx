@@ -2,7 +2,7 @@
 import React from "react";
 import AIExerciseBlock from "./AIExerciseBlock";
 
-export default function BlockContentRenderer({ html, progress = {}, onToggle, mode = "student" }) {
+export default function BlockContentRenderer({ html, progress = {}, onToggle, mode = "student", setFooterActions }) {
   if (!html) {
     console.warn("⚠️ No HTML provided to BlockContentRenderer.");
     return <div className="text-sm text-gray-400 italic">No content</div>;
@@ -66,6 +66,7 @@ export default function BlockContentRenderer({ html, progress = {}, onToggle, mo
           completed={isCompleted}
           onComplete={onToggle ? (() => onToggle(blockId, true)) : undefined}
           mode={mode}
+          setFooterActions={setFooterActions}
         />
       );
     } else if (
