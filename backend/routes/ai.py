@@ -5,6 +5,7 @@ import json
 import random
 import datetime
 from pathlib import Path
+from difflib import SequenceMatcher
 from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
 from mock_data.script import (
     generate_new_exercises,
@@ -234,6 +235,47 @@ def evaluate_answers_with_ai(
     return None
 
 
+def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | None) -> dict | None:
+    """Ensure AI evaluation for gap-fill exercises matches provided options."""
+    if not evaluation or "results" not in evaluation:
+        return evaluation
+
+    id_map = {str(r.get("id")): r.get("correct_answer", "") for r in evaluation.get("results", [])}
+
+    for ex in exercises:
+        if ex.get("type") != "gap-fill":
+            continue
+        cid = str(ex.get("id"))
+        correct = id_map.get(cid, "")
+        options = ex.get("options") or []
+        if correct not in options and options:
+            norm_corr = str(correct).strip().lower()
+            best = options[0]
+            best_score = -1.0
+            for opt in options:
+                opt_norm = opt.lower()
+                score = SequenceMatcher(None, norm_corr, opt_norm).ratio()
+                if score > best_score:
+                    best = opt
+                    best_score = score
+                if opt_norm in norm_corr or norm_corr in opt_norm:
+                    best = opt
+                    break
+            id_map[cid] = best
+
+    evaluation["results"] = [{"id": k, "correct_answer": v} for k, v in id_map.items()]
+
+    pass_val = True
+    for ex in exercises:
+        cid = str(ex.get("id"))
+        ans = str(answers.get(cid, "")).strip().lower()
+        corr = str(id_map.get(cid, "")).strip().lower()
+        if ans != corr:
+            pass_val = False
+    evaluation["pass"] = pass_val
+    return evaluation
+
+
 def generate_reading_exercise(style: str, level: int) -> dict:
     """Create a short reading text with questions using Mistral."""
     example = READING_TEMPLATE.copy()
@@ -443,6 +485,7 @@ def submit_ai_exercise(block_id):
     exercises = exercise_block.get("exercises", [])
 
     evaluation = evaluate_answers_with_ai(exercises, answers)
+    evaluation = _adjust_gapfill_results(exercises, answers, evaluation)
     if not evaluation:
         return jsonify({"msg": "Evaluation failed"}), 500
 
@@ -525,6 +568,7 @@ def argue_ai_exercise(block_id):
     exercises = exercise_block.get("exercises", [])
 
     evaluation = evaluate_answers_with_ai(exercises, answers, mode="argue")
+    evaluation = _adjust_gapfill_results(exercises, answers, evaluation)
     if not evaluation:
         return jsonify({"msg": "Evaluation failed"}), 500
 
@@ -590,6 +634,7 @@ def generate_ai_feedback():
     if exercise_block:
         all_exercises = exercise_block.get("exercises", [])
         evaluation = evaluate_answers_with_ai(all_exercises, answers)
+        evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
         id_map = {
             str(r.get("id")): r.get("correct_answer")
             for r in evaluation.get("results", [])
