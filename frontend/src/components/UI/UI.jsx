@@ -42,15 +42,17 @@ export const Container = ({ children, className }) => {
   return (
     <>
       <Header />
-      <div className="pt-20 flex flex-col items-center px-4 pb-8">
-        <div
-          className={clsx(
-            "w-full max-w-3xl p-6 rounded-xl shadow-lg",
-            darkMode ? "bg-gray-900/90" : "bg-white/90",
-            className
-          )}
-        >
-          {children}
+      <div className="pt-20 pb-6 px-4 h-[calc(100vh-7rem)] flex flex-col">
+        <div className="flex-1 overflow-auto flex flex-col items-center">
+          <div
+            className={clsx(
+              "w-full max-w-4xl p-6 rounded-xl shadow-lg",
+              darkMode ? "bg-gray-900/90" : "bg-white/90",
+              className
+            )}
+          >
+            {children}
+          </div>
         </div>
       </div>
     </>

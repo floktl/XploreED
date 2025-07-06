@@ -103,11 +103,10 @@ export default function LevelUpTest() {
               </>
             )}
           </Card>
-          <div className="mt-6 text-center">
-            <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
-          </div>
         </Container>
-        <Footer />
+        <Footer>
+          <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
+        </Footer>
       </div>
     );
   }

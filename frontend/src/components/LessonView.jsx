@@ -173,14 +173,13 @@ export default function LessonView() {
           </div>
         )}
 
-        <div className="text-center mt-8">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Lessons
-          </Button>
-        </div>
       </Container>
-      <Footer />
+      <Footer>
+        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Lessons
+        </Button>
+      </Footer>
     </div>
   );
 }
