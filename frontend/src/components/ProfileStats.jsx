@@ -47,7 +47,14 @@ export default function ProfileStats() {
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container>
+      <Container
+        bottom={
+          <Button onClick={() => navigate("/admin-panel")} variant="link" className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin Panel
+          </Button>
+        }
+      >
         <Title>📊 Stats for: {username || "—"}</Title>
 
         {error && <Alert type="error">{error}</Alert>}
@@ -85,12 +92,6 @@ export default function ProfileStats() {
           </Card>
         )}
 
-        <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/admin-panel")} variant="link" className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Admin Panel
-          </Button>
-        </div>
       </Container>
       <Footer />
     </div>
