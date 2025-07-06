@@ -60,7 +60,7 @@ def detect_grammar_case(text: str) -> str:
     return "unknown"
 
 def detect_language_topics(text: str) -> list[str]:
-    print("[detect_language_topics] 🔍 Input:", text, flush=True)
+    # print("[detect_language_topics] 🔍 Input:", text, flush=True)
 
     user_prompt = {
         "role": "user",
@@ -85,19 +85,19 @@ Return only a JSON list of strings such as:
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("[detect_language_topics] ✅ Mistral response received.", flush=True)
+        # print("[detect_language_topics] ✅ Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("[detect_language_topics] 📦 Raw Mistral output:", content, flush=True)
+            # print("[detect_language_topics] 📦 Raw Mistral output:", content, flush=True)
             topics = _extract_json(content)
             if isinstance(topics, list):
                 cleaned = [t.strip().lower() for t in topics if isinstance(t, str)]
-                print("[detect_language_topics] ✅ Parsed grammar topics:", cleaned, flush=True)
+                # print("[detect_language_topics] ✅ Parsed grammar topics:", cleaned, flush=True)
                 return sorted(set(cleaned))
     except Exception as e:
         print("[detect_language_topics] ⚠️ Mistral topic detection failed:", e, flush=True)
 
-    print("[detect_language_topics] 🔁 Falling back to rule-based detection...", flush=True)
+    # print("[detect_language_topics] 🔁 Falling back to rule-based detection...", flush=True)
     return _rule_based_detection(text)
 
 def _rule_based_detection(text: str) -> list[str]:
