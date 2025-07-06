@@ -224,7 +224,7 @@ Here is an example structure for reference (do not reuse content!):
 Here is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
 {json.dumps(vocabular, indent=2)}
 
-Here is the topic memory (prioritize these themes or test new related ones):
+Here is the topic memory (prioritize these themes or test new ones, based on the students level):
 {json.dumps(filtered_topic_memory, indent=2)}
 Create new sentences with new words and topics.
 Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
