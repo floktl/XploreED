@@ -29,6 +29,7 @@ export default function LessonView() {
   const navigate = useNavigate();
   const isAdmin = useAppStore((state) => state.isAdmin);
   const [numBlocks, setNumBlocks] = useState(0);
+  const [actions, setActions] = useState(null);
 
   useEffect(() => {
     if (isAdmin) {
@@ -151,6 +152,7 @@ export default function LessonView() {
                   html={entry.content}
                   progress={progress}
                   mode="student"
+                  setFooterActions={setActions}
                   onToggle={async (blockId, completed) => {
                     try {
                       await updateLessonBlockProgress(lessonId, blockId, completed);
@@ -167,7 +169,10 @@ export default function LessonView() {
                 {entry.ai_enabled && (
                   <div className="mt-4">
                     {showAi ? (
-                      <AIExerciseBlock blockId={`lesson-${lessonId}-ai`} />
+                      <AIExerciseBlock
+                        blockId={`lesson-${lessonId}-ai`}
+                        setFooterActions={setActions}
+                      />
                     ) : (
                       <Button variant="secondary" onClick={() => setShowAi(true)}>
                         Start AI Exercises
@@ -182,10 +187,19 @@ export default function LessonView() {
 
       </Container>
       <Footer>
-        <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Lessons
-        </Button>
+        <div className="flex gap-2">
+          {actions}
+          <Button
+            size="sm"
+            variant="ghost"
+            type="button"
+            onClick={() => navigate("/lessons")}
+            className="gap-2 rounded-full"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Lessons
+          </Button>
+        </div>
       </Footer>
     </div>
   );
