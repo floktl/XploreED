@@ -95,6 +95,78 @@ export default function AIExerciseBlock({
         }
     }, [submitted, passed, isComplete, onComplete, mode]);
 
+    // Update footer buttons based on exercise state
+    useEffect(() => {
+        if (!setFooterActions) return;
+
+        if (!submitted) {
+            setFooterActions(
+                <Button
+                    type="button"
+                    variant="success"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={handleSubmit}
+                >
+                    Submit Answers
+                </Button>
+            );
+            return () => setFooterActions(null);
+        }
+
+        if (!passed) {
+            if (submitting) {
+                setFooterActions(
+                    <div className="flex items-center gap-2">
+                        <Spinner />
+                        <span className="italic">AI thinking...</span>
+                    </div>
+                );
+            } else {
+                setFooterActions(
+                    <div className="flex gap-2">
+                        <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            className="rounded-full"
+                            onClick={handleArgue}
+                            disabled={arguing}
+                        >
+                            {arguing ? "Thinking..." : "Argue with AI"}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="rounded-full"
+                            onClick={handleNext}
+                            disabled={loading || arguing}
+                        >
+                            {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
+                        </Button>
+                    </div>
+                );
+            }
+            return () => setFooterActions(null);
+        }
+
+        setFooterActions(
+            <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="rounded-full"
+                onClick={() => handleNext(true)}
+                disabled={loading}
+            >
+                {loading ? "Loading..." : "More Exercises"}
+            </Button>
+        );
+
+        return () => setFooterActions(null);
+    }, [submitted, passed, submitting, loading, arguing, setFooterActions]);
+
     if (mode !== "student") {
         return (
             <Card className="text-center py-4">
@@ -274,78 +346,6 @@ export default function AIExerciseBlock({
     };
 
     const showVocab = stage > 1 && Array.isArray(current.vocabHelp);
-
-    // Update footer buttons based on exercise state
-    useEffect(() => {
-        if (!setFooterActions) return;
-
-        if (!submitted) {
-            setFooterActions(
-                <Button
-                    type="button"
-                    variant="success"
-                    size="sm"
-                    className="rounded-full"
-                    onClick={handleSubmit}
-                >
-                    Submit Answers
-                </Button>
-            );
-            return () => setFooterActions(null);
-        }
-
-        if (!passed) {
-            if (submitting) {
-                setFooterActions(
-                    <div className="flex items-center gap-2">
-                        <Spinner />
-                        <span className="italic">AI thinking...</span>
-                    </div>
-                );
-            } else {
-                setFooterActions(
-                    <div className="flex gap-2">
-                        <Button
-                            type="button"
-                            variant="danger"
-                            size="sm"
-                            className="rounded-full"
-                            onClick={handleArgue}
-                            disabled={arguing}
-                        >
-                            {arguing ? "Thinking..." : "Argue with AI"}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="rounded-full"
-                            onClick={handleNext}
-                            disabled={loading || arguing}
-                        >
-                            {loading ? "Loading..." : arguing ? "Thinking..." : "Continue"}
-                        </Button>
-                    </div>
-                );
-            }
-            return () => setFooterActions(null);
-        }
-
-        setFooterActions(
-            <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="rounded-full"
-                onClick={() => handleNext(true)}
-                disabled={loading}
-            >
-                {loading ? "Loading..." : "More Exercises"}
-            </Button>
-        );
-
-        return () => setFooterActions(null);
-    }, [submitted, passed, submitting, loading, arguing, setFooterActions]);
 
     return (
         <>
