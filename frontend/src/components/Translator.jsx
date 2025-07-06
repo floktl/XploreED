@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
 import { Input, Title, Container } from "./UI/UI";
+import { Rocket, ArrowLeft, PenSquare } from "lucide-react";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Spinner from "./UI/Spinner";
@@ -61,7 +62,7 @@ export default function Translator() {
       setFeedback(data.feedback || "");
     } catch (err) {
       console.error("[CLIENT] Translation request failed:", err);
-      setError("❌ Something went wrong. Please try again.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,12 @@ export default function Translator() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📝 {username ? `${username}'s` : "Your"} Translation Practice</Title>
+        <Title>
+          <div className="flex items-center gap-2">
+            <PenSquare className="w-6 h-6" />
+            <span>{username ? `${username}'s` : "Your"} Translation Practice</span>
+          </div>
+        </Title>
 
         <form
           className="space-y-4"
@@ -104,11 +110,13 @@ export default function Translator() {
           {loading && <Spinner />}
 
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <Button variant="primary" className="w-full" onClick={handleTranslate} disabled={loading}>
-              🚀 {loading ? "Translating..." : "Get Feedback"}
+            <Button variant="primary" className="w-full gap-2" onClick={handleTranslate} disabled={loading}>
+              <Rocket className="w-4 h-4" />
+              {loading ? "Translating..." : "Get Feedback"}
             </Button>
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
           </Button>
           </div>
         </form>

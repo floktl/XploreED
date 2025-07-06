@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BookOpen, ArrowLeft } from "lucide-react";
 import { Container, Title, Input } from "./UI/UI";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
@@ -113,12 +114,20 @@ export default function AIReading() {
     return (
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
         <Container>
-          <Title>📖 AI Reading Exercise</Title>
+          <Title>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-6 h-6" />
+              <span>AI Reading Exercise</span>
+            </div>
+          </Title>
           <Card className="bg-red-100 text-red-800 text-center p-4">
             <p>🚨 500: Mistral API Error. Please try again later.</p>
           </Card>
           <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
+            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Menu
+            </Button>
           </div>
         </Container>
         <Footer />
@@ -130,7 +139,12 @@ export default function AIReading() {
     return (
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
         <Container>
-          <Title>📖 AI Reading Exercise</Title>
+          <Title>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-6 h-6" />
+              <span>AI Reading Exercise</span>
+            </div>
+          </Title>
           <Card className="space-y-4">
             <label className="block font-medium">Choose a text type:</label>
             <select value={style} onChange={(e) => setStyle(e.target.value)} className="border p-2 rounded-md">
@@ -142,7 +156,10 @@ export default function AIReading() {
             {loading && <Spinner />}
           </Card>
           <div className="mt-6 text-center">
-            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
+            <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Menu
+            </Button>
           </div>
         </Container>
         <Footer />
@@ -153,7 +170,12 @@ export default function AIReading() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
       <Container>
-        <Title>📖 Reading Exercise</Title>
+        <Title>
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-6 h-6" />
+            <span>Reading Exercise</span>
+          </div>
+        </Title>
         <Card className="space-y-4">
           <p>{data.text}</p>
           {data.questions.map((q) => (
@@ -193,7 +215,10 @@ export default function AIReading() {
           )}
         </Card>
         <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>🔙 Back to Menu</Button>
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
         </div>
       </Container>
       <Footer />

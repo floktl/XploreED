@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
+import { Target, ArrowLeft } from "lucide-react";
 import useAppStore from "../store/useAppStore";
 
 export default function VocabTrainer() {
@@ -42,7 +43,12 @@ export default function VocabTrainer() {
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
     <Container>
-        <Title>🎯 Train Vocabulary</Title>
+        <Title>
+          <div className="flex items-center gap-2">
+            <Target className="w-6 h-6" />
+            <span>Train Vocabulary</span>
+          </div>
+        </Title>
         {loading ? (
           <Alert type="info">Loading...</Alert>
         ) : !card ? (
@@ -72,7 +78,10 @@ export default function VocabTrainer() {
           </Card>
         )}
         <div className="mt-6 text-center">
-          <Button variant="link" onClick={() => navigate("/vocabulary")}>⬅️ Back to Vocabulary</Button>
+          <Button variant="link" onClick={() => navigate("/vocabulary")} className="gap-1">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Vocabulary
+          </Button>
         </div>
       </Container>
       <Footer />
