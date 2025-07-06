@@ -313,6 +313,10 @@ def save_vocab(
         except Exception:
             english_word = "(error)"
 
+    if not analysis and english_word.lower() == german_word.lower():
+        # Likely an English word accidentally submitted as German
+        return
+
     if vocab_exists(username, normalized):
         return
 
