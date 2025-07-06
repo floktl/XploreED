@@ -87,8 +87,8 @@ export default function Vocabulary() {
                         <span>No vocabulary saved yet. Try completing a few translations or levels!</span>
                     </Alert>
                 ) : (
-                    <Card className="p-0">
-                        <div className="w-full overflow-x-auto rounded-lg">
+                    <Card fit className="p-0 overflow-x-auto">
+                        <div className="w-full rounded-lg">
                             <table className={`min-w-full border-separate border-spacing-0 ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
                                 <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
                                     <tr>
