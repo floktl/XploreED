@@ -23,6 +23,7 @@ import LessonEdit from "./components/LessonEdit";
 import AIFeedback from "./components/AIFeedback";
 import AIFeedbackView from "./components/AIFeedbackView";
 import TopicMemory from "./components/TopicMemory";
+import GrammarMap from "./components/GrammarMap";
 import AIWeaknessLesson from "./components/AIWeaknessLesson";
 import AIReading from "./components/AIReading";
 import LevelUpTest from "./components/LevelUpTest";
@@ -71,6 +72,7 @@ const router = createBrowserRouter(
     { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
     { path: "/vocabulary", element: <Vocabulary />, errorElement: <ErrorPage /> },
     { path: "/topic-memory", element: <TopicMemory />, errorElement: <ErrorPage /> },
+    { path: "/grammar-map", element: <GrammarMap />, errorElement: <ErrorPage /> },
     { path: "/vocab-trainer", element: <VocabTrainer />, errorElement: <ErrorPage /> },
     { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
     { path: "/admin-login", element: <AdminLogin />, errorElement: <ErrorPage /> },
