@@ -145,11 +145,12 @@ def extract_words(text: str) -> list[tuple[str, Optional[str]]]:
         tok = tokens[i]
         lower = tok.lower()
         if lower in ARTICLES and i + 1 < len(tokens):
+            # Attach the article to the following token regardless of
+            # capitalization. This helps when users do not capitalize nouns.
             next_tok = tokens[i + 1]
-            if next_tok and next_tok[0].isupper():
-                result.append((next_tok, lower))
-                i += 2
-                continue
+            result.append((next_tok, lower))
+            i += 2
+            continue
         result.append((tok, None))
         i += 1
     return result
@@ -232,36 +233,33 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
         base = _singularize(raw.capitalize())
         return base, "noun", article_guess
 
-    if candidate.endswith(("en", "st", "t", "e")):
+    # Detect common noun endings even when the word is not capitalized.
+    noun_suffixes = (
+        "ung",
+        "keit",
+        "heit",
+        "schaft",
+        "tät",
+        "tion",
+        "ik",
+        "chen",
+        "lein",
+        "ment",
+        "tum",
+        "ma",
+        "um",
+    )
+    if candidate.endswith(noun_suffixes):
+        base = _singularize(raw.capitalize())
+        return base, "noun", _guess_article(raw)
+
+    if candidate.endswith(("en", "st", "t")):
         return _normalize_verb(candidate), "verb", None
 
     if candidate.endswith(("ig", "lich", "isch", "bar")):
         return _normalize_adjective(candidate), "adjective", None
 
     return candidate, "other", None
-
-
-def _normalize_verb(word: str) -> str:
-    """Very small heuristic to convert a verb to its infinitive."""
-    if word.endswith("en"):
-        return word
-    if word.endswith("st"):
-        return word[:-2] + "en"
-    if word.endswith("t"):
-        return word[:-1] + "en"
-    if word.endswith("e"):
-        return word[:-1] + "en"
-    return word
-
-
-def _guess_article(word: str) -> str:
-    """Guess the article for a noun using simple endings."""
-    lower = word.lower()
-    if lower.endswith(("ung", "keit", "heit", "schaft", "tät", "tion", "ik")):
-        return "die"
-    if lower.endswith(("chen", "lein", "ment", "tum", "ma", "um")):
-        return "das"
-    return "der"
 
 
 def vocab_exists(username: str, german_word: str) -> bool:
@@ -301,6 +299,11 @@ def save_vocab(
         article = analysis.get("article") or article
         english_word = analysis.get("translation", "")
         details = analysis.get("info")
+
+        if word_type == "noun":
+            normalized = _singularize(normalized.capitalize())
+        else:
+            normalized = normalized.lower()
     else:
         normalized, word_type, art = normalize_word(german_word, article)
         if word_type == "noun":
