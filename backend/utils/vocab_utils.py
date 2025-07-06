@@ -155,14 +155,24 @@ def vocab_exists(username: str, german_word: str) -> bool:
         return cursor.fetchone() is not None
 
 
+ENGLISH_ARTICLES = {
+    "the": "der",
+    "a": "ein",
+    "an": "ein",
+}
+
+
 def save_vocab(
     username: str,
     german_word: str,
     context: Optional[str] = None,
     exercise: Optional[str] = None,
     article: Optional[str] = None,
-) -> None:
-    """Store a new vocabulary word for spaced repetition."""
+) -> Optional[str]:
+    """Store a new vocabulary word for spaced repetition.
+
+    Returns the canonical form of the word that was stored or found. Returns
+    ``None`` if nothing was saved (e.g. punctuation)."""
     print(
         Fore.CYAN
         + f"[save_vocab] User: {username}, Word: {german_word}, Context: {context}, Exercise: {exercise}, Article: {article}"
@@ -172,34 +182,39 @@ def save_vocab(
 
     if german_word in ["?", "!", ",", "."]:
         print(Fore.YELLOW + "[save_vocab] Skipping punctuation." + Style.RESET_ALL, flush=True)
-        return
+        return None
 
-    # Early normalization for existence check
-    norm_check, *_ = normalize_word(german_word, article)
-    if vocab_exists(username, norm_check):
-        print(Fore.YELLOW + "[save_vocab] Word already exists, skipping." + Style.RESET_ALL, flush=True)
-        return
-
-    # AI analysis only needed if word is new
-    analysis = analyze_word_ai(german_word)
-    if analysis:
-        print(Fore.CYAN + f"[save_vocab] AI analysis: {analysis}" + Style.RESET_ALL, flush=True)
-        normalized = analysis.get("base_form", german_word)
-        word_type = analysis.get("type", "other")
-        article = analysis.get("article") or article
-        english_word = analysis.get("translation", "")
-        details = analysis.get("info")
-
-        if word_type == "noun":
-            normalized = _singularize(normalized.capitalize())
-        else:
-            normalized = normalized.lower()
-    else:
-        normalized, word_type, _ = normalize_word(german_word, article)
-        english_word = ""
+    lower_word = german_word.lower()
+    if lower_word in ENGLISH_ARTICLES:
+        normalized = ENGLISH_ARTICLES[lower_word]
+        word_type = "article"
+        english_word = lower_word
         details = None
+    else:
+        # Early normalization for existence check
+        norm_check, *_ = normalize_word(german_word, article)
+        if vocab_exists(username, norm_check):
+            print(Fore.YELLOW + "[save_vocab] Word already exists, skipping." + Style.RESET_ALL, flush=True)
+            return norm_check
 
+        # AI analysis only needed if word is new
+        analysis = analyze_word_ai(german_word)
+        if analysis:
+            print(Fore.CYAN + f"[save_vocab] AI analysis: {analysis}" + Style.RESET_ALL, flush=True)
+            normalized = analysis.get("base_form", german_word)
+            word_type = analysis.get("type", "other")
+            article = analysis.get("article") or article
+            english_word = analysis.get("translation", "")
+            details = analysis.get("info")
 
+            if word_type == "noun":
+                normalized = _singularize(normalized.capitalize())
+            else:
+                normalized = normalized.lower()
+        else:
+            normalized, word_type, _ = normalize_word(german_word, article)
+            english_word = ""
+            details = None
 
     # Check again after potential AI normalization
     if vocab_exists(username, normalized):
@@ -209,7 +224,7 @@ def save_vocab(
             + Style.RESET_ALL,
             flush=True,
         )
-        return
+        return normalized
 
     now = datetime.now().isoformat()
     with get_connection() as conn:
@@ -235,6 +250,8 @@ def save_vocab(
             + Style.RESET_ALL,
             flush=True,
         )
+
+    return normalized
 
 
 def translate_to_german(english_sentence: str, username: Optional[str] = None) -> str:
@@ -276,13 +293,24 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
     return "❌ API failure"
 
 
-def review_vocab_word(username: str, word: str, quality: int) -> None:
+def review_vocab_word(
+    username: str,
+    word: str,
+    quality: int,
+    seen: Optional[set[str]] = None,
+) -> None:
     """Update spaced repetition data for a vocab word using SM2."""
     if not word or not word.isalpha():
         print(f"⚠️ Skipped invalid word: '{word}'", flush=True)
         return
 
     normalized, *_ = normalize_word(word)
+    if seen is not None:
+        if normalized in seen:
+            print(f"🔁 Skipping already reviewed word '{normalized}'", flush=True)
+            return
+        seen.add(normalized)
+
     print(f"\n🔁 Reviewing word '{normalized}' for user '{username}' with quality={quality}", flush=True)
 
     row = fetch_one_custom(
@@ -292,10 +320,21 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
 
     if not row:
         print(f"📘 No prior record found for '{normalized}'. Initializing new entry...", flush=True)
-        save_vocab(username, word, exercise="ai")
-        ef = 2.5
-        reps = 0
-        interval = 1
+        saved = save_vocab(username, word, exercise="ai")
+        if saved:
+            normalized = saved
+        row = fetch_one_custom(
+            "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
+            (username, normalized),
+        )
+        if row:
+            ef = row.get("ef", 2.5)
+            reps = row.get("repetitions", 0)
+            interval = row.get("interval_days", 1)
+        else:
+            ef = 2.5
+            reps = 0
+            interval = 1
     else:
         ef = row.get("ef", 2.5)
         reps = row.get("repetitions", 0)
