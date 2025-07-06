@@ -14,6 +14,7 @@ from mock_data.script import (
 )
 from utils.grammar_utils import detect_language_topics
 from utils.translation_utils import _update_single_topic, update_topic_memory_reading
+from utils.level_utils import check_auto_level_up
 from utils.helper import run_in_background
 from flask import request, Response
 from elevenlabs.client import ElevenLabs
@@ -570,6 +571,7 @@ def submit_ai_exercise(block_id):
                 answers,
                 {"exercises": exercises},
             )
+            check_auto_level_up(username)
             insert_row(
                 "exercise_submissions",
                 {
@@ -1135,6 +1137,7 @@ def submit_reading_exercise():
             for feat in features:
                 quality = 5 if is_correct else 2
                 _update_single_topic(username, feat, "reading", q.get("question",""), quality)
+        check_auto_level_up(username)
 
     run_in_background(_background_save)
 
