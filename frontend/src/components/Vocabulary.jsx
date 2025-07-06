@@ -65,9 +65,7 @@ export default function Vocabulary() {
     };
 
     return (
-        <div
-            className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}
-        >
+        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
                 <Title>
                     <div className="flex items-center gap-2">
@@ -89,60 +87,31 @@ export default function Vocabulary() {
                         <span>No vocabulary saved yet. Try completing a few translations or levels!</span>
                     </Alert>
                 ) : (
-                    <Card className="overflow-x-auto">
-                        <table
-                            className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"
-                                }`}
-                        >
-                            <thead
-                                className={
-                                    darkMode
-                                        ? "bg-gray-700 text-gray-200"
-                                        : "bg-blue-50 text-blue-700"
-                                }
-                            >
-                                <tr>
-                                    <th className="px-4 py-2 text-left">German Word</th>
-                                    <th className="px-4 py-2 text-left">Article</th>
-                                    <th className="px-4 py-2 text-left">English Translation</th>
-                                    <th className="px-4 py-2 text-left">Type</th>
-                                    <th className="px-4 py-2 text-left">Due</th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                className={
-                                    darkMode
-                                        ? "bg-gray-900 divide-gray-700"
-                                        : "bg-white divide-gray-200"
-                                }
-                            >
-                                {vocab.map((v, i) => (
-                                    <tr
-                                        key={i}
-                                        className={
-                                            darkMode
-                                                ? "hover:bg-gray-700 cursor-pointer"
-                                                : "hover:bg-gray-50 cursor-pointer"
-                                        }
-                                        onClick={() => setSelected(v)}
-                                    >
-                                        <td className="px-4 py-2 font-medium">{v.vocab}</td>
-                                        <td className="px-4 py-2">{v.article || ""}</td>
-                                        <td
-                                            className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}
-                                        >
-                                            {v.translation}
-                                        </td>
-                                        <td className="px-4 py-2 capitalize">{v.word_type || ""}</td>
-                                        <td className="px-4 py-2">
-                                            {v.next_review
-                                                ? new Date(v.next_review).toLocaleDateString()
-                                                : ""}
-                                        </td>
+                    <Card className="p-0">
+                        <div className="w-full overflow-x-auto rounded-lg">
+                            <table className={`min-w-full border-separate border-spacing-0 ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+                                <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
+                                    <tr>
+                                        <th className="sticky left-0 z-10 bg-inherit px-4 py-2 text-left">German Word</th>
+                                        <th className="px-4 py-2 text-left">Article</th>
+                                        <th className="px-4 py-2 text-left">English Translation</th>
+                                        <th className="px-4 py-2 text-left">Type</th>
+                                        <th className="px-4 py-2 text-left">Due</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
+                                    {vocab.map((v, i) => (
+                                        <tr key={i} className={darkMode ? "hover:bg-gray-700 cursor-pointer" : "hover:bg-gray-50 cursor-pointer"} onClick={() => setSelected(v)}>
+                                            <td className="sticky left-0 z-10 bg-inherit px-4 py-2 font-medium">{v.vocab}</td>
+                                            <td className="px-4 py-2">{v.article || ""}</td>
+                                            <td className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>{v.translation}</td>
+                                            <td className="px-4 py-2 capitalize">{v.word_type || ""}</td>
+                                            <td className="px-4 py-2">{v.next_review ? new Date(v.next_review).toLocaleDateString() : ""}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </Card>
                 )}
 
@@ -153,57 +122,28 @@ export default function Vocabulary() {
                     </Button>
                 </div>
             </Container>
+
             <Footer />
+
             {selected && (
                 <Modal onClose={() => setSelected(null)}>
                     <h2 className="text-xl font-semibold mb-4">
                         {selected.article ? `${selected.article} ${selected.vocab}` : selected.vocab}
                     </h2>
-                    <p className="mb-2">
-                        <strong>Translation:</strong> {selected.translation}
-                    </p>
-                    {selected.details && (
-                        <p className="mb-2">
-                            <strong>Info:</strong> {selected.details}
-                        </p>
-                    )}
-                    {selected.word_type && (
-                        <p className="mb-2 capitalize">
-                            <strong>Type:</strong> {selected.word_type}
-                        </p>
-                    )}
-                    {selected.created_at && (
-                        <p className="mb-2">
-                            <strong>Learned:</strong>{" "}
-                            {new Date(selected.created_at).toLocaleString()}
-                        </p>
-                    )}
-                    {selected.next_review && (
-                        <p className="mb-2">
-                            <strong>Next review:</strong>{" "}
-                            {new Date(selected.next_review).toLocaleDateString()}
-                        </p>
-                    )}
-                    {selected.context && (
-                        <p className="mb-2">
-                            <strong>Context:</strong> {selected.context}
-                        </p>
-                    )}
-                    {selected.exercise && (
-                        <p className="mb-2">
-                            <strong>Exercise:</strong> {selected.exercise}
-                        </p>
-                    )}
+                    <p className="mb-2"><strong>Translation:</strong> {selected.translation}</p>
+                    {selected.details && (<p className="mb-2"><strong>Info:</strong> {selected.details}</p>)}
+                    {selected.word_type && (<p className="mb-2 capitalize"><strong>Type:</strong> {selected.word_type}</p>)}
+                    {selected.created_at && (<p className="mb-2"><strong>Learned:</strong> {new Date(selected.created_at).toLocaleString()}</p>)}
+                    {selected.next_review && (<p className="mb-2"><strong>Next review:</strong> {new Date(selected.next_review).toLocaleDateString()}</p>)}
+                    {selected.context && (<p className="mb-2"><strong>Context:</strong> {selected.context}</p>)}
+                    {selected.exercise && (<p className="mb-2"><strong>Exercise:</strong> {selected.exercise}</p>)}
                     <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="danger" onClick={handleForget}>
-                            Forget
-                        </Button>
-                        <Button variant="secondary" onClick={() => setShowReport(true)}>
-                            Report
-                        </Button>
+                        <Button variant="danger" onClick={handleForget}>Forget</Button>
+                        <Button variant="secondary" onClick={() => setShowReport(true)}>Report</Button>
                     </div>
                 </Modal>
             )}
+
             {selected && showReport && (
                 <ReportVocabModal
                     vocab={selected}
