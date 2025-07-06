@@ -67,7 +67,11 @@ export default function AIFeedbackView() {
 
   return (
     <div className="min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Container>
+      <Container
+        bottom={
+          <Button variant="link" type="button" onClick={() => navigate("/ai-feedback")}>⬅ Back to AI Feedback</Button>
+        }
+      >
         <Title>🤖 AI Feedback {feedbackId}</Title>
         {error && <p className="text-red-500">{error}</p>}
         {!feedback ? (
@@ -174,15 +178,6 @@ export default function AIFeedbackView() {
             )}
           </Card>
         )}
-        <div className="text-center mt-8">
-          <Button
-            variant="link"
-            type="button"
-            onClick={() => navigate("/ai-feedback")}
-          >
-            ⬅ Back to AI Feedback
-          </Button>
-        </div>
       </Container>
     </div>
   );

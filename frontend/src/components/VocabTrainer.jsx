@@ -42,7 +42,14 @@ export default function VocabTrainer() {
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-    <Container>
+      <Container
+        bottom={
+          <Button variant="link" onClick={() => navigate("/vocabulary")} className="gap-1">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Vocabulary
+          </Button>
+        }
+      >
         <Title>
           <div className="flex items-center gap-2">
             <Target className="w-6 h-6" />
@@ -77,12 +84,6 @@ export default function VocabTrainer() {
             )}
           </Card>
         )}
-        <div className="mt-6 text-center">
-          <Button variant="link" onClick={() => navigate("/vocabulary")} className="gap-1">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Vocabulary
-          </Button>
-        </div>
       </Container>
       <Footer />
     </div>

@@ -88,7 +88,11 @@ export default function LevelUpTest() {
   if (result !== null) {
     return (
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-        <Container>
+        <Container
+          bottom={
+            <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
+          }
+        >
           <Title>Progress Test Result</Title>
           <Card className="text-center py-6 flex items-center justify-center gap-2">
             {result ? (
@@ -103,9 +107,6 @@ export default function LevelUpTest() {
               </>
             )}
           </Card>
-          <div className="mt-6 text-center">
-            <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
-          </div>
         </Container>
         <Footer />
       </div>
