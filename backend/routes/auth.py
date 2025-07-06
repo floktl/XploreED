@@ -1,6 +1,7 @@
 """User authentication routes."""
 
 from utils.imports.imports import *
+from utils.level_utils import initialize_topic_memory_for_level
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
@@ -91,6 +92,7 @@ def signup():
         success = insert_row("users", {"username": username, "password": hashed_pw})
         if not success:
             return jsonify({"error": "User could not be created"}), 500
+        initialize_topic_memory_for_level(username, 0)
     except Exception as e:
         print("❌ DB Exception:", e, flush=True)
         return jsonify({"error": f"Database error: {str(e)}"}), 500
