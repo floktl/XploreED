@@ -74,7 +74,7 @@ def generate_new_exercises(
     example_exercise_block=None,
     level=None,
 ):
-    print('Generate new exercises!!!!!!!!', flush=True)
+    # print('Generate new exercises!!!!!!!!', flush=True)
 
     try:
         upcoming = sorted(
@@ -115,7 +115,7 @@ def generate_new_exercises(
 
     example_exercise_block["level"] = cefr_level
 
-    print("🧠 Sending request to Mistral AI...", flush=True)
+    # print("🧠 Sending request to Mistral AI...", flush=True)
 
     user_prompt = {
         "role": "user",
@@ -179,7 +179,7 @@ Create a new exercise block using the **same structure** and **same field names*
         content = response.json()["choices"][0]["message"]["content"]
         parsed = _extract_json(content)
         if parsed is not None:
-            print("✅ Successfully parsed exercise block from AI./n/n", flush=True)
+            # print("✅ Successfully parsed exercise block from AI./n/n", flush=True)
             parsed = _ensure_schema(parsed)
             parsed["level"] = cefr_level
             # print(json.dumps(parsed, indent=2), flush=True)

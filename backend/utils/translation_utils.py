@@ -31,8 +31,8 @@ HEADERS = {
 }
 
 def _extract_json(text: str):
-    print("[_extract_json] Extracting JSON from text...", flush=True)
-    print("[_extract_json] Raw text:", text, flush=True)
+    # print("[_extract_json] Extracting JSON from text...", flush=True)
+    # print("[_extract_json] Raw text:", text, flush=True)
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -41,14 +41,14 @@ def _extract_json(text: str):
             try:
                 return json.loads(match.group(0))
             except json.JSONDecodeError:
-                print("[_extract_json] Failed to parse matched JSON.", flush=True)
+                # print("[_extract_json] Failed to parse matched JSON.", flush=True)
                 pass
     print("[_extract_json] Returning None.", flush=True)
     return None
 
 def evaluate_translation_ai(english: str, reference: str, student: str):
-    print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
-    print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
+    # print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
+    # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     user_prompt = {
         "role": "user",
@@ -74,12 +74,12 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("[evaluate_translation_ai] Mistral response received.", flush=True)
+        # print("[evaluate_translation_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("[evaluate_translation_ai] Raw response content:", content, flush=True)
+            # print("[evaluate_translation_ai] Raw response content:", content, flush=True)
             data = _extract_json(content)
-            print("[evaluate_translation_ai] Parsed result:", data, flush=True)
+            # print("[evaluate_translation_ai] Parsed result:", data, flush=True)
             if isinstance(data, dict):
                 return bool(data.get("correct")), str(data.get("reason", ""))
     except Exception as e:
@@ -88,18 +88,18 @@ Answer in JSON with keys `correct` (true/false) and `reason` in one short Englis
     return False, "Could not evaluate translation."
 
 def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> dict[str, int]:
-    print("[evaluate_topic_qualities_ai] Start", flush=True)
-    print(f"[evaluate_topic_qualities_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
+    # print("[evaluate_topic_qualities_ai] Start", flush=True)
+    # print(f"[evaluate_topic_qualities_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     topics = sorted(
         set(detect_language_topics(reference) or ["unknown"]) |
         set(detect_language_topics(student) or ["unknown"])
     )
 
-    print("[evaluate_topic_qualities_ai] Detected topics:", topics, flush=True)
+    # print("[evaluate_topic_qualities_ai] Detected topics:", topics, flush=True)
 
     if not topics:
-        print("[evaluate_topic_qualities_ai] No topics found.", flush=True)
+        # print("[evaluate_topic_qualities_ai] No topics found.", flush=True)
         return {}
 
     user_prompt = {
@@ -133,12 +133,12 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
 
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
-        print("[evaluate_topic_qualities_ai] Mistral response received.", flush=True)
+        # print("[evaluate_topic_qualities_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
-            print("[evaluate_topic_qualities_ai] Raw quality response:", content, flush=True)
+            # print("[evaluate_topic_qualities_ai] Raw quality response:", content, flush=True)
             data = _extract_json(content)
-            print("[evaluate_topic_qualities_ai] Parsed quality result:", data, flush=True)
+            # print("[evaluate_topic_qualities_ai] Parsed quality result:", data, flush=True)
             if isinstance(data, dict):
                 sanitized = {
                     k.replace("_", " ").strip(): int(v)
@@ -222,30 +222,30 @@ def update_topic_memory_translation(username: str, german: str, qualities: dict[
         _update_single_topic(username, feature, "translation", german, quality)
 
 def update_topic_memory_reading(username: str, text: str, qualities: dict[str, int] | None = None) -> None:
-    print("[update_topic_memory_reading] Start", flush=True)
-    print(f"[update_topic_memory_reading] username={username}, text={text}, qualities={qualities}", flush=True)
+    # print("[update_topic_memory_reading] Start", flush=True)
+    # print(f"[update_topic_memory_reading] username={username}, text={text}, qualities={qualities}", flush=True)
     if qualities:
         sanitized = {k.replace("_", " ").strip(): v for k, v in qualities.items()}
         features = list(sanitized.keys())
     else:
         sanitized = {}
         features = detect_language_topics(text) or ["unknown"]
-    print("[update_topic_memory_reading] Detected features:", features, flush=True)
+    # print("[update_topic_memory_reading] Detected features:", features, flush=True)
     for feature in features:
         quality = sanitized.get(feature, 3)
-        print(f"[update_topic_memory_reading] Updating feature '{feature}' with quality {quality}", flush=True)
+        # print(f"[update_topic_memory_reading] Updating feature '{feature}' with quality {quality}", flush=True)
         _update_single_topic(username, feature, "reading", text, quality)
 
 def compare_topic_qualities(reference: str, student: str) -> dict[str, int]:
-    print("[compare_topic_qualities] Start", flush=True)
+    # print("[compare_topic_qualities] Start", flush=True)
     ref_features = set(detect_language_topics(reference) or ["unknown"])
     student_features = set(detect_language_topics(student) or ["unknown"])
-    print("[compare_topic_qualities] Reference features:", ref_features, flush=True)
-    print("[compare_topic_qualities] Student features:", student_features, flush=True)
+    # print("[compare_topic_qualities] Reference features:", ref_features, flush=True)
+    # print("[compare_topic_qualities] Student features:", student_features, flush=True)
     qualities: dict[str, int] = {}
     for feat in ref_features | student_features:
         qualities[feat] = 5 if feat in ref_features and feat in student_features else 2
-        print(f"[compare_topic_qualities] Topic '{feat}': assigned quality {qualities[feat]}", flush=True)
+        # print(f"[compare_topic_qualities] Topic '{feat}': assigned quality {qualities[feat]}", flush=True)
     return qualities
 
 __all__ = [
