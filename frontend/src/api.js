@@ -162,6 +162,26 @@ export const saveVocabWords = async (words) => {
     return res.json();
 };
 
+export const deleteVocab = async (id) => {
+    const res = await fetch(`${BASE_URL}/api/vocabulary/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to delete vocab");
+    return res.json();
+};
+
+export const reportVocab = async (id, message) => {
+    const res = await fetch(`${BASE_URL}/api/vocabulary/${id}/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ message }),
+    });
+    if (!res.ok) throw new Error("Failed to send report");
+    return res.json();
+};
+
 // ---------- Topic Memory ----------
 export async function getTopicMemory() {
     const res = await fetch(`${BASE_URL}/api/topic-memory`, {
