@@ -124,7 +124,12 @@ export default function Vocabulary() {
 
             </Container>
 
-            <Footer />
+            <Footer>
+                <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Profile
+                </Button>
+            </Footer>
 
             {selected && (
                 <Modal onClose={() => setSelected(null)}>
