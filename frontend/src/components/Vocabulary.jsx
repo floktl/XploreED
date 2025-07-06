@@ -6,12 +6,14 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import Modal from "./UI/Modal";
-import { getVocabulary } from "../api";
+import ReportVocabModal from "./ReportVocabModal";
+import { getVocabulary, deleteVocab, reportVocab } from "../api";
 import useAppStore from "../store/useAppStore";
 
 export default function Vocabulary() {
     const [vocab, setVocab] = useState([]);
     const [selected, setSelected] = useState(null);
+    const [showReport, setShowReport] = useState(false);
     const username = useAppStore((state) => state.username);
     const setUsername = useAppStore((state) => state.setUsername);
     const darkMode = useAppStore((state) => state.darkMode);
@@ -39,6 +41,27 @@ export default function Vocabulary() {
                 });
         }
     }, [username, isAdmin]);
+
+    const handleForget = async () => {
+        if (!selected) return;
+        try {
+            await deleteVocab(selected.id);
+            setVocab((v) => v.filter((w) => w.id !== selected.id));
+            setSelected(null);
+        } catch (err) {
+            console.error("Failed to delete vocab", err);
+        }
+    };
+
+    const handleSendReport = async (message) => {
+        if (!selected) return;
+        try {
+            await reportVocab(selected.id, message);
+            setShowReport(false);
+        } catch (err) {
+            console.error("Failed to report vocab", err);
+        }
+    };
 
     return (
         <div
@@ -165,7 +188,22 @@ export default function Vocabulary() {
                             <strong>Exercise:</strong> {selected.exercise}
                         </p>
                     )}
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button variant="danger" onClick={handleForget}>
+                            Forget
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShowReport(true)}>
+                            Report
+                        </Button>
+                    </div>
                 </Modal>
+            )}
+            {selected && showReport && (
+                <ReportVocabModal
+                    vocab={selected}
+                    onSend={handleSendReport}
+                    onClose={() => setShowReport(false)}
+                />
             )}
         </div>
     );

@@ -176,6 +176,50 @@ def save_vocab_words():
     return jsonify({"saved": len(tokens)})
 
 
+@user_bp.route("/vocabulary/<int:vocab_id>", methods=["DELETE"])
+def delete_vocab_word(vocab_id: int):
+    """Delete a single vocabulary entry for the logged in user."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    delete_rows("vocab_log", "WHERE rowid = ? AND username = ?", (vocab_id, user))
+    return jsonify({"msg": "deleted"})
+
+
+@user_bp.route("/vocabulary/<int:vocab_id>/report", methods=["POST"])
+def report_vocab_word(vocab_id: int):
+    """Send a report message about a vocabulary entry."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    row = fetch_one_custom(
+        "SELECT vocab, translation, article, word_type FROM vocab_log WHERE rowid = ? AND username = ?",
+        (vocab_id, user),
+    )
+    if not row:
+        return jsonify({"msg": "Not found"}), 404
+
+    data = request.get_json() or {}
+    message = (data.get("message") or "").strip()
+    if not message:
+        return jsonify({"error": "Message required"}), 400
+
+    content = (
+        "Vocab Report\n"
+        f"ID: {vocab_id}\n"
+        f"Word: {row.get('vocab')}\n"
+        f"Translation: {row.get('translation')}\n"
+        f"Article: {row.get('article') or ''}\n"
+        f"Type: {row.get('word_type') or ''}\n"
+        f"Message: {message}"
+    )
+
+    insert_row("support_feedback", {"message": content})
+    return jsonify({"status": "ok"})
+
+
 @user_bp.route("/topic-memory", methods=["GET"])
 def get_topic_memory():
     """Return all topic memory entries for the logged in user."""
