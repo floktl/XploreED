@@ -55,7 +55,7 @@ export default function ProfileStats() {
         {!error && results.length === 0 ? (
           <Alert type="info">No data found.</Alert>
         ) : (
-          <Card className="overflow-x-auto">
+          <Card fit className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
                 <tr>
