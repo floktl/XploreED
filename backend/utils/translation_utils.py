@@ -5,6 +5,7 @@ import requests
 import datetime
 from utils.grammar_utils import detect_language_topics
 from utils.db_utils import insert_row, update_row, fetch_one_custom
+from utils.level_utils import check_auto_level_up
 from utils.algorithm import sm2
 from utils.vocab_utils import translate_to_german
 import random
@@ -205,6 +206,9 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             },
         )
         # print("[_update_single_topic] New topic memory row inserted.", flush=True)
+
+    # check for automatic level advancement
+    check_auto_level_up(username)
 
 def update_topic_memory_translation(username: str, german: str, qualities: dict[str, int] | None = None) -> None:
     # print("[update_topic_memory_translation] Start", flush=True)
