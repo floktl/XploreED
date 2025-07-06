@@ -75,6 +75,13 @@ export default function Header() {
                                 <Archive className="w-4 h-4" />
                                 Topic Memory
                             </button>
+                            <button
+                                onClick={() => navigate("/grammar-map")}
+                                className="flex items-center w-full gap-2 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
+                            >
+                                <Brain className="w-4 h-4" />
+                                Grammar Map
+                            </button>
                         </Dropdown>
 
                         {/* Profile dropdown */}
