@@ -43,7 +43,14 @@ export default function Lessons() {
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container>
+      <Container
+        bottom={
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        }
+      >
         <Title>📚 {username}'s Lessons</Title>
         <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
           Overview of your past and upcoming lessons
@@ -116,12 +123,6 @@ export default function Lessons() {
           </div>
         )}
 
-        <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Menu
-          </Button>
-        </div>
       </Container>
       <Footer />
     </div>
