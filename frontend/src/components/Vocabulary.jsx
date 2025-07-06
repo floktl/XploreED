@@ -75,6 +75,7 @@ export default function Vocabulary() {
                             >
                                 <tr>
                                     <th className="px-4 py-2 text-left">German Word</th>
+                                    <th className="px-4 py-2 text-left">Article</th>
                                     <th className="px-4 py-2 text-left">English Translation</th>
                                     <th className="px-4 py-2 text-left">Type</th>
                                     <th className="px-4 py-2 text-left">Due</th>
@@ -97,9 +98,8 @@ export default function Vocabulary() {
                                         }
                                         onClick={() => setSelected(v)}
                                     >
-                                        <td className="px-4 py-2 font-medium">
-                                            {v.article ? `${v.article} ${v.vocab}` : v.vocab}
-                                        </td>
+                                        <td className="px-4 py-2 font-medium">{v.vocab}</td>
+                                        <td className="px-4 py-2">{v.article || ""}</td>
                                         <td
                                             className={`px-4 py-2 ${darkMode ? "text-gray-300" : "text-gray-600"}`}
                                         >
@@ -133,6 +133,11 @@ export default function Vocabulary() {
                     <p className="mb-2">
                         <strong>Translation:</strong> {selected.translation}
                     </p>
+                    {selected.details && (
+                        <p className="mb-2">
+                            <strong>Info:</strong> {selected.details}
+                        </p>
+                    )}
                     {selected.word_type && (
                         <p className="mb-2 capitalize">
                             <strong>Type:</strong> {selected.word_type}
@@ -142,6 +147,12 @@ export default function Vocabulary() {
                         <p className="mb-2">
                             <strong>Learned:</strong>{" "}
                             {new Date(selected.created_at).toLocaleString()}
+                        </p>
+                    )}
+                    {selected.next_review && (
+                        <p className="mb-2">
+                            <strong>Next review:</strong>{" "}
+                            {new Date(selected.next_review).toLocaleDateString()}
                         </p>
                     )}
                     {selected.context && (
