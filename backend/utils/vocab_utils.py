@@ -323,7 +323,7 @@ def save_vocab(
     now = datetime.now().isoformat()
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at, last_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 username,
                 normalized,
@@ -333,6 +333,7 @@ def save_vocab(
                 details,
                 context,
                 exercise,
+                now,
                 now,
                 now,
             ),
@@ -396,6 +397,7 @@ def review_vocab_word(username: str, word: str, quality: int) -> None:
             "repetitions": reps,
             "interval_days": interval,
             "next_review": next_review,
+            "last_review": datetime.now().isoformat(),
         },
         "username = ? AND vocab = ?",
         (username, normalized),
