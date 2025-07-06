@@ -6,6 +6,8 @@ import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
+from colorama import Fore, Style
+
 import requests
 
 from .db_utils import get_connection, update_row, fetch_one_custom
@@ -280,11 +282,20 @@ def save_vocab(
     article: Optional[str] = None,
 ) -> None:
     """Store a new vocabulary word for spaced repetition."""
+    print(
+        Fore.CYAN
+        + f"[save_vocab] User: {username}, Word: {german_word}, Context: {context}, Exercise: {exercise}, Article: {article}"
+        + Style.RESET_ALL,
+        flush=True,
+    )
+
     if german_word in ["?", "!", ",", "."]:
+        print(Fore.YELLOW + "[save_vocab] Skipping punctuation." + Style.RESET_ALL, flush=True)
         return
 
     analysis = analyze_word_ai(german_word)
     if analysis:
+        print(Fore.CYAN + f"[save_vocab] AI analysis: {analysis}" + Style.RESET_ALL, flush=True)
         normalized = analysis.get("base_form", german_word)
         word_type = analysis.get("type", "other")
         article = analysis.get("article") or article
@@ -310,14 +321,17 @@ def save_vocab(
             english_word = response.json()["translations"][0]["text"]
             if english_word.isalpha() and english_word.istitle():
                 english_word = english_word.lower()
-        except Exception:
+        except Exception as e:
+            print(Fore.RED + f"[save_vocab] DeepL error: {e}" + Style.RESET_ALL, flush=True)
             english_word = "(error)"
 
     if not analysis and english_word.lower() == german_word.lower():
         # Likely an English word accidentally submitted as German
+        print(Fore.YELLOW + "[save_vocab] Detected English word, skipping." + Style.RESET_ALL, flush=True)
         return
 
     if vocab_exists(username, normalized):
+        print(Fore.YELLOW + "[save_vocab] Word already exists, skipping." + Style.RESET_ALL, flush=True)
         return
 
     now = datetime.now().isoformat()
@@ -337,6 +351,12 @@ def save_vocab(
                 now,
                 now,
             ),
+        )
+        print(
+            Fore.GREEN
+            + f"[save_vocab] Saved '{normalized}' -> '{english_word}' for {username}."
+            + Style.RESET_ALL,
+            flush=True,
         )
 
 
