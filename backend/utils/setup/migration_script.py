@@ -151,6 +151,15 @@ with get_connection() as conn:
     else:
         print("ℹ️ 'details' column already exists.")
 
+    if "last_review" not in vocab_cols:
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN last_review DATETIME;")
+        cursor.execute(
+            "UPDATE vocab_log SET last_review = created_at WHERE last_review IS NULL;"
+        )
+        print("✅ 'last_review' column added.")
+    else:
+        print("ℹ️ 'last_review' column already exists.")
+
     # ✅ Create lesson_content table
     cursor.execute(
         """

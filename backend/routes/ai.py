@@ -99,7 +99,7 @@ def _create_ai_block(username: str) -> dict | None:
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
-        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
         "FROM vocab_log WHERE username = ?",
         (username,),
     )
@@ -112,7 +112,7 @@ def _create_ai_block(username: str) -> dict | None:
             "sm2_due_date": row.get("next_review"),
             "sm2_ease": row.get("ef"),
             "repetitions": row.get("repetitions"),
-            "sm2_last_review": row.get("created_at"),
+            "sm2_last_review": row.get("last_review"),
             "quality": 0,
         }
         for row in vocab_rows
@@ -383,7 +383,7 @@ def get_ai_exercises():
     example_block = EXERCISE_TEMPLATE.copy()
 
     vocab_rows = fetch_custom(
-        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
         "FROM vocab_log WHERE username = ?",
         (username,),
     )
@@ -397,7 +397,7 @@ def get_ai_exercises():
             "sm2_due_date": row.get("next_review"),
             "sm2_ease": row.get("ef"),
             "repetitions": row.get("repetitions"),
-            "sm2_last_review": row.get("created_at"),
+            "sm2_last_review": row.get("last_review"),
             "quality": 0,
         }
         for row in vocab_rows
@@ -612,7 +612,7 @@ def generate_ai_feedback():
                 )
 
         vocab_rows = fetch_custom(
-            "SELECT vocab, translation, interval_days, next_review, ef, repetitions, created_at "
+            "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
             "FROM vocab_log WHERE username = ?",
             (username,),
         )
