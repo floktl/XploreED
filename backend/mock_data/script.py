@@ -29,56 +29,7 @@ CEFR_LEVELS = [
     "B1", "B2", "B2", "C1", "C1", "C2"
 ]
 
-# === FALLBACK DATA ===
-
-FALLBACK_EXERCISE_BLOCK = {
-  "lessonId": "mock-ai-lesson-001",
-  "title": "Using 'sein' in the Present Tense",
-  "instructions": "Fill in the blanks or translate the sentences.",
-  "level": "A1",
-  "exercises": [
-    {
-      "id": "ex1",
-      "type": "gap-fill",
-      "question": "Ich ___ müde.",
-      "options": ["bist", "bin", "ist", "seid"],
-      "explanation": "'Ich' uses 'bin' in present tense."
-    }
-  ],
-  "feedbackPrompt": "Good start! You sometimes mix up plural forms. Remember 'wir sind' and 'sie sind'.",
-  "vocabHelp": [
-    {"word": "sein", "meaning": "to be"}
-  ]
-}
-
-FALLBACK_VOCAB_DATA = [
-    {
-        "type": "string",
-        "word": "sein",
-        "translation": "to be",
-        "sm2_interval": 3,
-        "sm2_due_date": "2025-06-12",
-        "sm2_ease": 2.3,
-        "repetitions": 2,
-        "sm2_last_review": "2025-06-10",
-        "quality": 4
-    }
-]
-
-FALLBACK_TOPIC_MEMORY = [
-    {
-        "topic": "gender",
-        "skill_type": "gap-fill",
-        "context": "This example is great",
-        "lesson_content_id": "1.1",
-        "ease_factor": 2.2,
-        "intervall": 3,
-        "next_repeat": "2025-06-13",
-        "repetitions": 2,
-        "last_review": "2025-06-10",
-        "correct": 0
-    }
-]
+# === NO FALLBACK DATA ===
 
 # === UTILS ===
 
@@ -126,16 +77,13 @@ def generate_new_exercises(
     print('Generate new exercises!!!!!!!!', flush=True)
 
     if not vocabular:
-        print("⚠️ No vocabulary data found. Using fallback vocab.", flush=True)
-        vocabular = FALLBACK_VOCAB_DATA
+        raise ValueError("No vocabulary data provided")
 
     if not topic_memory:
-        print("⚠️ No topic memory found. Using fallback topic.", flush=True)
-        topic_memory = FALLBACK_TOPIC_MEMORY
+        raise ValueError("No topic memory provided")
 
     if not example_exercise_block:
-        print("⚠️ No example block provided. Using fallback block.", flush=True)
-        example_exercise_block = FALLBACK_EXERCISE_BLOCK
+        raise ValueError("No example block provided")
 
     try:
         upcoming = sorted(
