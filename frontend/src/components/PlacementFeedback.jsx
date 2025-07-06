@@ -10,7 +10,11 @@ export default function PlacementFeedback({ summary, onDone }) {
   const darkMode = useAppStore((s) => s.darkMode);
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container>
+      <Container
+        bottom={
+          <Button variant="primary" type="button" onClick={onDone}>Continue</Button>
+        }
+      >
         <Title className="mb-4 text-3xl font-bold">Placement Test Feedback</Title>
         <Card className="p-4 space-y-4">
           {summary && (

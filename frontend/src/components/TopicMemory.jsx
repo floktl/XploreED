@@ -82,7 +82,14 @@ export default function TopicMemory() {
     //
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container>
+            <Container
+                bottom={
+                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Profile
+                    </Button>
+                }
+            >
                 <Title>
                     <div className="flex items-center gap-2">
                         <Brain className="w-6 h-6" />

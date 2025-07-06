@@ -36,7 +36,7 @@ export const Title = ({ children, className }) => {
   );
 };
 
-export const Container = ({ children, className }) => {
+export const Container = ({ children, bottom, className }) => {
   const darkMode = useAppStore((state) => state.darkMode);
 
   return (
@@ -54,6 +54,7 @@ export const Container = ({ children, className }) => {
             {children}
           </div>
         </div>
+        {bottom && <div className="mt-4 flex justify-center">{bottom}</div>}
       </div>
     </>
   );
