@@ -36,7 +36,14 @@ export default function AdminLogin() {
 
   return (
     <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container>
+      <Container
+        bottom={
+          <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Student Login
+          </Button>
+        }
+      >
         <Title>🔐 Admin Login</Title>
 
         <Card>

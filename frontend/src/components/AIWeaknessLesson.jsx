@@ -43,7 +43,14 @@ export default function AIWeaknessLesson() {
         darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
       }`}
     >
-      <Container>
+      <Container
+        bottom={
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
+          </Button>
+        }
+      >
         <Title>🤖 Personalized Lesson</Title>
         {error ? (
           <p className="text-red-600">{error}</p>
