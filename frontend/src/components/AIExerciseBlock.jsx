@@ -449,20 +449,27 @@ export default function AIExerciseBlock({
                     </div>
                 )}
                 {submitted && (
-                    <div className="mt-4 flex gap-2">
-                        <Button variant="ghost" type="button" onClick={() => setShowAsk(true)}>
-                            Ask AI
-                        </Button>
-                        {Object.entries(evaluation).some(([id, ev]) => {
-                            const userAnswer = answers[id];
-                            return (
-                                userAnswer &&
-                                ev?.correct &&
-                                userAnswer.trim().toLowerCase() !==
-                                ev.correct.trim().toLowerCase()
-                            );
-                        }) && null}
-                    </div>
+                    <>
+                        <div className="mt-4 flex gap-2">
+                            <Button variant="ghost" type="button" onClick={() => setShowAsk(true)}>
+                                Ask AI
+                            </Button>
+                            {Object.entries(evaluation).some(([id, ev]) => {
+                                const userAnswer = answers[id];
+                                return (
+                                    userAnswer &&
+                                    ev?.correct &&
+                                    userAnswer.trim().toLowerCase() !==
+                                    ev.correct.trim().toLowerCase()
+                                );
+                            }) && null}
+                        </div>
+                        {feedbackPrompt && (
+                            <div className="mt-4 italic text-blue-700 dark:text-blue-300">
+                                {feedbackPrompt}
+                            </div>
+                        )}
+                    </>
                 )}
 
             </Card>
