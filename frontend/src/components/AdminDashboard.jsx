@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import { Input } from "./UI/UI";
+import { Search, Pencil, Ban, Megaphone, X, Save, Rocket } from "lucide-react";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import ErrorPage from "./ErrorPage";
@@ -124,12 +125,12 @@ export default function AdminDashboard() {
     );
 
     if (!isEditing && duplicateId) {
-      setFormError(`❌ Lesson ID ${newLessonId} already exists. Please choose a different ID.`);
+      setFormError(`Lesson ID ${newLessonId} already exists. Please choose a different ID.`);
       return;
     }
 
     if (duplicateTitle) {
-      setFormError(`❌ Lesson title "${newTitle}" already exists. Please choose a different title.`);
+      setFormError(`Lesson title "${newTitle}" already exists. Please choose a different title.`);
       return;
     }
 
@@ -145,7 +146,7 @@ export default function AdminDashboard() {
       const res = await saveLesson(lessonPayload, isEditing);
 
       if (!res.ok) {
-        setFormError("❌ Failed to save lesson.");
+        setFormError("Failed to save lesson.");
         return;
       }
 
@@ -162,7 +163,7 @@ export default function AdminDashboard() {
       setAiEnabled(false);
     } catch (err) {
       console.error("Error saving lesson:", err);
-      setFormError("❌ Could not save lesson.");
+      setFormError("Could not save lesson.");
       setFatalError(true);
     }
   };
@@ -282,8 +283,12 @@ export default function AdminDashboard() {
         </td>
 
         <td className="px-4 py-2 flex gap-2">
-          <Button variant="ghost" onClick={() => setModalContent(lesson)}>🔍</Button>
-          <Button variant="ghost" onClick={() => handleEditLesson(lesson)}>✏️</Button>
+          <Button variant="ghost" onClick={() => setModalContent(lesson)}>
+            <Search className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" onClick={() => handleEditLesson(lesson)}>
+            <Pencil className="w-4 h-4" />
+          </Button>
           <Button
             variant={lesson.published ? "danger" : "success"}
             onClick={async () => {
@@ -302,7 +307,7 @@ export default function AdminDashboard() {
               }
             }}
           >
-            {lesson.published ? "🚫" : "📢"}
+            {lesson.published ? <Ban className="w-4 h-4" /> : <Megaphone className="w-4 h-4" />}
           </Button>
           <Button
             variant="danger"
@@ -319,7 +324,7 @@ export default function AdminDashboard() {
               }
             }}
           >
-            ❌
+            <X className="w-4 h-4" />
           </Button>
         </td>
       </tr>
@@ -401,11 +406,13 @@ export default function AdminDashboard() {
             onToggleAI={() => setAiEnabled((v) => !v)}
           />
           <div className="flex justify-end mt-4 gap-2">
-            <Button variant="secondary" onClick={() => handleSaveLesson(false)}>
-              💾 Save as Draft
+            <Button variant="secondary" onClick={() => handleSaveLesson(false)} className="gap-2">
+              <Save className="w-4 h-4" />
+              Save as Draft
             </Button>
-            <Button variant="success" onClick={() => handleSaveLesson(true)}>
-              🚀 Save & Publish
+            <Button variant="success" onClick={() => handleSaveLesson(true)} className="gap-2">
+              <Rocket className="w-4 h-4" />
+              Save & Publish
             </Button>
           </div>
         </Modal>

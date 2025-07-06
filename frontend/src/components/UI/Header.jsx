@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
     Settings,
@@ -13,7 +13,7 @@ import {
     Archive,
 } from "lucide-react";
 import useAppStore from "../../store/useAppStore";
-import useClickOutside from "../../utils/useClickOutside";
+import Dropdown from "./Dropdown";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -24,13 +24,6 @@ export default function Header() {
     const currentLevel = useAppStore((state) => state.currentLevel ?? 0);
     const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
 
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [brainOpen, setBrainOpen] = useState(false);
-    const dropdownRef = useRef();
-    const brainRef = useRef();
-
-    useClickOutside(dropdownRef, () => setDropdownOpen(false));
-    useClickOutside(brainRef, () => setBrainOpen(false));
 
     const handleLogout = () => {
         localStorage.removeItem("username");
@@ -61,120 +54,96 @@ export default function Header() {
 
                 {username && (
                     <div className="flex items-center gap-4">
-                        {/* 🧠 Brain Dropdown */}
-                        <div className="relative" ref={brainRef}>
+                        <Dropdown trigger={<Brain className="w-5 h-5 text-white" />}>
                             <button
-                                onClick={() => setBrainOpen((prev) => !prev)}
-                                className="p-2 rounded-full bg-black/30 hover:bg-black/40"
+                                onClick={() => navigate("/vocabulary")}
+                                className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
                             >
-                                <Brain className="w-5 h-5 text-white" />
+                                <BookText className="w-4 h-4" />
+                                Vocabulary
                             </button>
-                            {brainOpen && (
-                                <div className="absolute right-0 mt-2 bg-white dark:bg-gray-800 rounded-md shadow-md w-52 z-50">
-                                    <button
-                                        onClick={() => navigate("/vocabulary")}
-                                        className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
-                                    >
-                                        <BookText className="w-4 h-4" />
-                                        Vocabulary
-                                    </button>
-                                    <button
-                                        onClick={() => navigate("/topic-memory")}
-                                        className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
-                                    >
-                                        <Archive className="w-4 h-4" />
-                                        Topic Memory
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 👤 Profile Dropdown */}
-                        <div className="relative" ref={dropdownRef}>
                             <button
-                                onClick={() => setDropdownOpen((prev) => !prev)}
-                                className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 hover:bg-black/40"
+                                onClick={() => navigate("/topic-memory")}
+                                className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
                             >
-                                <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
-                                    {avatarLetter}
-                                </span>
-                                <div className="w-8 h-8 relative">
-                                    <svg width="32" height="32">
-                                        <circle
-                                            cx="16"
-                                            cy="16"
-                                            r={radius}
-                                            stroke="#4B5563"
-                                            strokeWidth="2"
-                                            fill="none"
-                                        />
-                                        <circle
-                                            cx="16"
-                                            cy="16"
-                                            r={radius}
-                                            stroke="#10B981"
-                                            strokeWidth="2"
-                                            fill="none"
-                                            strokeLinecap="round"
-                                            strokeDasharray={`${circumference} ${circumference}`}
-                                            strokeDashoffset={strokeDashoffset}
-                                            transform="rotate(-90 16 16)"
-                                        />
-                                        <text
-                                            x="16"
-                                            y="16"
-                                            textAnchor="middle"
-                                            dy=".3em"
-                                            fontSize="10"
-                                            fill="#ffffff"
-                                            fontWeight="bold"
-                                        >
-                                            {currentLevel}
-                                        </text>
-                                    </svg>
-                                </div>
+                                <Archive className="w-4 h-4" />
+                                Topic Memory
                             </button>
+                        </Dropdown>
 
-                            {dropdownOpen && (
-                                <div className="absolute right-0 mt-2 w-56 rounded-xl shadow-xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 overflow-hidden z-50">
-                                    <button
-                                        onClick={() => navigate("/menu")}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
-                                    >
-                                        <Menu className="w-4 h-4" />
-                                        Main Menu
-                                    </button>
-                                    <button
-                                        onClick={() => navigate("/settings")}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
-                                    >
-                                        <Settings className="w-4 h-4" />
-                                        Settings
-                                    </button>
-                                    <button
-                                        onClick={toggleDarkMode}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
-                                    >
-                                        {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                                        {darkMode ? "Light Mode" : "Dark Mode"}
-                                    </button>
-                                    <button
-                                        onClick={() => navigate("/support")}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
-                                    >
-                                        <Mail className="w-4 h-4" />
-                                        Support
-                                    </button>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 dark:text-red-400 transition"
-                                    >
-                                        <LogOut className="w-4 h-4" />
-                                        Logout
-                                    </button>
+                        <Dropdown
+                            trigger={
+                                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 hover:bg-black/40">
+                                    <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+                                        {avatarLetter}
+                                    </span>
+                                    <div className="w-8 h-8 relative">
+                                        <svg width="32" height="32">
+                                            <circle cx="16" cy="16" r={radius} stroke="#4B5563" strokeWidth="2" fill="none" />
+                                            <circle
+                                                cx="16"
+                                                cy="16"
+                                                r={radius}
+                                                stroke="#10B981"
+                                                strokeWidth="2"
+                                                fill="none"
+                                                strokeLinecap="round"
+                                                strokeDasharray={`${circumference} ${circumference}`}
+                                                strokeDashoffset={strokeDashoffset}
+                                                transform="rotate(-90 16 16)"
+                                            />
+                                            <text
+                                                x="16"
+                                                y="16"
+                                                textAnchor="middle"
+                                                dy=".3em"
+                                                fontSize="10"
+                                                fill="#ffffff"
+                                                fontWeight="bold"
+                                            >
+                                                {currentLevel}
+                                            </text>
+                                        </svg>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
+                            }
+                        >
+                            <button
+                                onClick={() => navigate("/menu")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <Menu className="w-4 h-4" />
+                                Main Menu
+                            </button>
+                            <button
+                                onClick={() => navigate("/settings")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <Settings className="w-4 h-4" />
+                                Settings
+                            </button>
+                            <button
+                                onClick={toggleDarkMode}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                {darkMode ? "Light Mode" : "Dark Mode"}
+                            </button>
+                            <button
+                                onClick={() => navigate("/support")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <Mail className="w-4 h-4" />
+                                Support
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 dark:text-red-400 transition w-full text-left"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        </Dropdown>
                     </div>
                 )}
             </div>

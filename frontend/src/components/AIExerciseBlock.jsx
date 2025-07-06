@@ -3,6 +3,7 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
 import { Input } from "./UI/UI";
+import { CheckCircle, XCircle } from "lucide-react";
 import {
     getAiExercises,
     saveVocabWords,
@@ -336,10 +337,16 @@ export default function AIExerciseBlock({ data, blockId = "ai", completed = fals
                                 <div className="mt-2 text-sm">
                                     {String(answers[ex.id]).trim().toLowerCase() ===
                                         String(evaluation[ex.id]?.correct).trim().toLowerCase() ? (
-                                        <span className="text-green-600">✅ Correct!</span>
+                                        <span className="text-green-600 flex items-center gap-1">
+                                            <CheckCircle className="w-4 h-4" />
+                                            Correct!
+                                        </span>
                                     ) : (
                                         <>
-                                            <span className="text-red-600">❌ Incorrect.</span>
+                                            <span className="text-red-600 flex items-center gap-1">
+                                                <XCircle className="w-4 h-4" />
+                                                Incorrect.
+                                            </span>
                                             <div className="mt-1 text-gray-700 dark:text-gray-300">
                                                 {ex.explanation}
                                             </div>

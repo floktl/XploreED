@@ -5,6 +5,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
+import { ArrowLeft } from "lucide-react";
 import useAppStore from "../store/useAppStore";
 import { getStudentLessons } from "../api";
 
@@ -32,7 +33,7 @@ export default function Lessons() {
         setLessons(data);
       } catch (err) {
         console.error("[CLIENT] Failed to load lessons:", err);
-        setError("❌ Could not load lessons. Please try again later.");
+        setError("Could not load lessons. Please try again later.");
       }
     };
   
@@ -116,8 +117,9 @@ export default function Lessons() {
         )}
 
         <div className="mt-6 text-center">
-          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")}>
-            🔙 Back to Menu
+          <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Menu
           </Button>
         </div>
       </Container>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { XCircle } from "lucide-react";
 import Button from "./UI/Button";
 import { Container, Title, Input } from "./UI/UI";
 import Card from "./UI/Card";
@@ -24,19 +25,19 @@ export default function Settings() {
 
   const handlePasswordChange = async () => {
     if (!oldPw || !password || password !== confirmPassword) {
-      setError("❌ Missing fields or passwords do not match.");
+      setError("Missing fields or passwords do not match.");
       return;
     }
   
     try {
       await updatePassword(oldPw, password);
-      setSuccess("✅ Password updated successfully.");
+      setSuccess("Password updated successfully.");
       setError("");
       setOldPw("");
       setPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setError("❌ " + err.message);
+      setError(err.message);
     }
   };
   
@@ -46,10 +47,10 @@ export default function Settings() {
   
     try {
       await uploadAvatar(file);
-      setSuccess("✅ Avatar uploaded successfully.");
+      setSuccess("Avatar uploaded successfully.");
       setError("");
     } catch (err) {
-      setError("❌ " + err.message);
+      setError(err.message);
     }
   };
   
@@ -59,7 +60,7 @@ export default function Settings() {
       useAppStore.getState().resetStore();
       navigate("/");
     } catch (err) {
-      setError("❌ " + err.message);
+      setError(err.message);
     }
   };
 
@@ -69,7 +70,7 @@ export default function Settings() {
       useAppStore.getState().resetStore();
       navigate("/");
     } catch (err) {
-      setError("❌ " + err.message);
+      setError(err.message);
     }
   };
   
@@ -136,8 +137,9 @@ export default function Settings() {
 
             {/* Delete Account */}
             <div>
-              <Button variant="danger" onClick={() => setShowDelete(true)}>
-                ❌ Delete Account
+              <Button variant="danger" onClick={() => setShowDelete(true)} className="gap-2">
+                <XCircle className="w-4 h-4" />
+                Delete Account
               </Button>
             </div>
 
