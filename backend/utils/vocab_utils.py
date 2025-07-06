@@ -134,13 +134,14 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
     if not word:
         return word, "other", article
 
-    normalized = word.lower().strip()
+    token = word.strip()
 
     # Treat capitalized words or words with an article as nouns
-    if article or word[:1].isupper():
-        normalized = _singularize(normalized.capitalize()).lower()
+    if article or token[:1].isupper():
+        normalized = _singularize(token.capitalize())
         return normalized, "noun", article
 
+    normalized = token.lower()
     return normalized, "other", article
 
 
@@ -200,10 +201,20 @@ def save_vocab(
 
 
 
+    # Check again after potential AI normalization
+    if vocab_exists(username, normalized):
+        print(
+            Fore.YELLOW
+            + "[save_vocab] Word exists after normalization, skipping."
+            + Style.RESET_ALL,
+            flush=True,
+        )
+        return
+
     now = datetime.now().isoformat()
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at, last_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT OR IGNORE INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at, last_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 username,
                 normalized,
