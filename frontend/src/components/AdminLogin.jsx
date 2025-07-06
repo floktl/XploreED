@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title, Input } from "./UI/UI";
 import Card from "./UI/Card";
+import { Lock, ArrowLeft } from "lucide-react";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
@@ -24,11 +25,11 @@ export default function AdminLogin() {
         setIsAdmin(true);
         navigate("/admin-panel");
       } else {
-        setError("❌ Login failed. Wrong password?");
+        setError("Login failed. Wrong password?");
       }
     } catch (err) {
       console.error("[CLIENT] Login failed:", err);
-      setError("❌ Server error. Please try again.");
+      setError("Server error. Please try again.");
     }
   };
   
@@ -49,12 +50,14 @@ export default function AdminLogin() {
 
             {error && <Alert type="error">{error}</Alert>}
 
-            <Button onClick={handleLogin} variant="primary" type="submit" className="w-full">
-              🔓 Login
+            <Button onClick={handleLogin} variant="primary" type="submit" className="w-full gap-2">
+              <Lock className="w-4 h-4" />
+              Login
             </Button>
 
-            <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full">
-              ⬅️ Back to Student Login
+            <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Student Login
             </Button>
           </div>
         </Card>

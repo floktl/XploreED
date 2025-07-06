@@ -6,6 +6,7 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Footer from "./UI/Footer";
 import Spinner from "./UI/Spinner";
+import { CheckCircle, XCircle } from "lucide-react";
 import useAppStore from "../store/useAppStore";
 import { getProgressTest, submitProgressTest } from "../api";
 
@@ -89,8 +90,18 @@ export default function LevelUpTest() {
       <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
         <Container>
           <Title>Progress Test Result</Title>
-          <Card className="text-center py-6">
-            {result ? "🎉 You passed the test!" : "❌ You did not pass."}
+          <Card className="text-center py-6 flex items-center justify-center gap-2">
+            {result ? (
+              <>
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span>You passed the test!</span>
+              </>
+            ) : (
+              <>
+                <XCircle className="w-5 h-5 text-red-600" />
+                <span>You did not pass.</span>
+              </>
+            )}
           </Card>
           <div className="mt-6 text-center">
             <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>

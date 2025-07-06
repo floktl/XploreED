@@ -8,6 +8,7 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import Badge from "./UI/Badge";
 import Modal from "./UI/Modal";
+import { Brain, ArrowLeft, Trash2 } from "lucide-react";
 import { Container, Title, Input } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 
@@ -68,7 +69,7 @@ export default function TopicMemory() {
             setError("");
         } catch (err) {
             console.error("Failed to clear topic memory:", err);
-            setError("❌ Could not clear topic memory.");
+            setError("Could not clear topic memory.");
         }
     };
 
@@ -83,8 +84,11 @@ export default function TopicMemory() {
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
                 <Title>
-                    🧠 Topic Memory — <span className="text-blue-600">{username || "anonymous"}</span>
-                    <Badge type="default">Student</Badge>
+                    <div className="flex items-center gap-2">
+                        <Brain className="w-6 h-6" />
+                        <span>Topic Memory — <span className="text-blue-600">{username || "anonymous"}</span></span>
+                        <Badge type="default">Student</Badge>
+                    </div>
                 </Title>
                 <p className={`mb-4 text-center ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your simulation of your memory</p>
                 {weaknesses.length > 0 && (
@@ -181,10 +185,14 @@ export default function TopicMemory() {
                     <Button variant="secondary" size="md" onClick={() => setFilters({ grammar: "", topic: "", skill: "", context: "" })}>
                         Reset Filters
                     </Button>
-                    <Button variant="danger" size="md" onClick={() => setShowClear(true)}>
-                        🗑️ Clear Memory
+                    <Button variant="danger" size="md" onClick={() => setShowClear(true)} className="gap-2">
+                        <Trash2 className="w-4 h-4" />
+                        Clear Memory
                     </Button>
-                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")}>🔙 Back to Profile</Button>
+                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Profile
+                    </Button>
                 </div>
             </Container>
             <Footer />

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
+import { BookOpen, Target, ArrowLeft, Info } from "lucide-react";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
@@ -69,19 +70,23 @@ export default function Vocabulary() {
         >
             <Container>
                 <Title>
-                    📖 My Vocabulary
+                    <div className="flex items-center gap-2">
+                        <BookOpen className="w-6 h-6" />
+                        <span>My Vocabulary</span>
+                    </div>
                 </Title>
 
                 <div className="mb-4 text-center">
-                    <Button onClick={() => navigate("/vocab-trainer")}>
-                        🎯 Train Vocabulary
+                    <Button onClick={() => navigate("/vocab-trainer")} className="gap-2">
+                        <Target className="w-4 h-4" />
+                        Train Vocabulary
                     </Button>
                 </div>
 
                 {vocab.length === 0 ? (
-                    <Alert type="info">
-                        🤓 No vocabulary saved yet. Try completing a few translations or
-                        levels!
+                    <Alert type="info" className="flex items-center gap-2">
+                        <Info className="w-4 h-4" />
+                        <span>No vocabulary saved yet. Try completing a few translations or levels!</span>
                     </Alert>
                 ) : (
                     <Card className="overflow-x-auto">
@@ -142,8 +147,9 @@ export default function Vocabulary() {
                 )}
 
                 <div className="mt-6 text-center">
-                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")}>
-                        🔙 Back to Profile
+                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Profile
                     </Button>
                 </div>
             </Container>

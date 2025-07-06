@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
+import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import Button from "./UI/Button";
 import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
@@ -35,7 +36,7 @@ export default function ProfileStats() {
         setResults(data);
       } catch (err) {
         console.error("[CLIENT] Failed to load stats:", err);
-        setError("❌ Could not load profile stats.");
+        setError("Could not load profile stats.");
         navigate("/admin-login");
       }
     };
@@ -68,7 +69,13 @@ export default function ProfileStats() {
                 {results.map((r, i) => (
                   <tr key={i}>
                     <td className="px-4 py-2">{r.level}</td>
-                    <td className="px-4 py-2">{r.correct ? "✅" : "❌"}</td>
+                    <td className="px-4 py-2">
+                      {r.correct ? (
+                        <CheckCircle className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <XCircle className="w-4 h-4 text-red-600" />
+                      )}
+                    </td>
                     <td className="px-4 py-2">{r.answer}</td>
                     <td className="px-4 py-2">{new Date(r.timestamp).toLocaleString()}</td>
                   </tr>
@@ -79,8 +86,9 @@ export default function ProfileStats() {
         )}
 
         <div className="mt-6 text-center">
-          <Button onClick={() => navigate("/admin-panel")} variant="link">
-            ⬅️ Back to Admin Panel
+          <Button onClick={() => navigate("/admin-panel")} variant="link" className="gap-2">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Admin Panel
           </Button>
         </div>
       </Container>

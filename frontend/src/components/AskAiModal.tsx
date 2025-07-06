@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "./UI/Modal";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
+import { Lightbulb } from "lucide-react";
 import { streamAiAnswer } from "../utils/streamAi";
 
 interface Props {
@@ -60,8 +61,9 @@ export default function AskAiModal({ onClose }: Props) {
             block.type === "heading" ? (
               <h3 key={idx} className="text-xl font-bold mt-4">{block.text}</h3>
             ) : block.type === "tip" ? (
-              <div key={idx} className="bg-yellow-100 border-l-4 border-yellow-500 p-2 text-sm italic">
-                💡 {block.text}
+              <div key={idx} className="bg-yellow-100 border-l-4 border-yellow-500 p-2 text-sm italic flex items-center gap-2">
+                <Lightbulb className="w-4 h-4" />
+                <span>{block.text}</span>
               </div>
             ) : block.type === "quote" ? (
               <blockquote key={idx} className="border-l-4 border-blue-400 pl-3 italic text-gray-600">

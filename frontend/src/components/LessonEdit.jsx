@@ -6,6 +6,7 @@ import Button from "../components/UI/Button";
 import Alert from "../components/UI/Alert";
 import ErrorPage from "./ErrorPage";
 import LessonEditor from "../components/LessonEditor";
+import { Pencil } from "lucide-react";
 import { getLessonById, updateLesson } from "../api";
 
 export default function LessonEdit() {
@@ -21,7 +22,7 @@ export default function LessonEdit() {
         const data = await getLessonById(id);
         setLesson(data);
       } catch (err) {
-        setError("❌ Could not load lesson.");
+        setError("Could not load lesson.");
         setFatalError(true);
       }
     };
@@ -34,10 +35,10 @@ export default function LessonEdit() {
     try {
       const updated = await updateLesson(id, lesson);
       if (!updated.ok && updated !== true) throw new Error("Failed to update");
-      alert("✅ Lesson updated!");
+      alert("Lesson updated!");
       navigate("/admin-panel");
     } catch (err) {
-      setError("❌ Failed to save changes.");
+      setError("Failed to save changes.");
       setFatalError(true);
     }
   };
@@ -47,7 +48,12 @@ export default function LessonEdit() {
 
   return (
     <Container>
-      <Title className="mb-6">✏️ Edit Lesson {id}</Title>
+      <Title className="mb-6">
+        <div className="flex items-center gap-2">
+          <Pencil className="w-6 h-6" />
+          <span>Edit Lesson {id}</span>
+        </div>
+      </Title>
       {error && <Alert type="danger">{error}</Alert>}
 
       <Card>
