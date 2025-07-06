@@ -76,15 +76,6 @@ def generate_new_exercises(
 ):
     print('Generate new exercises!!!!!!!!', flush=True)
 
-    if not vocabular:
-        raise ValueError("No vocabulary data provided")
-
-    if not topic_memory:
-        raise ValueError("No topic memory provided")
-
-    if not example_exercise_block:
-        raise ValueError("No example block provided")
-
     try:
         upcoming = sorted(
             (entry for entry in topic_memory if "next_repeat" in entry),
