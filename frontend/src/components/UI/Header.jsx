@@ -6,7 +6,6 @@ import {
     Moon,
     Sun,
     Mail,
-    PanelTop,
     Menu,
     Brain,
     BookText,
@@ -24,7 +23,6 @@ export default function Header() {
     const currentLevel = useAppStore((state) => state.currentLevel ?? 0);
     const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
 
-
     const handleLogout = () => {
         localStorage.removeItem("username");
         useAppStore.getState().resetStore();
@@ -39,10 +37,11 @@ export default function Header() {
 
     return (
         <header
-            className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${darkMode
+            className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${
+                darkMode
                     ? "bg-gray-800/80 text-white"
                     : "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-900 text-white"
-                }`}
+            }`}
         >
             <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
                 <h1
@@ -54,32 +53,47 @@ export default function Header() {
 
                 {username && (
                     <div className="flex items-center gap-4">
-                        <Dropdown trigger={<Brain className="w-5 h-5 text-white" />}>
+                        {/* Brain dropdown */}
+                        <Dropdown
+                            trigger={
+                                <div className="p-2 rounded-full bg-black/20 hover:bg-black/30 transition cursor-pointer">
+                                    <Brain className="w-5 h-5 text-white" />
+                                </div>
+                            }
+                        >
                             <button
                                 onClick={() => navigate("/vocabulary")}
-                                className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
+                                className="flex items-center w-full gap-2 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
                             >
                                 <BookText className="w-4 h-4" />
                                 Vocabulary
                             </button>
                             <button
                                 onClick={() => navigate("/topic-memory")}
-                                className="flex items-center w-full gap-2 px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-700"
+                                className="flex items-center w-full gap-2 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition"
                             >
                                 <Archive className="w-4 h-4" />
                                 Topic Memory
                             </button>
                         </Dropdown>
 
+                        {/* Profile dropdown */}
                         <Dropdown
                             trigger={
-                                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 hover:bg-black/40">
+                                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/20 hover:bg-black/30 transition cursor-pointer">
                                     <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
                                         {avatarLetter}
                                     </span>
                                     <div className="w-8 h-8 relative">
                                         <svg width="32" height="32">
-                                            <circle cx="16" cy="16" r={radius} stroke="#4B5563" strokeWidth="2" fill="none" />
+                                            <circle
+                                                cx="16"
+                                                cy="16"
+                                                r={radius}
+                                                stroke="#4B5563"
+                                                strokeWidth="2"
+                                                fill="none"
+                                            />
                                             <circle
                                                 cx="16"
                                                 cy="16"
