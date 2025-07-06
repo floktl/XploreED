@@ -48,7 +48,7 @@ export default function Header() {
                     className="text-xl font-semibold tracking-wide cursor-pointer"
                     onClick={() => navigate("/menu")}
                 >
-                    Flo's-Lessons.com
+                    @XplorED
                 </h1>
 
                 {username && (
