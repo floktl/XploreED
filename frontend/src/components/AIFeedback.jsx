@@ -29,7 +29,7 @@ export default function AIFeedback() {
                 }`}
         >
             <Container>
-                <Title>🤖 {username}'s AI Training Exercises</Title>
+                <Title>{username}'s AI Exercises</Title>
                 <AIExerciseBlock
                     blockId="training"
                     fetchExercisesFn={getTrainingExercises}
@@ -38,7 +38,6 @@ export default function AIFeedback() {
             </Container>
             <Footer>
                 <div className="flex gap-2">
-                    {actions}
                     <Button
                         size="sm"
                         variant="ghost"
@@ -47,8 +46,9 @@ export default function AIFeedback() {
                         className="gap-2 rounded-full"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Menu
+                        Back
                     </Button>
+                    {actions}
                 </div>
             </Footer>
         </div>

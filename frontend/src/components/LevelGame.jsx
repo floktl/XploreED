@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, MoveRight, Mic } from "lucide-react";
+import { CheckCircle2, MoveRight, Mic, ArrowLeft } from "lucide-react";
 import Button from "./UI/Button";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
@@ -405,7 +405,19 @@ export default function LevelGame() {
 
             </Container>
 
-            <Footer />
+        <Footer>
+            <Button
+                size="md"
+                variant="ghost"
+                type="button"
+                onClick={() => navigate(-1)} // navigates one step back
+                className="gap-2"
+            >
+                <ArrowLeft className="w-4 h-4" />
+                Back
+            </Button>
+        </Footer>
+
         </div>
     );
 }

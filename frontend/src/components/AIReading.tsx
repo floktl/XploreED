@@ -127,7 +127,7 @@ export default function AIReading() {
                 <Footer>
                     <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Menu
+                        Back
                     </Button>
                 </Footer>
             </div>
@@ -158,7 +158,7 @@ export default function AIReading() {
                 <Footer>
                     <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Menu
+                        Back
                     </Button>
                 </Footer>
             </div>
@@ -171,7 +171,7 @@ export default function AIReading() {
                 bottom={
                     <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                         <ArrowLeft className="w-4 h-4" />
-                        Back to Menu
+                        Back
                     </Button>
                 }
             >
@@ -223,7 +223,7 @@ export default function AIReading() {
             <Footer>
                 <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Menu
+                    Back
                 </Button>
             </Footer>
         </div>

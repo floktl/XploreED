@@ -43,7 +43,7 @@ export default function AIWeaknessLesson() {
                 }`}
         >
             <Container >
-                <Title>🤖 Personalized Lesson</Title>
+                <Title>Personalized Lesson</Title>
                 {error ? (
                     <p className="text-red-600">{error}</p>
                 ) : (
@@ -55,7 +55,7 @@ export default function AIWeaknessLesson() {
             <Footer>
                 <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Menu
+                    Back
                 </Button>
             </Footer>
         </div>

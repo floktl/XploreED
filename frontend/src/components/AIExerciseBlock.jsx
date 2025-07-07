@@ -354,16 +354,7 @@ export default function AIExerciseBlock({
     return (
         <>
             <Card className="space-y-4">
-                <div className="flex justify-end">
-                    <Button
-                        type="button"
-                        size="auto"
-                        variant="secondary"
-                        onClick={() => handleNext(true)}
-                    >
-                        ➕ New Exercise
-                    </Button>
-                </div>
+
                 {stage === 1 && current.title && (
                     <h3 className="text-xl font-semibold">{current.title}</h3>
                 )}

@@ -21,27 +21,6 @@ def update_password_route():
     update_row('users', {'password': hashed}, 'username = ?', (user,))
     return jsonify({'msg': 'password updated'})
 
-
-@settings_bp.route('/avatar', methods=['POST'])
-def upload_avatar_route():
-    user = get_current_user()
-    if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
-
-    if 'avatar' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-
-    file = request.files['avatar']
-    if file.filename == '':
-        return jsonify({'error': 'Empty filename'}), 400
-
-    avatar_dir = os.path.join('backend', 'avatars')
-    os.makedirs(avatar_dir, exist_ok=True)
-    path = os.path.join(avatar_dir, f"{user}.png")
-    file.save(path)
-    return jsonify({'msg': 'avatar uploaded'})
-
-
 @settings_bp.route('/deactivate', methods=['POST'])
 def deactivate_account_route():
     user = get_current_user()

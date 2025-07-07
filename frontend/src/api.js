@@ -446,21 +446,6 @@ export async function updatePassword(current_password, new_password) {
     return data;
 }
 
-export async function uploadAvatar(file) {
-    const formData = new FormData();
-    formData.append("avatar", file);
-
-    const res = await fetch(`${BASE_URL}/api/settings/avatar`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-    });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    return data;
-}
-
 export async function deactivateAccount(deleteAll = false) {
     const res = await fetch(`${BASE_URL}/api/settings/deactivate`, {
         method: "POST",
