@@ -119,8 +119,8 @@ export default function Lessons() {
             </Container>
             <Footer>
                 <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to Menu
+                    <ArrowLeft/>
+                    Back
                 </Button>
             </Footer>
         </div>

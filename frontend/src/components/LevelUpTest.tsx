@@ -91,7 +91,7 @@ export default function LevelUpTest() {
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
                 <Container
                     bottom={
-                        <Button variant="primary" onClick={() => navigate("/menu")}>Back to Menu</Button>
+                        <Button variant="primary" onClick={() => navigate("/menu")}>Back</Button>
                     }
                 >
                     <Title>Progress Test Result</Title>
@@ -116,7 +116,7 @@ export default function LevelUpTest() {
                         className="rounded-full"
                         onClick={() => navigate("/menu")}
                     >
-                        Back to Menu
+                        Back
                     </Button>
                 </Footer>
             </div>

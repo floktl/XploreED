@@ -61,7 +61,9 @@ export default function GrammarMap() {
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
-                <Title>Grammar Map</Title>
+                <Title>Grammar Map
+                    (in build)
+                </Title>
                 <div className="overflow-auto border rounded" style={{ height: "70vh" }}>
                     <svg width={width} height={height} className="bg-gray-100 dark:bg-gray-800">
                         {nodes.map((n, idx) => {

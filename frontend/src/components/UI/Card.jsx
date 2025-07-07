@@ -9,7 +9,7 @@ export default function Card({ children, className, fit = false }) {
     return (
         <div
             className={clsx(
-                "shadow-md border rounded-lg p-4 backdrop-blur-sm",
+                "w-full shadow-md rounded-lg p-2 backdrop-blur-sm",
                 fit && "h-[calc(100vh-7rem)] overflow-y-auto",
                 darkMode
                     ? "bg-gray-800 text-white border-gray-800"

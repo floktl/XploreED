@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { XCircle } from "lucide-react";
+import { XCircle, ArrowLeft } from "lucide-react";
 import Button from "./UI/Button";
 import { Container, Title, Input } from "./UI/UI";
 import Card from "./UI/Card";
@@ -8,7 +8,8 @@ import Alert from "./UI/Alert";
 import useAppStore from "../store/useAppStore";
 import Footer from "./UI/Footer";
 import Modal from "./UI/Modal";
-import { updatePassword, uploadAvatar, deactivateAccount } from "../api";
+import { updatePassword, deactivateAccount } from "../api";
+import clsx from "clsx";
 
 export default function Settings() {
     const [oldPw, setOldPw] = useState("");
@@ -17,11 +18,11 @@ export default function Settings() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [language, setLanguage] = useState("en");
-    const [image, setImage] = useState(null);
+    const [showDelete, setShowDelete] = useState(false);
+
     const navigate = useNavigate();
     const darkMode = useAppStore((state) => state.darkMode);
     const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
-    const [showDelete, setShowDelete] = useState(false);
 
     const handlePasswordChange = async () => {
         if (!oldPw || !password || password !== confirmPassword) {
@@ -36,19 +37,6 @@ export default function Settings() {
             setOldPw("");
             setPassword("");
             setConfirmPassword("");
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    const handleImageUpload = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-            await uploadAvatar(file);
-            setSuccess("Avatar uploaded successfully.");
-            setError("");
         } catch (err) {
             setError(err.message);
         }
@@ -74,82 +62,91 @@ export default function Settings() {
         }
     };
 
-
     return (
-        <div className="min-h-screen pb-24">
+        <div className="min-h-screen pb-32">
             <Container>
-                <Title>⚙️ Settings</Title>
-
-                <Card>
-                    <div className="space-y-6">
-                        {/* Change Password */}
-                        <div>
-                            <label className="block font-semibold mb-1">Change Password</label>
-                            <Input
-                                type="password"
-                                placeholder="Current Password"
-                                value={oldPw}
-                                onChange={(e) => setOldPw(e.target.value)}
-                            />
-                            <Input
-                                type="password"
-                                placeholder="New Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <Input
-                                type="password"
-                                placeholder="Confirm Password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                            <Button variant="primary" onClick={handlePasswordChange}>
-                                🔐 Update Password
-                            </Button>
-                        </div>
-
-                        {/* Upload Avatar */}
-                        <div>
-                            <label className="block font-semibold mb-1">Upload Avatar</label>
-                            <Input type="file" onChange={handleImageUpload} />
-                        </div>
-
-                        {/* Language Toggle */}
-                        <div>
-                            <label className="block font-semibold mb-1">Language</label>
-                            <select
-                                className="border p-2 rounded"
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                            >
-                                <option value="en">English</option>
-                                <option value="de">Deutsch</option>
-                            </select>
-                        </div>
-
-                        {/* Dark Mode */}
-                        <div>
-                            <label className="block font-semibold mb-1">Theme</label>
-                            <Button variant="secondary" onClick={toggleDarkMode}>
-                                {darkMode ? "Switch to Light" : "Switch to Dark"}
-                            </Button>
-                        </div>
-
-                        {/* Delete Account */}
-                        <div>
-                            <Button variant="danger" onClick={() => setShowDelete(true)} className="gap-2">
-                                <XCircle className="w-4 h-4" />
-                                Delete Account
-                            </Button>
-                        </div>
-
-                        {/* Feedback */}
-                        {error && <Alert type="warning">{error}</Alert>}
-                        {success && <Alert type="success">{success}</Alert>}
+                <Card className="space-y-6">
+                    {/* Change Password */}
+                    <div className="space-y-2">
+                        <label className="block font-semibold">Change Password</label>
+                        <Input
+                            type="password"
+                            placeholder="Current Password"
+                            value={oldPw}
+                            onChange={(e) => setOldPw(e.target.value)}
+                        />
+                        <Input
+                            type="password"
+                            placeholder="New Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <Input
+                            type="password"
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                        <Button variant="primary" onClick={handlePasswordChange}>
+                            🔐 Update Password
+                        </Button>
                     </div>
+
+                    {/* Language Toggle */}
+                    <div className="space-y-2">
+                        <label className="block font-semibold">Language</label>
+                        <select
+                            className={clsx(
+                                "border rounded px-3 py-2",
+                                darkMode
+                                    ? "bg-gray-800 text-white border-gray-700"
+                                    : "bg-white text-gray-900 border-gray-200"
+                            )}
+                            value={language}
+                            onChange={(e) => setLanguage(e.target.value)}
+                        >
+                            <option value="en">English</option>
+                            <option value="de">Deutsch</option>
+                        </select>
+                    </div>
+
+                    {/* Theme Toggle */}
+                    <div className="space-y-2">
+                        <label className="block font-semibold">Theme</label>
+                        <Button variant="secondary" onClick={toggleDarkMode}>
+                            {darkMode ? "Switch to Light" : "Switch to Dark"}
+                        </Button>
+                    </div>
+
+                    {/* Feedback */}
+                    {error && <Alert type="warning">{error}</Alert>}
+                    {success && <Alert type="success">{success}</Alert>}
                 </Card>
             </Container>
-            <Footer />
+
+<Footer>
+    <Button
+        size="md"
+        variant="ghost"
+        type="button"
+        onClick={() => navigate("/profile")}
+        className="gap-2"
+    >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+    </Button>
+    <Button
+        variant="danger"
+        onClick={() => setShowDelete(true)}
+        className="gap-2"
+    >
+        <XCircle className="w-4 h-4" />
+        Delete Account
+    </Button>
+</Footer>
+
+
+            {/* Delete Modal */}
             {showDelete && (
                 <Modal onClose={() => setShowDelete(false)}>
                     <h2 className="text-lg font-bold mb-2">Delete Account</h2>

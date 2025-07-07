@@ -120,7 +120,7 @@ export default function Vocabulary() {
             <Footer>
                 <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Profile
+                    Back
                 </Button>
             </Footer>
 
