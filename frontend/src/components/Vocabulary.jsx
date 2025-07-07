@@ -74,13 +74,6 @@ export default function Vocabulary() {
                     </div>
                 </Title>
 
-                <div className="mb-4 text-center">
-                    <Button onClick={() => navigate("/vocab-trainer")} className="gap-2">
-                        <Target className="w-4 h-4" />
-                        Train Vocabulary
-                    </Button>
-                </div>
-
                 {vocab.length === 0 ? (
                     <Alert type="info" className="flex items-center gap-2">
                         <Info className="w-4 h-4" />
@@ -118,12 +111,26 @@ export default function Vocabulary() {
             </Container>
 
             <Footer>
-                <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                <Button
+                    size="md"
+                    variant="ghost"
+                    type="button"
+                    onClick={() => navigate("/profile")}
+                    className="gap-2"
+                >
                     <ArrowLeft className="w-4 h-4" />
                     Back
                 </Button>
-            </Footer>
 
+                <Button
+                    variant="primary"
+                    onClick={() => navigate("/vocab-trainer")}
+                    className="gap-2"
+                >
+                    <Target className="w-4 h-4" />
+                    Train Vocabulary
+                </Button>
+            </Footer>
             {selected && (
                 <Modal onClose={() => setSelected(null)}>
                     <h2 className="text-xl font-semibold mb-4">
