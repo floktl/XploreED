@@ -9,20 +9,17 @@
       "type": "gap-fill",
       "question": "Ich ___ müde.",
       "options": ["bist", "bin", "ist", "seid"],
-      "explanation": "'Ich' uses 'bin' in present tense."
     },
     {
       "id": "ex2",
       "type": "gap-fill",
       "question": "Du ___ mein Freund.",
       "options": ["bin", "bist", "ist", "seid"],
-      "explanation": "'Du' requires 'bist'."
     },
     {
       "id": "ex3",
       "type": "translation",
       "question": "Translate to German: He is tired.",
-      "explanation": "Use 'er ist' for 'he is'."
     }
   ],
   "feedbackPrompt": "Good start! You sometimes mix up plural forms. Remember 'wir sind' and 'sie sind'.",
