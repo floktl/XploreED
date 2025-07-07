@@ -10,68 +10,68 @@ import useAppStore from "../store/useAppStore";
 import { verifyAdminPassword } from "../api";
 
 export default function AdminLogin() {
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
-  const darkMode = useAppStore((state) => state.darkMode);
-  const setIsAdmin = useAppStore((state) => state.setIsAdmin);
-  
-  const handleLogin = async () => {
-    try {
-      const success = await verifyAdminPassword(password); // ✅ 2. Use API helper
-  
-      if (success) {
-        setIsAdmin(true);
-        navigate("/admin-panel");
-      } else {
-        setError("Login failed. Wrong password?");
-      }
-    } catch (err) {
-      console.error("[CLIENT] Login failed:", err);
-      setError("Server error. Please try again.");
-    }
-  };
-  
+    const darkMode = useAppStore((state) => state.darkMode);
+    const setIsAdmin = useAppStore((state) => state.setIsAdmin);
 
-  return (
-    <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-      <Container
-        bottom={
-          <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Student Login
-          </Button>
+    const handleLogin = async () => {
+        try {
+            const success = await verifyAdminPassword(password); // ✅ 2. Use API helper
+
+            if (success) {
+                setIsAdmin(true);
+                navigate("/admin-panel");
+            } else {
+                setError("Login failed. Wrong password?");
+            }
+        } catch (err) {
+            console.error("[CLIENT] Login failed:", err);
+            setError("Server error. Please try again.");
         }
-      >
-        <Title>🔐 Admin Login</Title>
+    };
 
-        <Card>
-          <div className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter Admin Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
 
-            {error && <Alert type="error">{error}</Alert>}
+    return (
+        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+            <Container
+                bottom={
+                    <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Student Login
+                    </Button>
+                }
+            >
+                <Title>🔐 Admin Login</Title>
 
-            <Button onClick={handleLogin} variant="primary" type="submit" className="w-full gap-2">
-              <Lock className="w-4 h-4" />
-              Login
-            </Button>
+                <Card>
+                    <div className="space-y-4">
+                        <Input
+                            type="password"
+                            placeholder="Enter Admin Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
 
-          </div>
-        </Card>
-      </Container>
+                        {error && <Alert type="error">{error}</Alert>}
 
-      <Footer>
-        <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Student Login
-        </Button>
-      </Footer>
-    </div>
-  );
+                        <Button onClick={handleLogin} variant="primary" type="submit" className="w-full gap-2">
+                            <Lock className="w-4 h-4" />
+                            Login
+                        </Button>
+
+                    </div>
+                </Card>
+            </Container>
+
+            <Footer>
+                <Button onClick={() => navigate("/")} variant="link" type="submit" className="w-full gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Student Login
+                </Button>
+            </Footer>
+        </div>
+    );
 }

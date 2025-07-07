@@ -37,11 +37,10 @@ export default function Header() {
 
     return (
         <header
-            className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${
-                darkMode
-                    ? "bg-gray-800/80 text-white"
-                    : "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-900 text-white"
-            }`}
+            className={`fixed top-0 w-full z-50 shadow-md backdrop-blur-sm ${darkMode
+                ? "bg-gray-800/80 text-white"
+                : "bg-gradient-to-r from-blue-500 via-blue-600 to-blue-900 text-white"
+                }`}
         >
             <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
                 <h1
@@ -129,6 +128,15 @@ export default function Header() {
                                 </div>
                             }
                         >
+                            <button
+                                onClick={() => navigate("/profile")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-semibold">
+                                    {avatarLetter}
+                                </span>
+                                Profile
+                            </button>
                             <button
                                 onClick={() => navigate("/menu")}
                                 className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
