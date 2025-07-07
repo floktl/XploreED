@@ -12,7 +12,6 @@ import {
     sendSupportFeedback,
 } from "../api";
 import diffWords from "../utils/diffWords";
-import AskAiModal from "./AskAiModal";
 import ReportExerciseModal from "./ReportExerciseModal";
 
 export default function AIExerciseBlock({
@@ -40,7 +39,6 @@ export default function AIExerciseBlock({
     const [submitting, setSubmitting] = useState(false);
     const [nextExercise, setNextExercise] = useState(null);
     const [loadingNext, setLoadingNext] = useState(false);
-    const [showAsk, setShowAsk] = useState(false);
     const [reportExerciseId, setReportExerciseId] = useState(null);
     const [replacingId, setReplacingId] = useState(null);
 
@@ -467,32 +465,13 @@ export default function AIExerciseBlock({
                         </ul>
                     </div>
                 )}
-                {submitted && (
-                    <>
-                        <div className="mt-4 flex gap-2">
-                            <Button variant="ghost" type="button" onClick={() => setShowAsk(true)}>
-                                Ask AI
-                            </Button>
-                            {Object.entries(evaluation).some(([id, ev]) => {
-                                const userAnswer = answers[id];
-                                return (
-                                    userAnswer &&
-                                    ev?.correct &&
-                                    userAnswer.trim().toLowerCase() !==
-                                    ev.correct.trim().toLowerCase()
-                                );
-                            }) && null}
-                        </div>
-                        {feedbackPrompt && (
-                            <div className="mt-4 italic text-blue-700 dark:text-blue-300">
-                                {feedbackPrompt}
-                            </div>
-                        )}
-                    </>
+                {submitted && feedbackPrompt && (
+                    <div className="mt-4 italic text-blue-700 dark:text-blue-300">
+                        {feedbackPrompt}
+                    </div>
                 )}
 
             </Card>
-            {showAsk && <AskAiModal onClose={() => setShowAsk(false)} />}
             {reportExerciseId !== null && (
                 <ReportExerciseModal
                     exercise={current.exercises.find((e) => e.id === reportExerciseId)}
