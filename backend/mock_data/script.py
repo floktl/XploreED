@@ -203,6 +203,7 @@ def generate_feedback_prompt(
     The prompt uses the student's vocabulary list to build short example
     sentences and checks topic memory entries to highlight repeated errors.
     """
+    print(summary, flush=True)
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
     mistakes = summary.get("mistakes", [])
