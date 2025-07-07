@@ -45,6 +45,11 @@ export default function AIExerciseBlock({
 
     const answersRef = useRef(answers);
 
+    // keep answersRef synchronized with state in case other updates setAnswers
+    useEffect(() => {
+        answersRef.current = answers;
+    }, [answers]);
+
     const exercises = current?.exercises || [];
     const instructions = current?.instructions;
     const feedbackPrompt = current?.feedbackPrompt;
