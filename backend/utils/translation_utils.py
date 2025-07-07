@@ -57,7 +57,6 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
 You are a helpful German teacher verifying a student's translation.
 
 English sentence: "{english}"
-DeepL reference: "{reference}"
 Student translation: "{student}"
 
 Answer in JSON with keys `correct` (true/false) and `reason` in one short English sentence.

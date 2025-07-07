@@ -56,7 +56,6 @@ export default function Profile() {
                         <span>Profile {username && `(${username})`}</span> <Badge type="default">Student</Badge>
                     </div>
                 </Title>
-                <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>Your game results are listed below:</p>
 
                 <Card className="mb-6">
                     <div className="flex flex-col gap-4">

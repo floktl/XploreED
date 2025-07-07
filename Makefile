@@ -1,85 +1,76 @@
-.PHONY: build run migrate logs stop prune rebuild reset cytest shell
+.PHONY: build run migrate logs stop prune rebuild reset cytest shell db-delete frontend-backend
 
 IMAGE_NAME=german_class_tool
-CONTAINER_NAME=german_class_tool_dev
+COMPOSE=docker compose -f docker-compose.dev.yml
+DB_FILE=backend/utils/database/user_data.db
 
-# === Build the Docker image (runs DB migration during build) ===
-build:
-	@echo "📦 Building Docker image (includes DB migration)..."
-	@docker build -t $(IMAGE_NAME) .
-
-# === Run the container locally ===
+# === Run containers ===
 run:
-	@echo "🚀 Running container on http://localhost:8080 ..."
-	@if [ -z "$$(docker images -q $(IMAGE_NAME))" ]; then \
-		echo "📦 Image not found — building first..."; \
-		make build; \
-	fi
-	@if [ "$$(docker ps -a -q -f name=$(CONTAINER_NAME))" ]; then \
-		echo "🔁 Container exists. Starting or attaching..."; \
-		if [ "$$(docker ps -q -f name=$(CONTAINER_NAME))" ]; then \
-			echo "✅ Already running."; \
-		else \
-			echo "▶️  Starting existing container..."; \
-			docker start $(CONTAINER_NAME); \
-		fi; \
-	else \
-		echo "📦 No existing container. Creating a new one..."; \
-		docker run -it -d \
-			--name $(CONTAINER_NAME) \
-			-p 8080:80 \
-			--env-file backend/secrets/.env \
-			$(IMAGE_NAME); \
-	fi
-	@sleep 2
-	@docker logs -f $(CONTAINER_NAME)
+	@echo "🚀 Starting frontend and backend..."
+	$(COMPOSE) up
 
+# === Build containers ===
+build:
+	@echo "🔧 Building images..."
+	$(COMPOSE) build
 
-# === Run DB migration again manually (if needed) ===
+# === Migrate DB inside backend container ===
 migrate:
-	@echo "🔁 Re-running DB migration manually..."
-	@docker run --rm \
-		--env-file backend/secrets/.env \
-		$(IMAGE_NAME) \
-		python3 backend/utils/setup/migration_script.py
+	@echo "🔁 Running DB migration inside container..."
+	$(COMPOSE) exec backend python backend/utils/setup/migration_script.py
 
-# === Run Cypress tests ===
+# === Delete local SQLite database ===
+db-delete:
+	@echo "🗑️  Deleting local SQLite database: $(DB_FILE)"
+	@rm -f $(DB_FILE)
+	@echo "✅ Done. You can now run 'make migrate' to recreate it."
+
+# === Tail logs ===
+logs:
+	@echo "📜 Showing logs..."
+	$(COMPOSE) logs -f
+
+# === Stop all services ===
+stop:
+	@echo "🛑 Stopping all services..."
+	$(COMPOSE) down
+
+# === Clean Docker system ===
+prune:
+	@echo "🔥 Cleaning Docker system..."
+	docker system prune -af --volumes
+
+# === Full rebuild ===
+rebuild:
+	@echo "🔁 Rebuilding from scratch..."
+	@make stop
+	@docker image rm -f $(IMAGE_NAME) || true
+	@make build
+
+# === Full reset (prune + rebuild + run) ===
+reset:
+	@make stop
+	@make prune
+	@make db-delete
+	@make build
+	@make run
+
+# === Run Cypress end-to-end tests ===
 cytest:
 	@echo "🧪 Running Cypress tests..."
-	@docker build -t cypress-only ./cypress-tests
-	@docker run --rm -it \
+	docker build -t cypress-only ./cypress-tests
+	docker run --rm -it \
 		-v $$PWD/cypress-tests:/e2e \
 		-w /e2e \
 		--network host \
 		cypress-only
 
-# === View logs ===
-logs:
-	@docker logs -f $(CONTAINER_NAME)
-
-# === Stop the container ===
-stop:
-	@echo "🛑 Stopping container..."
-	@docker stop $(CONTAINER_NAME) || true
-
-# === Full rebuild ===
-rebuild:
-	@echo "🔁 Rebuilding image from scratch..."
-	@docker image rm -f $(IMAGE_NAME)
-	@make build
-
-# === Clean up Docker data ===
-prune:
-	@echo "🔥 Pruning Docker system..."
-	@docker system prune -af --volumes
-
-# === Full reset ===
-reset:
-	@make stop
-	@make prune
-	@make build
-	@make run
-
-# === Open shell inside running container ===
+# === Shell into backend container ===
 shell:
-	@docker exec -it $(CONTAINER_NAME) sh
+	@echo "🐚 Opening shell in backend..."
+	$(COMPOSE) exec backend sh
+
+# === Start only frontend and backend ===
+frontend-backend:
+	@echo "🌐 Starting only frontend and backend..."
+	$(COMPOSE) up frontend backend
