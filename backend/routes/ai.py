@@ -515,32 +515,60 @@ def submit_ai_exercise(block_id):
         return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
-    # print("Received submission data (HJSON):\n", json.dumps(data, indent=2), flush=True)
+    # print("✅ Received submission data (JSON):\n", json.dumps(data, indent=2), flush=True)
 
     answers = data.get("answers", {})
-    exercise_block = data.get("exercise_block") or {}
-    exercises = exercise_block.get("exercises", [])
+    # print("📝 Extracted answers:", json.dumps(answers, indent=2), flush=True)
 
+    exercise_block = data.get("exercise_block")
+    if not exercise_block or not isinstance(exercise_block, dict):
+        print("❌ Missing or invalid exercise_block!", flush=True)
+        return jsonify({"msg": "Invalid or missing exercise block."}), 400
+
+    # print("📦 Extracted exercise block:", json.dumps(exercise_block, indent=2), flush=True)
+
+    exercises = exercise_block.get("exercises")
+    if not exercises or not isinstance(exercises, list):
+        print("❌ No exercises found in exercise_block!", flush=True)
+        return jsonify({"msg": "No exercises found to evaluate."}), 400
+
+    # print(f"📚 Number of exercises received: {len(exercises)}", flush=True)
+
+    # AI Evaluation
     evaluation = evaluate_answers_with_ai(exercises, answers)
+    # print("🤖 Raw evaluation result from AI (before adjustment):\n", json.dumps(evaluation, indent=2), flush=True)
+
+    # Adjust gap fill results
     evaluation = _adjust_gapfill_results(exercises, answers, evaluation)
+    # print("🔧 Evaluation after gapfill adjustment:\n", json.dumps(evaluation, indent=2), flush=True)
+
     if not evaluation:
+        print("❌ Evaluation failed — no evaluation returned", flush=True)
         return jsonify({"msg": "Evaluation failed"}), 500
 
+    # Mapping correct answers to exercises
     id_map = {str(r.get("id")): r.get("correct_answer") for r in evaluation.get("results", [])}
+    # print("🗺️ ID → Correct Answer Map:", json.dumps(id_map, indent=2), flush=True)
+
     for ex in exercises:
         cid = str(ex.get("id"))
         if cid in id_map:
             ex["correctAnswer"] = id_map[cid]
+        # print(f"✅ Updated exercise {cid} with correct answer: {id_map.get(cid)}", flush=True)
 
+    # Score summary
     mistakes = []
     correct = 0
     for ex in exercises:
         cid = str(ex.get("id"))
         user_ans = answers.get(cid, "")
         correct_ans = id_map.get(cid, "")
+        # print(f"🔍 Checking answer for {cid}: user='{user_ans}' vs correct='{correct_ans}'", flush=True)
         if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
             correct += 1
+            # print(f"✅ Correct for {cid}", flush=True)
         else:
+            # print(f"❌ Mistake for {cid}", flush=True)
             mistakes.append({
                 "question": ex.get("question"),
                 "your_answer": user_ans,
@@ -548,6 +576,8 @@ def submit_ai_exercise(block_id):
             })
 
     summary = {"correct": correct, "total": len(exercises), "mistakes": mistakes}
+    # print("📊 Final summary:\n", json.dumps(summary, indent=2), flush=True)
+
 
     vocab_rows = fetch_custom(
         "SELECT vocab, translation FROM vocab_log WHERE username = ?",

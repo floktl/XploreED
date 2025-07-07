@@ -604,7 +604,11 @@ export const submitExerciseAnswers = async (
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ answers, exercise_block: exerciseBlock }),
+        body: JSON.stringify({
+            answers,
+            exercise_block: exerciseBlock || { exercises: [] },
+        }),
+
     });
     if (!res.ok) throw new Error("Failed to submit answers");
     return res.json();
@@ -619,7 +623,10 @@ export const argueExerciseAnswers = async (
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ answers, exercise_block: exerciseBlock }),
+        body: JSON.stringify({
+            answers,
+            exercise_block: exerciseBlock || { exercises: [] },
+        }),
     });
     if (!res.ok) throw new Error("Failed to argue answers");
     return res.json();

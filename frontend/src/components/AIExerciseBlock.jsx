@@ -25,6 +25,7 @@ export default function AIExerciseBlock({
     setFooterActions,
 }) {
     const [current, setCurrent] = useState(data || null);
+    const currentBlockRef = useRef(null);
     const [loadingInit, setLoadingInit] = useState(
         mode === "student" && (!data || !Array.isArray(data.exercises))
     );
@@ -58,6 +59,12 @@ export default function AIExerciseBlock({
     useEffect(() => {
         setIsComplete(completed);
     }, [completed]);
+
+    useEffect(() => {
+        if (current && Array.isArray(current.exercises) && current.exercises.length > 0) {
+            currentBlockRef.current = current;
+        }
+    }, [current]);
 
     useEffect(() => {
         if (mode !== "student") return;
@@ -183,7 +190,13 @@ export default function AIExerciseBlock({
         setSubmitted(true);
         const currentAnswers = answersRef.current;
         try {
-            const result = await submitExerciseAnswers(blockId, currentAnswers, current);
+            const blockToSubmit = currentBlockRef.current || current;
+            const result = await submitExerciseAnswers(blockId, currentAnswers, {
+                instructions: blockToSubmit?.instructions || "",
+                exercises: blockToSubmit?.exercises || [],
+                vocabHelp: blockToSubmit?.vocabHelp || [],
+            });
+
             if (result?.results) {
                 const map = {};
                 result.results.forEach((r) => {
