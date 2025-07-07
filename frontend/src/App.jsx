@@ -29,6 +29,7 @@ import AIReading from "./components/AIReading";
 import LevelUpTest from "./components/LevelUpTest";
 import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
+import AskAiButton from "./components/AskAiButton";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -57,7 +58,12 @@ function AppWrapper() {
         fetchUserAndRole();
     }, [setUsername, setIsAdmin, setIsLoading]);
 
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <RouterProvider router={router} />
+            <AskAiButton />
+        </>
+    );
 }
 
 // ✅ Route definitions
