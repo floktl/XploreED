@@ -528,8 +528,7 @@ export const updateLessonBlockProgress = async (lessonId, blockId, completed) =>
     return res.json();
 };
 
-export const getAiExercises = async (payload = {}) =>
-{
+export const getAiExercises = async (payload = {}) => {
     const res = await fetch(`${BASE_URL}/api/ai-exercises`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

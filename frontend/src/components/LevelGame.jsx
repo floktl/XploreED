@@ -328,12 +328,12 @@ export default function LevelGame() {
                                     onDragEnd={handleDragEnd}
                                     onDrop={(e) => handleDrop(e, i)}
                                     className={`word-item px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${draggedItem === i
-                                            ? "bg-blue-600 text-white shadow-lg z-10"
-                                            : hoverIndex === i
-                                                ? "bg-blue-400 text-white"
-                                                : darkMode
-                                                    ? "bg-gray-700 hover:bg-gray-600 text-white"
-                                                    : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+                                        ? "bg-blue-600 text-white shadow-lg z-10"
+                                        : hoverIndex === i
+                                            ? "bg-blue-400 text-white"
+                                            : darkMode
+                                                ? "bg-gray-700 hover:bg-gray-600 text-white"
+                                                : "bg-gray-200 hover:bg-gray-300 text-gray-800"
                                         } cursor-ew-resize select-none flex items-center justify-center`}
                                     style={{ height: "42px" }}
                                 >
@@ -352,10 +352,10 @@ export default function LevelGame() {
                                 onClick={toggleRecording}
                                 disabled={!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY === "YOUR_API_KEY_HERE"}
                                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full p-2 ${isRecording
-                                        ? "bg-red-500 animate-pulse"
-                                        : darkMode
-                                            ? "bg-gray-600 hover:bg-gray-500"
-                                            : "bg-gray-200 hover:bg-gray-300"
+                                    ? "bg-red-500 animate-pulse"
+                                    : darkMode
+                                        ? "bg-gray-600 hover:bg-gray-500"
+                                        : "bg-gray-200 hover:bg-gray-300"
                                     } transition-all`}
                                 title={isRecording ? "Stop recording" : "Start recording (German)"}
                             >
