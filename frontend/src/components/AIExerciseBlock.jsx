@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
@@ -42,6 +42,8 @@ export default function AIExerciseBlock({
     const [showAsk, setShowAsk] = useState(false);
     const [reportExerciseId, setReportExerciseId] = useState(null);
     const [replacingId, setReplacingId] = useState(null);
+
+    const answersRef = useRef(answers);
 
     const exercises = current?.exercises || [];
     const instructions = current?.instructions;
@@ -166,14 +168,17 @@ export default function AIExerciseBlock({
     };
 
     const handleSelect = (exId, value) => {
-        setAnswers((prev) => ({ ...prev, [exId]: value }));
+        const updated = { ...answersRef.current, [exId]: value };
+        answersRef.current = updated;
+        setAnswers(updated);
     };
 
     const handleSubmit = async () => {
         setSubmitting(true);
         setSubmitted(true);
+        const currentAnswers = answersRef.current;
         try {
-            const result = await submitExerciseAnswers(blockId, answers, current);
+            const result = await submitExerciseAnswers(blockId, currentAnswers, current);
             if (result?.results) {
                 const map = {};
                 result.results.forEach((r) => {
@@ -202,14 +207,15 @@ export default function AIExerciseBlock({
             console.error("Submission failed:", e);
         } finally {
             setSubmitting(false);
-            fetchNext({ answers });
+            fetchNext({ answers: currentAnswers });
         }
     };
 
     const handleArgue = async () => {
         setArguing(true);
         try {
-            const result = await argueExerciseAnswers(blockId, answers, current);
+            const currentAnswers = answersRef.current;
+            const result = await argueExerciseAnswers(blockId, currentAnswers, current);
             if (result?.results) {
                 const map = {};
                 result.results.forEach((r) => {
@@ -240,6 +246,7 @@ export default function AIExerciseBlock({
             setCurrent(nextExercise);
             setNextExercise(null);
             setStage((s) => s + 1);
+            answersRef.current = {};
             setAnswers({});
             setSubmitted(false);
             setEvaluation({});
@@ -249,9 +256,11 @@ export default function AIExerciseBlock({
         } else {
             setLoading(true);
             try {
-                const newData = await fetchExercisesFn({ answers });
+                const currentAnswers = answersRef.current;
+                const newData = await fetchExercisesFn({ answers: currentAnswers });
                 setCurrent(newData);
                 setStage((s) => s + 1);
+                answersRef.current = {};
                 setAnswers({});
                 setSubmitted(false);
                 setEvaluation({});
@@ -281,6 +290,7 @@ export default function AIExerciseBlock({
                 setAnswers((a) => {
                     const na = { ...a };
                     delete na[exerciseId];
+                    answersRef.current = na;
                     return na;
                 });
                 setEvaluation((e) => {
@@ -298,7 +308,7 @@ export default function AIExerciseBlock({
 
     const handleSendReport = async (exerciseId, message) => {
         const ex = current.exercises.find((e) => e.id === exerciseId);
-        const userAns = answers[exerciseId] || "";
+        const userAns = answersRef.current[exerciseId] || "";
         const aiAns = evaluation[exerciseId]?.correct || "";
         const content =
             `Exercise Report\nID: ${exerciseId}\nQuestion: ${ex?.question}\n` +
