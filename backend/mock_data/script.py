@@ -135,7 +135,6 @@ Here is the required JSON structure — you must follow it **exactly**:
      - `correctAnswer`: the correct string
    - For "translation":
      - `correctAnswer`: the correct German translation
-   - `explanation`: one-line grammar explanation
 
  2. The overall JSON must contain:
    - `lessonId`, `title`, `instructions`, `level`
@@ -198,12 +197,8 @@ def generate_feedback_prompt(
     vocab: list | None = None,
     topic_memory: list | None = None,
 ) -> str:
-    """Return a short paragraph of feedback in English.
+    """Return concise feedback (1–2 sentences) summarizing student performance."""
 
-    The prompt uses the student's vocabulary list to build short example
-    sentences and checks topic memory entries to highlight repeated errors.
-    """
-    print(summary, flush=True)
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
     mistakes = summary.get("mistakes", [])
@@ -211,71 +206,53 @@ def generate_feedback_prompt(
     if total == 0:
         return "No answers were submitted."
 
-    mistakes_text = "\n".join(
-        f"- Question: {m['question']} | Your answer: {m['your_answer']} | Correct: {m['correct_answer']}"
-        for m in mistakes[:3]
-    )
+    top_mistakes = [
+        f"Q: {m['question']} | Your: {m['your_answer']} | Correct: {m['correct_answer']}"
+        for m in mistakes[:2]
+    ]
+    mistakes_text = "\n".join(top_mistakes)
 
-    # Build short example sentences using the student's vocabulary
-    examples = []
-    if vocab:
-        for item in vocab[:3]:
-            word = item.get("word")
-            if not word:
-                continue
-            translation = item.get("translation")
-            if translation:
-                examples.append(f"Example: {word} – {translation}.")
-            else:
-                examples.append(f"Example: {word}.")
-    examples_text = "\n".join(examples)
+    top_vocab = [
+        f"{v.get('word')} – {v.get('translation')}" for v in (vocab or [])[:3]
+        if v.get("word") and v.get("translation")
+    ]
+    examples_text = ", ".join(top_vocab)
 
-    repeated_topics = []
-    if topic_memory:
-        topic_counts = {}
-        for entry in topic_memory:
-            topic = entry.get("topic")
-            if not topic:
-                continue
-            for t in str(topic).split(','):
-                t = t.strip()
-                if not t:
-                    continue
+    topic_counts = {}
+    for entry in topic_memory or []:
+        for topic in str(entry.get("topic", "")).split(","):
+            t = topic.strip()
+            if t:
                 topic_counts[t] = topic_counts.get(t, 0) + 1
-        repeated_topics = [t for t, c in topic_counts.items() if c > 1]
-    repeated_text = "\n".join(f"- {t}" for t in repeated_topics[:3])
+    repeated_topics = [t for t, c in topic_counts.items() if c > 1][:3]
+    repeated_text = ", ".join(repeated_topics)
 
     user_prompt = {
         "role": "user",
-        "content": f"""
-You are a friendly German teacher. Summarise this placement test result for the new student.
-
-Correct answers: {correct} out of {total}
-
-List each mistake in the following format:
-{mistakes_text}
-
-If a topic was answered incorrectly multiple times also mention it:
-{repeated_text}
-
-Use these vocabulary items in short example sentences:
-{examples_text}
-
-End with two short sentences explaining that this platform will generate custom exercises focusing on the student's weak areas so they can improve.
-"""
+        "content": (
+            "You are a helpful German teacher writing a very short feedback message "
+            "based on this student's test result.\n\n"
+            f"Correct: {correct} out of {total}\n\n"
+            f"Mistakes:\n{mistakes_text or 'None'}\n\n"
+            f"Repeated grammar issues: {repeated_text or 'None'}\n\n"
+            f"Vocabulary used: {examples_text or 'None'}\n\n"
+        )
     }
 
     payload = {
         "model": "mistral-medium",
         "messages": [
-            {"role": "system", "content": "Write a short ecouraging one line feedback in English. Mention what went well and what could be improved."},
+            {"role": "system", "content": "You are a strict German teacher, answer in english only, and skip any small talk, focus on improvement only"},
             user_prompt
         ],
-        "temperature": 0.5
+        "temperature": 0.3,
     }
 
-    response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"].strip()
-    else:
-        return "Could not generate feedback."
+    try:
+        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        if resp.status_code == 200:
+            return resp.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        print("[generate_feedback_prompt] Error:", e, flush=True)
+
+    return "Great effort! We'll generate custom exercises to help you improve further."

@@ -115,7 +115,7 @@ export default function Vocabulary() {
                     size="md"
                     variant="ghost"
                     type="button"
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/menu")}
                     className="gap-2"
                 >
                     <ArrowLeft className="w-4 h-4" />
