@@ -92,3 +92,29 @@
 .feedback-fade-in {
     animation: feedback-fade-in 0.15s ease;
 }
+
+/* global.css or tailwind base */
+.lesson-content {
+    color: inherit;
+    background-color: inherit;
+}
+
+.lesson-content h1,
+.lesson-content h2,
+.lesson-content h3,
+.lesson-content p,
+.lesson-content li {
+    color: inherit !important;
+    background: inherit !important;
+}
+
+.lesson-content table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+.lesson-content img {
+  max-width: 100%;
+  height: auto;
+}
