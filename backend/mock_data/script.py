@@ -1,21 +1,16 @@
 # === mistral_exercise_generator.py ===
 
-import requests
 import os
 import json
 import re
-from dotenv import load_dotenv
 from datetime import datetime, date
+import requests
+from dotenv import load_dotenv
+from utils.prompt_utils import make_prompt, SYSTEM_PROMPT, FEEDBACK_SYSTEM_PROMPT
+from utils.ai_api import send_request
+from utils.json_utils import extract_json
 
 load_dotenv()
-
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json"
-}
 
 SYSTEM_PROMPT = """
 Your task is to generate new exercises in JSON format.
@@ -32,18 +27,6 @@ CEFR_LEVELS = [
 # === NO FALLBACK DATA ===
 
 # === UTILS ===
-
-def _extract_json(text: str):
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(0))
-            except json.JSONDecodeError:
-                pass
-    return None
 
 def _ensure_schema(exercise_block: dict) -> dict:
     def fix_exercise(ex, idx):
@@ -162,21 +145,11 @@ Create a new exercise block using the **same structure** and **same field names*
 """
     }
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            user_prompt
-        ],
-        "temperature": 0.7
-    }
-    # print('User prompt:::', flush=True)
-    content_str = payload["messages"][1]["content"]
-    # print(content_str.encode().decode("unicode_escape"))
-    response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload)
+    messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
+    response = send_request(messages)
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]
-        parsed = _extract_json(content)
+        parsed = extract_json(content)
         if parsed is not None:
             # print("✅ Successfully parsed exercise block from AI./n/n", flush=True)
             parsed = _ensure_schema(parsed)
@@ -239,17 +212,11 @@ def generate_feedback_prompt(
         )
     }
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a strict German teacher, answer in english only, and skip any small talk, focus on improvement only"},
-            user_prompt
-        ],
-        "temperature": 0.3,
-    }
-
+    messages = make_prompt(
+        user_prompt["content"], FEEDBACK_SYSTEM_PROMPT
+    )
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_request(messages, temperature=0.3)
         if resp.status_code == 200:
             return resp.json()["choices"][0]["message"]["content"].strip()
     except Exception as e:

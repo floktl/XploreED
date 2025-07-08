@@ -357,17 +357,13 @@ if "correct" not in topic_cols:
         "ALTER TABLE topic_memory ADD COLUMN correct INTEGER DEFAULT 0;"
     )
     print("✅ 'correct' column added to 'topic_memory'.")
-else:
-    print("ℹ️ 'correct' column already exists in 'topic_memory'.")
-
+# no-op else
 # ✅ Add context column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
 topic_cols = [col[1] for col in cursor.fetchall()]
 if "context" not in topic_cols:
     cursor.execute("ALTER TABLE topic_memory ADD COLUMN context TEXT;")
     print("✅ 'context' column added to 'topic_memory'.")
-else:
-    print("ℹ️ 'context' column already exists in 'topic_memory'.")
 
 # ✅ Add quality column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
@@ -375,8 +371,6 @@ topic_cols = [col[1] for col in cursor.fetchall()]
 if "quality" not in topic_cols:
     cursor.execute("ALTER TABLE topic_memory ADD COLUMN quality INTEGER DEFAULT 0;")
     print("✅ 'quality' column added to 'topic_memory'.")
-else:
-    print("ℹ️ 'quality' column already exists in 'topic_memory'.")
 
 
 # ✅ Add num_blocks column if missing
@@ -387,8 +381,6 @@ if "num_blocks" not in columns:
         "ALTER TABLE lesson_content ADD COLUMN num_blocks INTEGER DEFAULT 0;"
     )
     print("✅ 'num_blocks' column added.")
-else:
-    print("ℹ️ 'num_blocks' column already exists.")
 
 # ✅ Add ai_enabled column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")
@@ -398,8 +390,6 @@ if "ai_enabled" not in columns:
         "ALTER TABLE lesson_content ADD COLUMN ai_enabled INTEGER DEFAULT 0;"
     )
     print("✅ 'ai_enabled' column added.")
-else:
-    print("ℹ️ 'ai_enabled' column already exists.")
 
 
 conn.commit()
