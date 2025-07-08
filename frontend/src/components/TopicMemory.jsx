@@ -183,7 +183,7 @@ export default function TopicMemory() {
                 </div>
             </Container>
             <Footer>
-                <Button size="md" variant="ghost" type="button" onClick={() => navigate("/profile")} className="gap-2">
+                <Button size="md" variant="ghost" type="button" onClick={() => navigate("/menu")} className="gap-2">
                     <ArrowLeft className="w-4 h-4" />
                     Back
                 </Button>
