@@ -48,7 +48,7 @@ export default function AIWeaknessLesson() {
                     <p className="text-red-600">{error}</p>
                 ) : (
                     <Card>
-                        <div dangerouslySetInnerHTML={{ __html: html }} />
+                       <div className="lesson-content prose dark:prose-invert" dangerouslySetInnerHTML={{ __html: html }} />
                     </Card>
                 )}
             </Container>

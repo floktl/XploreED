@@ -914,6 +914,24 @@ def create_ai_lesson():
 
     return Response(html, mimetype="text/html")
 
+import re
+
+def clean_html(raw_html: str) -> str:
+    """Clean Mistral HTML: remove markdown block, <style> tags, and unwanted wrappers."""
+    # Remove markdown ```html wrapper
+    if raw_html.startswith("```html"):
+        raw_html = raw_html.replace("```html", "").strip()
+    if raw_html.endswith("```"):
+        raw_html = raw_html[:-3].strip()
+
+    # Remove <style> tags and their content
+    raw_html = re.sub(r"<style[\s\S]*?</style>", "", raw_html, flags=re.IGNORECASE)
+
+    # Remove <html>, <head>, <body>, <meta>, <title> tags
+    raw_html = re.sub(r"</?(html|head|body|meta|title)[^>]*>", "", raw_html, flags=re.IGNORECASE)
+
+    return raw_html.strip()
+
 
 @ai_bp.route("/weakness-lesson", methods=["GET"])
 def ai_weakness_lesson():
@@ -930,17 +948,14 @@ def ai_weakness_lesson():
         (username,),
     )
 
-    grammar = row.get("grammar") if row else None
-    skill = row.get("skill_type") if row else None
-    if not grammar:
-        grammar = "Modalverben"
-        skill = "grammar"
+    grammar = row.get("grammar") if row else "Modalverben"
+    skill = row.get("skill_type") if row else "grammar"
 
     user_prompt = {
         "role": "user",
         "content": (
             "Create a short HTML lesson in English for a German learner. "
-            f"Explain the topic '{grammar}' ({skill}) and give three training tips."
+            f"Explain the topic '{grammar}' ({skill})"
             "Return only valid HTML."
         ),
     }
@@ -964,18 +979,21 @@ def ai_weakness_lesson():
     try:
         resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
         if resp.status_code == 200:
-            html = resp.json()["choices"][0]["message"]["content"].strip()
+            raw_html = resp.json()["choices"][0]["message"]["content"].strip()
+            cleaned_html = clean_html(raw_html)
+
             store_user_ai_data(
                 username,
                 {
-                    "weakness_lesson": html,
+                    "weakness_lesson": cleaned_html,
                     "weakness_topic": grammar,
                     "lesson_updated_at": datetime.datetime.now().isoformat(),
                 },
             )
-            return Response(html, mimetype="text/html")
+            return Response(cleaned_html, mimetype="text/html")
     except Exception as e:
         current_app.logger.error("Failed to generate weakness lesson: %s", e)
+
     return jsonify({"error": "Mistral error"}), 500
 
 
