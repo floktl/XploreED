@@ -3,25 +3,11 @@
 
 from utils.data.db_utils import get_connection, fetch_custom
 from utils.ai.prompts import game_sentence_prompt
+from utils.ai.ai_api import send_prompt
 import random
-import requests
 from colorama import Fore, Style
 from datetime import datetime
-import os
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-if not MISTRAL_API_KEY:
-    try:
-        with open("MISTRAL_API_KEY") as f:
-            MISTRAL_API_KEY = f.read().strip()
-    except Exception:
-        MISTRAL_API_KEY = None
-
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json",
-}
 
 LEVELS = [
     "Ich bin Anna",
@@ -137,17 +123,10 @@ def generate_ai_sentence(username=None):
 
         user_prompt = game_sentence_prompt(vocab_list, topics)
 
-        payload = {
-            "model": "mistral-medium",
-            "messages": [
-                {"role": "system", "content": "You are a helpful German teacher."},
-                user_prompt,
-            ],
-            "temperature": 0.7,
-        }
-
-        resp = requests.post(
-            MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.7,
         )
         if resp.status_code == 200:
             sentence = resp.json()["choices"][0]["message"]["content"].strip()

@@ -21,13 +21,11 @@ from utils.ai.prompts import (
     answers_evaluation_prompt,
     reading_exercise_prompt,
 )
-from utils.ai.ai_api import send_request
+from utils.ai.ai_api import send_request, send_prompt
 from datetime import date
 from . import (
     EXERCISE_TEMPLATE,
     READING_TEMPLATE,
-    HEADERS,
-    MISTRAL_API_URL,
     CEFR_LEVELS,
     FEEDBACK_FILE,
 )
@@ -315,22 +313,12 @@ def evaluate_answers_with_ai(
 
     user_prompt = answers_evaluation_prompt(instructions, formatted)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher."
-                ),
-            },
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher.",
+            user_prompt,
+            temperature=0.3,
+        )
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"]
             parsed = extract_json(content)
@@ -417,17 +405,12 @@ def generate_reading_exercise(
 
     user_prompt = reading_exercise_prompt(style, cefr_level, extra)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            user_prompt,
-        ],
-        "temperature": 0.7,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.7,
+        )
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"]
             parsed = extract_json(content)

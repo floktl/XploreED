@@ -1,6 +1,5 @@
 """Utility helpers for vocabulary management and translation."""
 
-import os
 import re
 import json
 from datetime import datetime, timedelta
@@ -9,18 +8,11 @@ from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
-import requests
-
 from ..data.db_utils import get_connection, update_row, fetch_one_custom
 from .algorithm import sm2
+from utils.ai.ai_api import send_prompt
 
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json",
-}
 
 ARTICLES = {
     "der",
@@ -54,23 +46,16 @@ def _extract_json(text: str):
 
 def analyze_word_ai(word: str) -> Optional[dict]:
     """Return analysis data for a German word using Mistral."""
-    if not MISTRAL_API_KEY or not word:
+    if not word:
         return None
 
     user_prompt = analyze_word_prompt(word)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German linguist."},
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(
-            MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10
+        resp = send_prompt(
+            "You are a helpful German linguist.",
+            user_prompt,
+            temperature=0.3,
         )
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
@@ -248,22 +233,15 @@ def save_vocab(
 
 def translate_to_german(english_sentence: str, username: Optional[str] = None) -> str:
     """Translate an English sentence using Mistral AI and optionally store vocab."""
-    if not MISTRAL_API_KEY:
-        return "❌ Mistral key is empty."
 
     user_prompt = translate_sentence_prompt(english_sentence)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German translator."},
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a helpful German translator.",
+            user_prompt,
+            temperature=0.3,
+        )
         if resp.status_code == 200:
             german_text = resp.json()["choices"][0]["message"]["content"].strip()
             if username:
