@@ -2,7 +2,6 @@
 """SQLite backed session management for the API."""
 
 import uuid
-import sqlite3
 from ..db_utils import get_connection
 
 class SessionManager:
@@ -36,7 +35,7 @@ class SessionManager:
     def destroy_session(self, session_id):
         with get_connection() as conn:
             conn.execute("DELETE FROM sessions WHERE session_id = ?", (session_id,))
-    
+
     def destroy_user_sessions(self, username):
         with get_connection() as conn:
             conn.execute("DELETE FROM sessions WHERE username = ?", (username,))

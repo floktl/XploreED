@@ -164,8 +164,6 @@ def get_scrambled_sentence(sentence):
     random.shuffle(words)
     return words
 
-
-from mock_data.script import generate_feedback_prompt
 from colorama import Fore, Style
 
 def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None):

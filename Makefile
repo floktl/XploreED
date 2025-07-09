@@ -17,7 +17,7 @@ build:
 # === Migrate DB inside backend container ===
 migrate:
 	@echo "🔁 Running DB migration inside container..."
-	$(COMPOSE) exec backend python backend/utils/setup/migration_script.py
+	$(COMPOSE) exec backend python backend/src/utils/setup/migration_script.py
 
 # === Delete local SQLite database ===
 db-delete:
