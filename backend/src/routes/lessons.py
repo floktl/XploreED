@@ -5,6 +5,7 @@ from database import select_rows, select_one
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
+    """Return summary information for all published lessons for the user."""
     user = require_user()
 
     lessons = select_rows(
@@ -74,6 +75,7 @@ def get_lessons():
 
 @lessons_bp.route("/lesson/<int:lesson_id>", methods=["GET"])
 def get_lesson_content(lesson_id):
+    """Return HTML content and metadata for a single lesson."""
     user = require_user()
 
     row = select_rows(
@@ -103,6 +105,7 @@ def get_lesson_content(lesson_id):
 
 @lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
+    """Return completion status of each block in the lesson."""
     user = require_user()
 
     rows = select_rows(
