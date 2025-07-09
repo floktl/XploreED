@@ -30,6 +30,8 @@ import LevelUpTest from "./components/LevelUpTest";
 import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
 import AskAiButton from "./components/AskAiButton";
+import TermsOfService from "./components/TermsOfService";
+import About from "./components/About";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -93,7 +95,9 @@ const router = createBrowserRouter(
         { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> },
         { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> },
         { path: "/reading-exercise", element: <AIReading />, errorElement: <ErrorPage /> },
-        { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> }
+        { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> },
+        { path: "/terms-of-service", element: <TermsOfService />, errorElement: <ErrorPage /> },
+        { path: "/about", element: <About />, errorElement: <ErrorPage /> }
     ],
     {
         future: {
