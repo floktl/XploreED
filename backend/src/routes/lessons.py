@@ -5,11 +5,7 @@ from database import select_rows, select_one
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
-    session_id = request.cookies.get("session_id")
-    user = session_manager.get_user(session_id)
-    if not user:
-        print("❌ Unauthorized: No user found for session", flush=True)
-        return jsonify({"msg": "Unauthorized"}), 401
+    user = require_user()
 
     lessons = select_rows(
         "lesson_content",
@@ -78,11 +74,7 @@ def get_lessons():
 
 @lessons_bp.route("/lesson/<int:lesson_id>", methods=["GET"])
 def get_lesson_content(lesson_id):
-    session_id = request.cookies.get("session_id")
-    user = session_manager.get_user(session_id)
-
-    if not user:
-        return jsonify({"msg": "Unauthorized"}), 401
+    user = require_user()
 
     row = select_rows(
         "lesson_content",
@@ -111,10 +103,7 @@ def get_lesson_content(lesson_id):
 
 @lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
-    session_id = request.cookies.get("session_id")
-    user = session_manager.get_user(session_id)
-    if not user:
-        return jsonify({"msg": "Unauthorized"}), 401
+    user = require_user()
 
     rows = select_rows(
         "lesson_progress",
