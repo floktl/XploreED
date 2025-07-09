@@ -31,7 +31,12 @@ from database import (
     select_rows,
     select_one,
 )
-from utils.helpers.helper import is_admin, get_current_user, user_exists
+from utils.helpers.helper import (
+    is_admin,
+    get_current_user,
+    user_exists,
+    require_user,
+)
 from app.blueprint import (
     admin_bp,
     auth_bp,
@@ -63,7 +68,7 @@ from utils.spaced_repetition.algorithm import sm2
 # ✅ Route-specific grouped imports
 class Imports:
     admin = [
-        "admin_bp", "request", "jsonify", "session_manager", "BeautifulSoup",
+        "admin_bp", "request", "jsonify", "session_manager", "require_user", "BeautifulSoup",
         "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
         "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
         "is_admin", "OrderedDict"
@@ -81,42 +86,42 @@ class Imports:
 
     game = [
         "game_bp", "request", "jsonify",
-        "session_manager", "os", "LEVELS", "get_scrambled_sentence",
+        "session_manager", "require_user", "os", "LEVELS", "get_scrambled_sentence",
         "evaluate_order", "save_result", "save_vocab", "extract_words",
         "generate_ai_sentence"
     ]
 
     lesson_progress = [
         "lesson_progress_bp", "request", "jsonify", "datetime",
-        "session_manager", "fetch_all", "fetch_one", "execute_query", "fetch_custom"
+        "session_manager", "require_user", "fetch_all", "fetch_one", "execute_query", "fetch_custom"
     ]
 
     lessons = [
-        "lessons_bp", "request", "jsonify", "session_manager",
+        "lessons_bp", "request", "jsonify", "session_manager", "require_user",
         "fetch_all", "fetch_one", "execute_query", "fetch_custom"
     ]
 
     profile = [
-        "profile_bp", "jsonify", "session_manager",
+        "profile_bp", "jsonify", "session_manager", "require_user",
         "fetch_all", "fetch_custom", "request"
     ]
 
     translate = [
         "translate_bp", "request", "jsonify",
-        "session_manager", "translate_to_german",
+        "session_manager", "require_user", "translate_to_german",
         "get_feedback", "evaluate_translation_ai", "evaluate_topic_qualities_ai",
         "update_topic_memory_translation", "compare_topic_qualities"
     ]
 
     user = [
-        "user_bp", "request", "jsonify", "session_manager", "fetch_all",
+        "user_bp", "request", "jsonify", "session_manager", "require_user", "fetch_all",
         "get_current_user", "fetch_custom", "fetch_one_custom",
         "insert_row", "delete_rows", "save_vocab", "extract_words",
         "sm2"
     ]
 
     ai = [
-        "ai_bp", "request", "jsonify", "session_manager"
+        "ai_bp", "request", "jsonify", "session_manager", "require_user",
     ]
 
     support = [
@@ -124,13 +129,13 @@ class Imports:
     ]
 
     settings = [
-        "settings_bp", "request", "jsonify", "session_manager", "os",
+        "settings_bp", "request", "jsonify", "session_manager", "require_user", "os",
         "generate_password_hash", "check_password_hash", "fetch_one",
         "update_row", "delete_rows"
     ]
 
     progress_test = [
-        "progress_test_bp", "request", "jsonify", "session_manager",
+        "progress_test_bp", "request", "jsonify", "session_manager", "require_user",
         "generate_ai_sentence", "get_scrambled_sentence", "evaluate_order",
         "generate_training_exercises", "evaluate_answers_with_ai",
         "generate_reading_exercise", "translate_to_german",
@@ -154,7 +159,7 @@ __all__ = [
     "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
 
     # Global helper utils
-    "is_admin", "get_current_user", "user_exists",
+    "is_admin", "get_current_user", "user_exists", "require_user",
 
     # Blueprints
     "admin_bp", "auth_bp", "debug_bp", "game_bp", "lesson_progress_bp",

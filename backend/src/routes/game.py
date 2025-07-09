@@ -18,10 +18,7 @@ from database import fetch_one
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")
 def level_game():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     level = data.get("level")
@@ -39,10 +36,7 @@ def level_game():
 @game_bp.route("/level/submit", methods=["POST"])
 @limiter.limit("20/minute")
 def submit_level():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json()
     level = int(data.get("level", 0))

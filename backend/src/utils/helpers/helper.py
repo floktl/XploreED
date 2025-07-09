@@ -1,6 +1,6 @@
 """Helper utilities for user session management."""
 
-from flask import request
+from flask import request, jsonify, abort, make_response
 from utils.session.session_manager import session_manager
 from database import select_one
 import threading
@@ -28,6 +28,15 @@ def get_current_user():
     """Returns the current logged-in user based on session cookie."""
     session_id = request.cookies.get("session_id")
     return session_manager.get_user(session_id)
+
+
+def require_user():
+    """Return the current user or abort with a 401 JSON response."""
+    session_id = request.cookies.get("session_id")
+    username = session_manager.get_user(session_id)
+    if not username:
+        abort(make_response(jsonify({"msg": "Unauthorized"}), 401))
+    return username
 
 
 def run_in_background(func, *args, **kwargs):

@@ -4,11 +4,7 @@ from utils.imports.imports import *
 
 @lesson_progress_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
-    session_id = request.cookies.get("session_id")
-    user_id = session_manager.get_user(session_id)
-
-    if not user_id:
-        return jsonify({"msg": "Unauthorized"}), 401
+    user_id = require_user()
 
     rows = select_rows(
         "lesson_progress",
@@ -23,10 +19,7 @@ def get_lesson_progress(lesson_id):
 
 @lesson_progress_bp.route("/lesson-progress", methods=["POST"])
 def update_lesson_progress():
-    session_id = request.cookies.get("session_id")
-    user_id = session_manager.get_user(session_id)
-    if not user_id:
-        return jsonify({"msg": "Unauthorized"}), 401
+    user_id = require_user()
 
     data = request.get_json()
 
@@ -54,13 +47,7 @@ def update_lesson_progress():
 
 @lesson_progress_bp.route("/lesson-progress-complete", methods=["POST"])
 def mark_lesson_complete():
-    session_id = request.cookies.get("session_id")
-
-    user_id = session_manager.get_user(session_id)
-
-    if not user_id:
-        print("❌ Unauthorized: No user found for session", flush=True)
-        return jsonify({"msg": "Unauthorized"}), 401
+    user_id = require_user()
 
     try:
         data = request.get_json()
@@ -110,10 +97,7 @@ def mark_lesson_complete():
 
 @lesson_progress_bp.route("/lesson-completed", methods=["POST"])
 def check_lesson_marked_complete():
-    session_id = request.cookies.get("session_id")
-    user_id = session_manager.get_user(session_id)
-    if not user_id:
-        return jsonify({"msg": "Unauthorized"}), 401
+    user_id = require_user()
 
     try:
         lesson_id = int(request.get_json().get("lesson_id"))
@@ -143,11 +127,7 @@ def check_lesson_marked_complete():
 
 @lesson_progress_bp.route("/mark-as-completed", methods=["POST"])
 def mark_lesson_as_completed():
-    session_id = request.cookies.get("session_id")
-    user_id = session_manager.get_user(session_id)
-
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
+    user_id = require_user()
 
     data = request.get_json()
     lesson_id = data.get("lesson_id")

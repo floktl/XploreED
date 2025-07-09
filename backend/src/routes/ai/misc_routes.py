@@ -10,11 +10,7 @@ from utils.ai.ai_api import send_prompt
 
 @ai_bp.route("/ask-ai", methods=["POST"])
 def ask_ai():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     question = data.get("question", "").strip()
@@ -38,11 +34,7 @@ def ask_ai():
 
 @ai_bp.route("/ask-ai-stream", methods=["POST"])
 def ask_ai_stream():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     question = data.get("question", "").strip()
