@@ -2,7 +2,6 @@
 
 from utils.imports.imports import *
 from pathlib import Path
-import os
 
 from app.blueprint import ai_bp
 
@@ -40,12 +39,6 @@ READING_TEMPLATE = {
     "vocabHelp": [],
 }
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json",
-}
 
 CEFR_LEVELS = [
     "A1", "A1", "A2", "A2", "B1",
