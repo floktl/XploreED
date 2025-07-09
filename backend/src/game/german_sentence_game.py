@@ -1,7 +1,7 @@
 # german_sentence_game.py
 """Logic for the sentence ordering game and feedback helpers."""
 
-from utils.data.db_utils import get_connection, fetch_custom
+from database import get_connection, insert_row, select_rows
 from utils.ai.prompts import game_sentence_prompt
 from utils.ai.ai_api import send_prompt
 import random
@@ -102,9 +102,13 @@ def generate_ai_sentence(username=None):
     """Return a short German sentence created by Mistral."""
     try:
         vocab_rows = (
-            fetch_custom(
-                "SELECT vocab FROM vocab_log WHERE username = ? ORDER BY RANDOM() LIMIT 5",
-                (username,),
+            select_rows(
+                "vocab_log",
+                columns="vocab",
+                where="username = ?",
+                params=(username,),
+                order_by="RANDOM()",
+                limit=5,
             )
             if username
             else []
@@ -112,9 +116,13 @@ def generate_ai_sentence(username=None):
         vocab_list = [row["vocab"] for row in vocab_rows] if vocab_rows else []
 
         topic_rows = (
-            fetch_custom(
-                "SELECT topic FROM topic_memory WHERE username = ? AND topic IS NOT NULL ORDER BY RANDOM() LIMIT 3",
-                (username,),
+            select_rows(
+                "topic_memory",
+                columns="topic",
+                where="username = ? AND topic IS NOT NULL",
+                params=(username,),
+                order_by="RANDOM()",
+                limit=3,
             )
             if username
             else []
@@ -319,26 +327,25 @@ def get_feedback(student_version, correct_version, vocab=None, topic_memory=None
 
 
 def save_result(username, level, correct, answer):
-    with get_connection() as conn:
-        conn.execute(
-            "INSERT INTO results (username, level, correct, answer, timestamp) VALUES (?, ?, ?, ?, ?)",
-            (username, level, int(correct), answer, datetime.now().isoformat()),
-        )
+    insert_row(
+        "results",
+        {
+            "username": username,
+            "level": level,
+            "correct": int(correct),
+            "answer": answer,
+            "timestamp": datetime.now().isoformat(),
+        },
+    )
 
 
 def get_all_results():
-    with get_connection() as conn:
-        cursor = conn.execute(
-            """
-            SELECT u.username, r.level, r.correct, r.answer, r.timestamp
-            FROM users u
-            LEFT JOIN results r ON u.username = r.username
-            ORDER BY r.timestamp DESC
-        """
-        )
-        rows = cursor.fetchall()
-
-        return [
-            {"username": u, "level": l, "correct": c, "answer": a, "timestamp": t}
-            for u, l, c, a, t in rows
-        ]
+    rows = select_rows(
+        "users u LEFT JOIN results r ON u.username = r.username",
+        columns=["u.username", "r.level", "r.correct", "r.answer", "r.timestamp"],
+        order_by="r.timestamp DESC",
+    )
+    return [
+        {"username": u, "level": l, "correct": c, "answer": a, "timestamp": t}
+        for u, l, c, a, t in rows
+    ]

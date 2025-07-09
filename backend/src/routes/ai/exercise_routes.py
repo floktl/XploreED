@@ -17,7 +17,7 @@ from .helpers import (
     process_ai_answers,
     generate_feedback_prompt
 )
-from utils.data.db_utils import fetch_custom, fetch_one, insert_row
+from database import select_rows, fetch_one, insert_row
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
 from utils.helpers.helper import run_in_background, session_manager
 from utils.spaced_repetition.level_utils import check_auto_level_up
@@ -34,10 +34,19 @@ def get_ai_exercises():
 
     example_block = EXERCISE_TEMPLATE.copy()
 
-    vocab_rows = fetch_custom(
-        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
-        "FROM vocab_log WHERE username = ?",
-        (username,),
+    vocab_rows = select_rows(
+        "vocab_log",
+        columns=[
+            "vocab",
+            "translation",
+            "interval_days",
+            "next_review",
+            "ef",
+            "repetitions",
+            "last_review",
+        ],
+        where="username = ?",
+        params=(username,),
     )
 
     vocab_data = [
@@ -156,9 +165,11 @@ def submit_ai_exercise(block_id):
     # print("📊 Final summary:\n", json.dumps(summary, indent=2), flush=True)
 
 
-    vocab_rows = fetch_custom(
-        "SELECT vocab, translation FROM vocab_log WHERE username = ?",
-        (username,),
+    vocab_rows = select_rows(
+        "vocab_log",
+        columns=["vocab", "translation"],
+        where="username = ?",
+        params=(username,),
     )
     vocab_data = [
         {"word": row["vocab"], "translation": row.get("translation")}

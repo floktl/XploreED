@@ -8,7 +8,7 @@ from difflib import SequenceMatcher
 from flask import current_app
 
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.data.db_utils import *
+from database import *
 from utils.grammar.grammar_utils import detect_language_topics
 from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
 from utils.spaced_repetition.level_utils import check_auto_level_up
@@ -184,9 +184,11 @@ def generate_feedback_prompt(
 
 def store_user_ai_data(username: str, data: dict):
     """Insert or update cached AI data for a user."""
-    exists = fetch_one_custom(
-        "SELECT username FROM ai_user_data WHERE username = ?",
-        (username,),
+    exists = select_one(
+        "ai_user_data",
+        columns="username",
+        where="username = ?",
+        params=(username,),
     )
     if exists:
         update_row("ai_user_data", data, "username = ?", (username,))
@@ -202,10 +204,19 @@ def _create_ai_block(username: str) -> dict | None:
     """
     example_block = EXERCISE_TEMPLATE.copy()
 
-    vocab_rows = fetch_custom(
-        "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
-        "FROM vocab_log WHERE username = ?",
-        (username,),
+    vocab_rows = select_rows(
+        "vocab_log",
+        columns=[
+            "vocab",
+            "translation",
+            "interval_days",
+            "next_review",
+            "ef",
+            "repetitions",
+            "last_review",
+        ],
+        where="username = ?",
+        params=(username,),
     )
     vocab_data = [
         {
@@ -427,16 +438,29 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     If ``include_correct`` is ``False`` (default), only entries that were
     answered incorrectly are returned.
     """
-    query = (
-        "SELECT grammar, topic, skill_type, context, lesson_content_id, ease_factor, "
-        "intervall, next_repeat, repetitions, last_review, correct, quality "
-        "FROM topic_memory WHERE username = ?"
-    )
-    params = [username]
+    where = "username = ?"
     if not include_correct:
-        query += " AND (correct IS NULL OR correct = 0)"
+        where += " AND (correct IS NULL OR correct = 0)"
     try:
-        rows = fetch_custom(query, tuple(params))
+        rows = select_rows(
+            "topic_memory",
+            columns=[
+                "grammar",
+                "topic",
+                "skill_type",
+                "context",
+                "lesson_content_id",
+                "ease_factor",
+                "intervall",
+                "next_repeat",
+                "repetitions",
+                "last_review",
+                "correct",
+                "quality",
+            ],
+            where=where,
+            params=(username,),
+        )
         return rows if rows else []
     except Exception:
         # Table might not exist yet

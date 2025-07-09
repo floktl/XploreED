@@ -2,7 +2,7 @@
 
 from flask import request
 from utils.session.session_manager import session_manager
-from utils.data.db_utils import fetch_one_custom
+from database import select_one
 import threading
 
 
@@ -15,7 +15,12 @@ def is_admin():
 
 def user_exists(username):
     """Checks if a user exists in the users table."""
-    row = fetch_one_custom("SELECT 1 FROM users WHERE username = ?", (username,))
+    row = select_one(
+        "users",
+        columns="1",
+        where="username = ?",
+        params=(username,),
+    )
     return row is not None
 
 

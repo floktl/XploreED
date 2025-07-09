@@ -7,7 +7,7 @@ import datetime
 from flask import request, jsonify, Response, current_app
 from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
-from utils.data.db_utils import fetch_one, fetch_one_custom, fetch_custom
+from database import fetch_one, select_one, select_rows
 from utils.html.html_utils import clean_html
 from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
@@ -102,10 +102,12 @@ def ai_weakness_lesson():
     if not username:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    row = fetch_one_custom(
-        "SELECT grammar, skill_type FROM topic_memory WHERE username = ? "
-        "ORDER BY ease_factor ASC, repetitions DESC LIMIT 1",
-        (username,),
+    row = select_one(
+        "topic_memory",
+        columns=["grammar", "skill_type"],
+        where="username = ?",
+        params=(username,),
+        order_by="ease_factor ASC, repetitions DESC",
     )
 
     grammar = row.get("grammar") if row else "Modalverben"
@@ -113,9 +115,11 @@ def ai_weakness_lesson():
 
     user_prompt = weakness_lesson_prompt(grammar, skill)
 
-    cached = fetch_one_custom(
-        "SELECT weakness_lesson, weakness_topic FROM ai_user_data WHERE username = ?",
-        (username,),
+    cached = select_one(
+        "ai_user_data",
+        columns=["weakness_lesson", "weakness_topic"],
+        where="username = ?",
+        params=(username,),
     )
     if cached and cached.get("weakness_lesson") and cached.get("weakness_topic") == grammar:
         return Response(cached["weakness_lesson"], mimetype="text/html")
@@ -156,9 +160,11 @@ def ai_reading_exercise():
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
 
-    vocab_rows = fetch_custom(
-        "SELECT vocab, translation FROM vocab_log WHERE username = ?",
-        (username,),
+    vocab_rows = select_rows(
+        "vocab_log",
+        columns=["vocab", "translation"],
+        where="username = ?",
+        params=(username,),
     )
     vocab_data = [
         {"word": row["vocab"], "translation": row.get("translation")}
