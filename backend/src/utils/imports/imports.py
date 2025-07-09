@@ -18,7 +18,7 @@ from utils.html.lesson_parser import (
     inject_block_ids,
     strip_ai_data,
 )
-from utils.data.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
+from database import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
 from utils.helpers.helper import is_admin, get_current_user, user_exists
 from app.blueprint import (
     admin_bp,

@@ -2,7 +2,7 @@
 """SQLite backed session management for the API."""
 
 import uuid
-from utils.data.db_utils import get_connection
+from database import get_connection
 
 class SessionManager:
     def __init__(self, db_path="user_data.db"):
