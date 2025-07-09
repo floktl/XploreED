@@ -1,7 +1,7 @@
 """User authentication routes."""
 
 from utils.imports.imports import *
-from utils.level_utils import initialize_topic_memory_for_level
+from utils.spaced_repetition.level_utils import initialize_topic_memory_for_level
 from app.extensions import limiter
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")

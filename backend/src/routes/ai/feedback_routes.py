@@ -11,9 +11,9 @@ from .helpers import (
     fetch_topic_memory,
     process_ai_answers,
 )
-from utils.db_utils import fetch_custom
-from utils.helper import run_in_background, session_manager
-from utils.json_utils import extract_json
+from utils.data.db_utils import fetch_custom
+from utils.helpers.helper import run_in_background, session_manager
+from utils.data.json_utils import extract_json
 
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
