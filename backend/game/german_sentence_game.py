@@ -2,6 +2,7 @@
 """Logic for the sentence ordering game and feedback helpers."""
 
 from utils.db_utils import get_connection, fetch_custom
+from utils.prompts import game_sentence_prompt
 import random
 import requests
 from colorama import Fore, Style
@@ -134,15 +135,7 @@ def generate_ai_sentence(username=None):
         )
         topics = [row["topic"] for row in topic_rows] if topic_rows else []
 
-        user_prompt = {
-            "role": "user",
-            "content": (
-                "Create one short (max 8 words) German sentence for a beginner. "
-                f"Use some of these words: {', '.join(vocab_list)}. "
-                f"Topics to consider: {', '.join(topics)}. "
-                "Only return the sentence."
-            ),
-        }
+        user_prompt = game_sentence_prompt(vocab_list, topics)
 
         payload = {
             "model": "mistral-medium",

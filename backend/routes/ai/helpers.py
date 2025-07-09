@@ -14,6 +14,12 @@ from utils.level_utils import check_auto_level_up
 from utils.helper import run_in_background
 from utils.json_utils import extract_json
 from utils.prompt_utils import make_prompt, SYSTEM_PROMPT, FEEDBACK_SYSTEM_PROMPT
+from utils.prompts import (
+    exercise_generation_prompt,
+    feedback_generation_prompt,
+    answers_evaluation_prompt,
+    reading_exercise_prompt,
+)
 from utils.ai_api import send_request
 from datetime import date
 from . import (
@@ -98,50 +104,13 @@ def generate_new_exercises(
 
     example_exercise_block["level"] = cefr_level
 
-    user_prompt = {
-        "role": "user",
-        "content": f"""
-You are generating structured grammar and translation exercises for a German learner.
-The student's level is {level_val}/10 (CEFR {cefr_level}).
-Adjust sentence complexity and vocabulary accordingly.
-
-Here is the required JSON structure — you must follow it **exactly**:
-
-1. Each exercise must include:
-   - `id`: a unique ID like `"ex1"`
-   - `type`: either `"gap-fill"` or `"translation"`
-   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)
-   - For "gap-fill":
-     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.
-     - `correctAnswer`: the correct string
-   - For "translation":
-     - `correctAnswer`: the correct German translation
-
- 2. The overall JSON must contain:
-   - `lessonId`, `title`, `instructions`, `level`
-   - `exercises`: list of 2 total exercises (mix of both types)
-   - `feedbackPrompt`
-   - `vocabHelp`: list of vocab entries with:
-       - `word`, `meaning`
-
-⚠️ Do not change field names or format.
-⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".
-⚠️ All keys must match the example exactly.
-⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.
-⚠️ Always generate new, unique sentences that were not seen in earlier exercises.
-
-Here is an example structure for reference (do not reuse content!):
-{json.dumps(example_exercise_block, indent=2)}
-
-Here is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
-{json.dumps(vocabular, indent=2)}
-
-Here is the topic memory (form the exercises to train the weaknesses seen in the entries:):
-{json.dumps(filtered_topic_memory, indent=2)}
-Create new sentences with new words and topics.
-Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
-""",
-    }
+    user_prompt = exercise_generation_prompt(
+        level_val,
+        cefr_level,
+        example_exercise_block,
+        vocabular,
+        filtered_topic_memory,
+    )
 
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
     response = send_request(messages)
@@ -195,17 +164,13 @@ def generate_feedback_prompt(
     repeated_topics = [t for t, c in topic_counts.items() if c > 1][:3]
     repeated_text = ", ".join(repeated_topics)
 
-    user_prompt = {
-        "role": "user",
-        "content": (
-            "You are a helpful German teacher writing a very short feedback message "
-            "based on this student's test result.\n\n"
-            f"Correct: {correct} out of {total}\n\n"
-            f"Mistakes:\n{mistakes_text or 'None'}\n\n"
-            f"Repeated grammar issues: {repeated_text or 'None'}\n\n"
-            f"Vocabulary used: {examples_text or 'None'}\n\n"
-        ),
-    }
+    user_prompt = feedback_generation_prompt(
+        correct,
+        total,
+        mistakes_text,
+        repeated_text,
+        examples_text,
+    )
 
     messages = make_prompt(user_prompt["content"], FEEDBACK_SYSTEM_PROMPT)
     try:
@@ -347,10 +312,7 @@ def evaluate_answers_with_ai(
             + instructions
         )
 
-    user_prompt = {
-        "role": "user",
-        "content": instructions + "\n" + json.dumps(formatted, ensure_ascii=False),
-    }
+    user_prompt = answers_evaluation_prompt(instructions, formatted)
 
     payload = {
         "model": "mistral-medium",
@@ -452,15 +414,7 @@ def generate_reading_exercise(
                 "Questions should explicitly train these weaknesses. "
             )
 
-    user_prompt = {
-        "role": "user",
-        "content": (
-            "Create a short "
-            f"{style} in German for level {cefr_level}. "
-            f"{extra}"
-            "Return JSON with keys 'text', 'questions' (each with id, question, options, correctAnswer)."
-        ),
-    }
+    user_prompt = reading_exercise_prompt(style, cefr_level, extra)
 
     payload = {
         "model": "mistral-medium",
