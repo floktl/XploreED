@@ -7,6 +7,7 @@ import {
     Sun,
     Mail,
     Menu,
+    FileText,
     Brain,
     BookText,
     Archive,
@@ -164,6 +165,13 @@ export default function Header() {
                             >
                                 <Mail className="w-4 h-4" />
                                 Support
+                            </button>
+                            <button
+                                onClick={() => navigate("/terms-of-service")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <FileText className="w-4 h-4" />
+                                Terms of Service
                             </button>
                             <button
                                 onClick={() => navigate("/about")}
