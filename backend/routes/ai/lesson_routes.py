@@ -14,7 +14,7 @@ from utils.vocab_utils import extract_words, save_vocab
 from utils.prompts import weakness_lesson_prompt
 from utils.grammar_utils import detect_language_topics
 from utils.translation_utils import _update_single_topic, update_topic_memory_reading
-from utils.helper import run_in_background
+from utils.helper import run_in_background, session_manager
 
 
 def create_ai_lesson():
@@ -221,3 +221,9 @@ def submit_reading_exercise():
 
     def _background_save():
         features = detect_language_topics(text) or ["unknown"]
+        update_topic_memory_reading(username, text)
+        check_auto_level_up(username)
+
+    run_in_background(_background_save)
+
+    return jsonify({"summary": summary, "results": results})

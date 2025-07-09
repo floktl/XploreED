@@ -114,4 +114,9 @@ def ask_ai_stream():
 
 
 @ai_bp.route("/reading-exercise", methods=["POST"])
+def reading_exercise():
+    """Proxy to the lesson reading exercise generator."""
+    from .lesson_routes import ai_reading_exercise
+
+    return ai_reading_exercise()
 
