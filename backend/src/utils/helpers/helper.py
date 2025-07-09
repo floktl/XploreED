@@ -2,7 +2,7 @@
 
 from flask import request
 from utils.session.session_manager import session_manager
-from utils.db_utils import fetch_one_custom
+from utils.data.db_utils import fetch_one_custom
 import threading
 
 

@@ -3,12 +3,12 @@ import json
 import re
 import requests
 import datetime
-from utils.grammar_utils import detect_language_topics
-from utils.db_utils import insert_row, update_row, fetch_one_custom
-from utils.level_utils import check_auto_level_up
-from utils.algorithm import sm2
-from utils.vocab_utils import translate_to_german
-from utils.prompts import (
+from utils.grammar.grammar_utils import detect_language_topics
+from utils.data.db_utils import insert_row, update_row, fetch_one_custom
+from utils.spaced_repetition.level_utils import check_auto_level_up
+from utils.spaced_repetition.algorithm import sm2
+from utils.spaced_repetition.vocab_utils import translate_to_german
+from utils.ai.prompts import (
     evaluate_translation_prompt,
     quality_evaluation_prompt,
 )

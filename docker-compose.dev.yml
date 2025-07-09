@@ -13,10 +13,15 @@ services:
     image: python:3.11-slim
     working_dir: /app
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app
+      - ./backend/secrets/.env:/app/secrets/.env
+    env_file:
+      - ./backend/secrets/.env
     command: >-
-      sh -c "pip install -r backend/requirements.txt &&
-      python backend/src/utils/setup/migration_script.py &&
-      FLASK_ENV=development PYTHONPATH=backend/src python backend/src/app.py"
+      sh -c "pip install -r requirements.txt &&
+      python src/utils/setup/migration_script.py &&
+      FLASK_ENV=development PYTHONPATH=src python src/app.py"
+
     ports:
       - "5050:5050"
+
