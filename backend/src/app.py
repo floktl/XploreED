@@ -11,6 +11,7 @@ try:
     from dotenv import load_dotenv  # type: ignore
 except Exception:
     def load_dotenv(dotenv_path=None, **_):  # type: ignore
+        """Manually load environment variables from ``dotenv_path`` if present."""
         if dotenv_path and os.path.exists(dotenv_path):
             with open(dotenv_path) as f:
                 for line in f:

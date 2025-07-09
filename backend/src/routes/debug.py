@@ -4,6 +4,7 @@ from utils.imports.imports import *
 
 @debug_bp.route("/all-data", methods=["GET"])
 def show_all_data():
+    """Dump all database tables and rows for debugging."""
     db_path = os.getenv("DB_FILE", "user_data.db")  # or use a fixed path if needed
 
     try:
