@@ -356,5 +356,3 @@ def generate_ai_feedback():
     return jsonify(feedback)
 
 
-@ai_bp.route("/training-exercises", methods=["POST"])
-
