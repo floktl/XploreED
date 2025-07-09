@@ -3,11 +3,12 @@
 import json
 import os
 import re
+import requests
 from flask import request, jsonify, Response
 
 from . import ai_bp
-from .helpers import fetch_topic_memory
-from utils.db_utils import fetch_one, fetch_one_custom
+from .helpers import fetch_topic_memory, generate_reading_exercise
+from utils.db_utils import fetch_one, fetch_one_custom, fetch_custom
 from utils.html_utils import clean_html
 from utils.level_utils import check_auto_level_up
 from utils.vocab_utils import extract_words, save_vocab
