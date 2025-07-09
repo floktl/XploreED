@@ -4,7 +4,7 @@ import json
 import requests
 from flask import request, jsonify, Response
 
-from .. import ai_bp, HEADERS, MISTRAL_API_URL
+from . import ai_bp, HEADERS, MISTRAL_API_URL
 from utils.helper import session_manager
 
 

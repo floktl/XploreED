@@ -7,7 +7,7 @@ import os
 import requests
 from flask import request, jsonify, current_app
 
-from .. import ai_bp, EXERCISE_TEMPLATE, HEADERS, MISTRAL_API_URL
+from . import ai_bp, EXERCISE_TEMPLATE, HEADERS, MISTRAL_API_URL
 from .helpers import (
     generate_new_exercises,
     prefetch_next_exercises,
@@ -355,6 +355,4 @@ def generate_ai_feedback():
     feedback = random.choice(feedback_data) if feedback_data else {}
     return jsonify(feedback)
 
-
-@ai_bp.route("/training-exercises", methods=["POST"])
 

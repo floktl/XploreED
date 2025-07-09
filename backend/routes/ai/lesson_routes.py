@@ -5,7 +5,7 @@ import os
 import re
 from flask import request, jsonify, Response
 
-from .. import ai_bp
+from . import ai_bp
 from .helpers import fetch_topic_memory
 from utils.db_utils import fetch_one, fetch_one_custom
 from utils.html_utils import clean_html
