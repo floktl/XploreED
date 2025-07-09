@@ -4,7 +4,7 @@ import json
 import datetime
 from flask import request, jsonify
 
-from .. import ai_bp
+from . import ai_bp
 from .helpers import (
     generate_training_exercises,
     prefetch_next_exercises,
