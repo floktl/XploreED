@@ -16,6 +16,7 @@ from utils.helpers.helper import run_in_background, session_manager
 
 @ai_bp.route("/training-exercises", methods=["POST"])
 def get_training_exercises():
+    """Return AI-generated exercises and prefetch the next block."""
     username = require_user()
     print("Training request from user:", username, flush=True)
 

@@ -18,6 +18,7 @@ from database import fetch_one
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")
 def level_game():
+    """Return a scrambled sentence for the requested game level."""
     username = require_user()
 
     data = request.get_json() or {}
@@ -36,6 +37,7 @@ def level_game():
 @game_bp.route("/level/submit", methods=["POST"])
 @limiter.limit("20/minute")
 def submit_level():
+    """Check the player's answer and store the game result."""
     username = require_user()
 
     data = request.get_json()

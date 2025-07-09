@@ -10,6 +10,7 @@ from utils.ai.ai_api import send_prompt
 
 @ai_bp.route("/ask-ai", methods=["POST"])
 def ask_ai():
+    """Forward a single question to Mistral and return the answer."""
     username = require_user()
 
     data = request.get_json() or {}
@@ -34,6 +35,7 @@ def ask_ai():
 
 @ai_bp.route("/ask-ai-stream", methods=["POST"])
 def ask_ai_stream():
+    """Stream a long AI answer back to the client."""
     username = require_user()
 
     data = request.get_json() or {}

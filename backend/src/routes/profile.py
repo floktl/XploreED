@@ -4,6 +4,7 @@ from utils.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])
 def get_profile():
+    """Return the current user's past game results."""
     username = require_user()
 
     rows = select_rows(

@@ -16,6 +16,7 @@ ENGLISH_SENTENCES = [
 
 @progress_test_bp.route("/progress-test", methods=["GET"])
 def get_progress_test():
+    """Return a mix of exercises for evaluating overall progress."""
     username = require_user()
 
     row = fetch_one("users", "WHERE username = ?", (username,))
@@ -49,6 +50,7 @@ def get_progress_test():
 
 @progress_test_bp.route("/progress-test/submit", methods=["POST"])
 def submit_progress_test():
+    """Evaluate answers and update user level if passed."""
     username = require_user()
 
     data = request.get_json() or {}
