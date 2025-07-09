@@ -195,7 +195,16 @@ export default function NameInput() {
                     </form>
                 </Card>
             </Container>
-            <Footer />
+            <Footer>
+                <Button
+                    variant="link"
+                    type="button"
+                    onClick={() => navigate("/terms-of-service")}
+                    className="w-full gap-2"
+                >
+                    Terms of Service
+                </Button>
+            </Footer>
         </div>
     );
 }
