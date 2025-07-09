@@ -166,6 +166,13 @@ export default function Header() {
                                 Support
                             </button>
                             <button
+                                onClick={() => navigate("/about")}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-800 transition w-full text-left"
+                            >
+                                <Menu className="w-4 h-4" />
+                                About
+                            </button>
+                            <button
                                 onClick={handleLogout}
                                 className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 dark:text-red-400 transition w-full text-left"
                             >
