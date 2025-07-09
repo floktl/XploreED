@@ -27,7 +27,7 @@ import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from utils.data.db_utils import get_connection
+from database import get_connection
 
 
 with get_connection() as conn:
