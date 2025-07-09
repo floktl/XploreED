@@ -5,7 +5,7 @@ import os
 from flask import request, jsonify, Response
 from elevenlabs.client import ElevenLabs
 
-from .. import ai_bp
+from . import ai_bp
 
 
 @ai_bp.route("/tts", methods=["POST"])

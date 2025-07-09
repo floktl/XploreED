@@ -4,7 +4,7 @@ import json
 import random
 from flask import request, jsonify
 
-from .. import ai_bp, FEEDBACK_FILE
+from . import ai_bp, FEEDBACK_FILE
 from .helpers import (
     evaluate_answers_with_ai,
     _adjust_gapfill_results,
@@ -137,4 +137,3 @@ def generate_ai_feedback():
     return jsonify(feedback)
 
 
-@ai_bp.route("/training-exercises", methods=["POST"])

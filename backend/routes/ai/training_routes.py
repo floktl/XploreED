@@ -4,7 +4,7 @@ import json
 import datetime
 from flask import request, jsonify
 
-from .. import ai_bp
+from . import ai_bp
 from .helpers import (
     generate_training_exercises,
     prefetch_next_exercises,
@@ -14,6 +14,7 @@ from utils.db_utils import fetch_one_custom
 from utils.helper import run_in_background
 
 
+@ai_bp.route("/training-exercises", methods=["POST"])
 def get_training_exercises():
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
