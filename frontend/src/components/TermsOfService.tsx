@@ -20,7 +20,7 @@ export default function TermsOfService() {
                 <Title>Terms of Service</Title>
                 <p className="mb-4">
                     By using this platform you agree to a subscription price of
-                    <strong> 12.99€ per month</strong>. A one month free trial is
+                    <strong> XX.xx€ per month</strong>. A one month free trial is
                     provided. Continued use after the trial constitutes
                     acceptance of the monthly charge.
                 </p>

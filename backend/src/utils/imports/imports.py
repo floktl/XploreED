@@ -47,6 +47,7 @@ from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, tra
 from utils.ai.translation_utils import evaluate_translation_ai, update_topic_memory_translation
 from utils.spaced_repetition.algorithm import sm2
 
+
 # ✅ Route-specific grouped imports
 class Imports:
     admin = [

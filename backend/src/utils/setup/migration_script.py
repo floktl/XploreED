@@ -16,9 +16,11 @@ except Exception:
                         key, value = line.split('=', 1)
                         os.environ.setdefault(key, value)
 
+
 # Load .env file early!
 env_path = Path(__file__).resolve().parent.parent.parent / "secrets" / ".env"
 load_dotenv(dotenv_path=env_path)
+
 
 # NOW import anything using DB_FILE
 import sys
@@ -26,6 +28,7 @@ import sys
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 from utils.data.db_utils import get_connection
+
 
 with get_connection() as conn:
     cursor = conn.cursor()
@@ -330,6 +333,7 @@ with get_connection() as conn:
     )
     print("✅ 'topic_memory' table created (if not exists).")
 
+
 # ✅ Rename 'topic' column to 'grammar'
 cursor.execute("PRAGMA table_info(topic_memory);")
 topic_cols = [col[1] for col in cursor.fetchall()]
@@ -340,6 +344,7 @@ if "grammar" not in topic_cols and "topic" in topic_cols:
     except Exception:
         print("⚠️ Failed to rename column 'topic' to 'grammar'.")
 
+
 # ✅ Add new 'topic' column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
 topic_cols = [col[1] for col in cursor.fetchall()]
@@ -348,6 +353,7 @@ if "topic" not in topic_cols:
     print("✅ 'topic' column added to 'topic_memory'.")
 else:
     print("ℹ️ 'topic' column already exists in 'topic_memory'.")
+
 
 # ✅ Add correct column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
@@ -365,6 +371,7 @@ if "context" not in topic_cols:
     cursor.execute("ALTER TABLE topic_memory ADD COLUMN context TEXT;")
     print("✅ 'context' column added to 'topic_memory'.")
 
+
 # ✅ Add quality column if missing
 cursor.execute("PRAGMA table_info(topic_memory);")
 topic_cols = [col[1] for col in cursor.fetchall()]
@@ -381,6 +388,7 @@ if "num_blocks" not in columns:
         "ALTER TABLE lesson_content ADD COLUMN num_blocks INTEGER DEFAULT 0;"
     )
     print("✅ 'num_blocks' column added.")
+
 
 # ✅ Add ai_enabled column if missing
 cursor.execute("PRAGMA table_info(lesson_content);")

@@ -76,6 +76,40 @@
             background-color: #dbeafe !important;
         }
     }
+
+    /* 👤 About Page Styling */
+    .about-section {
+        @apply text-gray-800 dark:text-white space-y-6 leading-relaxed;
+    }
+
+    .about-section h2,
+    .about-section h3,
+    .about-section h4 {
+        @apply font-semibold text-xl mt-6 mb-2 text-gray-800 dark:text-white;
+    }
+
+    .about-section p,
+    .about-section li,
+    .about-section blockquote,
+    .about-section footer {
+        @apply text-gray-700 dark:text-gray-300;
+    }
+
+    .about-section strong {
+        @apply text-gray-800 dark:text-white;
+    }
+
+    .about-section blockquote {
+        @apply border-l-4 border-gray-300 dark:border-gray-500 italic pl-4;
+    }
+
+    .feature-card {
+        @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-white;
+    }
+
+    .feature-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+    }
 }
 
 /* ✅ Feedback animations */
@@ -83,22 +117,19 @@
     from {
         opacity: 0;
     }
-
     to {
         opacity: 1;
     }
 }
-
 .feedback-fade-in {
     animation: feedback-fade-in 0.15s ease;
 }
 
-/* global.css or tailwind base */
+/* 🧠 Lesson Content Styling */
 .lesson-content {
     color: inherit;
     background-color: inherit;
 }
-
 .lesson-content h1,
 .lesson-content h2,
 .lesson-content h3,
@@ -107,14 +138,12 @@
     color: inherit !important;
     background: inherit !important;
 }
-
 .lesson-content table {
-  width: 100%;
-  overflow-x: auto;
-  display: block;
+    width: 100%;
+    overflow-x: auto;
+    display: block;
 }
-
 .lesson-content img {
-  max-width: 100%;
-  height: auto;
+    max-width: 100%;
+    height: auto;
 }

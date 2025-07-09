@@ -107,8 +107,6 @@ def extract_words(text: str) -> list[tuple[str, Optional[str]]]:
     return result
 
 
-
-
 def _singularize(noun: str) -> str:
     """Very small heuristic to get the singular form of a noun."""
     lower = noun.lower()
