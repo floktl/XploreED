@@ -10,14 +10,14 @@ from . import ai_bp, MISTRAL_API_URL, HEADERS
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
 
 from .helpers import fetch_topic_memory, generate_reading_exercise
-from utils.db_utils import fetch_one, fetch_one_custom, fetch_custom
-from utils.html_utils import clean_html
-from utils.level_utils import check_auto_level_up
-from utils.vocab_utils import extract_words, save_vocab
-from utils.prompts import weakness_lesson_prompt
-from utils.grammar_utils import detect_language_topics
-from utils.translation_utils import _update_single_topic, update_topic_memory_reading
-from utils.helper import run_in_background, session_manager
+from utils.data.db_utils import fetch_one, fetch_one_custom, fetch_custom
+from utils.html.html_utils import clean_html
+from utils.spaced_repetition.level_utils import check_auto_level_up
+from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
+from utils.ai.prompts import weakness_lesson_prompt
+from utils.grammar.grammar_utils import detect_language_topics
+from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
+from utils.helpers.helper import run_in_background, session_manager
 
 
 def create_ai_lesson():

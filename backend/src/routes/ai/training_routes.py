@@ -10,8 +10,8 @@ from .helpers import (
     prefetch_next_exercises,
     store_user_ai_data,
 )
-from utils.db_utils import fetch_one_custom
-from utils.helper import run_in_background, session_manager
+from utils.data.db_utils import fetch_one_custom
+from utils.helpers.helper import run_in_background, session_manager
 
 
 @ai_bp.route("/training-exercises", methods=["POST"])

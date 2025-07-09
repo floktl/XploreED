@@ -7,21 +7,21 @@ import requests
 from difflib import SequenceMatcher
 from flask import current_app
 
-from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.db_utils import *
-from utils.grammar_utils import detect_language_topics
-from utils.translation_utils import _update_single_topic, update_topic_memory_reading
-from utils.level_utils import check_auto_level_up
-from utils.helper import run_in_background
-from utils.json_utils import extract_json
-from utils.prompt_utils import make_prompt, SYSTEM_PROMPT, FEEDBACK_SYSTEM_PROMPT
-from utils.prompts import (
+from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
+from utils.data.db_utils import *
+from utils.grammar.grammar_utils import detect_language_topics
+from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
+from utils.spaced_repetition.level_utils import check_auto_level_up
+from utils.helpers.helper import run_in_background
+from utils.data.json_utils import extract_json
+from utils.ai.prompt_utils import make_prompt, SYSTEM_PROMPT, FEEDBACK_SYSTEM_PROMPT
+from utils.ai.prompts import (
     exercise_generation_prompt,
     feedback_generation_prompt,
     answers_evaluation_prompt,
     reading_exercise_prompt,
 )
-from utils.ai_api import send_request
+from utils.ai.ai_api import send_request
 from datetime import date
 from . import (
     EXERCISE_TEMPLATE,

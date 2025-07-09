@@ -5,7 +5,7 @@ import requests
 from flask import request, jsonify, Response, current_app
 
 from . import ai_bp, HEADERS, MISTRAL_API_URL
-from utils.helper import session_manager
+from utils.helpers.helper import session_manager
 
 
 @ai_bp.route("/ask-ai", methods=["POST"])

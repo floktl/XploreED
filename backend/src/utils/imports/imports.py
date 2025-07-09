@@ -13,13 +13,13 @@ from collections import OrderedDict
 from bs4 import BeautifulSoup
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from utils.lesson_parser import (
+from utils.html.lesson_parser import (
     update_lesson_blocks_from_html,
     inject_block_ids,
     strip_ai_data,
 )
-from utils.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
-from utils.helper import is_admin, get_current_user, user_exists
+from utils.data.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
+from utils.helpers.helper import is_admin, get_current_user, user_exists
 from app.blueprint import (
     admin_bp,
     auth_bp,
@@ -43,9 +43,9 @@ from game.german_sentence_game import (
     get_feedback,
     generate_ai_sentence,
 )
-from utils.vocab_utils import split_and_clean, save_vocab, translate_to_german, extract_words
-from utils.translation_utils import evaluate_translation_ai, update_topic_memory_translation
-from utils.algorithm import sm2
+from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, translate_to_german, extract_words
+from utils.ai.translation_utils import evaluate_translation_ai, update_topic_memory_translation
+from utils.spaced_repetition.algorithm import sm2
 
 # ✅ Route-specific grouped imports
 class Imports:
