@@ -32,14 +32,12 @@ def profile():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom(
-        """
-        SELECT level, correct, answer, timestamp
-        FROM results
-        WHERE username = ?
-        ORDER BY timestamp DESC
-    """,
-        (user,),
+    rows = select_rows(
+        "results",
+        columns=["level", "correct", "answer", "timestamp"],
+        where="username = ?",
+        params=(user,),
+        order_by="timestamp DESC",
     )
 
     results = (
@@ -65,14 +63,23 @@ def vocabulary():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom(
-        """
-        SELECT rowid as id, vocab, translation, word_type, article, details, next_review, last_review, context, exercise
-        FROM vocab_log
-        WHERE username = ?
-        ORDER BY datetime(next_review) ASC
-        """,
-        (user,),
+    rows = select_rows(
+        "vocab_log",
+        columns=[
+            "rowid as id",
+            "vocab",
+            "translation",
+            "word_type",
+            "article",
+            "details",
+            "next_review",
+            "last_review",
+            "context",
+            "exercise",
+        ],
+        where="username = ?",
+        params=(user,),
+        order_by="datetime(next_review) ASC",
     )
 
     return (
@@ -105,11 +112,12 @@ def vocab_train():
         return jsonify({"msg": "Unauthorized"}), 401
 
     if request.method == "GET":
-        row = fetch_one_custom(
-            "SELECT rowid as id, vocab, translation, word_type, article FROM vocab_log "
-            "WHERE username = ? AND datetime(next_review) <= datetime('now') "
-            "ORDER BY next_review ASC LIMIT 1",
-            (user,),
+        row = select_one(
+            "vocab_log",
+            columns=["rowid as id", "vocab", "translation", "word_type", "article"],
+            where="username = ? AND datetime(next_review) <= datetime('now')",
+            params=(user,),
+            order_by="next_review ASC",
         )
         return jsonify(row or {})
 
@@ -119,9 +127,11 @@ def vocab_train():
     if rowid is None:
         return jsonify({"msg": "Missing id"}), 400
 
-    row = fetch_one_custom(
-        "SELECT ef, repetitions, interval_days FROM vocab_log WHERE rowid = ? AND username = ?",
-        (rowid, user),
+    row = select_one(
+        "vocab_log",
+        columns=["ef", "repetitions", "interval_days"],
+        where="rowid = ? AND username = ?",
+        params=(rowid, user),
     )
     if not row:
         return jsonify({"msg": "Not found"}), 404
@@ -197,9 +207,11 @@ def report_vocab_word(vocab_id: int):
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    row = fetch_one_custom(
-        "SELECT vocab, translation, article, word_type FROM vocab_log WHERE rowid = ? AND username = ?",
-        (vocab_id, user),
+    row = select_one(
+        "vocab_log",
+        columns=["vocab", "translation", "article", "word_type"],
+        where="rowid = ? AND username = ?",
+        params=(vocab_id, user),
     )
     if not row:
         return jsonify({"msg": "Not found"}), 404
@@ -230,16 +242,26 @@ def get_topic_memory():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom(
-        """
-        SELECT id, grammar, topic, skill_type, context, lesson_content_id, ease_factor,
-               intervall, next_repeat, repetitions, last_review, correct,
-               quality
-        FROM topic_memory
-        WHERE username = ?
-        ORDER BY datetime(next_repeat) ASC
-        """,
-        (user,),
+    rows = select_rows(
+        "topic_memory",
+        columns=[
+            "id",
+            "grammar",
+            "topic",
+            "skill_type",
+            "context",
+            "lesson_content_id",
+            "ease_factor",
+            "intervall",
+            "next_repeat",
+            "repetitions",
+            "last_review",
+            "correct",
+            "quality",
+        ],
+        where="username = ?",
+        params=(user,),
+        order_by="datetime(next_repeat) ASC",
     )
 
     return jsonify(rows if rows else [])
@@ -263,16 +285,14 @@ def topic_weaknesses():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom(
-        """
-        SELECT grammar, AVG(quality) AS avg_q
-        FROM topic_memory
-        WHERE username = ?
-        GROUP BY grammar
-        ORDER BY avg_q ASC
-        LIMIT 3
-        """,
-        (user,),
+    rows = select_rows(
+        "topic_memory",
+        columns=["grammar", "AVG(quality) AS avg_q"],
+        where="username = ?",
+        params=(user,),
+        group_by="grammar",
+        order_by="avg_q ASC",
+        limit=3,
     )
 
     weaknesses = [

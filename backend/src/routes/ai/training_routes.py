@@ -10,7 +10,7 @@ from .helpers import (
     prefetch_next_exercises,
     store_user_ai_data,
 )
-from utils.data.db_utils import fetch_one_custom
+from database import select_one
 from utils.helpers.helper import run_in_background, session_manager
 
 
@@ -28,9 +28,11 @@ def get_training_exercises():
     # print("Training answers received:", answers, flush=True)
 
     if answers:
-        cached = fetch_one_custom(
-            "SELECT next_exercises FROM ai_user_data WHERE username = ?",
-            (username,),
+        cached = select_one(
+            "ai_user_data",
+            columns="next_exercises",
+            where="username = ?",
+            params=(username,),
         )
         if cached and cached.get("next_exercises"):
             try:
@@ -54,9 +56,11 @@ def get_training_exercises():
         # print("Returned preloaded training exercises", flush=True)
         return jsonify(ai_block)
 
-    cached = fetch_one_custom(
-        "SELECT exercises, next_exercises FROM ai_user_data WHERE username = ?",
-        (username,),
+    cached = select_one(
+        "ai_user_data",
+        columns=["exercises", "next_exercises"],
+        where="username = ?",
+        params=(username,),
     )
     if cached and cached.get("exercises"):
         if not cached.get("next_exercises"):

@@ -8,7 +8,7 @@ from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
-from ..data.db_utils import get_connection, update_row, fetch_one_custom
+from database import update_row, select_one, fetch_one, insert_row
 from .algorithm import sm2
 from utils.ai.ai_api import send_prompt
 
@@ -124,12 +124,13 @@ def normalize_word(word: str, article: Optional[str] = None) -> Tuple[str, str, 
 
 def vocab_exists(username: str, german_word: str) -> bool:
     """Check if a vocab entry already exists for a user."""
-    with get_connection() as conn:
-        cursor = conn.execute(
-            "SELECT 1 FROM vocab_log WHERE username = ? AND vocab = ?",
-            (username, german_word),
-        )
-        return cursor.fetchone() is not None
+    row = fetch_one(
+        "vocab_log",
+        "WHERE username = ? AND vocab = ?",
+        (username, german_word),
+        columns="1",
+    )
+    return row is not None
 
 
 ENGLISH_ARTICLES = {
@@ -204,23 +205,22 @@ def save_vocab(
         return normalized
 
     now = datetime.now().isoformat()
-    with get_connection() as conn:
-        conn.execute(
-            "INSERT OR IGNORE INTO vocab_log (username, vocab, translation, word_type, article, details, context, exercise, next_review, created_at, last_review) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (
-                username,
-                normalized,
-                english_word,
-                word_type,
-                article,
-                details,
-                context,
-                exercise,
-                now,
-                now,
-                now,
-            ),
-        )
+    insert_row(
+        "vocab_log",
+        {
+            "username": username,
+            "vocab": normalized,
+            "translation": english_word,
+            "word_type": word_type,
+            "article": article,
+            "details": details,
+            "context": context,
+            "exercise": exercise,
+            "next_review": now,
+            "created_at": now,
+            "last_review": now,
+        },
+    )
         # print(
         #     Fore.GREEN
         #     + f"[save_vocab] Saved '{normalized}' -> '{english_word}' for {username}."
@@ -280,9 +280,11 @@ def review_vocab_word(
 
     # print(f"\n🔁 Reviewing word '{normalized}' for user '{username}' with quality={quality}", flush=True)
 
-    row = fetch_one_custom(
-        "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
-        (username, normalized),
+    row = select_one(
+        "vocab_log",
+        columns=["ef", "repetitions", "interval_days"],
+        where="username = ? AND vocab = ?",
+        params=(username, normalized),
     )
 
     if not row:
@@ -290,9 +292,11 @@ def review_vocab_word(
         saved = save_vocab(username, word, exercise="ai")
         if saved:
             normalized = saved
-        row = fetch_one_custom(
-            "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
-            (username, normalized),
+        row = select_one(
+            "vocab_log",
+            columns=["ef", "repetitions", "interval_days"],
+            where="username = ? AND vocab = ?",
+            params=(username, normalized),
         )
         if row:
             ef = row.get("ef", 2.5)

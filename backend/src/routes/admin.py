@@ -13,11 +13,11 @@ def admin_results():
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    results = fetch_custom("""
-        SELECT username, level, correct, answer, timestamp
-        FROM results
-        ORDER BY username ASC, timestamp DESC
-    """)
+    results = select_rows(
+        "results",
+        columns=["username", "level", "correct", "answer", "timestamp"],
+        order_by="username ASC, timestamp DESC",
+    )
     return jsonify(results)
 
 
@@ -77,12 +77,13 @@ def profile_stats():
     if not username:
         return jsonify({"error": "Missing username"}), 400
 
-    rows = fetch_custom("""
-        SELECT level, correct, answer, timestamp
-        FROM results
-        WHERE username = ?
-        ORDER BY timestamp DESC
-    """, (username,))
+    rows = select_rows(
+        "results",
+        columns=["level", "correct", "answer", "timestamp"],
+        where="username = ?",
+        params=(username,),
+        order_by="timestamp DESC",
+    )
 
     return jsonify([
         {
@@ -99,19 +100,25 @@ def get_all_lessons():
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    lessons = fetch_custom(
-        """
-        SELECT lesson_id, title, content, target_user, published, ai_enabled, num_blocks
-        FROM lesson_content
-        ORDER BY lesson_id ASC
-    """
+    lessons = select_rows(
+        "lesson_content",
+        columns=[
+            "lesson_id",
+            "title",
+            "content",
+            "target_user",
+            "published",
+            "ai_enabled",
+            "num_blocks",
+        ],
+        order_by="lesson_id ASC",
     )
     return jsonify(lessons)
 
 
 @admin_bp.route("/debug-lessons", methods=["GET"])
 def debug_lessons():
-    return jsonify(fetch_custom("SELECT * FROM lesson_content"))
+    return jsonify(select_rows("lesson_content"))
 
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["DELETE"])
@@ -133,7 +140,11 @@ def get_lesson_by_id(lesson_id):
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    lesson = fetch_one_custom("SELECT * FROM lesson_content WHERE lesson_id = ?", (lesson_id,))
+    lesson = select_one(
+        "lesson_content",
+        where="lesson_id = ?",
+        params=(lesson_id,),
+    )
     if not lesson:
         return jsonify({"error": "not found"}), 404
     return jsonify(lesson)
@@ -181,45 +192,51 @@ def lesson_progress_summary():
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    with get_connection() as conn:
-        conn.row_factory = sqlite3.Row
-        lesson_ids = [row["lesson_id"] for row in conn.execute("SELECT DISTINCT lesson_id FROM lesson_content").fetchall()]
-        summary = {}
+    lesson_ids = [row["lesson_id"] for row in select_rows(
+        "lesson_content",
+        columns="DISTINCT lesson_id",
+    )]
 
-        for lid in lesson_ids:
-            row = conn.execute("SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lid,)).fetchone()
-            total_blocks = row["num_blocks"] if row else 0
+    summary = {}
+    for lid in lesson_ids:
+        row = select_one(
+            "lesson_content",
+            columns="num_blocks",
+            where="lesson_id = ?",
+            params=(lid,),
+        )
+        total_blocks = row.get("num_blocks") if row else 0
 
-            if total_blocks == 0:
-                summary[lid] = {
-                    "percent": 0,
-                    "num_blocks": 0
-                }
-                continue
+        if total_blocks == 0:
+            summary[lid] = {"percent": 0, "num_blocks": 0}
+            continue
 
-            users = [row["user_id"] for row in conn.execute(
-                "SELECT DISTINCT user_id FROM lesson_progress WHERE lesson_id = ?", (lid,)
-            ).fetchall()]
-            if not users:
-                summary[lid] = {
-                    "percent": 0,
-                    "num_blocks": total_blocks
-                }
-                continue
+        user_rows = select_rows(
+            "lesson_progress",
+            columns="DISTINCT user_id",
+            where="lesson_id = ?",
+            params=(lid,),
+        )
+        users = [row["user_id"] for row in user_rows]
+        if not users:
+            summary[lid] = {"percent": 0, "num_blocks": total_blocks}
+            continue
 
-            total_percent = 0
-            for uid in users:
-                completed = conn.execute("""
-                    SELECT COUNT(*) FROM lesson_progress
-                    WHERE lesson_id = ? AND user_id = ? AND completed = 1
-                """, (lid, uid)).fetchone()[0]
+        total_percent = 0
+        for uid in users:
+            completed_row = select_one(
+                "lesson_progress",
+                columns="COUNT(*) as count",
+                where="lesson_id = ? AND user_id = ? AND completed = 1",
+                params=(lid, uid),
+            )
+            completed = completed_row.get("count") if completed_row else 0
+            total_percent += (completed / total_blocks) * 100
 
-                total_percent += (completed / total_blocks) * 100
-
-            summary[lid] = {
-                "percent": round(total_percent / len(users)),
-                "num_blocks": total_blocks
-            }
+        summary[lid] = {
+            "percent": round(total_percent / len(users)),
+            "num_blocks": total_blocks,
+        }
 
     return jsonify(summary)
 
@@ -231,31 +248,34 @@ def get_individual_lesson_progress(lesson_id):
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
-    with get_connection() as conn:
-        conn.row_factory = sqlite3.Row
+    num_blocks_row = select_one(
+        "lesson_content",
+        columns="num_blocks",
+        where="lesson_id = ?",
+        params=(lesson_id,),
+    )
+    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
 
-        # 🟡 Get total blocks from lesson_content table instead of counting lesson_blocks
-        num_blocks_row = conn.execute("SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lesson_id,)).fetchone()
-        total_blocks = num_blocks_row["num_blocks"] if num_blocks_row else 0
+    if total_blocks == 0:
+        return jsonify([])
 
-        if total_blocks == 0:
-            return jsonify([])
+    rows = select_rows(
+        "lesson_progress",
+        columns=["user_id", "COUNT(*) AS completed_blocks"],
+        where="lesson_id = ? AND completed = 1",
+        params=(lesson_id,),
+        group_by="user_id",
+    )
 
-        cursor = conn.execute("""
-            SELECT user_id, COUNT(*) AS completed_blocks
-            FROM lesson_progress
-            WHERE lesson_id = ? AND completed = 1
-            GROUP BY user_id
-        """, (lesson_id,))
-
-        result = [
-            {
-                "user": row["user_id"],
-                "completed": row["completed_blocks"],
-                "total": total_blocks,
-                "percent": round((row["completed_blocks"] / total_blocks) * 100)
-            } for row in cursor.fetchall()
-        ]
+    result = [
+        {
+            "user": row["user_id"],
+            "completed": row["completed_blocks"],
+            "total": total_blocks,
+            "percent": round((row["completed_blocks"] / total_blocks) * 100),
+        }
+        for row in rows
+    ]
 
     return jsonify(result)
 
@@ -264,8 +284,10 @@ def get_individual_lesson_progress(lesson_id):
 def list_users():
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
-    rows = fetch_custom(
-        "SELECT username, created_at, skill_level FROM users ORDER BY username"
+    rows = select_rows(
+        "users",
+        columns=["username", "created_at", "skill_level"],
+        order_by="username",
     )
     return jsonify(rows)
 
