@@ -2,6 +2,7 @@ import os
 import re
 import json
 import requests
+from utils.prompts import detect_topics_prompt
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
@@ -30,17 +31,7 @@ def _extract_json(text: str):
 def detect_language_topics(text: str) -> list[str]:
     # print("[detect_language_topics] 🔍 Input:", text, flush=True)
 
-    user_prompt = {
-        "role": "user",
-        "content": f"""
-You are a helpful German teacher. Identify grammar topics used in the following sentence:
-
-"{text}"
-
-Return only a JSON list of strings such as:
-["modal verb", "pronoun", "subordinating conjunction"]
-""",
-    }
+    user_prompt = detect_topics_prompt(text)
 
     payload = {
         "model": "mistral-medium",

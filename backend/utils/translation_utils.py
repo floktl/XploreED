@@ -8,6 +8,10 @@ from utils.db_utils import insert_row, update_row, fetch_one_custom
 from utils.level_utils import check_auto_level_up
 from utils.algorithm import sm2
 from utils.vocab_utils import translate_to_german
+from utils.prompts import (
+    evaluate_translation_prompt,
+    quality_evaluation_prompt,
+)
 import random
 
 # Default conversation topics used when creating new topic memory rows
@@ -51,17 +55,7 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
     # print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
     # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
-    user_prompt = {
-        "role": "user",
-        "content": f"""
-You are a helpful German teacher verifying a student's translation.
-
-English sentence: "{english}"
-Student translation: "{student}"
-
-Answer in JSON with keys `correct` (true/false) and `reason` in one short English sentence.
-""",
-    }
+    user_prompt = evaluate_translation_prompt(english, student)
 
     payload = {
         "model": "mistral-medium",
@@ -102,24 +96,7 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
         # print("[evaluate_topic_qualities_ai] No topics found.", flush=True)
         return {}
 
-    user_prompt = {
-        "role": "user",
-        "content": (
-            "You are a helpful German teacher grading a student's translation.\n\n"
-            f"English sentence: '{english}'\n"
-            f"Reference translation: '{reference}'\n"
-            f"Student translation: '{student}'\n\n"
-            "Return a JSON object where each grammar topic is a key (all lowercase, spaces only), "
-            "and its value is an integer from 0 to 5 representing the quality of usage.\n\n"
-            "For example:\n"
-            "{\n"
-            "  \"adjective\": 5,\n"
-            "  \"nominative case\": 4,\n"
-            "  \"modal verb\": 3\n"
-            "}\n\n"
-            "Topics: " + ", ".join(topics)
-        ),
-    }
+    user_prompt = quality_evaluation_prompt(english, reference, student, topics)
 
 
     payload = {
