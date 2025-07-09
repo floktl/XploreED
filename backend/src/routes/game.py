@@ -13,7 +13,7 @@ from game.german_sentence_game import (
     generate_ai_sentence,
 )
 from app.extensions import limiter
-from utils.data.db_utils import fetch_one
+from database import fetch_one
 
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")

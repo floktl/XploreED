@@ -10,7 +10,7 @@ from .helpers import (
     prefetch_next_exercises,
     store_user_ai_data,
 )
-from utils.data.db_utils import fetch_one_custom
+from database import fetch_one_custom
 from utils.helpers.helper import run_in_background, session_manager
 
 

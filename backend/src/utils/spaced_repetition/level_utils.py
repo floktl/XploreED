@@ -1,7 +1,7 @@
 """Helpers for level progress tracking and initialization."""
 
 import datetime
-from utils.data.db_utils import fetch_custom, fetch_one, insert_row, update_row
+from database import fetch_custom, fetch_one, insert_row, update_row
 
 
 # Mapping of numeric skill levels (0-10) to grammar topics that should be
