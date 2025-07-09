@@ -1,7 +1,7 @@
 """Helpers for level progress tracking and initialization."""
 
 import datetime
-from database import fetch_custom, fetch_one, insert_row, update_row
+from database import select_rows, select_one, insert_row, update_row
 
 
 # Mapping of numeric skill levels (0-10) to grammar topics that should be
@@ -29,9 +29,11 @@ def initialize_topic_memory_for_level(username: str, level: int) -> None:
 
     now = datetime.datetime.now().isoformat()
     for grammar in topics:
-        existing = fetch_custom(
-            "SELECT id FROM topic_memory WHERE username = ? AND grammar = ?",
-            (username, grammar),
+        existing = select_rows(
+            "topic_memory",
+            columns="id",
+            where="username = ? AND grammar = ?",
+            params=(username, grammar),
         )
         if existing:
             continue
@@ -61,9 +63,11 @@ def calculate_level_progress(username: str, level: int) -> float:
         return 0.0
 
     placeholders = ",".join(["?"] * len(topics))
-    rows = fetch_custom(
-        f"SELECT DISTINCT grammar FROM topic_memory WHERE username = ? AND grammar IN ({placeholders}) AND quality >= 4",
-        tuple([username] + topics),
+    rows = select_rows(
+        "topic_memory",
+        columns="DISTINCT grammar",
+        where=f"username = ? AND grammar IN ({placeholders}) AND quality >= 4",
+        params=tuple([username] + topics),
     )
     count = len(rows) if rows else 0
     return count / len(topics)

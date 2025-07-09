@@ -8,7 +8,7 @@ from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
-from database import update_row, fetch_one_custom, fetch_one, insert_row
+from database import update_row, select_one, fetch_one, insert_row
 from .algorithm import sm2
 from utils.ai.ai_api import send_prompt
 
@@ -280,9 +280,11 @@ def review_vocab_word(
 
     # print(f"\n🔁 Reviewing word '{normalized}' for user '{username}' with quality={quality}", flush=True)
 
-    row = fetch_one_custom(
-        "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
-        (username, normalized),
+    row = select_one(
+        "vocab_log",
+        columns=["ef", "repetitions", "interval_days"],
+        where="username = ? AND vocab = ?",
+        params=(username, normalized),
     )
 
     if not row:
@@ -290,9 +292,11 @@ def review_vocab_word(
         saved = save_vocab(username, word, exercise="ai")
         if saved:
             normalized = saved
-        row = fetch_one_custom(
-            "SELECT ef, repetitions, interval_days FROM vocab_log WHERE username = ? AND vocab = ?",
-            (username, normalized),
+        row = select_one(
+            "vocab_log",
+            columns=["ef", "repetitions", "interval_days"],
+            where="username = ? AND vocab = ?",
+            params=(username, normalized),
         )
         if row:
             ef = row.get("ef", 2.5)

@@ -2,7 +2,7 @@ import json
 import re
 import datetime
 from utils.grammar.grammar_utils import detect_language_topics
-from database import insert_row, update_row, fetch_one_custom
+from database import insert_row, update_row, select_one
 from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.spaced_repetition.algorithm import sm2
 from utils.spaced_repetition.vocab_utils import translate_to_german
@@ -114,10 +114,11 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
     # print(f"[_update_single_topic] Inputs: username={username}, grammar={grammar}, skill={skill}, context={context}, quality={quality}", flush=True)
     correct = quality == 5
 
-    existing = fetch_one_custom(
-        "SELECT id, topic, ease_factor, intervall, repetitions FROM topic_memory "
-        "WHERE username = ? AND grammar = ? AND skill_type = ?",
-        (username, grammar, skill),
+    existing = select_one(
+        "topic_memory",
+        columns=["id", "topic", "ease_factor", "intervall", "repetitions"],
+        where="username = ? AND grammar = ? AND skill_type = ?",
+        params=(username, grammar, skill),
     )
     # print("[_update_single_topic] Existing DB row:", existing, flush=True)
 

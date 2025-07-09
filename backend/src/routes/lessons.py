@@ -1,7 +1,7 @@
 """Endpoints serving lessons and lesson metadata."""
 
 from utils.imports.imports import *
-from database import fetch_custom  # Needed for raw SQL queries
+from database import select_rows, select_one
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
@@ -11,15 +11,19 @@ def get_lessons():
         print("❌ Unauthorized: No user found for session", flush=True)
         return jsonify({"msg": "Unauthorized"}), 401
 
-    lessons = fetch_custom(
-        """
-        SELECT lesson_id, title, created_at, target_user, num_blocks, ai_enabled
-        FROM lesson_content
-        WHERE (target_user IS NULL OR target_user = ?)
-            AND published = 1
-        ORDER BY created_at DESC
-    """,
-        (user,),
+    lessons = select_rows(
+        "lesson_content",
+        columns=[
+            "lesson_id",
+            "title",
+            "created_at",
+            "target_user",
+            "num_blocks",
+            "ai_enabled",
+        ],
+        where="(target_user IS NULL OR target_user = ?) AND published = 1",
+        params=(user,),
+        order_by="created_at DESC",
     )
 
     results = []
@@ -29,28 +33,34 @@ def get_lessons():
 
         total_blocks = lesson.get("num_blocks") or 0
 
-        completed_blocks_res = fetch_custom("""
-            SELECT COUNT(*) as count FROM lesson_progress
-            WHERE lesson_id = ? AND user_id = ? AND completed = 1
-        """, (lid, user))
-        completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
+        completed_row = select_one(
+            "lesson_progress",
+            columns="COUNT(*) as count",
+            where="lesson_id = ? AND user_id = ? AND completed = 1",
+            params=(lid, user),
+        )
+        completed_blocks = completed_row.get("count") if completed_row else 0
 
-        completed_res = fetch_custom("""
-            SELECT 1 FROM results
-            WHERE username = ? AND level = ? AND correct = 1
-            LIMIT 1
-        """, (user, lid))
-        completed = bool(completed_res)
+        completed = bool(
+            select_one(
+                "results",
+                columns="1",
+                where="username = ? AND level = ? AND correct = 1",
+                params=(user, lid),
+            )
+        )
 
         percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks else 100
         if completed:
             percent_complete = 100
 
-        latest_res = fetch_custom("""
-            SELECT MAX(timestamp) as ts FROM results
-            WHERE username = ? AND level = ?
-        """, (user, lid))
-        latest = latest_res[0]["ts"] if latest_res else None
+        latest_row = select_one(
+            "results",
+            columns="MAX(timestamp) as ts",
+            where="username = ? AND level = ?",
+            params=(user, lid),
+        )
+        latest = latest_row.get("ts") if latest_row else None
 
         results.append(
             {
@@ -74,14 +84,11 @@ def get_lesson_content(lesson_id):
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    row = fetch_custom(
-        """
-        SELECT title, content, created_at, num_blocks, ai_enabled FROM lesson_content
-        WHERE lesson_id = ?
-          AND (target_user IS NULL OR target_user = ?)
-          AND published = 1
-    """,
-        (lesson_id, user),
+    row = select_rows(
+        "lesson_content",
+        columns=["title", "content", "created_at", "num_blocks", "ai_enabled"],
+        where="lesson_id = ? AND (target_user IS NULL OR target_user = ?) AND published = 1",
+        params=(lesson_id, user),
     )
 
     if not row:
