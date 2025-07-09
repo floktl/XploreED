@@ -4,6 +4,7 @@ from utils.imports.imports import *
 
 @settings_bp.route('/password', methods=['POST'])
 def update_password_route():
+    """Change the logged in user's password."""
     user = get_current_user()
     if not user:
         return jsonify({'error': 'Unauthorized'}), 401
@@ -23,6 +24,7 @@ def update_password_route():
 
 @settings_bp.route('/deactivate', methods=['POST'])
 def deactivate_account_route():
+    """Delete or anonymize all data for the current user."""
     user = get_current_user()
     if not user:
         return jsonify({'error': 'Unauthorized'}), 401

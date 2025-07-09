@@ -40,6 +40,7 @@ class User:
 
 
 def init_db():
+    """Create SQLite tables if they do not already exist."""
     with get_connection() as conn:
         conn.execute(
             """CREATE TABLE IF NOT EXISTS results (
@@ -147,6 +148,7 @@ def generate_ai_sentence(username=None):
 
 
 def get_scrambled_sentence(sentence):
+    """Return a shuffled list of words from ``sentence``."""
     words = sentence.split()
     random.shuffle(words)
     return words
@@ -154,6 +156,7 @@ def get_scrambled_sentence(sentence):
 from colorama import Fore, Style
 
 def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None):
+    """Return evaluation feedback comparing ``user_answer`` to ``correct_sentence``."""
     user_words = user_answer.strip().split()
     correct_words = correct_sentence.strip().split()
 
@@ -327,6 +330,7 @@ def get_feedback(student_version, correct_version, vocab=None, topic_memory=None
 
 
 def save_result(username, level, correct, answer):
+    """Insert a game result row for ``username``."""
     insert_row(
         "results",
         {
@@ -340,6 +344,7 @@ def save_result(username, level, correct, answer):
 
 
 def get_all_results():
+    """Return all results joined with user data."""
     rows = select_rows(
         "users u LEFT JOIN results r ON u.username = r.username",
         columns=["u.username", "r.level", "r.correct", "r.answer", "r.timestamp"],

@@ -4,6 +4,7 @@ from utils.imports.imports import *
 
 @lesson_progress_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
+    """Return completion status for each block in the lesson."""
     user_id = require_user()
 
     rows = select_rows(
@@ -19,6 +20,7 @@ def get_lesson_progress(lesson_id):
 
 @lesson_progress_bp.route("/lesson-progress", methods=["POST"])
 def update_lesson_progress():
+    """Mark a single lesson block as completed or not."""
     user_id = require_user()
 
     data = request.get_json()
@@ -47,6 +49,7 @@ def update_lesson_progress():
 
 @lesson_progress_bp.route("/lesson-progress-complete", methods=["POST"])
 def mark_lesson_complete():
+    """Confirm that a lesson is fully completed."""
     user_id = require_user()
 
     try:
@@ -97,6 +100,7 @@ def mark_lesson_complete():
 
 @lesson_progress_bp.route("/lesson-completed", methods=["POST"])
 def check_lesson_marked_complete():
+    """Check if the lesson is marked as completed for the user."""
     user_id = require_user()
 
     try:
@@ -127,6 +131,7 @@ def check_lesson_marked_complete():
 
 @lesson_progress_bp.route("/mark-as-completed", methods=["POST"])
 def mark_lesson_as_completed():
+    """Mark an entire lesson as completed and record results."""
     user_id = require_user()
 
     data = request.get_json()
