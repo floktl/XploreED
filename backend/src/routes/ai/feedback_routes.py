@@ -11,7 +11,8 @@ from .helpers import (
     fetch_topic_memory,
     process_ai_answers,
 )
-from database import fetch_custom
+
+from database import select_rows
 from utils.helpers.helper import run_in_background, session_manager
 from utils.data.json_utils import extract_json
 
@@ -94,10 +95,19 @@ def generate_ai_feedback():
                     }
                 )
 
-        vocab_rows = fetch_custom(
-            "SELECT vocab, translation, interval_days, next_review, ef, repetitions, last_review "
-            "FROM vocab_log WHERE username = ?",
-            (username,),
+        vocab_rows = select_rows(
+            "vocab_log",
+            columns=[
+                "vocab",
+                "translation",
+                "interval_days",
+                "next_review",
+                "ef",
+                "repetitions",
+                "last_review",
+            ],
+            where="username = ?",
+            params=(username,),
         )
         vocab_data = [
             {

@@ -10,12 +10,13 @@ def get_profile():
     if not username:
         return jsonify({"error": "Invalid session"}), 401
 
-    rows = fetch_custom("""
-        SELECT level, answer, correct, timestamp
-        FROM results
-        WHERE username = ?
-        ORDER BY timestamp DESC
-    """, (username,))
+    rows = select_rows(
+        "results",
+        columns=["level", "answer", "correct", "timestamp"],
+        where="username = ?",
+        params=(username,),
+        order_by="timestamp DESC",
+    )
 
     if rows is None:
         return jsonify({"error": "Failed to fetch results"}), 500

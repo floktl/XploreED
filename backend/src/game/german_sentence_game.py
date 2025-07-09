@@ -1,7 +1,7 @@
 # german_sentence_game.py
 """Logic for the sentence ordering game and feedback helpers."""
 
-from database import get_connection, fetch_custom, insert_row, select_rows
+from database import get_connection, insert_row, select_rows
 from utils.ai.prompts import game_sentence_prompt
 from utils.ai.ai_api import send_prompt
 import random
@@ -102,9 +102,13 @@ def generate_ai_sentence(username=None):
     """Return a short German sentence created by Mistral."""
     try:
         vocab_rows = (
-            fetch_custom(
-                "SELECT vocab FROM vocab_log WHERE username = ? ORDER BY RANDOM() LIMIT 5",
-                (username,),
+            select_rows(
+                "vocab_log",
+                columns="vocab",
+                where="username = ?",
+                params=(username,),
+                order_by="RANDOM()",
+                limit=5,
             )
             if username
             else []
@@ -112,9 +116,13 @@ def generate_ai_sentence(username=None):
         vocab_list = [row["vocab"] for row in vocab_rows] if vocab_rows else []
 
         topic_rows = (
-            fetch_custom(
-                "SELECT topic FROM topic_memory WHERE username = ? AND topic IS NOT NULL ORDER BY RANDOM() LIMIT 3",
-                (username,),
+            select_rows(
+                "topic_memory",
+                columns="topic",
+                where="username = ? AND topic IS NOT NULL",
+                params=(username,),
+                order_by="RANDOM()",
+                limit=3,
             )
             if username
             else []

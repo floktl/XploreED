@@ -16,5 +16,9 @@ def post_feedback():
 def get_feedback_list():
     if not is_admin():
         return jsonify({'msg': 'Unauthorized'}), 401
-    rows = fetch_custom('SELECT id, message, created_at FROM support_feedback ORDER BY id DESC')
+    rows = select_rows(
+        "support_feedback",
+        columns=["id", "message", "created_at"],
+        order_by="id DESC",
+    )
     return jsonify(rows or [])
