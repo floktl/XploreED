@@ -1,7 +1,7 @@
 """Endpoints serving lessons and lesson metadata."""
 
 from utils.imports.imports import *
-from utils.data.db_utils import fetch_custom  # Needed for raw SQL queries
+from database import fetch_custom  # Needed for raw SQL queries
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
@@ -109,10 +109,11 @@ def get_lesson_progress(lesson_id):
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom("""
-        SELECT block_id, completed FROM lesson_progress
-        WHERE user_id = ? AND lesson_id = ?
-    """, (user, lesson_id))
+    rows = select_rows(
+        "lesson_progress",
+        columns=["block_id", "completed"],
+        where="user_id = ? AND lesson_id = ?",
+        params=(user, lesson_id),
+    )
 
-    progress = {row[0]: bool(row[1]) for row in rows}
-    return jsonify(progress)
+    progress = {row[0]: bool(row[1]) for row in rows}    return jsonify(progress)

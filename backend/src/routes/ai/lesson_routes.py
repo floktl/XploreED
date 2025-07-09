@@ -7,7 +7,7 @@ import datetime
 from flask import request, jsonify, Response, current_app
 from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
-from utils.data.db_utils import fetch_one, fetch_one_custom, fetch_custom
+from database import fetch_one, fetch_one_custom, fetch_custom
 from utils.html.html_utils import clean_html
 from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
