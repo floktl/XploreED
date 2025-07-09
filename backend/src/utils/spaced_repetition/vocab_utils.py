@@ -5,13 +5,13 @@ import re
 import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
-from utils.prompts import analyze_word_prompt, translate_sentence_prompt
+from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
 import requests
 
-from .db_utils import get_connection, update_row, fetch_one_custom
+from ..data.db_utils import get_connection, update_row, fetch_one_custom
 from .algorithm import sm2
 
 

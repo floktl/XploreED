@@ -2,7 +2,7 @@ import os
 import re
 import json
 import requests
-from utils.prompts import detect_topics_prompt
+from utils.ai.prompts import detect_topics_prompt
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
