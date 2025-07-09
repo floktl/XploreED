@@ -30,3 +30,12 @@ def send_request(messages: list[dict], temperature: float = 0.7, stream: bool = 
     payload = build_payload(messages, temperature, stream)
     return requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20, stream=stream)
 
+
+def send_prompt(system_message: str, user_prompt: dict, temperature: float = 0.7, stream: bool = False) -> requests.Response:
+    """Convenience wrapper for a system and user prompt."""
+    messages = [
+        {"role": "system", "content": system_message},
+        user_prompt,
+    ]
+    return send_request(messages, temperature, stream)
+

@@ -3,13 +3,10 @@
 import json
 import os
 import re
-import requests
 import datetime
 from flask import request, jsonify, Response, current_app
-from . import ai_bp, MISTRAL_API_URL, HEADERS
+from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
-
-from .helpers import fetch_topic_memory, generate_reading_exercise
 from utils.data.db_utils import fetch_one, fetch_one_custom, fetch_custom
 from utils.html.html_utils import clean_html
 from utils.spaced_repetition.level_utils import check_auto_level_up
@@ -18,6 +15,7 @@ from utils.ai.prompts import weakness_lesson_prompt
 from utils.grammar.grammar_utils import detect_language_topics
 from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
 from utils.helpers.helper import run_in_background, session_manager
+from utils.ai.ai_api import send_prompt
 
 
 def create_ai_lesson():
@@ -115,15 +113,6 @@ def ai_weakness_lesson():
 
     user_prompt = weakness_lesson_prompt(grammar, skill)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            user_prompt,
-        ],
-        "temperature": 0.7,
-    }
-
     cached = fetch_one_custom(
         "SELECT weakness_lesson, weakness_topic FROM ai_user_data WHERE username = ?",
         (username,),
@@ -132,7 +121,11 @@ def ai_weakness_lesson():
         return Response(cached["weakness_lesson"], mimetype="text/html")
 
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.7,
+        )
         if resp.status_code == 200:
             raw_html = resp.json()["choices"][0]["message"]["content"].strip()
             cleaned_html = clean_html(raw_html)
