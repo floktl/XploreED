@@ -2,7 +2,7 @@
 
 IMAGE_NAME=german_class_tool
 COMPOSE=docker compose -f docker-compose.dev.yml
-DB_FILE=backend/utils/database/user_data.db
+DB_FILE=backend/database/user_data.db
 
 # === Run containers ===
 run:
