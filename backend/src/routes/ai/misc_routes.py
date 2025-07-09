@@ -1,11 +1,11 @@
 """Miscellaneous AI endpoints."""
 
 import json
-import requests
 from flask import request, jsonify, Response, current_app
 
-from . import ai_bp, HEADERS, MISTRAL_API_URL
+from . import ai_bp
 from utils.helpers.helper import session_manager
+from utils.ai.ai_api import send_prompt
 
 
 @ai_bp.route("/ask-ai", methods=["POST"])
@@ -21,17 +21,12 @@ def ask_ai():
     if not question:
         return jsonify({"error": "Question required"}), 400
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            {"role": "user", "content": question},
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            {"role": "user", "content": question},
+            temperature=0.3,
+        )
         if resp.status_code == 200:
             answer = resp.json()["choices"][0]["message"]["content"].strip()
             return jsonify({"answer": answer})
@@ -54,24 +49,13 @@ def ask_ai_stream():
     if not question:
         return jsonify({"error": "Question required"}), 400
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            {"role": "user", "content": question},
-        ],
-        "temperature": 0.3,
-        "stream": True,
-    }
-
     def generate():
         try:
-            with requests.post(
-                MISTRAL_API_URL,
-                headers=HEADERS,
-                json=payload,
+            with send_prompt(
+                "You are a helpful German teacher.",
+                {"role": "user", "content": question},
+                temperature=0.3,
                 stream=True,
-                timeout=20,
             ) as resp:
                 buffer = ""
                 for line in resp.iter_lines(decode_unicode=True):
