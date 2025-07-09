@@ -13,7 +13,7 @@ from utils.translation_utils import _update_single_topic, update_topic_memory_re
 from utils.level_utils import check_auto_level_up
 from utils.helper import run_in_background
 from utils.json_utils import extract_json
-from .. import (
+from . import (
     EXERCISE_TEMPLATE,
     READING_TEMPLATE,
     HEADERS,
