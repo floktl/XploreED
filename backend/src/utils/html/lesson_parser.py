@@ -27,7 +27,6 @@ def update_lesson_blocks_from_html(lesson_id, html):
         conn.commit()
 
 
-
 def inject_block_ids(html):
 
     soup = BeautifulSoup(html, "html.parser")

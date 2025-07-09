@@ -3,6 +3,7 @@
 import datetime
 from utils.data.db_utils import fetch_custom, fetch_one, insert_row, update_row
 
+
 # Mapping of numeric skill levels (0-10) to grammar topics that should be
 # mastered for that level. These topics are simplified examples.
 LEVEL_TOPICS: dict[int, list[str]] = {
