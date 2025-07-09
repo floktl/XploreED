@@ -16,10 +16,7 @@ ENGLISH_SENTENCES = [
 
 @progress_test_bp.route("/progress-test", methods=["GET"])
 def get_progress_test():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
@@ -52,10 +49,7 @@ def get_progress_test():
 
 @progress_test_bp.route("/progress-test/submit", methods=["POST"])
 def submit_progress_test():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     answers = data.get("answers", {})

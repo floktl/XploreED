@@ -20,11 +20,7 @@ from utils.ai.ai_api import send_prompt
 
 def create_ai_lesson():
     """Return a mock HTML lesson based on the user's topic memory."""
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     topic_rows = fetch_topic_memory(username)
     topics = [row.get("grammar") for row in topic_rows if row.get("grammar")] if topic_rows else []
@@ -96,11 +92,7 @@ def create_ai_lesson():
 @ai_bp.route("/weakness-lesson", methods=["GET"])
 def ai_weakness_lesson():
     """Return a short HTML lesson focused on the user's weakest topic."""
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     row = select_one(
         "topic_memory",
@@ -149,10 +141,7 @@ def ai_weakness_lesson():
 
 def ai_reading_exercise():
     """Return a short reading exercise based on the user's level."""
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     style = data.get("style", "story")
@@ -185,10 +174,7 @@ def ai_reading_exercise():
 @ai_bp.route("/reading-exercise/submit", methods=["POST"])
 def submit_reading_exercise():
     """Evaluate reading answers and update memory."""
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     answers = data.get("answers", {})

@@ -16,12 +16,8 @@ from utils.helpers.helper import run_in_background, session_manager
 
 @ai_bp.route("/training-exercises", methods=["POST"])
 def get_training_exercises():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     print("Training request from user:", username, flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
     answers = data.get("answers", {})

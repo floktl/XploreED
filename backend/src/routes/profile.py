@@ -4,11 +4,7 @@ from utils.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])
 def get_profile():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"error": "Invalid session"}), 401
+    username = require_user()
 
     rows = select_rows(
         "results",
