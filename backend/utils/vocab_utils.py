@@ -5,6 +5,7 @@ import re
 import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
+from utils.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
@@ -56,14 +57,7 @@ def analyze_word_ai(word: str) -> Optional[dict]:
     if not MISTRAL_API_KEY or not word:
         return None
 
-    user_prompt = {
-        "role": "user",
-        "content": (
-            "Give dictionary info for the German word '" + word + "'.\n"
-            "Return JSON with keys base_form, type, article, translation, info."
-            " Use null for article if not a noun."
-        ),
-    }
+    user_prompt = analyze_word_prompt(word)
 
     payload = {
         "model": "mistral-medium",
@@ -259,10 +253,7 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
     if not MISTRAL_API_KEY:
         return "❌ Mistral key is empty."
 
-    user_prompt = {
-        "role": "user",
-        "content": f"Translate this sentence to German:\n{english_sentence}",
-    }
+    user_prompt = translate_sentence_prompt(english_sentence)
 
     payload = {
         "model": "mistral-medium",
