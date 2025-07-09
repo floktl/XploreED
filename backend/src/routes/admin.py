@@ -241,8 +241,6 @@ def lesson_progress_summary():
     return jsonify(summary)
 
 
-
-
 @admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_individual_lesson_progress(lesson_id):
     if not is_admin():
@@ -264,8 +262,7 @@ def get_individual_lesson_progress(lesson_id):
         columns=["user_id", "COUNT(*) AS completed_blocks"],
         where="lesson_id = ? AND completed = 1",
         params=(lesson_id,),
-        group_by="user_id",
-    )
+        group_by="user_id",)
 
     result = [
         {

@@ -31,7 +31,7 @@ db_path = Path(DB)
 db_path.parent.mkdir(parents=True, exist_ok=True)
 if not db_path.exists():
     db_path.touch()
-    
+
 def get_connection():
     return sqlite3.connect(DB)
 
@@ -80,7 +80,7 @@ def fetch_all(
     order_by: str | None = None,
     limit: int | None = None,
     group_by: str | None = None,
-): 
+):
     """Return multiple rows from ``table`` using basic query building."""
 
     cols = ", ".join(columns) if isinstance(columns, (list, tuple)) else str(columns)
