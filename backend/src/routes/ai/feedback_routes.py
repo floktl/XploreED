@@ -19,6 +19,7 @@ from utils.data.json_utils import extract_json
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
 def get_ai_feedback():
+    """Return the list of cached AI feedback entries."""
     username = require_user()
     # print("Fetching AI feedback for:", username, flush=True)
 
@@ -33,6 +34,7 @@ def get_ai_feedback():
 
 @ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
 def get_ai_feedback_item(feedback_id):
+    """Return a single cached feedback item by ID."""
     username = require_user()
     # print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
 
@@ -50,6 +52,7 @@ def get_ai_feedback_item(feedback_id):
 
 @ai_bp.route("/ai-feedback", methods=["POST"])
 def generate_ai_feedback():
+    """Generate AI feedback from submitted exercise results."""
     username = require_user()
     # print("Generating feedback for user:", username, flush=True)
 

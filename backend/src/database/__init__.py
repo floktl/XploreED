@@ -33,9 +33,11 @@ if not db_path.exists():
     db_path.touch()
     
 def get_connection():
+    """Return a connection to the configured SQLite database file."""
     return sqlite3.connect(DB)
 
 def execute_query(query, params=(), fetch=False, many=False):
+    """Execute ``query`` with optional parameters and return fetch results."""
 
     try:
         with get_connection() as conn:
@@ -116,25 +118,30 @@ def fetch_one(
     return rows[0] if rows else None
 
 def insert_row(table, data):
+    """Insert ``data`` as a new row into ``table``."""
     columns = ", ".join(data.keys())
     placeholders = ", ".join(["?"] * len(data))
     query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
     return execute_query(query, tuple(data.values()))
 
 def update_row(table, updates: dict, where_clause: str, params=()):
+    """Update rows in ``table`` matching ``where_clause`` with ``updates``."""
     set_clause = ", ".join([f"{col} = ?" for col in updates])
     query = f"UPDATE {table} SET {set_clause} WHERE {where_clause.lstrip('WHERE ')}"
     all_params = tuple(updates.values()) + tuple(params)
     return execute_query(query, all_params)
 
 def delete_rows(table, where_clause="", params=()):
+    """Delete rows from ``table`` that satisfy ``where_clause``."""
     query = f"DELETE FROM {table} {where_clause}"
     return execute_query(query, params)
 
 def fetch_custom(query, params=()):
+    """Return rows from a custom ``SELECT`` query."""
     return execute_query(query, params, fetch=True)
 
 def fetch_one_custom(query, params=()):
+    """Return the first row from a custom query or ``None``."""
     results = fetch_custom(query, params)
     return results[0] if results else None
 

@@ -24,6 +24,7 @@ from utils.spaced_repetition.level_utils import check_auto_level_up
 
 
 def get_ai_exercises():
+    """Return a new AI-generated exercise block for the user."""
     username = require_user()
     # print("Session ID:", session_id, flush=True)
     # print("Username:", username, flush=True)
@@ -89,6 +90,7 @@ def get_ai_exercises():
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
+    """Evaluate a submitted exercise block and save results."""
     username = require_user()
     # print("Session ID:", session_id, "Username:", username, flush=True)
 

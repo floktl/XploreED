@@ -5,6 +5,7 @@ from utils.imports.imports import *
 
 @user_bp.route("/me", methods=["GET", "OPTIONS"])
 def get_me():
+    """Return the username of the current session."""
     if request.method == "OPTIONS":
         response = jsonify({"ok": True})
         response.headers.add("Access-Control-Allow-Credentials", "true")
@@ -20,6 +21,7 @@ def get_me():
 
 @user_bp.route("/role", methods=["GET"])
 def get_role():
+    """Return whether the logged in user is an admin."""
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -28,6 +30,7 @@ def get_role():
 
 @user_bp.route("/profile", methods=["GET"])
 def profile():
+    """Return recent game results for the current user."""
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -59,6 +62,7 @@ def profile():
 
 @user_bp.route("/vocabulary", methods=["GET"])
 def vocabulary():
+    """Return the user's vocabulary list ordered by next review date."""
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -107,6 +111,7 @@ def vocabulary():
 
 @user_bp.route("/vocab-train", methods=["GET", "POST"])
 def vocab_train():
+    """Serve spaced repetition training data and record reviews."""
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
