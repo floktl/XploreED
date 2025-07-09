@@ -18,10 +18,10 @@ from .helpers import (
     process_ai_answers,
     generate_feedback_prompt
 )
-from utils.db_utils import fetch_custom, fetch_one, insert_row
-from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.helper import run_in_background, session_manager
-from utils.level_utils import check_auto_level_up
+from utils.data.db_utils import fetch_custom, fetch_one, insert_row
+from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
+from utils.helpers.helper import run_in_background, session_manager
+from utils.spaced_repetition.level_utils import check_auto_level_up
 
 
 def get_ai_exercises():

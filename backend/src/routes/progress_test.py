@@ -3,8 +3,8 @@
 from utils.imports.imports import *
 from game.german_sentence_game import generate_ai_sentence, get_scrambled_sentence, evaluate_order, LEVELS
 from routes.ai import generate_training_exercises, evaluate_answers_with_ai, generate_reading_exercise
-from utils.translation_utils import translate_to_german, evaluate_translation_ai
-from utils.db_utils import fetch_one, update_row
+from utils.ai.translation_utils import translate_to_german, evaluate_translation_ai
+from utils.data.db_utils import fetch_one, update_row
 import random
 
 ENGLISH_SENTENCES = [
