@@ -19,7 +19,7 @@ from .helpers import (
 )
 from utils.db_utils import fetch_custom, fetch_one, insert_row
 from utils.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.helper import run_in_background
+from utils.helper import run_in_background, session_manager
 from utils.level_utils import check_auto_level_up
 
 
