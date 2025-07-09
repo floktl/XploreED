@@ -4,7 +4,7 @@ from utils.imports.imports import *
 from pathlib import Path
 import os
 
-from utils.blueprint import ai_bp
+from app.blueprint import ai_bp
 
 DEFAULT_TOPICS = [
     "dogs",
