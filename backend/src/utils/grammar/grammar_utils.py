@@ -1,15 +1,8 @@
-import os
 import re
 import json
-import requests
 from utils.ai.prompts import detect_topics_prompt
+from utils.ai.ai_api import send_prompt
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json",
-}
 
 def _extract_json(text: str):
     # print("[_extract_json] Raw input:", text, flush=True)
@@ -33,17 +26,12 @@ def detect_language_topics(text: str) -> list[str]:
 
     user_prompt = detect_topics_prompt(text)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.3,
+        )
         # print("[detect_language_topics] ✅ Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()

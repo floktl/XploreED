@@ -1,13 +1,12 @@
-import os
 import json
 import re
-import requests
 import datetime
 from utils.grammar.grammar_utils import detect_language_topics
 from utils.data.db_utils import insert_row, update_row, fetch_one_custom
 from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.spaced_repetition.algorithm import sm2
 from utils.spaced_repetition.vocab_utils import translate_to_german
+from utils.ai.ai_api import send_prompt
 from utils.ai.prompts import (
     evaluate_translation_prompt,
     quality_evaluation_prompt,
@@ -27,13 +26,6 @@ DEFAULT_TOPICS = [
     "hobbies",
     "weather",
 ]
-
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-HEADERS = {
-    "Authorization": f"Bearer {MISTRAL_API_KEY}",
-    "Content-Type": "application/json",
-}
 
 def _extract_json(text: str):
     # print("[_extract_json] Extracting JSON from text...", flush=True)
@@ -57,17 +49,12 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
 
     user_prompt = evaluate_translation_prompt(english, student)
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.3,
+        )
         # print("[evaluate_translation_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
@@ -99,17 +86,12 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
     user_prompt = quality_evaluation_prompt(english, reference, student, topics)
 
 
-    payload = {
-        "model": "mistral-medium",
-        "messages": [
-            {"role": "system", "content": "You are a helpful German teacher."},
-            user_prompt,
-        ],
-        "temperature": 0.3,
-    }
-
     try:
-        resp = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=10)
+        resp = send_prompt(
+            "You are a helpful German teacher.",
+            user_prompt,
+            temperature=0.3,
+        )
         # print("[evaluate_topic_qualities_ai] Mistral response received.", flush=True)
         if resp.status_code == 200:
             content = resp.json()["choices"][0]["message"]["content"].strip()
