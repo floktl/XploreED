@@ -12,7 +12,7 @@ from .helpers import (
     process_ai_answers,
 )
 from utils.db_utils import fetch_custom
-from utils.helper import run_in_background
+from utils.helper import run_in_background, session_manager
 from utils.json_utils import extract_json
 
 
