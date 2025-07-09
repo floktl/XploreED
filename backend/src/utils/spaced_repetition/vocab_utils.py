@@ -8,7 +8,7 @@ from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
 
 from colorama import Fore, Style
 
-from ..data.db_utils import get_connection, update_row, fetch_one_custom
+from database import get_connection, update_row, fetch_one_custom
 from .algorithm import sm2
 from utils.ai.ai_api import send_prompt
 

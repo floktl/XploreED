@@ -11,7 +11,7 @@ from .helpers import (
     fetch_topic_memory,
     process_ai_answers,
 )
-from utils.data.db_utils import fetch_custom
+from database import fetch_custom
 from utils.helpers.helper import run_in_background, session_manager
 from utils.data.json_utils import extract_json
 

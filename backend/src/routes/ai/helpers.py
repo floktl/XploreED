@@ -8,7 +8,7 @@ from difflib import SequenceMatcher
 from flask import current_app
 
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.data.db_utils import *
+from database import *
 from utils.grammar.grammar_utils import detect_language_topics
 from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
 from utils.spaced_repetition.level_utils import check_auto_level_up

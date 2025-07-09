@@ -1,7 +1,7 @@
 """Endpoints serving lessons and lesson metadata."""
 
 from utils.imports.imports import *
-from utils.data.db_utils import fetch_custom  # Needed for raw SQL queries
+from database import fetch_custom  # Needed for raw SQL queries
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():

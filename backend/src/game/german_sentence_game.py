@@ -1,7 +1,7 @@
 # german_sentence_game.py
 """Logic for the sentence ordering game and feedback helpers."""
 
-from utils.data.db_utils import get_connection, fetch_custom
+from database import get_connection, fetch_custom
 from utils.ai.prompts import game_sentence_prompt
 from utils.ai.ai_api import send_prompt
 import random
