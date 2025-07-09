@@ -10,10 +10,12 @@ def get_lesson_progress(lesson_id):
     if not user_id:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = fetch_custom("""
-        SELECT block_id, completed FROM lesson_progress
-        WHERE user_id = ? AND lesson_id = ?
-    """, (user_id, lesson_id))
+    rows = select_rows(
+        "lesson_progress",
+        columns=["block_id", "completed"],
+        where="user_id = ? AND lesson_id = ?",
+        params=(user_id, lesson_id),
+    )
 
     progress = {row["block_id"]: bool(row["completed"]) for row in rows}
     return jsonify(progress), 200
@@ -76,26 +78,32 @@ def mark_lesson_complete():
         print(f"❌ Error parsing lesson_id: {e}", flush=True)
         return jsonify({"error": "Invalid lesson ID"}), 400
 
-    num_blocks_res = fetch_custom(
-        "SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lesson_id,)
+    num_blocks_row = select_one(
+        "lesson_content",
+        columns="num_blocks",
+        where="lesson_id = ?",
+        params=(lesson_id,),
     )
-    total_blocks = num_blocks_res[0]["num_blocks"] if num_blocks_res else 0
-    completed_blocks_res = fetch_custom("""
-        SELECT COUNT(*) as count FROM lesson_progress
-        WHERE user_id = ? AND lesson_id = ? AND completed = 1
-    """, (user_id, lesson_id))
-    completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
+    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
+
+    completed_blocks_row = select_one(
+        "lesson_progress",
+        columns="COUNT(*) as count",
+        where="user_id = ? AND lesson_id = ? AND completed = 1",
+        params=(user_id, lesson_id),
+    )
+    completed_blocks = completed_blocks_row.get("count") if completed_blocks_row else 0
 
     if completed_blocks < total_blocks and total_blocks > 0:
         print("❌ Lesson not fully completed", flush=True)
         return jsonify({"error": "Lesson not fully completed"}), 400
 
-    with get_connection() as conn:
-        conn.execute("""
-            UPDATE lesson_progress SET completed = 1
-            WHERE user_id = ? AND lesson_id = ?
-        """, (user_id, lesson_id))
-        conn.commit()
+    update_row(
+        "lesson_progress",
+        {"completed": 1},
+        "user_id = ? AND lesson_id = ?",
+        (user_id, lesson_id),
+    )
     return jsonify({"status": "lesson confirmed mplete"}), 200
 
 
@@ -114,16 +122,21 @@ def check_lesson_marked_complete():
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid lesson ID"}), 400
 
-    total_blocks_res = fetch_custom(
-        "SELECT COUNT(*) as count FROM lesson_blocks WHERE lesson_id = ?", (lesson_id,)
+    total_blocks_row = select_one(
+        "lesson_blocks",
+        columns="COUNT(*) as count",
+        where="lesson_id = ?",
+        params=(lesson_id,),
     )
-    total_blocks = total_blocks_res[0]["count"] if total_blocks_res else 0
+    total_blocks = total_blocks_row.get("count") if total_blocks_row else 0
 
-    completed_blocks_res = fetch_custom("""
-        SELECT COUNT(*) as count FROM lesson_progress
-        WHERE user_id = ? AND lesson_id = ? AND completed = 1
-    """, (user_id, lesson_id))
-    completed_blocks = completed_blocks_res[0]["count"] if completed_blocks_res else 0
+    completed_blocks_row = select_one(
+        "lesson_progress",
+        columns="COUNT(*) as count",
+        where="user_id = ? AND lesson_id = ? AND completed = 1",
+        params=(user_id, lesson_id),
+    )
+    completed_blocks = completed_blocks_row.get("count") if completed_blocks_row else 0
 
     completed = total_blocks > 0 and completed_blocks == total_blocks
     return jsonify({"completed": completed})
@@ -142,30 +155,29 @@ def mark_lesson_as_completed():
     if not lesson_id:
         return jsonify({"error": "Missing lesson_id"}), 400
 
-    with get_connection() as conn:
-        conn.row_factory = sqlite3.Row
+    num_blocks_row = select_one(
+        "lesson_content",
+        columns="num_blocks",
+        where="lesson_id = ?",
+        params=(lesson_id,),
+    )
+    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
 
-        # Get total blocks from lesson_content
-        row = conn.execute("SELECT num_blocks FROM lesson_content WHERE lesson_id = ?", (lesson_id,)).fetchone()
-        total_blocks = row["num_blocks"] if row else 0
+    if total_blocks == 0:
+        insert_row("results", {"username": user_id, "level": lesson_id, "correct": 1})
+        return jsonify({"status": "completed (no blocks)"}), 200
 
-        if total_blocks == 0:
-            # No blocks — instantly complete
-            conn.execute("INSERT INTO results (username, level, correct) VALUES (?, ?, 1)", (user_id, lesson_id))
-            conn.commit()
-            return jsonify({"status": "completed (no blocks)"}), 200
+    completed_row = select_one(
+        "lesson_progress",
+        columns="COUNT(*) as count",
+        where="lesson_id = ? AND user_id = ? AND completed = 1",
+        params=(lesson_id, user_id),
+    )
+    completed = completed_row.get("count") if completed_row else 0
 
-        # Check completed blocks
-        completed = conn.execute("""
-            SELECT COUNT(*) as count FROM lesson_progress
-            WHERE lesson_id = ? AND user_id = ? AND completed = 1
-        """, (lesson_id, user_id)).fetchone()["count"]
+    if completed < total_blocks:
+        return jsonify({"error": "Lesson is not fully completed"}), 400
 
-        if completed < total_blocks:
-            return jsonify({"error": "Lesson is not fully completed"}), 400
-
-        # All blocks completed
-        conn.execute("INSERT INTO results (username, level, correct) VALUES (?, ?, 1)", (user_id, lesson_id))
-        conn.commit()
-        return jsonify({"status": "completed"}), 200
+    insert_row("results", {"username": user_id, "level": lesson_id, "correct": 1})
+    return jsonify({"status": "completed"}), 200
 
