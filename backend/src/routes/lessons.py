@@ -123,4 +123,5 @@ def get_lesson_progress(lesson_id):
         params=(user, lesson_id),
     )
 
-    progress = {row[0]: bool(row[1]) for row in rows}    return jsonify(progress)
+    progress = {row[0]: bool(row[1]) for row in rows}
+    return jsonify(progress)
