@@ -37,8 +37,8 @@ import routes.support
 import routes.settings
 import routes.progress_test
 
-from utils.init_app.extensions import limiter
-from utils.blueprint import registered_blueprints
+from app.extensions import limiter
+from app.blueprint import registered_blueprints
 
 # from routes.ai import ai_bp
 # app.register_blueprint(ai_bp, url_prefix="/api")

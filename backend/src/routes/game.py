@@ -1,7 +1,19 @@
 """Endpoints for the sentence ordering game."""
 
-from utils.imports.imports import *
-
+from flask import request, jsonify
+import os
+from utils.session.session_manager import session_manager
+from app.blueprint import game_bp
+from utils.vocab_utils import save_vocab, extract_words
+from game.german_sentence_game import (
+    LEVELS,
+    get_scrambled_sentence,
+    evaluate_order,
+    save_result,
+    generate_ai_sentence,
+)
+from app.extensions import limiter
+from utils.db_utils import fetch_one
 
 @game_bp.route("/level", methods=["POST"])
 @limiter.limit("10/minute")

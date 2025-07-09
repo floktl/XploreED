@@ -12,7 +12,6 @@ import os
 from collections import OrderedDict
 from bs4 import BeautifulSoup
 from werkzeug.security import generate_password_hash, check_password_hash
-from utils.init_app.extensions import limiter
 
 from utils.lesson_parser import (
     update_lesson_blocks_from_html,
@@ -21,7 +20,7 @@ from utils.lesson_parser import (
 )
 from utils.db_utils import fetch_all, fetch_one, insert_row, update_row, delete_rows, execute_query, get_connection, fetch_custom, fetch_one_custom
 from utils.helper import is_admin, get_current_user, user_exists
-from utils.blueprint import (
+from app.blueprint import (
     admin_bp,
     auth_bp,
     debug_bp,
@@ -125,3 +124,40 @@ class Imports:
         "evaluate_translation_ai", "fetch_one", "update_row", "random", "LEVELS"
     ]
 
+# At the bottom of utils/imports/imports.py
+__all__ = [
+    # Common Flask & system imports
+    "Blueprint", "request", "jsonify", "make_response", "current_app",
+    "Limiter", "get_remote_address", "session_manager",
+    "sqlite3", "datetime", "os", "OrderedDict", "BeautifulSoup",
+    "generate_password_hash", "check_password_hash",
+
+    # DB utils
+    "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
+    "execute_query", "get_connection", "fetch_custom", "fetch_one_custom",
+
+    # Lesson helpers
+    "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
+
+    # Global helper utils
+    "is_admin", "get_current_user", "user_exists",
+
+    # Blueprints
+    "admin_bp", "auth_bp", "debug_bp", "game_bp", "lesson_progress_bp",
+    "lessons_bp", "profile_bp", "translate_bp", "user_bp",
+    "ai_bp", "support_bp", "settings_bp", "progress_test_bp",
+
+    # Game logic
+    "LEVELS", "get_scrambled_sentence", "evaluate_order", "save_result",
+    "get_feedback", "generate_ai_sentence",
+
+    # Vocab + AI
+    "split_and_clean", "save_vocab", "translate_to_german", "extract_words",
+    "evaluate_translation_ai", "update_topic_memory_translation",
+
+    # Spaced repetition
+    "sm2",
+
+    # Grouped import maps
+    "Imports",
+]
