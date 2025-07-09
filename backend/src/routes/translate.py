@@ -1,8 +1,8 @@
 """Simple translation exercise endpoints."""
 
 from utils.imports.imports import *
-from utils.translation_utils import evaluate_topic_qualities_ai
-from utils.helper import run_in_background
+from utils.ai.translation_utils import evaluate_topic_qualities_ai
+from utils.helpers.helper import run_in_background
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
