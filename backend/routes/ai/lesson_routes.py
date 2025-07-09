@@ -221,3 +221,9 @@ def submit_reading_exercise():
 
     def _background_save():
         features = detect_language_topics(text) or ["unknown"]
+        update_topic_memory_reading(username, text)
+        check_auto_level_up(username)
+
+    run_in_background(_background_save)
+
+    return jsonify({"summary": summary, "results": results})
