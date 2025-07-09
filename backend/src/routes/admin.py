@@ -5,11 +5,13 @@ from app.extensions import limiter
 
 @admin_bp.route("/check-admin", methods=["GET"])
 def check_admin():
+    """Return whether the current session belongs to the admin user."""
     return jsonify({"is_admin": is_admin()})
 
 
 @admin_bp.route("/results", methods=["GET"])
 def admin_results():
+    """Return all game results for admin review."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -23,7 +25,7 @@ def admin_results():
 
 @admin_bp.route("/lesson-content", methods=["POST"])
 def insert_lesson_content():
-
+    """Insert a new lesson row and associated block IDs."""
     if not is_admin():
         print("❌ Unauthorized access attempt", flush=True)
         return jsonify({"error": "unauthorized"}), 401
@@ -70,6 +72,7 @@ def insert_lesson_content():
 
 @admin_bp.route("/profile-stats", methods=["POST"])
 def profile_stats():
+    """Return a user's game results ordered by timestamp."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -97,6 +100,7 @@ def profile_stats():
 
 @admin_bp.route("/lesson-content", methods=["GET"])
 def get_all_lessons():
+    """Return all lesson content rows for editing."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -118,11 +122,13 @@ def get_all_lessons():
 
 @admin_bp.route("/debug-lessons", methods=["GET"])
 def debug_lessons():
+    """Return raw lesson rows without authorization checks."""
     return jsonify(select_rows("lesson_content"))
 
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["DELETE"])
 def delete_lesson(lesson_id):
+    """Remove a lesson and all related progress records."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -137,6 +143,7 @@ def delete_lesson(lesson_id):
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["GET"])
 def get_lesson_by_id(lesson_id):
+    """Return a single lesson row by ID."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -152,7 +159,7 @@ def get_lesson_by_id(lesson_id):
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT"])
 def update_lesson_by_id(lesson_id):
-
+    """Update the content and metadata of an existing lesson."""
     if not is_admin():
         print("❌ Not authorized")
         return jsonify({"error": "unauthorized"}), 401
@@ -189,6 +196,7 @@ def update_lesson_by_id(lesson_id):
 
 @admin_bp.route("/lesson-progress-summary", methods=["GET"])
 def lesson_progress_summary():
+    """Return percentage completion for every lesson."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -243,6 +251,7 @@ def lesson_progress_summary():
 
 @admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_individual_lesson_progress(lesson_id):
+    """Return per-user completion stats for a specific lesson."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -279,6 +288,7 @@ def get_individual_lesson_progress(lesson_id):
 
 @admin_bp.route("/users", methods=["GET"])
 def list_users():
+    """Return a list of all registered users."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
     rows = select_rows(
@@ -291,6 +301,7 @@ def list_users():
 
 @admin_bp.route("/users/<string:username>", methods=["PUT"])
 def update_user(username):
+    """Update username, password or level for a user."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
@@ -325,6 +336,7 @@ def update_user(username):
 
 @admin_bp.route("/users/<string:username>", methods=["DELETE"])
 def delete_user(username):
+    """Remove a user account and all of their data."""
     if not is_admin():
         return jsonify({"error": "unauthorized"}), 401
 
