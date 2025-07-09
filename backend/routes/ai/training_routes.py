@@ -11,7 +11,7 @@ from .helpers import (
     store_user_ai_data,
 )
 from utils.db_utils import fetch_one_custom
-from utils.helper import run_in_background
+from utils.helper import run_in_background, session_manager
 
 
 @ai_bp.route("/training-exercises", methods=["POST"])
