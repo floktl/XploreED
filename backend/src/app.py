@@ -69,7 +69,6 @@ allowed_origin = os.getenv("FRONTEND_URL", "").split(",")
 CORS(app, origins=allowed_origin, supports_credentials=True)
 
 
-
 # === Init limiter and database ===
 limiter.init_app(app)
 

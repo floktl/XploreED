@@ -16,7 +16,7 @@ services:
       - ./backend:/app/backend
     command: >-
       sh -c "pip install -r backend/requirements.txt &&
-      python backend/utils/setup/migration_script.py &&
-      FLASK_ENV=development python backend/app.py"
+      python backend/src/utils/setup/migration_script.py &&
+      FLASK_ENV=development python backend/src/app.py"
     ports:
       - "5050:5050"

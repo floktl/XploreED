@@ -4,9 +4,11 @@ import json
 import os
 import re
 import requests
-from flask import request, jsonify, Response
+import datetime
+from flask import request, jsonify, Response, current_app
+from . import ai_bp, MISTRAL_API_URL, HEADERS
+from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
 
-from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise
 from utils.db_utils import fetch_one, fetch_one_custom, fetch_custom
 from utils.html_utils import clean_html
@@ -93,8 +95,7 @@ def create_ai_lesson():
 
     return Response(html, mimetype="text/html")
 
-import re
-
+@ai_bp.route("/weakness-lesson", methods=["GET"])
 def ai_weakness_lesson():
     """Return a short HTML lesson focused on the user's weakest topic."""
     session_id = request.cookies.get("session_id")
@@ -147,6 +148,7 @@ def ai_weakness_lesson():
             return Response(cleaned_html, mimetype="text/html")
     except Exception as e:
         current_app.logger.error("Failed to generate weakness lesson: %s", e)
+    return jsonify({"error": "Mistral API error"}), 500
 
 def ai_reading_exercise():
     """Return a short reading exercise based on the user's level."""
