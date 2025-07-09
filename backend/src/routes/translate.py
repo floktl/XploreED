@@ -6,10 +6,7 @@ from utils.helpers.helper import run_in_background
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json()
     english = data.get("english", "")

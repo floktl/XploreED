@@ -19,12 +19,8 @@ from utils.data.json_utils import extract_json
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
 def get_ai_feedback():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     # print("Fetching AI feedback for:", username, flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
@@ -37,12 +33,8 @@ def get_ai_feedback():
 
 @ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
 def get_ai_feedback_item(feedback_id):
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     # print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     try:
         with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
@@ -58,12 +50,8 @@ def get_ai_feedback_item(feedback_id):
 
 @ai_bp.route("/ai-feedback", methods=["POST"])
 def generate_ai_feedback():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     # print("Generating feedback for user:", username, flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
     answers = data.get("answers", {})

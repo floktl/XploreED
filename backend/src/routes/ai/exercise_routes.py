@@ -24,13 +24,9 @@ from utils.spaced_repetition.level_utils import check_auto_level_up
 
 
 def get_ai_exercises():
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     # print("Session ID:", session_id, flush=True)
     # print("Username:", username, flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     example_block = EXERCISE_TEMPLATE.copy()
 
@@ -93,12 +89,8 @@ def get_ai_exercises():
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
+    username = require_user()
     # print("Session ID:", session_id, "Username:", username, flush=True)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
 
     data = request.get_json() or {}
     # print("✅ Received submission data (JSON):\n", json.dumps(data, indent=2), flush=True)
@@ -218,11 +210,7 @@ def submit_ai_exercise(block_id):
 @ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])
 def argue_ai_exercise(block_id):
     """Reevaluate answers when the student wants to argue with the AI."""
-    session_id = request.cookies.get("session_id")
-    username = session_manager.get_user(session_id)
-
-    if not username:
-        return jsonify({"msg": "Unauthorized"}), 401
+    username = require_user()
 
     data = request.get_json() or {}
     answers = data.get("answers", {})
