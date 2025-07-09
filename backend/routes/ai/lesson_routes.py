@@ -11,6 +11,7 @@ from utils.db_utils import fetch_one, fetch_one_custom
 from utils.html_utils import clean_html
 from utils.level_utils import check_auto_level_up
 from utils.vocab_utils import extract_words, save_vocab
+from utils.prompts import weakness_lesson_prompt
 from utils.grammar_utils import detect_language_topics
 from utils.translation_utils import _update_single_topic, update_topic_memory_reading
 from utils.helper import run_in_background
@@ -110,14 +111,7 @@ def ai_weakness_lesson():
     grammar = row.get("grammar") if row else "Modalverben"
     skill = row.get("skill_type") if row else "grammar"
 
-    user_prompt = {
-        "role": "user",
-        "content": (
-            "Create a short HTML lesson in English for a German learner. "
-            f"Explain the topic '{grammar}' ({skill})"
-            "Return only valid HTML."
-        ),
-    }
+    user_prompt = weakness_lesson_prompt(grammar, skill)
 
     payload = {
         "model": "mistral-medium",
