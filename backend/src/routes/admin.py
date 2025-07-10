@@ -1,6 +1,6 @@
 """Admin endpoints for viewing results and managing the app."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 from app.extensions import limiter
 
 @admin_bp.route("/check-admin", methods=["GET"])

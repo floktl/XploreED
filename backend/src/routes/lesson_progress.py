@@ -1,6 +1,6 @@
 """Track per-block progress for lesson content."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 
 @lesson_progress_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):

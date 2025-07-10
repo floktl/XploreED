@@ -2,7 +2,7 @@
 
 IMAGE_NAME=german_class_tool
 COMPOSE=docker compose -f docker-compose.dev.yml
-DB_FILE=backend/database/user_data.db
+DB_FILE=database/user_data.db
 
 # === Run containers ===
 run:
@@ -17,7 +17,7 @@ build:
 # === Migrate DB inside backend container ===
 migrate:
 	@echo "🔁 Running DB migration inside container..."
-	$(COMPOSE) exec backend python backend/src/utils/setup/migration_script.py
+	$(COMPOSE) exec backend python backend/src/app/migration_script.py
 
 # === Delete local SQLite database ===
 db-delete:
@@ -38,6 +38,7 @@ stop:
 # === Clean Docker system ===
 prune:
 	@echo "🔥 Cleaning Docker system..."
+	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	docker system prune -af --volumes
 
 # === Full rebuild ===

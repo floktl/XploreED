@@ -52,7 +52,8 @@ from app.blueprint import (
     settings_bp,
     progress_test_bp,
 )
-from game.german_sentence_game import (
+
+from game.sentence_order_game import (
     LEVELS,
     get_scrambled_sentence,
     evaluate_order,
@@ -60,6 +61,7 @@ from game.german_sentence_game import (
     get_feedback,
     generate_ai_sentence,
 )
+
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, translate_to_german, extract_words
 from utils.ai.translation_utils import evaluate_translation_ai, update_topic_memory_translation
 from utils.spaced_repetition.algorithm import sm2

@@ -1,7 +1,7 @@
 """Combined progress test endpoints."""
 
-from utils.imports.imports import *
-from game.german_sentence_game import generate_ai_sentence, get_scrambled_sentence, evaluate_order, LEVELS
+from app.imports.imports import *
+from game.sentence_order_game import generate_ai_sentence, get_scrambled_sentence, evaluate_order, LEVELS
 from routes.ai import generate_training_exercises, evaluate_answers_with_ai, generate_reading_exercise
 from utils.ai.translation_utils import translate_to_german, evaluate_translation_ai
 from database import fetch_one, update_row

@@ -1,7 +1,7 @@
 """Shared Mistral API helpers."""
 
 import os
-import requests
+import requests  # type: ignore
 from typing import List, Dict
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")

@@ -2,7 +2,7 @@
 
 import json
 import datetime
-from flask import request, jsonify
+from flask import request, jsonify  # type: ignore
 
 from . import ai_bp
 from .helpers import (
@@ -11,7 +11,7 @@ from .helpers import (
     store_user_ai_data,
 )
 from database import select_one
-from utils.helpers.helper import run_in_background, session_manager
+from utils.helpers.helper import run_in_background, require_user
 
 
 @ai_bp.route("/training-exercises", methods=["POST"])

@@ -27,7 +27,7 @@
     # Copy app and frontend
     COPY --from=backend /app/backend /app/backend
         # Create the database directory (if SQLite wants to create the DB)
-    RUN mkdir -p /app/backend/database
+    RUN mkdir -p /app/database
 
     COPY --from=frontend /app/frontend/dist /app/frontend/dist
     RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
@@ -41,7 +41,7 @@
     RUN pip install --break-system-packages -r requirements.txt
 
     # Run database migration script once during image build
-    RUN python3 backend/src/utils/setup/migration_script.py || true
+    RUN python3 backend/src/app/migration_script.py || true
 
     # Expose port
     EXPOSE 80

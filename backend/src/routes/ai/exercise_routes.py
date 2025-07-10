@@ -2,9 +2,7 @@
 
 import json
 import random
-import datetime
-import os
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app  # type: ignore
 
 from . import ai_bp, EXERCISE_TEMPLATE
 from .helpers import (
@@ -13,13 +11,12 @@ from .helpers import (
     evaluate_answers_with_ai,
     _adjust_gapfill_results,
     fetch_topic_memory,
-    store_user_ai_data,
     process_ai_answers,
     generate_feedback_prompt
 )
 from database import select_rows, fetch_one, insert_row
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
-from utils.helpers.helper import run_in_background, session_manager
+from utils.helpers.helper import run_in_background, require_user
 from utils.spaced_repetition.level_utils import check_auto_level_up
 
 
@@ -176,28 +173,35 @@ def submit_ai_exercise(block_id):
     feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
 
     def _background_save():
-        try:
-            process_ai_answers(
-                username,
-                str(block_id),
-                answers,
-                {"exercises": exercises},
-            )
-            check_auto_level_up(username)
-            insert_row(
-                "exercise_submissions",
-                {
-                    "username": username,
-                    "block_id": str(block_id),
-                    "answers": json.dumps(answers),
-                },
-            )
-            # print("Successfully inserted submission", flush=True)
-        except Exception as e:
-            current_app.logger.error("Failed to save exercise submission: %s", e)
+        app = current_app._get_current_object()
 
-    run_in_background(_background_save)
+        def run():
+            from database import fetch_one
+            with app.app_context():
+                try:
+                    process_ai_answers(
+                        username,
+                        str(block_id),
+                        answers,
+                        {"exercises": exercises},
+                    )
+                    check_auto_level_up(username)
+                    insert_row(
+                        "exercise_submissions",
+                        {
+                            "username": username,
+                            "block_id": str(block_id),
+                            "answers": json.dumps(answers),
+                        },
+                    )
+                    # print("Successfully inserted submission", flush=True)
+                except Exception as e:
+                    current_app.logger.error("Failed to save exercise submission: %s", e)
 
+        from threading import Thread
+        Thread(target=run).start()
+
+    _background_save()
     passed = bool(evaluation.get("pass"))
     run_in_background(prefetch_next_exercises, username)
 

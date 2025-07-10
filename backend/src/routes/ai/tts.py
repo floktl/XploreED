@@ -2,8 +2,8 @@
 """Text to speech endpoint."""
 
 import os
-from flask import request, jsonify, Response
-from elevenlabs.client import ElevenLabs
+from flask import request, jsonify, Response  # type: ignore
+from elevenlabs.client import ElevenLabs  # type: ignore
 
 from . import ai_bp
 

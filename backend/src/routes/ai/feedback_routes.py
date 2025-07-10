@@ -2,7 +2,7 @@
 
 import json
 import random
-from flask import request, jsonify
+from flask import request, jsonify  # type: ignore
 
 from . import ai_bp, FEEDBACK_FILE
 from .helpers import (
@@ -10,10 +10,11 @@ from .helpers import (
     _adjust_gapfill_results,
     fetch_topic_memory,
     process_ai_answers,
+    generate_feedback_prompt
 )
 
 from database import select_rows
-from utils.helpers.helper import run_in_background, session_manager
+from utils.helpers.helper import run_in_background, require_user
 from utils.data.json_utils import extract_json
 
 

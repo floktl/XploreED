@@ -1,8 +1,6 @@
 """AI blueprint and route aggregation."""
 
-from utils.imports.imports import *
-from pathlib import Path
-
+from app.imports.imports import *
 from app.blueprint import ai_bp
 
 DEFAULT_TOPICS = [
@@ -18,7 +16,24 @@ DEFAULT_TOPICS = [
     "weather",
 ]
 
-FEEDBACK_FILE = Path(__file__).resolve().parent.parent / "mock_data" / "ai_feedback.json"
+FEEDBACK_FILE = [
+    {
+        "id": "fb1",
+        "title": "Feedback After Set 1",
+        "instructions": "Here are notes on your first round of exercises.",
+        "type": "mixed",
+        "feedbackPrompt": "You mixed up some plural forms like 'wir sind' and 'sie sind'. Review the pronouns before continuing.",
+        "created_at": "2025-06-12T09:00:00Z"
+    },
+    {
+        "id": "fb2",
+        "title": "Feedback After Set 2",
+        "instructions": "Comments on your second round of practice.",
+        "type": "mixed",
+        "feedbackPrompt": "Great improvement! Keep an eye on word order in translations and continue practicing.",
+        "created_at": "2025-06-12T09:10:00Z"
+    }
+]
 
 EXERCISE_TEMPLATE = {
     "lessonId": "dynamic-ai-lesson",

@@ -5,13 +5,9 @@ import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
-
-from colorama import Fore, Style
-
 from database import update_row, select_one, fetch_one, insert_row
 from .algorithm import sm2
 from utils.ai.ai_api import send_prompt
-
 
 
 ARTICLES = {

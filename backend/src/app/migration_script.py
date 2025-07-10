@@ -1,4 +1,4 @@
-# utils/setup/migration_script.py
+# app/migration_script.py
 """Database migration script executed on container startup."""
 
 import os
@@ -27,7 +27,7 @@ import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from database import get_connection
+from src.database import get_connection
 
 
 with get_connection() as conn:

@@ -1,6 +1,6 @@
 """Basic profile information for the logged in user."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 
 @profile_bp.route("/profile", methods=["GET"])
 def get_profile():

@@ -3,7 +3,7 @@ This project provides a small learning platform for German classes. It is compos
 
 Database
 --------
-The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` file. The database schema is created on startup by `backend/src/utils/setup/migration_script.py`. The migration script creates and updates these tables:
+The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` file. The database schema is created on startup by `backend/src/app/migration_script.py`. The migration script creates and updates these tables:
 - **users** – stores registered usernames and hashed passwords
 - **results** – records user answers for the sentence ordering game and lesson completions
 - **vocab_log** – vocabulary items tracked for spaced repetition

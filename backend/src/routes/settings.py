@@ -1,6 +1,6 @@
 """Account settings endpoints."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 
 @settings_bp.route('/password', methods=['POST'])
 def update_password_route():
