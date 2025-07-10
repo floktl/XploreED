@@ -5,6 +5,7 @@ import os
 from utils.helpers.helper import require_user
 from app.blueprint import game_bp
 from utils.spaced_repetition.vocab_utils import save_vocab, extract_words
+from .game_helpers import ansi_to_html
 from game.sentence_order_game import (
     LEVELS,
     get_scrambled_sentence,
@@ -57,14 +58,6 @@ def submit_level():
                 exercise=f"game_level_{level}",
                 article=art,
             )
-
-    def ansi_to_html(text):
-        return (
-            text.replace("\x1b[31m", '<span style="color:red;">')
-            .replace("\x1b[32m", '<span style="color:green;">')
-            .replace("\x1b[33m", '<span style="color:orange;">')
-            .replace("\x1b[0m", "</span>")
-        )
 
     return jsonify(
         {
