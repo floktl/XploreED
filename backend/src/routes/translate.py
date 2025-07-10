@@ -6,6 +6,7 @@ from utils.helpers.helper import run_in_background
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
+    """Translate English text and score the student's attempt."""
     username = require_user()
 
     data = request.get_json()
