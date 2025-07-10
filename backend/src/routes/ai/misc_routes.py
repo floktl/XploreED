@@ -1,11 +1,11 @@
 """Miscellaneous AI endpoints."""
 
-import json
-from flask import request, jsonify, Response, current_app  # type: ignore
+from flask import request, jsonify
 
 from . import ai_bp
 from utils.helpers.helper import require_user
 from utils.ai.ai_api import send_prompt
+from .misc_helpers import stream_ai_answer
 
 
 @ai_bp.route("/ask-ai", methods=["POST"])
@@ -43,52 +43,7 @@ def ask_ai_stream():
     if not question:
         return jsonify({"error": "Question required"}), 400
 
-    def generate():
-        try:
-            with send_prompt(
-                "You are a helpful German teacher.",
-                {"role": "user", "content": question},
-                temperature=0.3,
-                stream=True,
-            ) as resp:
-                buffer = ""
-                for line in resp.iter_lines(decode_unicode=True):
-                    if not line:
-                        continue
-                    try:
-                        if line.strip() == "data: [DONE]":
-                            break
-                        if line.startswith("data:"):
-                            line = line[len("data:"):].strip()
-                        data = json.loads(line)
-                        chunk = (
-                            data.get("choices", [{}])[0]
-                            .get("delta", {})
-                            .get("content")
-                        )
-                        if chunk:
-                            buffer += chunk
-
-                            # ✨ Simple Markdown: Convert "**text**" to bold
-                            buffer = buffer.replace("**", "")
-
-                            # ✨ Flush as paragraph on sentence end
-                            if buffer.endswith((".", "!", "?")):
-                                structured = {
-                                    "type": "paragraph",
-                                    "text": buffer.strip()
-                                }
-                                yield f"data: {json.dumps(structured, ensure_ascii=False)}\n\n"
-                                buffer = ""
-                    except Exception:
-                        continue
-                if buffer.strip():
-                    yield f"data: {json.dumps({ 'type': 'paragraph', 'text': buffer.strip() }, ensure_ascii=False)}\n\n"
-        except Exception as e:
-            current_app.logger.error("Streaming error: %s", e)
-        yield "data: [DONE]\n\n"
-
-    return Response(generate(), mimetype="text/event-stream")
+    return stream_ai_answer(question)
 
 
 @ai_bp.route("/reading-exercise", methods=["POST"])

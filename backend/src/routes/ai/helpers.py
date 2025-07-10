@@ -30,23 +30,25 @@ from . import (
 )
 
 
+def _fix_exercise(ex: dict, idx: int) -> dict:
+    """Normalize a single exercise dict."""
+    fixed = {
+        "id": ex.get("id", f"ex{idx+1}"),
+        "type": ex.get("type"),
+        "question": ex.get("question") or ex.get("sentence") or "Missing question",
+        "explanation": ex.get("explanation") or ex.get("hint") or "No explanation.",
+    }
+    if fixed["type"] == "gap-fill":
+        fixed["options"] = ex.get("options", ["bin", "bist", "ist", "sind"])
+    return fixed
+
+
 def _ensure_schema(exercise_block: dict) -> dict:
     """Return exercise block with guaranteed keys."""
 
-    def fix_exercise(ex, idx):
-        fixed = {
-            "id": ex.get("id", f"ex{idx+1}"),
-            "type": ex.get("type"),
-            "question": ex.get("question") or ex.get("sentence") or "Missing question",
-            "explanation": ex.get("explanation") or ex.get("hint") or "No explanation.",
-        }
-        if fixed["type"] == "gap-fill":
-            fixed["options"] = ex.get("options", ["bin", "bist", "ist", "sind"])
-        return fixed
-
     if "exercises" in exercise_block:
         exercise_block["exercises"] = [
-            fix_exercise(ex, i) for i, ex in enumerate(exercise_block["exercises"])
+            _fix_exercise(ex, i) for i, ex in enumerate(exercise_block["exercises"])
         ]
 
     return exercise_block
