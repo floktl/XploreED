@@ -8,11 +8,13 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 @auth_bp.route("/debug-login", methods=["GET"])
 def debug_login():
+    """Simple health check endpoint used during development."""
     return jsonify({"msg": "working"})
 
 @auth_bp.route("/login", methods=["POST", "OPTIONS"])
 @limiter.limit("5 per minute")
 def login():
+    """Authenticate the user and return a session cookie."""
     if request.method == "OPTIONS":
         return '', 200
 
@@ -45,6 +47,7 @@ def login():
 
 @auth_bp.route("/admin/login", methods=["POST", "OPTIONS"])
 def admin_login():
+    """Login route for the admin account only."""
     if request.method == "OPTIONS":
         return '', 200
     data = request.get_json()
@@ -59,6 +62,7 @@ def admin_login():
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
+    """Destroy the current session and clear the cookie."""
     session_id = request.cookies.get("session_id")
     session_manager.destroy_session(session_id)
     resp = make_response(jsonify({"msg": "Logout successful"}))
@@ -67,6 +71,7 @@ def logout():
 
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
+    """Create a new user account and initialize topic memory."""
     data = request.get_json()
     username = data.get("username", "").strip()
     password = data.get("password", "").strip()

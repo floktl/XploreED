@@ -5,6 +5,7 @@ from utils.ai.ai_api import send_prompt
 
 
 def _extract_json(text: str):
+    """Parse a JSON list from ``text`` if possible."""
     # print("[_extract_json] Raw input:", text, flush=True)
     try:
         return json.loads(text)
@@ -22,6 +23,7 @@ def _extract_json(text: str):
 
 
 def detect_language_topics(text: str) -> list[str]:
+    """Use Mistral to detect grammar topics present in ``text``."""
     # print("[detect_language_topics] 🔍 Input:", text, flush=True)
 
     user_prompt = detect_topics_prompt(text)

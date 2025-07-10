@@ -10,6 +10,7 @@ from . import ai_bp
 
 @ai_bp.route("/tts", methods=["POST"])
 def tts():
+    """Convert text to speech using the ElevenLabs API."""
     data = request.get_json()
     text = data.get("text", "")
     voice_id = data.get("voice_id", "JBFqnCBsd6RMkjVDRZzb")
