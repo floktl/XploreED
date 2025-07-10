@@ -1,6 +1,11 @@
 """User account and vocabulary related routes."""
 
 from app.imports.imports import *
+from routes.user_helpers import (
+    fetch_vocab_entries,
+    select_vocab_word_due_for_review,
+    update_vocab_after_review,
+)
 
 
 @user_bp.route("/me", methods=["GET", "OPTIONS"])
@@ -67,46 +72,8 @@ def vocabulary():
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    rows = select_rows(
-        "vocab_log",
-        columns=[
-            "rowid as id",
-            "vocab",
-            "translation",
-            "word_type",
-            "article",
-            "details",
-            "next_review",
-            "last_review",
-            "context",
-            "exercise",
-        ],
-        where="username = ?",
-        params=(user,),
-        order_by="datetime(next_review) ASC",
-    )
-
-    return (
-        jsonify(
-            [
-                {
-                    "id": row["id"],
-                    "vocab": row["vocab"],
-                    "translation": row["translation"],
-                    "word_type": row.get("word_type"),
-                    "article": row.get("article"),
-                    "details": row.get("details"),
-                    "next_review": row.get("next_review"),
-                    "last_review": row.get("last_review"),
-                    "context": row.get("context"),
-                    "exercise": row.get("exercise"),
-                }
-                for row in rows
-            ]
-        )
-        if rows
-        else []
-    )
+    entries = fetch_vocab_entries(user)
+    return jsonify(entries)
 
 
 @user_bp.route("/vocab-train", methods=["GET", "POST"])
@@ -117,13 +84,7 @@ def vocab_train():
         return jsonify({"msg": "Unauthorized"}), 401
 
     if request.method == "GET":
-        row = select_one(
-            "vocab_log",
-            columns=["rowid as id", "vocab", "translation", "word_type", "article"],
-            where="username = ? AND datetime(next_review) <= datetime('now')",
-            params=(user,),
-            order_by="next_review ASC",
-        )
+        row = select_vocab_word_due_for_review(user)
         return jsonify(row or {})
 
     data = request.get_json() or {}
@@ -132,36 +93,8 @@ def vocab_train():
     if rowid is None:
         return jsonify({"msg": "Missing id"}), 400
 
-    row = select_one(
-        "vocab_log",
-        columns=["ef", "repetitions", "interval_days"],
-        where="rowid = ? AND username = ?",
-        params=(rowid, user),
-    )
-    if not row:
+    if not update_vocab_after_review(rowid, user, quality):
         return jsonify({"msg": "Not found"}), 404
-
-    ef = row.get("ef", 2.5)
-    reps = row.get("repetitions", 0)
-    interval = row.get("interval_days", 1)
-
-    ef, reps, interval = sm2(quality, ef, reps, interval)
-
-    next_review = (
-        datetime.datetime.now() + datetime.timedelta(days=interval)
-    ).isoformat()
-
-    update_row(
-        "vocab_log",
-        {
-            "ef": ef,
-            "repetitions": reps,
-            "interval_days": interval,
-            "next_review": next_review,
-        },
-        "rowid = ? AND username = ?",
-        (rowid, user),
-    )
 
     return jsonify({"msg": "updated"})
 
