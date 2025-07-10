@@ -5,7 +5,7 @@ import sqlite3
 from database import get_connection
 
 def update_lesson_blocks_from_html(lesson_id, html):
-
+    """Store all ``data-block-id`` values for ``lesson_id`` in the DB."""
     soup = BeautifulSoup(html, "html.parser")
     block_ids = set()
 
@@ -28,7 +28,7 @@ def update_lesson_blocks_from_html(lesson_id, html):
 
 
 def inject_block_ids(html):
-
+    """Insert numeric ``data-block-id`` attributes into lesson HTML."""
     soup = BeautifulSoup(html, "html.parser")
     blocks = soup.select(".interactive-block")
 
