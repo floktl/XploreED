@@ -1,6 +1,6 @@
 """User account and vocabulary related routes."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 
 
 @user_bp.route("/me", methods=["GET", "OPTIONS"])

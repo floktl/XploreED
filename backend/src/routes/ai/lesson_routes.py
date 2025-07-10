@@ -1,10 +1,7 @@
 """Lesson and reading exercise routes."""
 
-import json
-import os
-import re
 import datetime
-from flask import request, jsonify, Response, current_app
+from flask import request, jsonify, Response, current_app  # type: ignore
 from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
 from database import fetch_one, select_one, select_rows
@@ -14,7 +11,7 @@ from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
 from utils.ai.prompts import weakness_lesson_prompt
 from utils.grammar.grammar_utils import detect_language_topics
 from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
-from utils.helpers.helper import run_in_background, session_manager
+from utils.helpers.helper import run_in_background, require_user
 from utils.ai.ai_api import send_prompt
 
 

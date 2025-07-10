@@ -18,9 +18,11 @@ services:
     env_file:
       - ./backend/secrets/.env
     command: >-
-      sh -c "pip install -r requirements.txt &&
-      python src/utils/setup/migration_script.py &&
+      sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
+      pip install -r requirements.txt &&
+      python src/app/migration_script.py &&
       FLASK_ENV=development PYTHONPATH=src python src/app.py"
+
 
     ports:
       - "5050:5050"

@@ -2,7 +2,8 @@
 """Script fixing broken lesson block references in the database."""
 
 import sqlite3
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
+from database import get_connection
 
 print("🔧 Repairing lesson_blocks...")
 

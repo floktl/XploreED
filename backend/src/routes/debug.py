@@ -1,6 +1,6 @@
 """Debug endpoints exposing raw database information."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 
 @debug_bp.route("/all-data", methods=["GET"])
 def show_all_data():

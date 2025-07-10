@@ -1,11 +1,11 @@
 """Endpoints for the sentence ordering game."""
 
-from flask import request, jsonify
+from flask import request, jsonify  # type: ignore
 import os
-from utils.session.session_manager import session_manager
+from utils.helpers.helper import require_user
 from app.blueprint import game_bp
 from utils.spaced_repetition.vocab_utils import save_vocab, extract_words
-from game.german_sentence_game import (
+from game.sentence_order_game import (
     LEVELS,
     get_scrambled_sentence,
     evaluate_order,

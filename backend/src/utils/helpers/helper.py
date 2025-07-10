@@ -1,6 +1,6 @@
 """Helper utilities for user session management."""
 
-from flask import request, jsonify, abort, make_response
+from flask import request, jsonify, abort, make_response  # type: ignore
 from utils.session.session_manager import session_manager
 from database import select_one
 import threading

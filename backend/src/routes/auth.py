@@ -1,6 +1,6 @@
 """User authentication routes."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 from utils.spaced_repetition.level_utils import initialize_topic_memory_for_level
 from app.extensions import limiter
 
@@ -42,7 +42,6 @@ def login():
     except Exception as e:
         print(f"❌ Exception during login: {e}", flush=True)
         return jsonify({"error": "Server error"}), 500
-
 
 
 @auth_bp.route("/admin/login", methods=["POST", "OPTIONS"])

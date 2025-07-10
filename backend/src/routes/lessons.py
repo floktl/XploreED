@@ -1,6 +1,6 @@
 """Endpoints serving lessons and lesson metadata."""
 
-from utils.imports.imports import *
+from app.imports.imports import *
 from database import select_rows, select_one
 
 @lessons_bp.route("/lessons", methods=["GET"])

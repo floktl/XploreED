@@ -1,7 +1,7 @@
 """Flask application setup and route registration."""
 
-from flask import Flask, jsonify, render_template
-from flask_cors import CORS
+from flask import Flask, jsonify, render_template  # type: ignore
+from flask_cors import CORS  # type: ignore
 from pathlib import Path
 import os
 import sys

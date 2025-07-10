@@ -1,10 +1,10 @@
 """Miscellaneous AI endpoints."""
 
 import json
-from flask import request, jsonify, Response, current_app
+from flask import request, jsonify, Response, current_app  # type: ignore
 
 from . import ai_bp
-from utils.helpers.helper import session_manager
+from utils.helpers.helper import require_user
 from utils.ai.ai_api import send_prompt
 
 

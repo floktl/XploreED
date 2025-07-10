@@ -1,7 +1,7 @@
 # utils/blueprint.py
 """Central definition of all Flask blueprints used by the API."""
 
-from flask import Blueprint
+from flask import Blueprint # type: ignore
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")

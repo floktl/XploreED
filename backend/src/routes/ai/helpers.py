@@ -3,9 +3,8 @@
 import json
 import random
 import datetime
-import requests
 from difflib import SequenceMatcher
-from flask import current_app
+from flask import current_app  # type: ignore
 
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
 from database import *

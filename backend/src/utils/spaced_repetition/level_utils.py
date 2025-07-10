@@ -1,7 +1,7 @@
 """Helpers for level progress tracking and initialization."""
 
 import datetime
-from database import select_rows, select_one, insert_row, update_row
+from database import select_rows, insert_row, update_row, fetch_one
 
 
 # Mapping of numeric skill levels (0-10) to grammar topics that should be
