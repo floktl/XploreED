@@ -28,6 +28,7 @@ DEFAULT_TOPICS = [
 ]
 
 def _extract_json(text: str):
+    """Return a JSON object if ``text`` contains one."""
     # print("[_extract_json] Extracting JSON from text...", flush=True)
     # print("[_extract_json] Raw text:", text, flush=True)
     try:
@@ -44,6 +45,7 @@ def _extract_json(text: str):
     return None
 
 def evaluate_translation_ai(english: str, reference: str, student: str):
+    """Return ``(correct, reason)`` after scoring ``student`` against ``reference``."""
     # print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
     # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
@@ -69,6 +71,7 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
     return False, "Could not evaluate translation."
 
 def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> dict[str, int]:
+    """Return a mapping of grammar topics to quality scores."""
     # print("[evaluate_topic_qualities_ai] Start", flush=True)
     # print(f"[evaluate_topic_qualities_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
@@ -110,6 +113,7 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
     return compare_topic_qualities(reference, student)
 
 def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int) -> None:
+    """Insert or update one topic memory row based on ``quality``."""
     # print("[_update_single_topic] Start", flush=True)
     # print(f"[_update_single_topic] Inputs: username={username}, grammar={grammar}, skill={skill}, context={context}, quality={quality}", flush=True)
     correct = quality == 5
@@ -170,6 +174,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
     check_auto_level_up(username)
 
 def update_topic_memory_translation(username: str, german: str, qualities: dict[str, int] | None = None) -> None:
+    """Update translation topic memory using ``qualities`` if provided."""
     # print("[update_topic_memory_translation] Start", flush=True)
     # print(f"[update_topic_memory_translation] username={username}, german={german}, qualities={qualities}", flush=True)
     if qualities:
@@ -185,6 +190,7 @@ def update_topic_memory_translation(username: str, german: str, qualities: dict[
         _update_single_topic(username, feature, "translation", german, quality)
 
 def update_topic_memory_reading(username: str, text: str, qualities: dict[str, int] | None = None) -> None:
+    """Update reading topic memory using ``qualities`` or detected topics."""
     # print("[update_topic_memory_reading] Start", flush=True)
     # print(f"[update_topic_memory_reading] username={username}, text={text}, qualities={qualities}", flush=True)
     if qualities:
@@ -200,6 +206,7 @@ def update_topic_memory_reading(username: str, text: str, qualities: dict[str, i
         _update_single_topic(username, feature, "reading", text, quality)
 
 def compare_topic_qualities(reference: str, student: str) -> dict[str, int]:
+    """Return best-guess topic quality comparison for fallback use."""
     # print("[compare_topic_qualities] Start", flush=True)
     ref_features = set(detect_language_topics(reference) or ["unknown"])
     student_features = set(detect_language_topics(student) or ["unknown"])
