@@ -2,7 +2,7 @@
 
 import json
 import random
-from flask import request, jsonify, current_app  # type: ignore
+from flask import request, jsonify
 
 from . import ai_bp, EXERCISE_TEMPLATE
 from .helpers import (
@@ -14,10 +14,16 @@ from .helpers import (
     process_ai_answers,
     generate_feedback_prompt
 )
-from database import select_rows, fetch_one, insert_row
+from database import select_rows, fetch_one
 from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, review_vocab_word, extract_words
 from utils.helpers.helper import run_in_background, require_user
-from utils.spaced_repetition.level_utils import check_auto_level_up
+from .exercise_helpers import (
+    fetch_vocab_and_topic_data,
+    compile_score_summary,
+    save_exercise_submission_async,
+    evaluate_exercises,
+    parse_submission_data,
+)
 
 
 def get_ai_exercises():
@@ -94,114 +100,25 @@ def submit_ai_exercise(block_id):
     data = request.get_json() or {}
     # print("✅ Received submission data (JSON):\n", json.dumps(data, indent=2), flush=True)
 
-    answers = data.get("answers", {})
-    # print("📝 Extracted answers:", json.dumps(answers, indent=2), flush=True)
-
-    exercise_block = data.get("exercise_block")
-    if not exercise_block or not isinstance(exercise_block, dict):
-        print("❌ Missing or invalid exercise_block!", flush=True)
-        return jsonify({"msg": "Invalid or missing exercise block."}), 400
-
-    # print("📦 Extracted exercise block:", json.dumps(exercise_block, indent=2), flush=True)
-
-    exercises = exercise_block.get("exercises")
-    if not exercises or not isinstance(exercises, list):
-        print("❌ No exercises found in exercise_block!", flush=True)
-        return jsonify({"msg": "No exercises found to evaluate."}), 400
+    exercises, answers, error = parse_submission_data(data)
+    if error:
+        print(f"❌ {error}", flush=True)
+        return jsonify({"msg": error}), 400
 
     # print(f"📚 Number of exercises received: {len(exercises)}", flush=True)
 
-    # AI Evaluation
-    evaluation = evaluate_answers_with_ai(exercises, answers)
-    # print("🤖 Raw evaluation result from AI (before adjustment):\n", json.dumps(evaluation, indent=2), flush=True)
-
-    # Adjust gap fill results
-    evaluation = _adjust_gapfill_results(exercises, answers, evaluation)
-    # print("🔧 Evaluation after gapfill adjustment:\n", json.dumps(evaluation, indent=2), flush=True)
-
+    evaluation, id_map = evaluate_exercises(exercises, answers)
     if not evaluation:
         print("❌ Evaluation failed — no evaluation returned", flush=True)
         return jsonify({"msg": "Evaluation failed"}), 500
 
-    # Mapping correct answers to exercises
-    id_map = {str(r.get("id")): r.get("correct_answer") for r in evaluation.get("results", [])}
-    # print("🗺️ ID → Correct Answer Map:", json.dumps(id_map, indent=2), flush=True)
+    summary = compile_score_summary(exercises, answers, id_map)
 
-    for ex in exercises:
-        cid = str(ex.get("id"))
-        if cid in id_map:
-            ex["correctAnswer"] = id_map[cid]
-        # print(f"✅ Updated exercise {cid} with correct answer: {id_map.get(cid)}", flush=True)
-
-    # Score summary
-    mistakes = []
-    correct = 0
-    for ex in exercises:
-        cid = str(ex.get("id"))
-        user_ans = answers.get(cid, "")
-        correct_ans = id_map.get(cid, "")
-        # print(f"🔍 Checking answer for {cid}: user='{user_ans}' vs correct='{correct_ans}'", flush=True)
-        if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
-            correct += 1
-            # print(f"✅ Correct for {cid}", flush=True)
-        else:
-            # print(f"❌ Mistake for {cid}", flush=True)
-            mistakes.append({
-                "question": ex.get("question"),
-                "your_answer": user_ans,
-                "correct_answer": correct_ans,
-            })
-
-    summary = {"correct": correct, "total": len(exercises), "mistakes": mistakes}
-    # print("📊 Final summary:\n", json.dumps(summary, indent=2), flush=True)
-
-
-    vocab_rows = select_rows(
-        "vocab_log",
-        columns=["vocab", "translation"],
-        where="username = ?",
-        params=(username,),
-    )
-    vocab_data = [
-        {"word": row["vocab"], "translation": row.get("translation")}
-        for row in vocab_rows
-    ] if vocab_rows else []
-
-    topic_rows = fetch_topic_memory(username)
-    topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+    vocab_data, topic_data = fetch_vocab_and_topic_data(username)
 
     feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
 
-    def _background_save():
-        app = current_app._get_current_object()
-
-        def run():
-            from database import fetch_one
-            with app.app_context():
-                try:
-                    process_ai_answers(
-                        username,
-                        str(block_id),
-                        answers,
-                        {"exercises": exercises},
-                    )
-                    check_auto_level_up(username)
-                    insert_row(
-                        "exercise_submissions",
-                        {
-                            "username": username,
-                            "block_id": str(block_id),
-                            "answers": json.dumps(answers),
-                        },
-                    )
-                    # print("Successfully inserted submission", flush=True)
-                except Exception as e:
-                    current_app.logger.error("Failed to save exercise submission: %s", e)
-
-        from threading import Thread
-        Thread(target=run).start()
-
-    _background_save()
+    save_exercise_submission_async(username, block_id, answers, exercises)
     passed = bool(evaluation.get("pass"))
     run_in_background(prefetch_next_exercises, username)
 
