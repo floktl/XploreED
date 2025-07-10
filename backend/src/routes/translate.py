@@ -1,8 +1,7 @@
 """Simple translation exercise endpoints."""
 
 from app.imports.imports import *
-from utils.ai.translation_utils import evaluate_topic_qualities_ai
-from utils.helpers.helper import run_in_background
+from .translate_helpers import update_memory_async
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():
@@ -19,11 +18,7 @@ def translate():
 
     correct, reason = evaluate_translation_ai(english, german, student_input)
 
-    def _background_save():
-        qualities = evaluate_topic_qualities_ai(english, german, student_input)
-        update_topic_memory_translation(username, german, qualities)
-
-    run_in_background(_background_save)
+    update_memory_async(username, english, german, student_input)
     prefix = "✅" if correct else "❌"
     feedback = f"{prefix} {reason}"
 

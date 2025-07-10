@@ -6,12 +6,10 @@ from . import ai_bp
 from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
 from database import fetch_one, select_one, select_rows
 from utils.html.html_utils import clean_html
-from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
 from utils.ai.prompts import weakness_lesson_prompt
-from utils.grammar.grammar_utils import detect_language_topics
-from utils.ai.translation_utils import _update_single_topic, update_topic_memory_reading
-from utils.helpers.helper import run_in_background, require_user
+from utils.helpers.helper import require_user
+from .lesson_helpers import update_reading_memory_async
 from utils.ai.ai_api import send_prompt
 
 
@@ -204,11 +202,6 @@ def submit_reading_exercise():
     for word, art in extract_words(text):
         save_vocab(username, word, context=text, exercise="reading", article=art)
 
-    def _background_save():
-        features = detect_language_topics(text) or ["unknown"]
-        update_topic_memory_reading(username, text)
-        check_auto_level_up(username)
-
-    run_in_background(_background_save)
+    update_reading_memory_async(username, text)
 
     return jsonify({"summary": summary, "results": results})
