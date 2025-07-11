@@ -72,14 +72,38 @@ from utils.ai.translation_utils import (
     update_topic_memory_translation,
 )
 from utils.spaced_repetition.algorithm import sm2
-from routes.ai.helpers.ai_evaluation_helpers import *
-from routes.ai.helpers.exercise_helpers import *
-from routes.ai.helpers.helpers import *
-from routes.ai.helpers.lesson_helpers import *
-from routes.ai.helpers.misc_helpers import *
-from routes.ai.helpers.reading_helpers import *
-from routes.ai.helpers.translate_helpers import *
-from routes.ai.helpers.user_helpers import *
+from routes.ai.helpers.ai_evaluation_helpers import (
+    evaluate_answers_with_ai,
+    process_ai_answers,
+)
+from routes.ai.helpers.exercise_helpers import (
+    fetch_vocab_and_topic_data,
+    compile_score_summary,
+    save_exercise_submission_async,
+    evaluate_exercises,
+    parse_submission_data,
+    generate_new_exercises,
+    generate_training_exercises,
+    prefetch_next_exercises,
+)
+from routes.ai.helpers.helpers import (
+    generate_feedback_prompt,
+    store_user_ai_data,
+    _adjust_gapfill_results,
+)
+from routes.ai.helpers.lesson_helpers import update_reading_memory_async
+from routes.ai.helpers.misc_helpers import stream_ai_answer
+from routes.ai.helpers.reading_helpers import (
+    generate_reading_exercise,
+    ai_reading_exercise,
+    submit_reading_exercise,
+)
+from routes.ai.helpers.translate_helpers import update_memory_async
+from routes.ai.helpers.user_helpers import (
+    fetch_vocab_entries,
+    select_vocab_word_due_for_review,
+    update_vocab_after_review,
+)
 
 from utils.ai.prompt_utils import (
     make_prompt,
