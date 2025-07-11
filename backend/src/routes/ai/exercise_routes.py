@@ -3,11 +3,10 @@
 from app.imports.imports import ai_bp
 from flask import request, jsonify # type: ignore
 from .helpers.helpers import (
-    evaluate_answers_with_ai,
     _adjust_gapfill_results,
-    process_ai_answers,
     generate_feedback_prompt
 )
+from .helpers.ai_evaluation_helpers import evaluate_answers_with_ai, process_ai_answers
 from utils.helpers.helper import run_in_background, require_user
 from .helpers.exercise_helpers import (
     prefetch_next_exercises,

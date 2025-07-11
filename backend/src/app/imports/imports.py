@@ -1,4 +1,3 @@
-# utils/imports/imports.py
 """Centralised import lists to keep route modules short."""
 
 # ✅ Common imports used in most route files
@@ -62,10 +61,34 @@ from game.sentence_order_game import (
     generate_ai_sentence,
 )
 
-from utils.spaced_repetition.vocab_utils import split_and_clean, save_vocab, translate_to_german, extract_words
-from utils.ai.translation_utils import evaluate_translation_ai, update_topic_memory_translation
+from utils.spaced_repetition.vocab_utils import (
+    split_and_clean,
+    save_vocab,
+    translate_to_german,
+    extract_words,
+)
+from utils.ai.translation_utils import (
+    evaluate_translation_ai,
+    update_topic_memory_translation,
+)
 from utils.spaced_repetition.algorithm import sm2
+from routes.ai.helpers.ai_evaluation_helpers import *
+from routes.ai.helpers.exercise_helpers import *
+from routes.ai.helpers.helpers import *
+from routes.ai.helpers.lesson_helpers import *
+from routes.ai.helpers.misc_helpers import *
+from routes.ai.helpers.reading_helpers import *
+from routes.ai.helpers.translate_helpers import *
+from routes.ai.helpers.user_helpers import *
 
+from utils.ai.prompt_utils import (
+    make_prompt,
+    extract_json,
+    send_request,
+    send_prompt,
+    exercise_generation_prompt,
+    feedback_generation_prompt,
+)
 
 # ✅ Route-specific grouped imports
 class Imports:
@@ -123,17 +146,9 @@ class Imports:
     ]
 
     ai = [
-        "ai_bp",
-        "request",
-        "jsonify",
-        "session_manager",
-        "require_user",
-        "evaluate_answers_with_ai",
-        "generate_training_exercises",
-        "compile_score_summary",
-        "save_exercise_submission_async",
-        "evaluate_exercises",
-        "generate_new_exercises",
+        "ai_bp", "request", "jsonify", "session_manager", "require_user",
+        "evaluate_answers_with_ai", "generate_training_exercises", "compile_score_summary",
+        "save_exercise_submission_async", "evaluate_exercises", "generate_new_exercises"
     ]
 
     support = [
@@ -154,15 +169,15 @@ class Imports:
         "evaluate_translation_ai", "fetch_one", "update_row", "random", "LEVELS"
     ]
 
-# At the bottom of utils/imports/imports.py
+# ✅ Export list
 __all__ = [
-    # Common Flask & system imports
+    # Flask & system
     "Blueprint", "request", "jsonify", "make_response", "current_app",
     "Limiter", "get_remote_address", "session_manager",
     "sqlite3", "datetime", "os", "OrderedDict", "BeautifulSoup",
     "generate_password_hash", "check_password_hash",
 
-    # DB utils
+    # DB
     "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
     "execute_query", "get_connection", "fetch_custom", "fetch_one_custom",
     "select_rows", "select_one",
@@ -170,7 +185,7 @@ __all__ = [
     # Lesson helpers
     "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
 
-    # Global helper utils
+    # Global utils
     "is_admin", "get_current_user", "user_exists", "require_user",
 
     # Blueprints
@@ -182,29 +197,21 @@ __all__ = [
     "LEVELS", "get_scrambled_sentence", "evaluate_order", "save_result",
     "get_feedback", "generate_ai_sentence",
 
-    # Vocab + AI
+    # Vocab & AI
     "split_and_clean", "save_vocab", "translate_to_german", "extract_words",
     "evaluate_translation_ai", "update_topic_memory_translation",
 
     # Spaced repetition
     "sm2",
 
-    # AI Exercise Helpers
-    "evaluate_answers_with_ai",
-    "evaluate_exercises",
-    "compile_score_summary",
-    "generate_new_exercises",
-    "generate_training_exercises",
-    "save_exercise_submission_async",
+    # AI Evaluation
+    "evaluate_answers_with_ai", "evaluate_exercises", "compile_score_summary",
+    "generate_new_exercises", "generate_training_exercises", "save_exercise_submission_async",
 
-    # Mistral + Prompt utils
-    "make_prompt",
-    "extract_json",
-    "send_request",
-    "send_prompt",
-    "exercise_generation_prompt",
-    "feedback_generation_prompt",
+    # Prompt helpers
+    "make_prompt", "extract_json", "send_request", "send_prompt",
+    "exercise_generation_prompt", "feedback_generation_prompt",
 
-    # Grouped import maps
-    "Imports",
+    # Grouped imports
+    "Imports"
 ]
