@@ -8,7 +8,6 @@ from utils.ai.prompt_utils import make_prompt, FEEDBACK_SYSTEM_PROMPT
 from utils.ai.prompts import (
     feedback_generation_prompt,
 )
-from .exercise_helpers import generate_new_exercises
 from utils.ai.ai_api import send_request
 from .. import (
     EXERCISE_TEMPLATE,
@@ -151,6 +150,8 @@ def _create_ai_block(username: str) -> dict | None:
     level = row.get("skill_level", 0) if row else 0
 
     try:
+        from .exercise_helpers import generate_new_exercises
+
         ai_block = generate_new_exercises(
             vocab_data, topic_memory, example_block, level=level
         )
