@@ -5,7 +5,7 @@ from flask import request, jsonify
 from . import ai_bp
 from utils.helpers.helper import require_user
 from utils.ai.ai_api import send_prompt
-from .misc_helpers import stream_ai_answer
+from .helpers.misc_helpers import stream_ai_answer
 
 
 @ai_bp.route("/ask-ai", methods=["POST"])
@@ -44,12 +44,3 @@ def ask_ai_stream():
         return jsonify({"error": "Question required"}), 400
 
     return stream_ai_answer(question)
-
-
-@ai_bp.route("/reading-exercise", methods=["POST"])
-def reading_exercise():
-    """Proxy to the lesson reading exercise generator."""
-    from .lesson_routes import ai_reading_exercise
-
-    return ai_reading_exercise()
-

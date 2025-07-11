@@ -117,6 +117,42 @@ def fetch_one(
     )
     return rows[0] if rows else None
 
+
+def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
+    """Retrieve topic memory rows for a user.
+
+    If ``include_correct`` is ``False`` (default), only entries that were
+    answered incorrectly are returned.
+    """
+    where = "username = ?"
+    if not include_correct:
+        where += " AND (correct IS NULL OR correct = 0)"
+    try:
+        rows = select_rows(
+            "topic_memory",
+            columns=[
+                "grammar",
+                "topic",
+                "skill_type",
+                "context",
+                "lesson_content_id",
+                "ease_factor",
+                "intervall",
+                "next_repeat",
+                "repetitions",
+                "last_review",
+                "correct",
+                "quality",
+            ],
+            where=where,
+            params=(username,),
+        )
+        return rows if rows else []
+    except Exception:
+        # Table might not exist yet
+        return []
+
+
 def insert_row(table, data):
     """Insert ``data`` as a new row into ``table``."""
     columns = ", ".join(data.keys())

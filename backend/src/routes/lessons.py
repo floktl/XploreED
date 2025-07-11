@@ -99,10 +99,6 @@ def get_lesson_content(lesson_id):
     return jsonify(data)
 
 
-
-
-
-
 @lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
     """Return completion status of each block in the lesson."""

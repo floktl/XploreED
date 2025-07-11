@@ -22,6 +22,7 @@ def update_password_route():
     update_row('users', {'password': hashed}, 'username = ?', (user,))
     return jsonify({'msg': 'password updated'})
 
+
 @settings_bp.route('/deactivate', methods=['POST'])
 def deactivate_account_route():
     """Delete or anonymize all data for the current user."""

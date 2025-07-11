@@ -61,8 +61,10 @@ CEFR_LEVELS = [
 ]
 
 # Import submodules so routes get registered
-from . import helpers, tts, exercise_routes, feedback_routes, training_routes, lesson_routes, misc_routes
-from .helpers import generate_training_exercises, evaluate_answers_with_ai, generate_reading_exercise
+from . import exercise_routes, feedback_routes, training_routes, lesson_routes, misc_routes, tts_routes, reading_routes
+from .helpers.ai_evaluation_helpers import evaluate_answers_with_ai
+from .helpers.exercise_helpers import generate_training_exercises
+from .helpers.reading_helpers import generate_reading_exercise
 
 __all__ = [
     "ai_bp",
