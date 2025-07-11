@@ -5,17 +5,14 @@ import random
 from flask import request, jsonify  # type: ignore
 
 from . import ai_bp, FEEDBACK_FILE
-from .helpers import (
-    evaluate_answers_with_ai,
+from .helpers.helpers import (
     _adjust_gapfill_results,
     fetch_topic_memory,
-    process_ai_answers,
     generate_feedback_prompt
 )
-
+from .helpers.ai_evaluation_helpers import evaluate_answers_with_ai, process_ai_answers
 from database import select_rows
 from utils.helpers.helper import run_in_background, require_user
-from utils.data.json_utils import extract_json
 
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
@@ -137,5 +134,3 @@ def generate_ai_feedback():
 
     feedback = random.choice(feedback_data) if feedback_data else {}
     return jsonify(feedback)
-
-

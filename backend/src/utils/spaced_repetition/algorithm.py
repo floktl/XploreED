@@ -1,4 +1,5 @@
-"""Algorithms module.
+"""
+Algorithms module.
 Contains spaced repetition algorithms such as SM2.
 """
 

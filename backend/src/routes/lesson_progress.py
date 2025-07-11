@@ -129,6 +129,7 @@ def check_lesson_marked_complete():
     completed = total_blocks > 0 and completed_blocks == total_blocks
     return jsonify({"completed": completed})
 
+
 @lesson_progress_bp.route("/mark-as-completed", methods=["POST"])
 def mark_lesson_as_completed():
     """Mark an entire lesson as completed and record results."""

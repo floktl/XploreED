@@ -1,7 +1,7 @@
 """User account and vocabulary related routes."""
 
 from app.imports.imports import *
-from routes.user_helpers import (
+from routes.ai.helpers.user_helpers import (
     fetch_vocab_entries,
     select_vocab_word_due_for_review,
     update_vocab_after_review,

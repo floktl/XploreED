@@ -4,7 +4,7 @@
 from database import get_connection, insert_row, select_rows
 from utils.ai.prompts import game_sentence_prompt
 from utils.ai.ai_api import send_prompt
-from routes.ai.helpers import generate_feedback_prompt
+from routes.ai.helpers.helpers import generate_feedback_prompt
 import random
 from colorama import Fore, Style # type: ignore
 from datetime import datetime

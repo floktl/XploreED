@@ -5,10 +5,12 @@ import datetime
 from flask import request, jsonify  # type: ignore
 
 from . import ai_bp
-from .helpers import (
+from .helpers.helpers import (
+    store_user_ai_data,
+)
+from .helpers.exercise_helpers import (
     generate_training_exercises,
     prefetch_next_exercises,
-    store_user_ai_data,
 )
 from database import select_one
 from utils.helpers.helper import run_in_background, require_user

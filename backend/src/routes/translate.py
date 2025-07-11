@@ -1,7 +1,7 @@
 """Simple translation exercise endpoints."""
 
 from app.imports.imports import *
-from .translate_helpers import update_memory_async
+from .ai.helpers.translate_helpers import update_memory_async
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate():

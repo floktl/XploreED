@@ -1,7 +1,7 @@
 """Helper functions for misc AI routes."""
 
 import json
-from flask import Response, current_app
+from flask import Response, current_app # type: ignore
 from .helpers import send_prompt
 
 

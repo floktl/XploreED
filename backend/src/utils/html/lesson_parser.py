@@ -1,6 +1,6 @@
 """HTML helpers for parsing lesson content."""
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup #type: ignore
 import sqlite3
 from database import get_connection
 

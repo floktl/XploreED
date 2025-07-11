@@ -1,15 +1,13 @@
 """Lesson and reading exercise routes."""
 
 import datetime
-from flask import request, jsonify, Response, current_app  # type: ignore
+from flask import jsonify, Response, current_app  # type: ignore
 from . import ai_bp
-from .helpers import fetch_topic_memory, generate_reading_exercise, store_user_ai_data
-from database import fetch_one, select_one, select_rows
+from .helpers.helpers import fetch_topic_memory, store_user_ai_data
+from database import select_one
 from utils.html.html_utils import clean_html
-from utils.spaced_repetition.vocab_utils import extract_words, save_vocab
 from utils.ai.prompts import weakness_lesson_prompt
 from utils.helpers.helper import require_user
-from .lesson_helpers import update_reading_memory_async
 from utils.ai.ai_api import send_prompt
 
 
@@ -133,75 +131,3 @@ def ai_weakness_lesson():
     except Exception as e:
         current_app.logger.error("Failed to generate weakness lesson: %s", e)
     return jsonify({"error": "Mistral API error"}), 500
-
-def ai_reading_exercise():
-    """Return a short reading exercise based on the user's level."""
-    username = require_user()
-
-    data = request.get_json() or {}
-    style = data.get("style", "story")
-
-    row = fetch_one("users", "WHERE username = ?", (username,))
-    level = row.get("skill_level", 0) if row else 0
-
-    vocab_rows = select_rows(
-        "vocab_log",
-        columns=["vocab", "translation"],
-        where="username = ?",
-        params=(username,),
-    )
-    vocab_data = [
-        {"word": row["vocab"], "translation": row.get("translation")}
-        for row in vocab_rows
-    ] if vocab_rows else []
-
-    topic_rows = fetch_topic_memory(username)
-    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
-
-    block = generate_reading_exercise(style, level, vocab_data, topic_memory)
-    if not block or not block.get("text") or not block.get("questions"):
-        return jsonify({"error": "Mistral error"}), 500
-    for q in block.get("questions", []):
-        q.pop("correctAnswer", None)
-    return jsonify(block)
-
-
-@ai_bp.route("/reading-exercise/submit", methods=["POST"])
-def submit_reading_exercise():
-    """Evaluate reading answers and update memory."""
-    username = require_user()
-
-    data = request.get_json() or {}
-    answers = data.get("answers", {})
-    exercise = data.get("exercise") or {}
-    text = exercise.get("text", "")
-    questions = exercise.get("questions", [])
-
-    correct = 0
-    results = []
-    for q in questions:
-        qid = str(q.get("id"))
-        sol = str(q.get("correctAnswer", "")).strip().lower()
-        ans = str(answers.get(qid, "")).strip().lower()
-        if ans == sol:
-            correct += 1
-        results.append({"id": qid, "correct_answer": q.get("correctAnswer")})
-
-    summary = {"correct": correct, "total": len(questions), "mistakes": []}
-    for q in questions:
-        qid = str(q.get("id"))
-        if str(answers.get(qid, "")).strip().lower() != str(q.get("correctAnswer", "")).strip().lower():
-            summary["mistakes"].append(
-                {
-                    "question": q.get("question"),
-                    "your_answer": answers.get(qid, ""),
-                    "correct_answer": q.get("correctAnswer"),
-                }
-            )
-
-    for word, art in extract_words(text):
-        save_vocab(username, word, context=text, exercise="reading", article=art)
-
-    update_reading_memory_async(username, text)
-
-    return jsonify({"summary": summary, "results": results})
