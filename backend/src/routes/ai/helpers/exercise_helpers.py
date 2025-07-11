@@ -4,7 +4,6 @@ import json
 import random
 from threading import Thread
 from flask import current_app # type: ignore
-from app.imports.imports import *
 from database import insert_row, select_rows, fetch_one
 from utils.spaced_repetition.level_utils import check_auto_level_up
 from utils.helpers.helper import require_user
