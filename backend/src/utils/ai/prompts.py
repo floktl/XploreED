@@ -10,8 +10,9 @@ def exercise_generation_prompt(
     example_exercise_block: dict,
     vocabular: list,
     filtered_topic_memory: list,
+    recent_questions: str = "",
 ) -> dict:
-    """Return the user prompt for generating a new exercise block."""
+    """Return the user prompt for generating a new exercise block, including recent questions to avoid repeats."""
     return {
         "role": "user",
         "content": f"""
@@ -22,8 +23,8 @@ Adjust sentence complexity and vocabulary accordingly.
 Here is the required JSON structure — you must follow it **exactly**:
 
 1. Each exercise must include:
-   - `id`: a unique ID like `"ex1"`
-   - `type`: either `"gap-fill"` or `"translation"`
+   - `id`: a unique ID like `\"ex1\"`
+   - `type`: either `\"gap-fill\"` or `\"translation\"`
    - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)
    - For "gap-fill":
      - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.
@@ -33,7 +34,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 
  2. The overall JSON must contain:
    - `lessonId`, `title`, `instructions`, `level`
-   - `exercises`: list of 2 total exercises (mix of both types)
+   - `exercises`: list of 3 total exercises (mix of both types)
    - `feedbackPrompt`
    - `vocabHelp`: list of vocab entries with:
        - `word`, `meaning`
@@ -42,6 +43,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 ⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".
 ⚠️ All keys must match the example exactly.
 ⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.
+⚠️ **NEVER repeat any of these questions the user has seen recently:**\n{recent_questions}\n
 ⚠️ Always generate new, unique sentences that were not seen in earlier exercises.
 
 Here is an example structure for reference (do not reuse content!):

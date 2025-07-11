@@ -28,7 +28,7 @@ def build_payload(messages: list[dict], temperature: float = 0.7, stream: bool =
 def send_request(messages: list[dict], temperature: float = 0.7, stream: bool = False) -> requests.Response:
     """Send a request to the Mistral API and return the raw response."""
     payload = build_payload(messages, temperature, stream)
-    return requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=20, stream=stream)
+    return requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=60, stream=stream)
 
 
 def send_prompt(system_message: str, user_prompt: dict, temperature: float = 0.7, stream: bool = False) -> requests.Response:

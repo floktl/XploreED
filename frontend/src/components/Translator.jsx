@@ -8,7 +8,8 @@ import Alert from "./UI/Alert";
 import Spinner from "./UI/Spinner";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
-import { translateSentence } from "../api";
+import { translateSentence, translateSentenceStream } from "../api";
+import PrettyFeedback from "./PrettyFeedback";
 
 
 export default function Translator() {
@@ -44,6 +45,8 @@ export default function Translator() {
 
     const handleTranslate = async () => {
         setError("");
+        setGerman("");
+        setFeedback("");
 
         if (!english.trim() || !studentInput.trim()) {
             setError("⚠️ Please fill out both fields before submitting.");
@@ -57,9 +60,12 @@ export default function Translator() {
 
         try {
             setLoading(true);
-            const data = await translateSentence(payload);
-            setGerman(data.german || "");
-            setFeedback(data.feedback || "");
+            let streamed = "";
+            await translateSentenceStream(payload, (chunk) => {
+                streamed += chunk;
+                setFeedback(streamed);
+            });
+            setGerman("(see feedback)");
         } catch (err) {
             console.error("[CLIENT] Translation request failed:", err);
             setError("Something went wrong. Please try again.");
@@ -124,10 +130,7 @@ export default function Translator() {
                                 🗣️ Correct German:
                             </p>
                             <p className={`mb-3 ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
-                            <div
-                                className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}
-                                dangerouslySetInnerHTML={{ __html: feedback }}
-                            />
+                            <PrettyFeedback feedback={feedback} />
                         </Card>
 
                         <div className="mt-6 text-center">

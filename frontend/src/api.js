@@ -260,20 +260,66 @@ export async function submitLevelAnswer(level, answer, sentence = "") {
 
 // ---------- Translation ----------
 export async function translateSentence(payload) {
+    // Step 1: Start translation job
     const res = await fetch(`${BASE_URL}/api/translate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(payload),
     });
-
     if (!res.ok) {
         const errorText = await res.text();
         console.error("[API] Server error response:", errorText);
         throw new Error(`❌ Server error: ${res.status}`);
     }
+    const { job_id } = await res.json();
+    if (!job_id) throw new Error("❌ No job_id returned from server");
 
-    return await res.json();
+    // Step 2: Poll for result
+    const poll = async (retries = 0) => {
+        const statusRes = await fetch(`${BASE_URL}/api/translate/status/${job_id}`, {
+            credentials: "include",
+        });
+        if (!statusRes.ok) throw new Error("❌ Failed to poll translation status");
+        const data = await statusRes.json();
+        if (data.status === "done") return data.result;
+        if (data.status === "not_found") throw new Error("❌ Translation job not found");
+        if (retries > 30) throw new Error("❌ Translation timed out");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return poll(retries + 1);
+    };
+    return poll();
+}
+
+export async function translateSentenceStream(payload, onChunk) {
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+    const res = await fetch(`${BASE_URL}/api/translate/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok || !res.body) throw new Error("Failed to connect to stream");
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let lines = buffer.split(/\n\n/);
+        buffer = lines.pop() || "";
+        for (const line of lines) {
+            if (line.startsWith("data: ")) {
+                const chunk = line.replace(/^data: /, "");
+                if (onChunk) onChunk(chunk);
+            }
+        }
+    }
+    if (buffer && buffer.startsWith("data: ")) {
+        const chunk = buffer.replace(/^data: /, "");
+        if (onChunk) onChunk(chunk);
+    }
 }
 
 

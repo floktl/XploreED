@@ -205,6 +205,7 @@ export default function AIExerciseBlock({
                             r.other_solutions ||
                             r.other_answers ||
                             [],
+                        explanation: r.explanation || "",
                     };
                 });
                 setEvaluation(map);
@@ -242,6 +243,7 @@ export default function AIExerciseBlock({
                             r.other_solutions ||
                             r.other_answers ||
                             [],
+                        explanation: r.explanation || "",
                     };
                 });
                 setEvaluation(map);
@@ -407,47 +409,64 @@ export default function AIExerciseBlock({
                                 </>
                             )}
                             {submitted && evaluation[ex.id] !== undefined && (
-                                <div className="mt-2 text-sm">
+                                <div className="mt-2 p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
                                     {String(answers[ex.id]).trim().toLowerCase() ===
-                                        String(evaluation[ex.id]?.correct).trim().toLowerCase() ? (
-                                        <span className="text-green-600 flex items-center gap-1">
-                                            <CheckCircle className="w-4 h-4" />
-                                            Correct!
+                                    String(evaluation[ex.id]?.correct).trim().toLowerCase() ? (
+                                        <span className="text-green-700 dark:text-green-400 flex items-center gap-1 font-bold">
+                                            <CheckCircle className="w-4 h-4" /> Correct!
                                         </span>
                                     ) : (
-                                        <>
-                                            <span className="text-red-600 flex items-center gap-1">
-                                                <XCircle className="w-4 h-4" />
-                                                Incorrect.
-                                            </span>
-                                            <div className="mt-1 text-gray-700 dark:text-gray-300">
-                                                {ex.explanation}
-                                            </div>
-                                            <div className="mt-1">
-                                                {diffWords(answers[ex.id], evaluation[ex.id]?.correct)}
-                                            </div>
-                                        </>
+                                        <span className="text-red-700 dark:text-red-400 flex items-center gap-1 font-bold">
+                                            <XCircle className="w-4 h-4" /> Incorrect.
+                                        </span>
                                     )}
-                                    {evaluation[ex.id]?.alternatives &&
-                                        evaluation[ex.id].alternatives.length > 0 && (
-                                            <div className="text-sm mt-1 text-blue-600 dark:text-blue-300">
-                                                Other ways to say it: {evaluation[ex.id].alternatives.join(', ')}
-                                            </div>
+
+                                    <div className="mt-3">
+                                        <strong className="text-green-700 dark:text-green-400">Correct answer:</strong>
+                                        <span className="font-mono ml-2">{evaluation[ex.id]?.correct}</span>
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <strong className="text-blue-700 dark:text-blue-400">Alternative correct answers:</strong>
+                                        {evaluation[ex.id]?.alternatives?.length > 0 ? (
+                                            <ul className="list-disc ml-6 mt-1">
+                                                {evaluation[ex.id].alternatives.map((alt, i) => (
+                                                    <li key={i} className="font-mono">{alt}</li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <span className="ml-2 text-gray-800 dark:text-gray-100">No alternative correct answers.</span>
                                         )}
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>
+                                        <span className="ml-2 text-gray-800 dark:text-gray-100">
+                                            {evaluation[ex.id]?.explanation || <span>No explanation available.</span>}
+                                        </span>
+                                    </div>
+
+                                    <div className="mt-3">
+                                        <strong className="text-gray-700 dark:text-gray-200">Your answer vs. correct answer:</strong>
+                                        <span className="ml-2 font-mono">
+                                            {diffWords(answers[ex.id], evaluation[ex.id]?.correct)}
+                                        </span>
+                                    </div>
+
                                     {String(answers[ex.id]).trim().toLowerCase() !==
                                         String(evaluation[ex.id]?.correct).trim().toLowerCase() && (
-                                            <div className="mt-2">
-                                                <Button
-                                                    variant="danger"
-                                                    size="sm"
-                                                    type="button"
-                                                    onClick={() => setReportExerciseId(ex.id)}
-                                                    disabled={replacingId === ex.id}
-                                                >
-                                                    {replacingId === ex.id ? 'Loading...' : 'Report Error'}
-                                                </Button>
-                                            </div>
-                                        )}
+                                        <div className="mt-4">
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                type="button"
+                                                onClick={() => setReportExerciseId(ex.id)}
+                                                disabled={replacingId === ex.id}
+                                            >
+                                                {replacingId === ex.id ? 'Loading...' : 'Report Error'}
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
