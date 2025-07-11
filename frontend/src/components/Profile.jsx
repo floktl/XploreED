@@ -48,7 +48,7 @@ export default function Profile() {
     }, [navigate, setUsername, setIsAdmin]);
 
     return (
-        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+        <div data-tour="profile" className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container >
                 <Title>
                     <div className="flex items-center gap-2">

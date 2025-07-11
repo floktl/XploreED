@@ -14,6 +14,8 @@ import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 import { getUserLevel } from "../api";
+import AskAiButton from "./AskAiButton";
+import OnboardingTour from "./OnboardingTour";
 
 export default function Menu() {
     const navigate = useNavigate();
@@ -55,7 +57,7 @@ export default function Menu() {
 
                 <Card className="shadow-xl">
                     <div className="flex flex-col gap-4">
-                        <Button type="button" variant="primary" onClick={() => navigate("/translate")} className="justify-start gap-3">
+                        <Button data-tour="start-lesson" type="button" variant="primary" onClick={() => navigate("/translate")} className="justify-start gap-3">
                             <FileText className="w-5 h-5" />
                             Translation Practice
                         </Button>
@@ -90,6 +92,8 @@ export default function Menu() {
             </Container>
 
             <Footer />
+            <AskAiButton />
+            <OnboardingTour />
         </div>
     );
 }

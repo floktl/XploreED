@@ -32,6 +32,7 @@ import Settings from "./components/Settings";
 import AskAiButton from "./components/AskAiButton";
 import TermsOfService from "./components/TermsOfService";
 import About from "./components/About";
+import OnboardingTour from "./components/OnboardingTour";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -63,7 +64,6 @@ function AppWrapper() {
     return (
         <>
             <RouterProvider router={router} />
-            <AskAiButton />
         </>
     );
 }

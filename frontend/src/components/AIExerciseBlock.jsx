@@ -353,7 +353,7 @@ export default function AIExerciseBlock({
 
     return (
         <>
-            <Card className="space-y-4">
+            <Card data-tour="ai-feedback" className="space-y-4">
 
                 {stage === 1 && current.title && (
                     <h3 className="text-xl font-semibold">{current.title}</h3>

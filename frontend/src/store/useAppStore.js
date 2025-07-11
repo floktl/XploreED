@@ -2,6 +2,7 @@
 import { create } from "zustand";
 
 const initialDark = JSON.parse(localStorage.getItem("darkMode") || "false");
+const initialOnboarding = JSON.parse(localStorage.getItem("showOnboarding") || "true");
 
 const useAppStore = create((set) => ({
     username: null,
@@ -10,6 +11,7 @@ const useAppStore = create((set) => ({
     darkMode: initialDark,
     currentLevel: 0,
     isLoading: true,
+    showOnboarding: initialOnboarding,
 
     setUsername: (username) => set({ username }),
     setIsAdmin: (isAdmin) => set({ isAdmin }),
@@ -26,6 +28,10 @@ const useAppStore = create((set) => ({
         set({ darkMode: val });
     },
     setIsLoading: (val) => set({ isLoading: val }),
+    setShowOnboarding: (val) => {
+        localStorage.setItem("showOnboarding", JSON.stringify(val));
+        set({ showOnboarding: val });
+    },
 
     resetStore: () => {
         localStorage.removeItem("username");
