@@ -105,14 +105,18 @@ from routes.ai.helpers.user_helpers import (
     update_vocab_after_review,
 )
 
-from utils.ai.prompt_utils import (
-    make_prompt,
-    extract_json,
-    send_request,
-    send_prompt,
+from utils.ai.prompts import (
     exercise_generation_prompt,
     feedback_generation_prompt,
 )
+from utils.ai.prompt_utils import (
+    make_prompt,
+)
+from utils.ai.ai_api import (
+    send_request,
+    send_prompt,
+)
+from utils.data.json_utils import extract_json
 
 # ✅ Route-specific grouped imports
 class Imports:

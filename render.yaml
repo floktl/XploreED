@@ -12,3 +12,16 @@ services:
         value: production
       - key: VITE_API_BASE_URL
         value: ""  # Empty means use relative URLs (required!)
+  - type: web
+    name: backend
+    env: python
+    buildCommand: ... # your build command
+    startCommand: ... # your start command
+    envVars:
+      - key: REDIS_HOST
+        value: redis
+    dependsOn:
+      - redis
+  - type: redis
+    name: redis
+    plan: free

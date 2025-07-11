@@ -310,6 +310,13 @@ with get_connection() as conn:
     else:
         print("ℹ️ 'next_exercises' column already exists in 'ai_user_data'.")
 
+    # ✅ Add exercise_history column if missing
+    if "exercise_history" not in ai_cols:
+        cursor.execute("ALTER TABLE ai_user_data ADD COLUMN exercise_history TEXT;")
+        print("✅ 'exercise_history' column added to 'ai_user_data'.")
+    else:
+        print("ℹ️ 'exercise_history' column already exists in 'ai_user_data'.")
+
     # ✅ Create topic_memory table
     cursor.execute(
         """
