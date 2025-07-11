@@ -97,9 +97,6 @@ def save_exercise_submission_async(
     Thread(target=run).start()
 
 
-from .helpers import evaluate_answers_with_ai, _adjust_gapfill_results
-
-
 def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dict]:
     """Return evaluation result and id map after updating exercises."""
     evaluation = evaluate_answers_with_ai(exercises, answers)

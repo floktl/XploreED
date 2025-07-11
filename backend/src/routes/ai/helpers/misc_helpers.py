@@ -2,7 +2,7 @@
 
 import json
 from flask import Response, current_app # type: ignore
-from .helpers import send_prompt
+from utils.ai.ai_api import send_prompt
 
 
 def stream_ai_answer(question: str) -> Response:
