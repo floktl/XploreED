@@ -1,7 +1,7 @@
 """Helper functions for user-related routes."""
 
 import datetime
-from app.imports.imports import select_rows, select_one, update_row
+from database import select_rows, select_one, update_row
 from utils.spaced_repetition.algorithm import sm2
 
 VOCAB_COLUMNS = [
