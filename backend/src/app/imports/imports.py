@@ -123,7 +123,17 @@ class Imports:
     ]
 
     ai = [
-        "ai_bp", "request", "jsonify", "session_manager", "require_user",
+        "ai_bp",
+        "request",
+        "jsonify",
+        "session_manager",
+        "require_user",
+        "evaluate_answers_with_ai",
+        "generate_training_exercises",
+        "compile_score_summary",
+        "save_exercise_submission_async",
+        "evaluate_exercises",
+        "generate_new_exercises",
     ]
 
     support = [
@@ -178,6 +188,22 @@ __all__ = [
 
     # Spaced repetition
     "sm2",
+
+    # AI Exercise Helpers
+    "evaluate_answers_with_ai",
+    "evaluate_exercises",
+    "compile_score_summary",
+    "generate_new_exercises",
+    "generate_training_exercises",
+    "save_exercise_submission_async",
+
+    # Mistral + Prompt utils
+    "make_prompt",
+    "extract_json",
+    "send_request",
+    "send_prompt",
+    "exercise_generation_prompt",
+    "feedback_generation_prompt",
 
     # Grouped import maps
     "Imports",
