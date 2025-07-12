@@ -89,14 +89,20 @@ def extract_words(text: str) -> list[tuple[str, Optional[str]]]:
 
 
 def _singularize(noun: str) -> str:
-    """Very small heuristic to get the singular form of a noun."""
+    """Improved heuristic to get the singular form of a German noun."""
     lower = noun.lower()
+    # Handle common feminine plural endings
+    if lower.endswith("innen"):
+        return noun[:-5] + "in"  # Freundinnen -> Freundin
     if lower.endswith("nen"):
         return noun[:-3] + "ne"
+    # Remove plural 'en' (but not for diminutives)
     if lower.endswith("en") and not lower.endswith(("chen", "lein")):
         return noun[:-2]
+    # Remove plural 'e'
     if lower.endswith("e") and len(noun) > 3:
         return noun[:-1]
+    # Remove plural 'n'
     if lower.endswith("n") and len(noun) > 3:
         return noun[:-1]
     return noun
@@ -189,6 +195,12 @@ def save_vocab(
             normalized, word_type, _ = normalize_word(german_word, article)
             english_word = ""
             details = None
+
+    # Avoid saving invalid forms like 'Freundi' (unless valid endings)
+    valid_i_endings = ("ei", "ie", "ai", "oi", "ui")
+    if normalized.endswith("i") and not normalized.endswith(valid_i_endings):
+        # Optionally, log or skip
+        return None
 
     # Check again after potential AI normalization
     if vocab_exists(username, normalized):

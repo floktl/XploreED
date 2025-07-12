@@ -7768,3 +7768,1148 @@
 2025-07-12 14:41:05,566 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:05] "POST /api/ask-ai-stream HTTP/1.1" 200 -
 2025-07-12 14:41:09,502 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:09] "POST /api/mistral-chat-history HTTP/1.1" 200 -
 2025-07-12 14:41:10,009 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:10] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 15:05:26,103 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 15:05:26,104 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 15:05:37,899 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:05:37] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 15:05:37,902 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:05:37] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:05:38,470 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:05:38] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 15:05:38,476 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:05:38] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:05:39,050 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:05:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:08:55,858 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:08:55] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 15:09:16,766 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:09:16] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:10:05,513 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:10:05] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 15:10:05,516 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:10:05] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:10:06,088 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:10:06] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 15:10:06,091 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:10:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:10:06,672 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:10:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:59:46,687 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:59:46] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 15:59:48,303 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 15:59:48] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 15:59:49,496 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 15:59:49,503 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 15:59:49,503 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 15:59:49,505 - routes.ai.training_routes - INFO - Generating new training exercises for user ff
+2025-07-12 15:59:49,505 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_training_exercises for user ff
+2025-07-12 15:59:49,506 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 15:59:49,508 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user ff
+2025-07-12 15:59:49,508 - routes.ai.helpers.exercise_helpers - INFO - Detected new user ff, generating two unique blocks with different contexts
+2025-07-12 15:59:49,508 - routes.ai.helpers.exercise_helpers - INFO - Generating blocks for new user ff
+2025-07-12 15:59:49,508 - routes.ai.helpers.exercise_helpers - INFO - Generating first block for new user ff
+2025-07-12 15:59:49,513 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 15:59:49,514 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user ff
+2025-07-12 15:59:49,515 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 0 recent questions for user ff
+2025-07-12 15:59:49,515 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 15:59:49,515 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 15:59:49,515 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 15:59:49,516 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 15:59:49,516 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 15:59:49,516 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=0
+2025-07-12 15:59:49,517 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 15:59:49,518 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 15:59:49,518 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 15:59:49,565 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:10:50,932 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:10:50,943 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 16:10:50,944 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1078 characters
+2025-07-12 16:10:50,945 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 16:10:50,945 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 16:10:50,946 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user ff
+2025-07-12 16:10:50,947 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user ff
+2025-07-12 16:10:50,947 - routes.ai.helpers.exercise_helpers - INFO - Generated first block for new user ff with 3 exercises
+2025-07-12 16:10:50,947 - routes.ai.helpers.exercise_helpers - INFO - Extracted 3 questions from first block for new user ff
+2025-07-12 16:10:50,948 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user ff with 3 new questions, limit=20
+2025-07-12 16:10:50,948 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:10:50,952 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user ff
+2025-07-12 16:10:50,952 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user ff: 3 total questions
+2025-07-12 16:10:50,961 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user ff
+2025-07-12 16:10:50,961 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user ff
+2025-07-12 16:10:50,963 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for ff after after updating exercise history: {
+  "username": "ff",
+  "exercises": null,
+  "next_exercises": null,
+  "exercises_updated_at": null,
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"____ bist mein Freund.\", \"She is a teacher.\", \"Ich ____ einen Bruder.\"]"
+}
+2025-07-12 16:10:51,066 - routes.ai.helpers.exercise_helpers - INFO - Generating second block for new user ff with different context
+2025-07-12 16:10:51,067 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block with variation for new user ff with 3 exclude questions
+2025-07-12 16:10:51,072 - routes.ai.helpers.exercise_helpers - INFO - Using 3 exclude questions as recent questions for variation
+2025-07-12 16:10:51,072 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 16:10:51,072 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 16:10:51,072 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 16:10:51,073 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 16:10:51,073 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 16:10:51,073 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 16:10:51,074 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 16:10:51,074 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:10:51,074 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n____ bist mein Freund.\nShe is a teacher.\nIch ____ einen Bruder.\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 16:10:51,076 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:10:57,740 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:10:57,743 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 16:10:57,743 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 987 characters
+2025-07-12 16:10:57,744 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 16:10:57,744 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 16:10:57,746 - routes.ai.helpers.exercise_helpers - INFO - Generated 3 exercises in variation block for new user ff
+2025-07-12 16:10:57,746 - routes.ai.helpers.exercise_helpers - INFO - Successfully created AI block with variation for new user ff: 3 exercises
+2025-07-12 16:10:57,746 - routes.ai.helpers.exercise_helpers - INFO - Generated second block for new user ff with 3 exercises
+2025-07-12 16:10:57,747 - routes.ai.helpers.exercise_helpers - INFO - After filtering duplicates for new user ff: 3 exercises remain
+2025-07-12 16:10:57,747 - routes.ai.helpers.exercise_helpers - INFO - Final second block for new user ff: 3 exercises
+2025-07-12 16:10:57,747 - routes.ai.helpers.exercise_helpers - INFO - Storing exercise blocks for new user ff
+2025-07-12 16:10:57,755 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for ff after after storing both blocks: {
+  "username": "ff",
+  "exercises": "{\"lessonId\": \"dynamic-ai-lesson\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"____ bist mein Freund.\", \"explanation\": \"No explanation.\", \"options\": [\"Du\", \"Er\", \"Sie\", \"Wir\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"She is a teacher.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich ____ einen Bruder.\", \"explanation\": \"No explanation.\", \"options\": [\"hat\", \"hast\", \"haben\", \"habe\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you notice any patterns or specific areas where you felt confident or struggled?\", \"vocabHelp\": [{\"word\": \"einen Bruder\", \"meaning\": \"a brother\"}, {\"word\": \"Lehrerin\", \"meaning\": \"teacher (female)\"}, {\"word\": \"Freund\", \"meaning\": \"friend (male)\"}]}",
+  "next_exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"He has a cat.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"____ habe einen Hund.\", \"explanation\": \"No explanation.\", \"options\": [\"Ich\", \"Du\", \"Er\", \"Sie\"]}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"____ bist eine Sch\\u00fclerin.\", \"explanation\": \"No explanation.\", \"options\": [\"Ich\", \"Du\", \"Er\", \"Sie\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you have any difficulties?\", \"vocabHelp\": [{\"word\": \"Hund\", \"meaning\": \"dog\"}, {\"word\": \"Katze\", \"meaning\": \"cat\"}, {\"word\": \"Sch\\u00fclerin\", \"meaning\": \"female student\"}]}",
+  "exercises_updated_at": "2025-07-12T16:10:57.747697",
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"____ bist mein Freund.\", \"She is a teacher.\", \"Ich ____ einen Bruder.\"]"
+}
+2025-07-12 16:10:57,756 - routes.ai.helpers.exercise_helpers - INFO - Successfully completed generate_training_exercises for new user ff
+2025-07-12 16:10:57,756 - routes.ai.training_routes - INFO - Returning new training exercises for user ff
+2025-07-12 16:10:57,758 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:10:57] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 16:10:57,814 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 16:10:57,815 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 16:10:57,815 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 16:10:57,817 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 16:10:57,817 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 16:10:57,817 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:10:57] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 16:11:31,176 - routes.ai.exercise_routes - INFO - Exercise submission request for user ff, block training
+2025-07-12 16:11:31,178 - routes.ai.exercise_routes - INFO - Received submission data for user ff: {
+  "answers": {
+    "ex3": "Er",
+    "ex2": "Sie sein ein Lehrer.",
+    "ex1": "habe"
+  },
+  "exercise_block": {
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "exercises": [
+      {
+        "explanation": "No explanation.",
+        "id": "ex3",
+        "options": [
+          "Du",
+          "Er",
+          "Sie",
+          "Wir"
+        ],
+        "question": "____ bist mein Freund.",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex2",
+        "question": "She is a teacher.",
+        "type": "translation"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex1",
+        "options": [
+          "hat",
+          "hast",
+          "haben",
+          "habe"
+        ],
+        "question": "Ich ____ einen Bruder.",
+        "type": "gap-fill"
+      }
+    ],
+    "vocabHelp": [
+      {
+        "meaning": "a brother",
+        "word": "einen Bruder"
+      },
+      {
+        "meaning": "teacher (female)",
+        "word": "Lehrerin"
+      },
+      {
+        "meaning": "friend (male)",
+        "word": "Freund"
+      }
+    ]
+  }
+}
+2025-07-12 16:11:31,178 - routes.ai.exercise_routes - INFO - Parsed submission for user ff: 3 exercises, 3 answers
+2025-07-12 16:11:31,178 - routes.ai.exercise_routes - INFO - Evaluating exercises for user ff
+2025-07-12 16:11:31,179 - routes.ai.helpers.ai_evaluation_helpers - INFO - Starting AI evaluation with mode=strict, exercises_count=3, answers_count=3
+2025-07-12 16:11:31,179 - routes.ai.helpers.ai_evaluation_helpers - INFO - Formatted 3 exercises for evaluation
+2025-07-12 16:11:31,179 - routes.ai.helpers.ai_evaluation_helpers - INFO - Generated evaluation instructions for mode=strict
+2025-07-12 16:11:31,180 - routes.ai.helpers.ai_evaluation_helpers - INFO - Sending evaluation request to Mistral API
+2025-07-12 16:11:31,180 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:31,181 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a strict German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Evaluate these answers for a German exercise. Return JSON with \'pass\' (true/false) and a \'results\' list. Each result must include \'id\' and \'correct_answer\'. Mark pass true only if all answers are fully correct.\n[{"id": "ex3", "question": "____ bist mein Freund.", "type": "gap-fill", "answer": "Er"}, {"id": "ex2", "question": "She is a teacher.", "type": "translation", "answer": "Sie sein ein Lehrer."}, {"id": "ex1", "question": "Ich ____ einen Bruder.", "type": "gap-fill", "answer": "habe"}]'}], 'temperature': 0.3}
+2025-07-12 16:11:31,193 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:32,555 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:32,558 - routes.ai.helpers.ai_evaluation_helpers - INFO - Mistral evaluation response successful
+2025-07-12 16:11:32,559 - routes.ai.helpers.ai_evaluation_helpers - INFO - Raw evaluation response length: 255 characters
+2025-07-12 16:11:32,560 - routes.ai.helpers.ai_evaluation_helpers - INFO - Successfully parsed evaluation JSON
+2025-07-12 16:11:32,561 - routes.ai.exercise_routes - INFO - Evaluation successful for user ff
+2025-07-12 16:11:32,564 - routes.ai.exercise_routes - INFO - Summary for user ff: {'correct': 2, 'total': 3, 'mistakes': [{'question': 'She is a teacher.', 'your_answer': 'Sie sein ein Lehrer.', 'correct_answer': 'Sie ist eine Lehrerin.'}]}
+2025-07-12 16:11:32,564 - routes.ai.exercise_routes - INFO - Fetching vocab and topic data for user ff
+2025-07-12 16:11:32,572 - routes.ai.exercise_routes - INFO - Got 0 vocab and 3 topic entries for user ff
+2025-07-12 16:11:32,573 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:32,573 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a strict German teacher, answer in english only, and skip any small talk, focus on improvement only'}, {'role': 'user', 'content': "You are a helpful German teacher writing a very short feedback message based on this student's test result.\n\nCorrect: 2 out of 3\n\nMistakes:\nQ: She is a teacher. | Your: Sie sein ein Lehrer. | Correct: Sie ist eine Lehrerin.\n\nRepeated grammar issues: None\n\nVocabulary used: None\n\n"}], 'temperature': 0.3}
+2025-07-12 16:11:32,575 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:34,193 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:34,195 - routes.ai.exercise_routes - INFO - Generated feedback prompt for user ff
+2025-07-12 16:11:34,195 - routes.ai.exercise_routes - INFO - Saving exercise submission for user ff
+2025-07-12 16:11:34,196 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T16:11:34.196204",
+  "event_type": "submission_start",
+  "username": "ff",
+  "details": {
+    "block_id": "training",
+    "answers_count": 3,
+    "exercises_count": 3,
+    "answers": {
+      "ex3": "Er",
+      "ex2": "Sie sein ein Lehrer.",
+      "ex1": "habe"
+    }
+  }
+}
+2025-07-12 16:11:34,198 - routes.ai.helpers.exercise_helpers - INFO - Processing AI answers for user ff, block training
+2025-07-12 16:11:34,199 - routes.ai.exercise_routes - INFO - Running prefetch next exercises for user ff
+2025-07-12 16:11:34,199 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing AI answers for user ff, block training, answers_count=3
+2025-07-12 16:11:34,201 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing 3 exercises for user ff
+2025-07-12 16:11:34,201 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user ff
+2025-07-12 16:11:34,201 - routes.ai.exercise_routes - INFO - Exercise submission completed for user ff, passed=False
+2025-07-12 16:11:34,202 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex3 for user ff: correct=1, quality=5
+2025-07-12 16:11:34,203 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:34,203 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:34,204 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:34,205 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: habe'}], 'temperature': 0.3}
+2025-07-12 16:11:34,206 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"____ bist mein Freund. er"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 16:11:34,208 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:34,211 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:34,219 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user ff
+2025-07-12 16:11:34,220 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user ff
+2025-07-12 16:11:34,220 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user ff
+2025-07-12 16:11:34,229 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:34,236 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user ff
+2025-07-12 16:11:34,236 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user ff
+2025-07-12 16:11:34,237 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 16:11:34,238 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 16:11:34,238 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 16:11:34,239 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 16:11:34,240 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 16:11:34,240 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 16:11:34,240 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 16:11:34,241 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:34,241 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n____ bist mein Freund.\nShe is a teacher.\nIch ____ einen Bruder.\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 16:11:34,242 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:34,913 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:34,914 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:34,917 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:34,921 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: Ich ____ einen Bruder.\nUser answer: habe\nCorrect answer: habe\nReply in English."}], 'temperature': 0.3}
+2025-07-12 16:11:34,920 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex3: ['capitalization rules', 'personal pronoun', 'sentence structure', 'verb conjugation (sein)']
+2025-07-12 16:11:34,923 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=capitalization rules, skill=gap-fill
+2025-07-12 16:11:34,923 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:34,944 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=personal pronoun, skill=gap-fill
+2025-07-12 16:11:34,957 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=sentence structure, skill=gap-fill
+2025-07-12 16:11:34,969 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=verb conjugation (sein), skill=gap-fill
+2025-07-12 16:11:34,980 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 4 words from exercise ex3 for user ff
+2025-07-12 16:11:34,982 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:34,982 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'bist'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:34,983 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:36,039 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:36,042 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:36,042 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: Sie ist eine Lehrerin.'}], 'temperature': 0.3}
+2025-07-12 16:11:36,045 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:36,755 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:36,758 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:36,759 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: She is a teacher.\nUser answer: Sie sein ein Lehrer.\nCorrect answer: Sie ist eine Lehrerin.\nReply in English."}], 'temperature': 0.3}
+2025-07-12 16:11:36,762 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:36,887 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:36,903 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:36,903 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'mein'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:36,904 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:38,599 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:38,601 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 16:11:38,602 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 987 characters
+2025-07-12 16:11:38,602 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 16:11:38,603 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 16:11:38,604 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user ff
+2025-07-12 16:11:38,605 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user ff
+2025-07-12 16:11:38,606 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user ff: True
+2025-07-12 16:11:38,606 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user ff to avoid duplicates
+2025-07-12 16:11:38,607 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user ff
+2025-07-12 16:11:38,607 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user ff: 3 exercises
+2025-07-12 16:11:38,608 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user ff
+2025-07-12 16:11:38,616 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user ff
+2025-07-12 16:11:38,732 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:38,735 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:38,735 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: Er'}], 'temperature': 0.3}
+2025-07-12 16:11:38,738 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:38,938 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:38,955 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:38,956 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Freund'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:38,957 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:39,355 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:39,358 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:39,361 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: ____ bist mein Freund.\nUser answer: Er\nCorrect answer: Er\nReply in English."}], 'temperature': 0.3}
+2025-07-12 16:11:39,364 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:40,032 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:40,056 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:40,056 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'er'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:40,057 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:40,750 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:40,756 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:11:40] "POST /api/ai-exercise/training/submit HTTP/1.1" 200 -
+2025-07-12 16:11:40,803 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 16:11:40,803 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=3
+2025-07-12 16:11:40,804 - routes.ai.training_routes - INFO - User ff has answers, checking cached next exercises
+2025-07-12 16:11:40,805 - routes.ai.training_routes - INFO - Found cached next exercises for user ff
+2025-07-12 16:11:40,806 - routes.ai.training_routes - INFO - Successfully loaded cached next exercises for user ff
+2025-07-12 16:11:40,806 - routes.ai.training_routes - INFO - Storing exercises for user ff
+2025-07-12 16:11:40,811 - routes.ai.training_routes - INFO - Running prefetch next exercises for user ff
+2025-07-12 16:11:40,811 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user ff
+2025-07-12 16:11:40,811 - routes.ai.training_routes - INFO - Returning preloaded training exercises for user ff
+2025-07-12 16:11:40,812 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:40,812 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:11:40] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 16:11:40,815 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user ff
+2025-07-12 16:11:40,816 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user ff
+2025-07-12 16:11:40,817 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user ff
+2025-07-12 16:11:40,827 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:40,830 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user ff
+2025-07-12 16:11:40,831 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user ff
+2025-07-12 16:11:40,831 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=3, topic_count=3
+2025-07-12 16:11:40,831 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 16:11:40,831 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 16:11:40,832 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 16:11:40,832 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 16:11:40,832 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 16:11:40,836 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 16:11:40,836 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:40,836 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n____ bist mein Freund.\nShe is a teacher.\nIch ____ einen Bruder.\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 16:11:40,837 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:41,310 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:41,329 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex2 for user ff: correct=0, quality=2
+2025-07-12 16:11:41,330 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:41,330 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"She is a teacher. sie ist eine lehrerin."\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 16:11:41,332 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:42,010 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:42,147 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex2: ['definite article', 'indefinite article', 'noun', 'personal pronoun', 'present tense']
+2025-07-12 16:11:42,150 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=definite article, skill=translation
+2025-07-12 16:11:42,163 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=indefinite article, skill=translation
+2025-07-12 16:11:42,194 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=noun, skill=translation
+2025-07-12 16:11:42,235 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=personal pronoun, skill=translation
+2025-07-12 16:11:42,246 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=present tense, skill=translation
+2025-07-12 16:11:42,251 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex2 for user ff
+2025-07-12 16:11:42,253 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:42,253 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'sie'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:42,254 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:44,132 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:44,134 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 16:11:44,135 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 986 characters
+2025-07-12 16:11:44,135 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 16:11:44,136 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 16:11:44,138 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user ff
+2025-07-12 16:11:44,139 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user ff
+2025-07-12 16:11:44,139 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user ff: True
+2025-07-12 16:11:44,140 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user ff to avoid duplicates
+2025-07-12 16:11:44,140 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user ff
+2025-07-12 16:11:44,140 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user ff: 3 exercises
+2025-07-12 16:11:44,141 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user ff
+2025-07-12 16:11:44,150 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user ff
+2025-07-12 16:11:44,437 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:44,454 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:44,455 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'ist'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:44,456 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:45,869 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:45,887 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:45,888 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'is'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:45,889 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:47,098 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:47,114 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:47,115 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'She'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:47,117 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:48,345 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:48,374 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:48,375 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'lehrerin'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:48,376 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:49,965 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:49,994 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:49,994 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'teacher'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:49,997 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:50,887 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:50,906 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex1 for user ff: correct=1, quality=5
+2025-07-12 16:11:50,906 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:50,907 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"Ich ____ einen Bruder. habe"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 16:11:50,908 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:51,499 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:51,500 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex1: ['indefinite article', 'verb conjugation', 'word order']
+2025-07-12 16:11:51,501 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=indefinite article, skill=gap-fill
+2025-07-12 16:11:51,514 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=verb conjugation, skill=gap-fill
+2025-07-12 16:11:51,523 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user ff, feature=word order, skill=gap-fill
+2025-07-12 16:11:51,532 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 3 words from exercise ex1 for user ff
+2025-07-12 16:11:51,534 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:51,534 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Bruder'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:51,542 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:52,902 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:52,921 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:52,922 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'habe'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:52,924 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:54,499 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:54,526 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:54,527 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Ich'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 16:11:54,528 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:55,395 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:11:55,421 - routes.ai.helpers.ai_evaluation_helpers - INFO - Completed processing AI answers for user ff: 12 results
+2025-07-12 16:11:55,421 - routes.ai.helpers.exercise_helpers - INFO - Checking auto level up for user ff
+2025-07-12 16:11:55,424 - routes.ai.helpers.exercise_helpers - INFO - Inserting exercise submission for user ff, block training
+2025-07-12 16:11:55,428 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user ff with 3 new questions
+2025-07-12 16:11:55,428 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user ff with 3 new questions, limit=20
+2025-07-12 16:11:55,428 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:55,429 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user ff
+2025-07-12 16:11:55,429 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user ff: 6 total questions
+2025-07-12 16:11:55,434 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user ff
+2025-07-12 16:11:55,434 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user ff
+2025-07-12 16:11:55,434 - routes.ai.helpers.exercise_helpers - INFO - Prefetching next exercises for user ff
+2025-07-12 16:11:55,434 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user ff
+2025-07-12 16:11:55,435 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:55,436 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T16:11:55.435944",
+  "event_type": "submission_complete",
+  "username": "ff",
+  "details": {
+    "block_id": "training",
+    "new_questions_count": 3
+  }
+}
+2025-07-12 16:11:55,438 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user ff
+2025-07-12 16:11:55,438 - routes.ai.helpers.exercise_helpers - INFO - Got 6 recent questions for user ff
+2025-07-12 16:11:55,438 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user ff
+2025-07-12 16:11:55,441 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user ff, limit=20
+2025-07-12 16:11:55,443 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user ff
+2025-07-12 16:11:55,443 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 6 recent questions for user ff
+2025-07-12 16:11:55,444 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=11, topic_count=8
+2025-07-12 16:11:55,445 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 16:11:55,445 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 16:11:55,446 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 16:11:55,446 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 16:11:55,447 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=6
+2025-07-12 16:11:55,448 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 16:11:55,448 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 16:11:55,448 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n____ bist mein Freund.\nShe is a teacher.\nIch ____ einen Bruder.\n____ bist mein Freund.\nShe is a teacher.\nIch ____ einen Bruder.\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "definite article",\n    "topic": "work",\n    "skill_type": "translation"\n  },\n  {\n    "grammar": "indefinite article",\n    "topic": "shopping",\n    "skill_type": "translation"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 16:11:55,450 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 16:11:57,702 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:11:57] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:12:02,562 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 16:12:02,567 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 16:12:02,567 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 992 characters
+2025-07-12 16:12:02,568 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 16:12:02,569 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 16:12:02,570 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user ff
+2025-07-12 16:12:02,570 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user ff
+2025-07-12 16:12:02,571 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user ff: True
+2025-07-12 16:12:02,571 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user ff to avoid duplicates
+2025-07-12 16:12:02,572 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user ff
+2025-07-12 16:12:02,572 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user ff: 3 exercises
+2025-07-12 16:12:02,573 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user ff
+2025-07-12 16:12:02,583 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user ff
+2025-07-12 16:12:56,370 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:12:56] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 16:12:56,376 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:12:56] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 16:13:18,869 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:13:18] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:16:24,443 - werkzeug - INFO -  * Detected change in '/app/src/utils/spaced_repetition/vocab_utils.py', reloading
+2025-07-12 16:16:26,558 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:16:26,577 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:16:34,221 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:34] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:16:36,088 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 16:16:36,091 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 16:16:36,092 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 16:16:36,094 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 16:16:36,095 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 16:16:36,096 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:36] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 16:16:36,682 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 16:16:36,684 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 16:16:36,684 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 16:16:36,687 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 16:16:36,687 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 16:16:36,689 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:36] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 16:16:38,674 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:38] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 16:16:38,675 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:38] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 16:16:40,512 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:16:40] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:19:29,819 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:19:29] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:20:41,692 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:20:41] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:22:18,367 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:18] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 16:22:18,376 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:18] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:22:18,896 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:18] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 16:22:18,898 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:18] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:22:34,022 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:34] "DELETE /api/vocabulary/17 HTTP/1.1" 200 -
+2025-07-12 16:22:38,489 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:38] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:22:41,160 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:22:41] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:23:38,611 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:23:38] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:23:39,425 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:23:39] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:23:42,058 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:23:42] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:25:51,355 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 16:25:51] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:27:51,760 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:27:51,761 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:27:51,761 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:27:52,633 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:27:52,634 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:28:16,499 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:28:16] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 16:28:16,502 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:28:16] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:28:17,059 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:28:17] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 16:28:17,063 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:28:17] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:30:00,283 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:30:00] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:30:17,801 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:30:17] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:31:32,346 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:31:32] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:32:41,488 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:32:41] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:32:46,566 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:32:46] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:32:50,909 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:32:50] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:32:54,993 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:32:54] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:33:01,519 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:33:01] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:33:21,288 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:33:21] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 16:33:21,290 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:33:21] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 16:33:26,433 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:33:26] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:34:15,405 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:34:15] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:34:26,907 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:34:26] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:35:48,737 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:35:48] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:35:51,330 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:35:51] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:36:13,238 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:36:13] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:36:20,471 - werkzeug - INFO -  * Detected change in '/app/src/routes/translate.py', reloading
+2025-07-12 16:36:20,869 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:41:55,818 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:41:55,819 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:41:55,821 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:41:57,048 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:41:57,050 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:42:04,386 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:42:04] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 16:42:04,396 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:42:04] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:42:04,670 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:42:04] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 16:42:04,671 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:42:04] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:42:09,338 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:42:09] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:45:39,338 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:45:39,338 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:45:39,339 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:45:40,213 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:45:40,216 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:50:13,073 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:50:13,073 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:50:13,074 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:50:13,939 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:50:13,940 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:52:09,714 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:52:09,714 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:52:09,715 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:52:10,545 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:52:10,545 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:53:07,762 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 16:53:07,762 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 16:53:07,762 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 16:53:08,630 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 16:53:08,631 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 16:53:28,847 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:53:28] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 16:53:28,853 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:53:28] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:53:29,400 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:53:29] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 16:53:29,405 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:53:29] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:53:34,866 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:53:34] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:55:09,009 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:09] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:55:09,510 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:09] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:55:15,168 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:15] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:55:43,425 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:43] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:55:46,795 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:46] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:55:47,657 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:47] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:55:57,588 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:55:57] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 16:57:14,981 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:57:14] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:57:22,369 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:57:22] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:57:57,269 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:57:57] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:57:59,360 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:57:59] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:58:11,645 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:58:11] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 16:58:19,245 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:58:19] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 16:58:22,032 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:58:22] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 16:58:22,033 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 16:58:22] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:00:19,402 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:00:19] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:00:19,403 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:00:19] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:01:02,982 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:01:02] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:01:02,984 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:01:02] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:05:19,707 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:05:19] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:05:23,013 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:05:23] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 17:05:35,592 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:05:35] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:05:38,189 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:05:38] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:05:38,194 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:05:38] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:06:03,610 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:06:03] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:06:03,612 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:06:03] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:07:54,473 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:07:54] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:07:57,373 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:07:57] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:08:06,282 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:08:06] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:08:06,282 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:08:06] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:08:56,710 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:08:56] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:08:59,266 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:08:59] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:08:59,267 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:08:59] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:10:13,532 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:10:13] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:10:13,532 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:10:13] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:10:14,078 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:10:14] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:10:14,080 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:10:14] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:11:36,096 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:36] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:11:36,098 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:36] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:11:38,751 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:38] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:11:38,752 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:38] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:11:39,324 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:39] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:11:39,329 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:11:39] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:12:39,420 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:12:41,826 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:41] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:12:41,831 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:41] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:12:48,719 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:48] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:12:53,262 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:53] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:12:53,262 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:53] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:12:57,965 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:12:57] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:13:15,807 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:13:15] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:13:15,808 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:13:15] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:13:42,367 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:13:42] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:14:06,182 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:14:06,183 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Translate and evaluate: Hello | Student: Hallöchen'}], 'temperature': 0.3, 'stream': True}
+2025-07-12 17:14:06,203 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:14:06,479 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:14:06,482 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:14:06] "POST /api/translate/stream HTTP/1.1" 200 -
+2025-07-12 17:14:07,678 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:14:07,679 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"Here is the translation and evaluation of the greeting:\n\n| English | German | Evaluation |\n|---------|--------|------------|\n| Hello | Hallöchen | The translation is correct. However, "Hallöchen" is a more informal and cute way of saying "Hello". It\'s often used when talking to children or in a very casual setting. A more standard translation would be "Hallo". |"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 17:14:07,681 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:14:08,748 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:14:08,751 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:14:08,752 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"Hallöchen"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 17:14:08,753 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:14:09,254 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:14:09,256 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:14:09,256 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'You are a helpful German teacher grading a student\'s translation.\n\nEnglish sentence: \'Hello\'\nReference translation: \'Here is the translation and evaluation of the greeting:\n\n| English | German | Evaluation |\n|---------|--------|------------|\n| Hello | Hallöchen | The translation is correct. However, "Hallöchen" is a more informal and cute way of saying "Hello". It\'s often used when talking to children or in a very casual setting. A more standard translation would be "Hallo". |\'\nStudent translation: \'Hallöchen\'\n\nReturn a JSON object where each grammar topic is a key (all lowercase, spaces only), and its value is an integer from 0 to 5 representing the quality of usage.\n\nFor example:\n{\n  "adjective": 5,\n  "nominative case": 4,\n  "modal verb": 3\n}\n\nTopics: adjective, comparative adjective, conjunction, definite article, diminutive, formal and informal language, indefinite article, informal greeting, noun, preposition, pronoun, sentence structure, verb, vocabulary'}], 'temperature': 0.3}
+2025-07-12 17:14:09,258 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:14:10,635 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:14:45,467 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:14:45] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:14:45,468 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:14:45] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:17:49,441 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:17:49] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:17:52,282 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:17:52] "GET /api/topic-weaknesses HTTP/1.1" 200 -
+2025-07-12 17:17:52,284 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:17:52] "GET /api/topic-memory HTTP/1.1" 200 -
+2025-07-12 17:17:56,277 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:17:56] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:17:59,493 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:17:59] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:19:07,023 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:19:07] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:19:07,505 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:19:07] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:19:19,884 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:19:19] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:20:41,591 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:20:41] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:21:04,805 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 17:21:04,808 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 17:21:04,808 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 17:21:04,810 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 17:21:04,811 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 17:21:04,812 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:21:04] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:21:05,376 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 17:21:05,377 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 17:21:05,377 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 17:21:05,379 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 17:21:05,379 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 17:21:05,380 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:21:05] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:21:09,491 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:21:09] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:23:00,122 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:23:00] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 17:23:00,679 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:23:00] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 17:23:01,249 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:23:01] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 17:23:02,014 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:23:02] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:44:16,309 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 17:44:16,311 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 17:44:16,311 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 17:44:16,312 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 17:44:16,312 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 17:44:16,314 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:44:16] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:44:16,895 - routes.ai.training_routes - INFO - Training exercises request from user: ff
+2025-07-12 17:44:16,897 - routes.ai.training_routes - INFO - Training request data for user ff: answers_count=0
+2025-07-12 17:44:16,898 - routes.ai.training_routes - INFO - User ff has no answers, checking cached exercises
+2025-07-12 17:44:16,901 - routes.ai.training_routes - INFO - Found cached exercises for user ff
+2025-07-12 17:44:16,901 - routes.ai.training_routes - INFO - Returning cached exercises for user ff
+2025-07-12 17:44:16,902 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:44:16] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:44:27,235 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:44:27] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:44:28,853 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:44:28] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:44:51,058 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:44:51] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:45:14,174 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:45:14] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:45:14,728 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:45:14] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:46:59,333 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:46:59] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-12 17:47:16,646 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:16] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-07-12 17:47:26,021 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:26] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-12 17:47:26,136 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:26] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 17:47:26,174 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:26] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 17:47:26,209 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:26] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 17:47:29,299 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:29] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:47:29,358 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:47:29] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:48:10,495 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:10] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:48:12,034 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:12] "GET /api/lessons HTTP/1.1" 200 -
+2025-07-12 17:48:14,896 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:14] "GET /api/vocabulary HTTP/1.1" 200 -
+2025-07-12 17:48:18,714 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:18] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:48:20,844 - routes.ai.training_routes - INFO - Training exercises request from user: Flo
+2025-07-12 17:48:20,845 - routes.ai.training_routes - INFO - Training request data for user Flo: answers_count=0
+2025-07-12 17:48:20,845 - routes.ai.training_routes - INFO - User Flo has no answers, checking cached exercises
+2025-07-12 17:48:20,846 - routes.ai.training_routes - INFO - Generating new training exercises for user Flo
+2025-07-12 17:48:20,846 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_training_exercises for user Flo
+2025-07-12 17:48:20,847 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:20,848 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user Flo
+2025-07-12 17:48:20,848 - routes.ai.helpers.exercise_helpers - INFO - Detected new user Flo, generating two unique blocks with different contexts
+2025-07-12 17:48:20,849 - routes.ai.helpers.exercise_helpers - INFO - Generating blocks for new user Flo
+2025-07-12 17:48:20,849 - routes.ai.helpers.exercise_helpers - INFO - Generating first block for new user Flo
+2025-07-12 17:48:20,855 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:20,857 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user Flo
+2025-07-12 17:48:20,857 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 0 recent questions for user Flo
+2025-07-12 17:48:20,857 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 17:48:20,857 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 17:48:20,858 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 17:48:20,858 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 17:48:20,858 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 17:48:20,858 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=0
+2025-07-12 17:48:20,858 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 17:48:20,859 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:20,859 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\n\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 17:48:20,863 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:28,996 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:29,002 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 17:48:29,002 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1167 characters
+2025-07-12 17:48:29,003 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 17:48:29,003 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 17:48:29,004 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user Flo
+2025-07-12 17:48:29,005 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user Flo
+2025-07-12 17:48:29,005 - routes.ai.helpers.exercise_helpers - INFO - Generated first block for new user Flo with 3 exercises
+2025-07-12 17:48:29,005 - routes.ai.helpers.exercise_helpers - INFO - Extracted 3 questions from first block for new user Flo
+2025-07-12 17:48:29,005 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user Flo with 3 new questions, limit=20
+2025-07-12 17:48:29,006 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:29,008 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user Flo
+2025-07-12 17:48:29,008 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user Flo: 3 total questions
+2025-07-12 17:48:29,017 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user Flo
+2025-07-12 17:48:29,017 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user Flo
+2025-07-12 17:48:29,018 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for Flo after after updating exercise history: {
+  "username": "Flo",
+  "exercises": null,
+  "next_exercises": null,
+  "exercises_updated_at": null,
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"She is happy.\", \"___ du ein Buch? (Do you have a book?)\", \"Ich ___ einen Hund. (I have a dog.)\"]"
+}
+2025-07-12 17:48:29,124 - routes.ai.helpers.exercise_helpers - INFO - Generating second block for new user Flo with different context
+2025-07-12 17:48:29,125 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block with variation for new user Flo with 3 exclude questions
+2025-07-12 17:48:29,131 - routes.ai.helpers.exercise_helpers - INFO - Using 3 exclude questions as recent questions for variation
+2025-07-12 17:48:29,131 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 17:48:29,131 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 17:48:29,131 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 17:48:29,132 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 17:48:29,132 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 17:48:29,132 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 17:48:29,132 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 17:48:29,133 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:29,133 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\nShe is happy.\n___ du ein Buch? (Do you have a book?)\nIch ___ einen Hund. (I have a dog.)\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 17:48:29,135 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:33,414 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:33,416 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 17:48:33,417 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1071 characters
+2025-07-12 17:48:33,417 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 17:48:33,418 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 17:48:33,419 - routes.ai.helpers.exercise_helpers - INFO - Generated 3 exercises in variation block for new user Flo
+2025-07-12 17:48:33,419 - routes.ai.helpers.exercise_helpers - INFO - Successfully created AI block with variation for new user Flo: 3 exercises
+2025-07-12 17:48:33,420 - routes.ai.helpers.exercise_helpers - INFO - Generated second block for new user Flo with 3 exercises
+2025-07-12 17:48:33,420 - routes.ai.helpers.exercise_helpers - INFO - After filtering duplicates for new user Flo: 3 exercises remain
+2025-07-12 17:48:33,420 - routes.ai.helpers.exercise_helpers - INFO - Final second block for new user Flo: 3 exercises
+2025-07-12 17:48:33,420 - routes.ai.helpers.exercise_helpers - INFO - Storing exercise blocks for new user Flo
+2025-07-12 17:48:33,428 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for Flo after after storing both blocks: {
+  "username": "Flo",
+  "exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"She is happy.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"___ du ein Buch? (Do you have a book?)\", \"explanation\": \"No explanation.\", \"options\": [\"Hast\", \"Bist\", \"Hat\", \"Ist\"]}, {\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich ___ einen Hund. (I have a dog.)\", \"explanation\": \"No explanation.\", \"options\": [\"ist\", \"bin\", \"habe\", \"hat\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you notice any patterns or common mistakes?\", \"vocabHelp\": [{\"word\": \"habe\", \"meaning\": \"have (I)\"}, {\"word\": \"ist\", \"meaning\": \"is\"}, {\"word\": \"gl\\u00fccklich\", \"meaning\": \"happy\"}, {\"word\": \"Hast\", \"meaning\": \"have (you informal)\"}, {\"word\": \"Buch\", \"meaning\": \"book\"}]}",
+  "next_exercises": "{\"lessonId\": \"dynamic-ai-lesson\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"We are in the garden.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"___ du einen Stift? (Do you have a pen?)\", \"explanation\": \"No explanation.\", \"options\": [\"Hast\", \"Hat\", \"Haben\", \"Habt\"]}, {\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"___ ist mein Bruder. (He is my brother.)\", \"explanation\": \"No explanation.\", \"options\": [\"Er\", \"Sie\", \"Es\", \"Wir\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you notice any patterns or common mistakes?\", \"vocabHelp\": [{\"word\": \"der Bruder\", \"meaning\": \"the brother\"}, {\"word\": \"der Garten\", \"meaning\": \"the garden\"}, {\"word\": \"der Stift\", \"meaning\": \"the pen\"}]}",
+  "exercises_updated_at": "2025-07-12T17:48:33.420983",
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"She is happy.\", \"___ du ein Buch? (Do you have a book?)\", \"Ich ___ einen Hund. (I have a dog.)\"]"
+}
+2025-07-12 17:48:33,428 - routes.ai.helpers.exercise_helpers - INFO - Successfully completed generate_training_exercises for new user Flo
+2025-07-12 17:48:33,428 - routes.ai.training_routes - INFO - Returning new training exercises for user Flo
+2025-07-12 17:48:33,430 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:33] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:48:33,469 - routes.ai.training_routes - INFO - Training exercises request from user: Flo
+2025-07-12 17:48:33,469 - routes.ai.training_routes - INFO - Training request data for user Flo: answers_count=0
+2025-07-12 17:48:33,469 - routes.ai.training_routes - INFO - User Flo has no answers, checking cached exercises
+2025-07-12 17:48:33,470 - routes.ai.training_routes - INFO - Found cached exercises for user Flo
+2025-07-12 17:48:33,470 - routes.ai.training_routes - INFO - Returning cached exercises for user Flo
+2025-07-12 17:48:33,471 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:33] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:48:45,006 - routes.ai.exercise_routes - INFO - Exercise submission request for user Flo, block training
+2025-07-12 17:48:45,007 - routes.ai.exercise_routes - INFO - Received submission data for user Flo: {
+  "answers": {
+    "ex2": "Sie ist gl\u00fccklich.",
+    "ex3": "Bist",
+    "ex1": "ist"
+  },
+  "exercise_block": {
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "exercises": [
+      {
+        "explanation": "No explanation.",
+        "id": "ex2",
+        "question": "She is happy.",
+        "type": "translation"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex3",
+        "options": [
+          "Hast",
+          "Bist",
+          "Hat",
+          "Ist"
+        ],
+        "question": "___ du ein Buch? (Do you have a book?)",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex1",
+        "options": [
+          "ist",
+          "bin",
+          "habe",
+          "hat"
+        ],
+        "question": "Ich ___ einen Hund. (I have a dog.)",
+        "type": "gap-fill"
+      }
+    ],
+    "vocabHelp": [
+      {
+        "meaning": "have (I)",
+        "word": "habe"
+      },
+      {
+        "meaning": "is",
+        "word": "ist"
+      },
+      {
+        "meaning": "happy",
+        "word": "gl\u00fccklich"
+      },
+      {
+        "meaning": "have (you informal)",
+        "word": "Hast"
+      },
+      {
+        "meaning": "book",
+        "word": "Buch"
+      }
+    ]
+  }
+}
+2025-07-12 17:48:45,007 - routes.ai.exercise_routes - INFO - Parsed submission for user Flo: 3 exercises, 3 answers
+2025-07-12 17:48:45,007 - routes.ai.exercise_routes - INFO - Evaluating exercises for user Flo
+2025-07-12 17:48:45,007 - routes.ai.helpers.ai_evaluation_helpers - INFO - Starting AI evaluation with mode=strict, exercises_count=3, answers_count=3
+2025-07-12 17:48:45,008 - routes.ai.helpers.ai_evaluation_helpers - INFO - Formatted 3 exercises for evaluation
+2025-07-12 17:48:45,008 - routes.ai.helpers.ai_evaluation_helpers - INFO - Generated evaluation instructions for mode=strict
+2025-07-12 17:48:45,008 - routes.ai.helpers.ai_evaluation_helpers - INFO - Sending evaluation request to Mistral API
+2025-07-12 17:48:45,009 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:45,009 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a strict German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Evaluate these answers for a German exercise. Return JSON with \'pass\' (true/false) and a \'results\' list. Each result must include \'id\' and \'correct_answer\'. Mark pass true only if all answers are fully correct.\n[{"id": "ex2", "question": "She is happy.", "type": "translation", "answer": "Sie ist glücklich."}, {"id": "ex3", "question": "___ du ein Buch? (Do you have a book?)", "type": "gap-fill", "answer": "Bist"}, {"id": "ex1", "question": "Ich ___ einen Hund. (I have a dog.)", "type": "gap-fill", "answer": "ist"}]'}], 'temperature': 0.3}
+2025-07-12 17:48:45,011 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:46,052 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:46,054 - routes.ai.helpers.ai_evaluation_helpers - INFO - Mistral evaluation response successful
+2025-07-12 17:48:46,054 - routes.ai.helpers.ai_evaluation_helpers - INFO - Raw evaluation response length: 253 characters
+2025-07-12 17:48:46,055 - routes.ai.helpers.ai_evaluation_helpers - INFO - Successfully parsed evaluation JSON
+2025-07-12 17:48:46,056 - routes.ai.exercise_routes - INFO - Evaluation successful for user Flo
+2025-07-12 17:48:46,056 - routes.ai.exercise_routes - INFO - Summary for user Flo: {'correct': 1, 'total': 3, 'mistakes': [{'question': '___ du ein Buch? (Do you have a book?)', 'your_answer': 'Bist', 'correct_answer': 'Hast'}, {'question': 'Ich ___ einen Hund. (I have a dog.)', 'your_answer': 'ist', 'correct_answer': 'habe'}]}
+2025-07-12 17:48:46,057 - routes.ai.exercise_routes - INFO - Fetching vocab and topic data for user Flo
+2025-07-12 17:48:46,062 - routes.ai.exercise_routes - INFO - Got 0 vocab and 3 topic entries for user Flo
+2025-07-12 17:48:46,063 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:46,063 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a strict German teacher, answer in english only, and skip any small talk, focus on improvement only'}, {'role': 'user', 'content': "You are a helpful German teacher writing a very short feedback message based on this student's test result.\n\nCorrect: 1 out of 3\n\nMistakes:\nQ: ___ du ein Buch? (Do you have a book?) | Your: Bist | Correct: Hast\nQ: Ich ___ einen Hund. (I have a dog.) | Your: ist | Correct: habe\n\nRepeated grammar issues: None\n\nVocabulary used: None\n\n"}], 'temperature': 0.3}
+2025-07-12 17:48:46,064 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:48,072 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:48,075 - routes.ai.exercise_routes - INFO - Generated feedback prompt for user Flo
+2025-07-12 17:48:48,075 - routes.ai.exercise_routes - INFO - Saving exercise submission for user Flo
+2025-07-12 17:48:48,076 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T17:48:48.076095",
+  "event_type": "submission_start",
+  "username": "Flo",
+  "details": {
+    "block_id": "training",
+    "answers_count": 3,
+    "exercises_count": 3,
+    "answers": {
+      "ex2": "Sie ist gl\u00fccklich.",
+      "ex3": "Bist",
+      "ex1": "ist"
+    }
+  }
+}
+2025-07-12 17:48:48,078 - routes.ai.helpers.exercise_helpers - INFO - Processing AI answers for user Flo, block training
+2025-07-12 17:48:48,079 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing AI answers for user Flo, block training, answers_count=3
+2025-07-12 17:48:48,079 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing 3 exercises for user Flo
+2025-07-12 17:48:48,079 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex2 for user Flo: correct=1, quality=5
+2025-07-12 17:48:48,080 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:48,080 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"She is happy. sie ist glücklich."\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 17:48:48,079 - routes.ai.exercise_routes - INFO - Running prefetch next exercises for user Flo
+2025-07-12 17:48:48,081 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:48,084 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user Flo
+2025-07-12 17:48:48,084 - routes.ai.exercise_routes - INFO - Exercise submission completed for user Flo, passed=False
+2025-07-12 17:48:48,085 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:48,085 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:48,086 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: habe'}], 'temperature': 0.3}
+2025-07-12 17:48:48,089 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:48,093 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user Flo
+2025-07-12 17:48:48,094 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user Flo
+2025-07-12 17:48:48,094 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user Flo
+2025-07-12 17:48:48,099 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:48,101 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user Flo
+2025-07-12 17:48:48,101 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user Flo
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 17:48:48,102 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 17:48:48,103 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 17:48:48,103 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:48,103 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\nShe is happy.\n___ du ein Buch? (Do you have a book?)\nIch ___ einen Hund. (I have a dog.)\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 17:48:48,104 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:48,596 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:48,599 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex2: ['adjective', 'personal pronoun', 'present tense']
+2025-07-12 17:48:48,599 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=adjective, skill=translation
+2025-07-12 17:48:48,613 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=personal pronoun, skill=translation
+2025-07-12 17:48:48,624 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=present tense, skill=translation
+2025-07-12 17:48:48,632 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 6 words from exercise ex2 for user Flo
+2025-07-12 17:48:48,634 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:48,634 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'happy'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:48,635 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:48,693 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:48,694 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:48,694 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: Ich ___ einen Hund. (I have a dog.)\nUser answer: ist\nCorrect answer: habe\nReply in English."}], 'temperature': 0.3}
+2025-07-12 17:48:48,695 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:49,862 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:49,880 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:49,880 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'She'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:49,880 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:51,047 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:51,068 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:51,068 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'ist'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:51,070 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:51,485 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:51,487 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:51,487 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: Sie ist glücklich.'}], 'temperature': 0.3}
+2025-07-12 17:48:51,488 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:52,137 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:52,139 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 17:48:52,140 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1056 characters
+2025-07-12 17:48:52,140 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 17:48:52,140 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 17:48:52,141 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user Flo
+2025-07-12 17:48:52,142 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user Flo
+2025-07-12 17:48:52,142 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user Flo: True
+2025-07-12 17:48:52,142 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user Flo to avoid duplicates
+2025-07-12 17:48:52,142 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user Flo
+2025-07-12 17:48:52,142 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user Flo: 3 exercises
+2025-07-12 17:48:52,142 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user Flo
+2025-07-12 17:48:52,152 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user Flo
+2025-07-12 17:48:52,246 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:52,249 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:52,249 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: She is happy.\nUser answer: Sie ist glücklich.\nCorrect answer: Sie ist glücklich.\nReply in English."}], 'temperature': 0.3}
+2025-07-12 17:48:52,251 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:53,003 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:53,025 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:53,025 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'is'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:53,026 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:53,152 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:53,155 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:53,156 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: Hast'}], 'temperature': 0.3}
+2025-07-12 17:48:53,158 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:53,691 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:53,694 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:53,695 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. If the user's answer is correct, explain why. If it's wrong, explain the mistake.\nExercise: ___ du ein Buch? (Do you have a book?)\nUser answer: Bist\nCorrect answer: Hast\nReply in English."}], 'temperature': 0.3}
+2025-07-12 17:48:53,697 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:54,505 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:54,526 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex3 for user Flo: correct=0, quality=2
+2025-07-12 17:48:54,526 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:54,527 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"___ du ein Buch? (Do you have a book?) hast"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 17:48:54,528 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:54,898 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:54,900 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:54] "POST /api/ai-exercise/training/submit HTTP/1.1" 200 -
+2025-07-12 17:48:54,934 - routes.ai.training_routes - INFO - Training exercises request from user: Flo
+2025-07-12 17:48:54,934 - routes.ai.training_routes - INFO - Training request data for user Flo: answers_count=3
+2025-07-12 17:48:54,934 - routes.ai.training_routes - INFO - User Flo has answers, checking cached next exercises
+2025-07-12 17:48:54,935 - routes.ai.training_routes - INFO - Found cached next exercises for user Flo
+2025-07-12 17:48:54,936 - routes.ai.training_routes - INFO - Successfully loaded cached next exercises for user Flo
+2025-07-12 17:48:54,936 - routes.ai.training_routes - INFO - Storing exercises for user Flo
+2025-07-12 17:48:54,940 - routes.ai.training_routes - INFO - Running prefetch next exercises for user Flo
+2025-07-12 17:48:54,940 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user Flo
+2025-07-12 17:48:54,941 - routes.ai.training_routes - INFO - Returning preloaded training exercises for user Flo
+2025-07-12 17:48:54,941 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:54,941 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:54] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:48:54,943 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user Flo
+2025-07-12 17:48:54,943 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user Flo
+2025-07-12 17:48:54,944 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user Flo
+2025-07-12 17:48:54,946 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user Flo
+2025-07-12 17:48:54,947 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user Flo
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=3, topic_count=3
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 17:48:54,947 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 17:48:54,952 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 17:48:54,952 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:54,952 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\nShe is happy.\n___ du ein Buch? (Do you have a book?)\nIch ___ einen Hund. (I have a dog.)\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 17:48:54,953 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:55,091 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:55,093 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex3: ['indefinite article', 'interrogative sentence', 'personal pronoun', 'verb conjugation']
+2025-07-12 17:48:55,093 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=indefinite article, skill=gap-fill
+2025-07-12 17:48:55,108 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=interrogative sentence, skill=gap-fill
+2025-07-12 17:48:55,118 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=personal pronoun, skill=gap-fill
+2025-07-12 17:48:55,126 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=verb conjugation, skill=gap-fill
+2025-07-12 17:48:55,132 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 8 words from exercise ex3 for user Flo
+2025-07-12 17:48:55,134 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:55,134 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'have'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:55,135 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:56,705 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:56,728 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:48:56,728 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Do'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:48:56,729 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:48:58,097 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:48:58,099 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 17:48:58,100 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 998 characters
+2025-07-12 17:48:58,100 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 17:48:58,100 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 17:48:58,101 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user Flo
+2025-07-12 17:48:58,102 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user Flo
+2025-07-12 17:48:58,102 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user Flo: True
+2025-07-12 17:48:58,102 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user Flo to avoid duplicates
+2025-07-12 17:48:58,102 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user Flo
+2025-07-12 17:48:58,103 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user Flo: 3 exercises
+2025-07-12 17:48:58,103 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user Flo
+2025-07-12 17:48:58,112 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user Flo
+2025-07-12 17:48:58,157 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:48:58] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:49:01,176 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:01,209 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:01,209 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'hast'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:01,210 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:02,035 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:02,052 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:02,052 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'you'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:02,053 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:07,497 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:07,515 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:07,516 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Buch'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:07,517 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:12,222 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:12,245 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:12,246 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'book'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:12,247 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:13,775 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:13,806 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:13,807 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'du'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:13,811 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:15,113 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:15,129 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex1 for user Flo: correct=0, quality=2
+2025-07-12 17:49:15,129 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:15,129 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': '\nYou are a helpful German teacher. Identify grammar topics used in the following sentence:\n\n"Ich ___ einen Hund. (I have a dog.) habe"\n\nReturn only a JSON list of strings such as:\n["modal verb", "pronoun", "subordinating conjunction"]\n'}], 'temperature': 0.3}
+2025-07-12 17:49:15,130 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:15,748 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:15,751 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex1: ['indefinite article', 'present tense', 'subject-verb agreement', 'verb conjugation']
+2025-07-12 17:49:15,751 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=indefinite article, skill=gap-fill
+2025-07-12 17:49:15,766 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=present tense, skill=gap-fill
+2025-07-12 17:49:15,775 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=subject-verb agreement, skill=gap-fill
+2025-07-12 17:49:15,783 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user Flo, feature=verb conjugation, skill=gap-fill
+2025-07-12 17:49:15,789 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex1 for user Flo
+2025-07-12 17:49:15,791 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:15,791 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'habe'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:15,792 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:17,292 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:17,310 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:17,310 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'I'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:17,311 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:18,125 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:18,150 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:18,150 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Ich'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:18,151 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:19,136 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:19,152 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:19,152 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'Hund'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:19,154 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:21,980 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:22,004 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:22,005 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German linguist.'}, {'role': 'user', 'content': "Give dictionary info for the German word 'dog'.\nReturn JSON with keys base_form, type, article, translation, info. Use null for article if not a noun."}], 'temperature': 0.3}
+2025-07-12 17:49:22,007 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:23,669 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:23,684 - routes.ai.helpers.ai_evaluation_helpers - INFO - Completed processing AI answers for user Flo: 11 results
+2025-07-12 17:49:23,685 - routes.ai.helpers.exercise_helpers - INFO - Checking auto level up for user Flo
+2025-07-12 17:49:23,689 - routes.ai.helpers.exercise_helpers - INFO - Inserting exercise submission for user Flo, block training
+2025-07-12 17:49:23,695 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user Flo with 3 new questions
+2025-07-12 17:49:23,695 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user Flo with 3 new questions, limit=20
+2025-07-12 17:49:23,696 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:49:23,697 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user Flo
+2025-07-12 17:49:23,697 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user Flo: 6 total questions
+2025-07-12 17:49:23,702 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user Flo
+2025-07-12 17:49:23,702 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user Flo
+2025-07-12 17:49:23,702 - routes.ai.helpers.exercise_helpers - INFO - Prefetching next exercises for user Flo
+2025-07-12 17:49:23,703 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user Flo
+2025-07-12 17:49:23,704 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:49:23,704 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T17:49:23.704495",
+  "event_type": "submission_complete",
+  "username": "Flo",
+  "details": {
+    "block_id": "training",
+    "new_questions_count": 3
+  }
+}
+2025-07-12 17:49:23,707 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user Flo
+2025-07-12 17:49:23,707 - routes.ai.helpers.exercise_helpers - INFO - Got 6 recent questions for user Flo
+2025-07-12 17:49:23,707 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user Flo
+2025-07-12 17:49:23,710 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user Flo, limit=20
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user Flo
+2025-07-12 17:49:23,712 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 6 recent questions for user Flo
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=11, topic_count=9
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 17:49:23,712 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 17:49:23,713 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=6
+2025-07-12 17:49:23,721 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 17:49:23,721 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:23,721 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'Your task is to generate new exercises in JSON format. Use provided memory data to tailor difficulty.'}, {'role': 'user', 'content': '\nYou are generating structured grammar and translation exercises for a German learner.\nThe student\'s level is 2/10 (CEFR A2).\nAdjust sentence complexity and vocabulary accordingly.\n\nHere is the required JSON structure — you must follow it **exactly**:\n\n1. Each exercise must include:\n   - `id`: a unique ID like `"ex1"`\n   - `type`: either `"gap-fill"` or `"translation"`\n   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)\n   - For "gap-fill":\n     - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.\n     - `correctAnswer`: the correct string\n   - For "translation":\n     - `correctAnswer`: the correct German translation\n\n 2. The overall JSON must contain:\n   - `lessonId`, `title`, `instructions`, `level`\n   - `exercises`: list of 3 total exercises (mix of both types)\n   - `feedbackPrompt`\n   - `vocabHelp`: list of vocab entries with:\n       - `word`, `meaning`\n\n⚠️ Do not change field names or format.\n⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".\n⚠️ All keys must match the example exactly.\n⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.\n⚠️ **NEVER repeat any of these questions the user has seen recently:**\nShe is happy.\n___ du ein Buch? (Do you have a book?)\nIch ___ einen Hund. (I have a dog.)\nShe is happy.\n___ du ein Buch? (Do you have a book?)\nIch ___ einen Hund. (I have a dog.)\n\n⚠️ Always generate new, unique sentences that were not seen in earlier exercises.\n\nHere is an example structure for reference (do not reuse content!):\n{\n  "lessonId": "dynamic-ai-lesson",\n  "title": "AI Generated Exercises",\n  "instructions": "Fill in the blanks or translate the sentences.",\n  "level": "A2",\n  "exercises": [],\n  "feedbackPrompt": "",\n  "vocabHelp": []\n}\n\nHere is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):\n[]\n\nHere is the topic memory (form the exercises to train the weaknesses seen in the entries:):\n[\n  {\n    "grammar": "personal pronouns",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "sein",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "haben",\n    "topic": null,\n    "skill_type": "initial"\n  },\n  {\n    "grammar": "interrogative sentence",\n    "topic": "food",\n    "skill_type": "gap-fill"\n  },\n  {\n    "grammar": "personal pronoun",\n    "topic": "family",\n    "skill_type": "gap-fill"\n  }\n]\nCreate new sentences with new words and topics.\nCreate a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.\n'}], 'temperature': 0.7}
+2025-07-12 17:49:23,722 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:28,480 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:28,482 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 17:49:28,483 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1092 characters
+2025-07-12 17:49:28,483 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 17:49:28,483 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 17:49:28,484 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user Flo
+2025-07-12 17:49:28,485 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user Flo
+2025-07-12 17:49:28,486 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user Flo: True
+2025-07-12 17:49:28,486 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user Flo to avoid duplicates
+2025-07-12 17:49:28,486 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user Flo
+2025-07-12 17:49:28,487 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user Flo: 3 exercises
+2025-07-12 17:49:28,487 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user Flo
+2025-07-12 17:49:28,497 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user Flo
+2025-07-12 17:49:41,053 - routes.ai.training_routes - INFO - Training exercises request from user: Flo
+2025-07-12 17:49:41,055 - routes.ai.training_routes - INFO - Training request data for user Flo: answers_count=0
+2025-07-12 17:49:41,055 - routes.ai.training_routes - INFO - User Flo has no answers, checking cached exercises
+2025-07-12 17:49:41,056 - routes.ai.training_routes - INFO - Found cached exercises for user Flo
+2025-07-12 17:49:41,057 - routes.ai.training_routes - INFO - Returning cached exercises for user Flo
+2025-07-12 17:49:41,058 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:49:41] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 17:49:43,705 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:49:43] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:49:57,882 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 17:49:57,883 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.'}, {'role': 'user', 'content': 'App info: XplorED is a German learning platform. Features include: user management, AI-powered exercises (gap-fills, translations, sentence ordering), vocab trainer with spaced repetition, lesson progress tracking, skill levels, feedback, and admin tools. You can ask about your progress, how to use features, or for feedback on your learning.\nUser info: Skill level: 2. Recent results: No recent results.. Vocab words: 11. Weakest topics: haben (100% weak), personal pronouns (100% weak), sein (100% weak). Lesson progress: No recent lessons.. User question: Whats is my current state of learning in this platform'}], 'temperature': 0.3, 'stream': True}
+2025-07-12 17:49:57,886 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 17:49:58,982 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 17:49:58,986 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:49:58] "POST /api/ask-ai-stream HTTP/1.1" 200 -
+2025-07-12 17:50:05,070 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:50:05] "POST /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:50:05,150 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:50:05] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 17:50:28,919 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:50:28] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 17:50:52,391 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 17:50:52] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 18:12:35,169 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-12 18:12:35,171 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-12 18:12:35,173 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-12 18:12:35,197 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
