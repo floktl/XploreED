@@ -14,11 +14,6 @@ interface Props {
     pageContext?: any;
 }
 
-interface AnswerBlock {
-    type: string;
-    text: string;
-}
-
 interface ChatHistory {
     id: number;
     question: string;
@@ -28,7 +23,7 @@ interface ChatHistory {
 
 export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     const [question, setQuestion] = useState("");
-    const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>([]);
+    const [markdown, setMarkdown] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ChatHistory[]>([]);
@@ -49,12 +44,12 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         loadHistory();
     }, []);
 
-    // Scroll to bottom only when a new question is asked (first block of answerBlocks)
+    // Scroll to bottom as the AI streams new content
     useEffect(() => {
-        if (answerBlocks.length === 1 && chatEndRef.current) {
+        if (isStreaming && chatEndRef.current) {
             chatEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
-    }, [answerBlocks]);
+    }, [markdown]);
 
     // Scroll to bottom when history is loaded (on open)
     useEffect(() => {
@@ -73,19 +68,19 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         try {
             setLoading(true);
             setIsStreaming(true);
-            setAnswerBlocks([]);
+            setMarkdown("");
             fullAnswerRef.current = "";
 
             await streamAiAnswer(question.trim(), (chunk) => {
                 fullAnswerRef.current = chunk.text;
-                setAnswerBlocks([{ type: 'paragraph', text: chunk.text }]);
+                setMarkdown(chunk.text);
             }, pageContext);
 
             setIsStreaming(false);
 
             // After streaming, if no answer, show placeholder
             if (!fullAnswerRef.current.trim()) {
-                setAnswerBlocks([{ type: "paragraph", text: "[No answer returned by AI]" }]);
+                setMarkdown("[No answer returned by AI]");
             } else {
                 console.log("[DEBUG] Full AI answer after streaming:", fullAnswerRef.current);
             }
@@ -163,7 +158,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                 </div>
                 {/* Chat area: show all history as a continuous chat */}
                 <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-64 min-h-[120px]" style={{background: "rgba(255,255,255,0.13)"}}>
-                    {history.length === 0 && answerBlocks.length === 0 && (
+                    {history.length === 0 && markdown === "" && (
                         <div className="text-gray-400 italic text-center pt-6 text-sm sm:text-base">Ask anything about German or your learning progress!</div>
                     )}
                     {/* Render all previous chat history */}
@@ -235,7 +230,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                         </React.Fragment>
                     ))}
                     {/* Render current question/answer if present */}
-                    {answerBlocks.length > 0 && (
+                    {markdown !== "" && (
                         <div className="flex flex-col gap-2 sm:gap-3 w-full">
                             {/* User bubble */}
                             <div className="flex items-end gap-1 sm:gap-2 justify-end w-full">
@@ -275,8 +270,9 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                             }}
                                         >
                                             <ReactMarkdown
-                                                children={answerBlocks[0].text}
+                                                key={markdown}
                                                 remarkPlugins={[remarkGfm]}
+                                                children={markdown}
                                                 components={{
                                                     h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
                                                     h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,
