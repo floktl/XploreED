@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title, Input } from "./UI/UI";
+import AskAiButton from "./AskAiButton";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
@@ -94,7 +95,7 @@ export default function NameInput() {
     if (showChoice) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container>
+                <Container showHeader={true} minimalHeader={true}>
                     <Title>Set Your Level</Title>
                     <Card className="space-y-4 p-4 text-center">
                         <p>Would you like to take a placement test or choose a level manually?</p>
@@ -111,7 +112,7 @@ export default function NameInput() {
 
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container>
+            <Container showHeader={true} minimalHeader={true}>
                 <Title>{isSignup ? "👋 Create an Account" : "🎓 Willkommen!"}</Title>
                 <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                     {isSignup ? "Choose your username and password." : "Please enter your name and password to begin:"}
@@ -205,6 +206,8 @@ export default function NameInput() {
                     Terms of Service
                 </Button>
             </Footer>
+            {/* Only show AskAiButton after signup and level placement, i.e., not on login/signup screens */}
+            {/* No AskAiButton here */}
         </div>
     );
 }

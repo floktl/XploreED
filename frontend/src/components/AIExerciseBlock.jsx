@@ -336,23 +336,28 @@ export default function AIExerciseBlock({
     };
 
     if (mode !== "student") {
+        // console.log('[AIExerciseBlock] Not student mode, rendering Card');
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
 
     if (loadingInit) {
+        // console.log('[AIExerciseBlock] loadingInit true, rendering loading Card');
         return <Card className="text-center py-4">Loading personalized AI exercises...</Card>;
     }
 
     if (current === "API_ERROR_500") {
+        // console.log('[AIExerciseBlock] API_ERROR_500, rendering error Card');
         return <Card className="bg-red-100 text-red-800">🚨 500: Mistral API Error.</Card>;
     }
 
     if (!Array.isArray(exercises)) {
+        // console.log('[AIExerciseBlock] exercises not array, rendering error Card');
         return <Card className="bg-red-100 text-red-800">Failed to load AI exercise.</Card>;
     }
 
+    // console.log('[AIExerciseBlock] RENDERING OUTERMOST DIV WITH data-tour=ai-feedback');
     return (
-        <>
+        <div data-tour="ai-feedback">
             <Card className="space-y-4">
 
                 {stage === 1 && current.title && (
@@ -500,6 +505,6 @@ export default function AIExerciseBlock({
                     onClose={() => setReportExerciseId(null)}
                 />
             )}
-        </>
+        </div>
     );
 }

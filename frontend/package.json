@@ -35,7 +35,8 @@
     "react-router-dom": "^6.23.0",
     "react-markdown": "^8.0.7",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.4.0"
+    "zustand": "^4.4.0",
+    "remark-gfm": "^3.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.0",

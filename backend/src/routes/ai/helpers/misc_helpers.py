@@ -5,14 +5,14 @@ from flask import Response, current_app # type: ignore
 from utils.ai.ai_api import send_prompt
 
 
-def stream_ai_answer(question: str) -> Response:
-    """Stream a long answer from Mistral as Server-Sent Events."""
+def stream_ai_answer(context: str) -> Response:
+    """Stream a long answer from Mistral as Server-Sent Events, using context-aware prompt."""
 
     def generate():
         try:
             with send_prompt(
-                "You are a helpful German teacher.",
-                {"role": "user", "content": question},
+                "You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.",
+                {"role": "user", "content": context},
                 temperature=0.3,
                 stream=True,
             ) as resp:
@@ -33,7 +33,6 @@ def stream_ai_answer(question: str) -> Response:
                         )
                         if chunk:
                             buffer += chunk
-                            buffer = buffer.replace("**", "")
                             if buffer.endswith((".", "!", "?")):
                                 structured = {"type": "paragraph", "text": buffer.strip()}
                                 yield f"data: {json.dumps(structured, ensure_ascii=False)}\n\n"

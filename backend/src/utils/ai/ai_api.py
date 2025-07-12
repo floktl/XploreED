@@ -33,6 +33,9 @@ def send_request(messages: list[dict], temperature: float = 0.7, stream: bool = 
 
 def send_prompt(system_message: str, user_prompt: dict, temperature: float = 0.7, stream: bool = False) -> requests.Response:
     """Convenience wrapper for a system and user prompt."""
+    # For chat/feedback endpoints, encourage Markdown output for tables/lists
+    if "chat" in system_message.lower() or "teacher" in system_message.lower():
+        system_message += " Always use Markdown for tables, lists, and formatting."
     messages = [
         {"role": "system", "content": system_message},
         user_prompt,
