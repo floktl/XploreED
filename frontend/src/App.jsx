@@ -32,7 +32,7 @@ import Settings from "./components/Settings";
 import AskAiButton from "./components/AskAiButton";
 import TermsOfService from "./components/TermsOfService";
 import About from "./components/About";
-import OnboardingTour from "./components/OnboardingTour";
+import RootLayout from "./components/RootLayout";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -71,33 +71,39 @@ function AppWrapper() {
 // ✅ Route definitions
 const router = createBrowserRouter(
     [
-        { path: "/", element: <NameInput />, errorElement: <ErrorPage /> },
-        { path: "/placement-test", element: <PlacementTest />, errorElement: <ErrorPage /> },
-        { path: "/select-level", element: <LevelGuess />, errorElement: <ErrorPage /> },
-        { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
-        { path: "/translate", element: <Translator />, errorElement: <ErrorPage /> },
-        { path: "/level-game", element: <LevelGame />, errorElement: <ErrorPage /> },
-        { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
-        { path: "/vocabulary", element: <Vocabulary />, errorElement: <ErrorPage /> },
-        { path: "/topic-memory", element: <TopicMemory />, errorElement: <ErrorPage /> },
-        { path: "/grammar-map", element: <GrammarMap />, errorElement: <ErrorPage /> },
-        { path: "/vocab-trainer", element: <VocabTrainer />, errorElement: <ErrorPage /> },
-        { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
-        { path: "/admin-login", element: <AdminLogin />, errorElement: <ErrorPage /> },
-        { path: "/admin-panel", element: <AdminDashboard />, errorElement: <ErrorPage /> },
-        { path: "/admin-users", element: <AdminUserManagement />, errorElement: <ErrorPage /> },
-        { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
-        { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
-        { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },
-        { path: "/settings", element: <Settings />, errorElement: <ErrorPage /> },
-        { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
-        { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
-        { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> },
-        { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> },
-        { path: "/reading-exercise", element: <AIReading />, errorElement: <ErrorPage /> },
-        { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> },
-        { path: "/terms-of-service", element: <TermsOfService />, errorElement: <ErrorPage /> },
-        { path: "/about", element: <About />, errorElement: <ErrorPage /> }
+        {
+            element: <RootLayout />,
+            errorElement: <ErrorPage />,
+            children: [
+                { path: "/", element: <NameInput /> },
+                { path: "/placement-test", element: <PlacementTest /> },
+                { path: "/select-level", element: <LevelGuess /> },
+                { path: "/menu", element: <Menu /> },
+                { path: "/translate", element: <Translator /> },
+                { path: "/level-game", element: <LevelGame /> },
+                { path: "/profile", element: <Profile /> },
+                { path: "/vocabulary", element: <Vocabulary /> },
+                { path: "/topic-memory", element: <TopicMemory /> },
+                { path: "/grammar-map", element: <GrammarMap /> },
+                { path: "/vocab-trainer", element: <VocabTrainer /> },
+                { path: "/admin", element: <AdminLogin /> },
+                { path: "/admin-login", element: <AdminLogin /> },
+                { path: "/admin-panel", element: <AdminDashboard /> },
+                { path: "/admin-users", element: <AdminUserManagement /> },
+                { path: "/lessons", element: <Lessons /> },
+                { path: "/lesson/:lessonId", element: <LessonView /> },
+                { path: "/profile-stats", element: <ProfileStats /> },
+                { path: "/settings", element: <Settings /> },
+                { path: "/admin/lessons/:id", element: <LessonEdit /> },
+                { path: "/ai-feedback", element: <AIFeedback /> },
+                { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView /> },
+                { path: "/weakness-lesson", element: <AIWeaknessLesson /> },
+                { path: "/reading-exercise", element: <AIReading /> },
+                { path: "/progress-test", element: <LevelUpTest /> },
+                { path: "/terms-of-service", element: <TermsOfService /> },
+                { path: "/about", element: <About /> }
+            ]
+        }
     ],
     {
         future: {

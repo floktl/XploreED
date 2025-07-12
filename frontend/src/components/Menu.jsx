@@ -15,7 +15,6 @@ import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 import { getUserLevel } from "../api";
 import AskAiButton from "./AskAiButton";
-import OnboardingTour from "./OnboardingTour";
 
 export default function Menu() {
     const navigate = useNavigate();
@@ -94,7 +93,6 @@ export default function Menu() {
 
             <Footer />
             <AskAiButton />
-            <OnboardingTour />
         </div>
     );
 }
