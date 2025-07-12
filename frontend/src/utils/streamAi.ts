@@ -2,22 +2,31 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function streamAiAnswer(
     question: string,
-    onChunk: (chunk: { type: string; text: string }) => void
+    onChunk: (chunk: { type: string; text: string }) => void,
+    pageContext?: any
 ): Promise<void> {
     const res = await fetch(`${BASE_URL}/api/ask-ai-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, pageContext }),
     });
 
-    if (!res.ok || !res.body) {
-        throw new Error("Failed to stream AI answer");
+    // If not a stream, just parse JSON and call onChunk once
+    if (!res.body || !res.headers.get("content-type")?.includes("stream")) {
+        const data = await res.json();
+        if (data.answer) {
+            onChunk({ type: "paragraph", text: data.answer });
+        } else {
+            onChunk({ type: "paragraph", text: "[No answer returned by AI]" });
+        }
+        return;
     }
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
+    let lastText = "";
 
     while (true) {
         const { value, done } = await reader.read();
@@ -32,7 +41,11 @@ export async function streamAiAnswer(
                 if (data === "[DONE]") return;
                 try {
                     const parsed = JSON.parse(data);
-                    onChunk(parsed);
+                    // Only update if the text has changed
+                    if (parsed.text !== lastText) {
+                        onChunk(parsed);
+                        lastText = parsed.text;
+                    }
                 } catch (e) {
                     console.warn("Failed to parse stream chunk:", data);
                 }

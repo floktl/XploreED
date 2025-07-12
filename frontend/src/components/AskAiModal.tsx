@@ -11,6 +11,7 @@ import remarkGfm from "remark-gfm";
 interface Props {
     onClose: () => void;
     btnRect?: DOMRect | null;
+    pageContext?: any;
 }
 
 interface AnswerBlock {
@@ -25,13 +26,15 @@ interface ChatHistory {
     created_at: string;
 }
 
-export default function AskAiModal({ onClose, btnRect }: Props) {
+export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     const [question, setQuestion] = useState("");
     const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ChatHistory[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const fullAnswerRef = useRef("");
+    const [isStreaming, setIsStreaming] = useState(false);
 
     // Load history from backend on mount
     useEffect(() => {
@@ -53,6 +56,13 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
         }
     }, [answerBlocks]);
 
+    // Scroll to bottom when history is loaded (on open)
+    useEffect(() => {
+      if (history.length > 0 && chatEndRef.current) {
+        chatEndRef.current.scrollIntoView({ behavior: "auto" });
+      }
+    }, [history.length]);
+
 
     const handleAsk = async () => {
         if (!question.trim()) {
@@ -62,17 +72,25 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
 
         try {
             setLoading(true);
+            setIsStreaming(true);
             setAnswerBlocks([]);
-            let fullAnswer = "";
+            fullAnswerRef.current = "";
 
             await streamAiAnswer(question.trim(), (chunk) => {
-                setAnswerBlocks((prev) => [...prev, chunk]);
-                fullAnswer += chunk.text;
-            });
+                fullAnswerRef.current = chunk.text;
+                setAnswerBlocks([{ type: 'paragraph', text: chunk.text }]);
+            }, pageContext);
+
+            setIsStreaming(false);
+
+            // After streaming, if no answer, show placeholder
+            if (!fullAnswerRef.current.trim()) {
+                setAnswerBlocks([{ type: "paragraph", text: "[No answer returned by AI]" }]);
+            }
 
             // Save to backend history
             try {
-                await addMistralChatHistory(question.trim(), fullAnswer);
+                await addMistralChatHistory(question.trim(), fullAnswerRef.current);
                 // Reload history
                 const h = await getMistralChatHistory();
                 setHistory(h);
@@ -197,11 +215,11 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                         strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                         em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
                                                         table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                        th: ({node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
-                                                        td: ({node, ...props}) => <td className="border px-2 py-1" {...props} />,
-                                                        ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
-                                                        ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
-                                                        li: ({node, ...props}) => <li className="mb-1" {...props} />,
+                                                        th: ({isHeader, node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
+                                                        td: ({isHeader, node, ...props}) => <td className="border px-2 py-1" {...props} />,
+                                                        ul: ({ordered, node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
+                                                        ol: ({ordered, node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
+                                                        li: ({ordered, node, ...props}) => <li className="mb-1" {...props} />,
                                                         p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
                                                         blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" style={{whiteSpace: 'pre-line'}} {...props} />,
                                                     }}
@@ -255,27 +273,25 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                     maxWidth: '100%',
                                                 }}
                                             >
-                                                {typeof block.text === 'string' && (
-                                                    <ReactMarkdown
-                                                        children={block.text}
-                                                        remarkPlugins={[remarkGfm]}
-                                                        components={{
-                                                            h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
-                                                            h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,
-                                                            h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
-                                                            strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
-                                                            em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
-                                                            table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                            th: ({node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
-                                                            td: ({node, ...props}) => <td className="border px-2 py-1" {...props} />,
-                                                            ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
-                                                            ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
-                                                            li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                                                            p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
-                                                            blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" {...props} />,
-                                                        }}
-                                                    />
-                                                )}
+                                                <ReactMarkdown
+                                                    children={block.text}
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
+                                                        h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,
+                                                        h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
+                                                        strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
+                                                        em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
+                                                        table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
+                                                        th: ({isHeader, node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
+                                                        td: ({isHeader, node, ...props}) => <td className="border px-2 py-1" {...props} />,
+                                                        ul: ({ordered, node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
+                                                        ol: ({ordered, node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
+                                                        li: ({ordered, node, ...props}) => <li className="mb-1" {...props} />,
+                                                        p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
+                                                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" {...props} />,
+                                                    }}
+                                                />
                                                 <span className="absolute left-[-10px] bottom-0 w-0 h-0 border-t-[12px] border-t-white/70 border-r-[12px] border-r-transparent border-b-0 border-l-0" />
                                             </div>
                                         </div>
@@ -313,7 +329,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                     <svg style={arrowStyle} viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M0 0 Q24 32 48 0" fill="rgba(255,255,255,0.38)" filter="url(#shadow)" />
                         <filter id="shadow" x="-10" y="0" width="68" height="34">
-                            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.10" />
+                            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
                         </filter>
                     </svg>
                 )}

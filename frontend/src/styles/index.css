@@ -278,3 +278,92 @@
     font-size: 0.85em;
   }
 }
+
+/* --- Markdown styles for AI chat bubble --- */
+.chat-bubble-ai h1,
+.chat-bubble-ai h2,
+.chat-bubble-ai h3 {
+  font-weight: bold;
+  margin: 0.7em 0 0.4em 0;
+  line-height: 1.2;
+  color: #1a237e;
+}
+.chat-bubble-ai h1 { font-size: 1.25rem; }
+.chat-bubble-ai h2 { font-size: 1.1rem; }
+.chat-bubble-ai h3 { font-size: 1rem; }
+
+.chat-bubble-ai strong { font-weight: bold; color: #0d1a4d; }
+.chat-bubble-ai em { font-style: italic; color: #2a3eb1; }
+
+.chat-bubble-ai ul,
+.chat-bubble-ai ol {
+  margin: 0.5em 0 0.5em 1.5em;
+  padding-left: 1.2em;
+}
+.chat-bubble-ai ul { list-style-type: disc; }
+.chat-bubble-ai ol { list-style-type: decimal; }
+.chat-bubble-ai li { margin-bottom: 0.2em; }
+
+.chat-bubble-ai .markdown-table-wrapper {
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+.chat-bubble-ai table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  overflow: hidden;
+  display: block;
+}
+.chat-bubble-ai th,
+.chat-bubble-ai td {
+  border: 1px solid #e0e7ef;
+  padding: 0.5em 0.7em;
+  text-align: left;
+}
+.chat-bubble-ai th {
+  background: #e3eafc;
+  font-weight: bold;
+}
+.chat-bubble-ai tr:nth-child(even) {
+  background: #f7fafd;
+}
+
+.chat-bubble-ai blockquote {
+  border-left: 4px solid #b3c6ff;
+  background: #f4f8ff;
+  color: #2a3eb1;
+  padding: 0.5em 1em;
+  margin: 0.7em 0;
+  font-style: italic;
+}
+
+.chat-bubble-ai pre,
+.chat-bubble-ai code {
+  background: #f3f6fa;
+  color: #1a237e;
+  border-radius: 4px;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 0.97em;
+}
+.chat-bubble-ai pre {
+  padding: 0.7em 1em;
+  margin: 0.5em 0;
+  overflow-x: auto;
+}
+.chat-bubble-ai code {
+  padding: 0.1em 0.3em;
+}
+
+.chat-bubble-ai p {
+  margin: 0.4em 0;
+  white-space: pre-line;
+}
+
+.chat-bubble-ai hr {
+  border: none;
+  border-top: 1px solid #e0e7ef;
+  margin: 1em 0;
+}
+/* --- End Markdown styles for AI chat bubble --- */
