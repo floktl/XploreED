@@ -20,10 +20,19 @@ export default function AskAiButton() {
             <button
                 ref={btnRef}
                 onClick={handleOpen}
-                className={`fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:opacity-90 ${darkMode ? "bg-blue-700 text-white" : "bg-blue-600 text-white"}`}
+                className={`fixed bottom-20 right-4 z-50 w-11 h-11 rounded-full flex items-center justify-center shadow-lg bg-white/80 hover:bg-white text-blue-700 border border-blue-200 transition-all duration-150`}
+                style={{ boxShadow: '0 2px 12px 0 rgba(80,120,200,0.10)' }}
             >
-                <svg viewBox="0 0 100 100" className="w-8 h-8" fill="currentColor" stroke="currentColor" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 80 V20 L50 60 L80 20 V80" fill="none" />
+                {/* Simple assistant SVG icon */}
+                <svg viewBox="0 0 40 40" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="20" cy="20" r="12" fill="#e3eafc" stroke="#1a237e" strokeWidth="1.5" />
+                  <ellipse cx="20" cy="27" rx="6" ry="2.5" fill="#b3c6ff" />
+                  <circle cx="15.5" cy="18" r="1.5" fill="#1a237e" />
+                  <circle cx="24.5" cy="18" r="1.5" fill="#1a237e" />
+                  <rect x="17" y="22" width="6" height="2" rx="1" fill="#1a237e" />
+                  <rect x="18.5" y="10" width="3" height="3" rx="1.5" fill="#b3c6ff" stroke="#1a237e" />
+                  <rect x="10" y="16" width="2" height="6" rx="1" fill="#b3c6ff" stroke="#1a237e" />
+                  <rect x="28" y="16" width="2" height="6" rx="1" fill="#b3c6ff" stroke="#1a237e" />
                 </svg>
             </button>
             {open && <AskAiModal onClose={() => setOpen(false)} btnRect={btnRect} />}

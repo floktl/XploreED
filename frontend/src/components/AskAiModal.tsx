@@ -7,6 +7,7 @@ import { streamAiAnswer } from "../utils/streamAi";
 import { getMistralChatHistory, addMistralChatHistory } from "../api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import useClickOutside from "../utils/useClickOutside";
 
 interface Props {
     onClose: () => void;
@@ -30,6 +31,14 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     const chatEndRef = useRef<HTMLDivElement>(null);
     const fullAnswerRef = useRef("");
     const [isStreaming, setIsStreaming] = useState(false);
+    const modalRef = useRef<HTMLDivElement>(null);
+    useClickOutside(modalRef, onClose);
+
+    // Prevent background scroll when modal is open
+    useEffect(() => {
+        document.body.classList.add('modal-open');
+        return () => { document.body.classList.remove('modal-open'); };
+    }, []);
 
     // Load history from backend on mount
     useEffect(() => {
@@ -114,11 +123,11 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         left: '50%',
         transform: 'translateX(-50%)',
         border: "none",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-        background: "rgba(255,255,255,0.38)",
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
-        borderRadius: 24,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
+        background: "rgba(255,255,255,0.10)", // more transparent
+        backdropFilter: "blur(22px)",
+        WebkitBackdropFilter: "blur(22px)",
+        borderRadius: 28,
         padding: 0,
         maxHeight: "80vh",
         display: "flex",
@@ -126,7 +135,6 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     };
     let arrowStyle: React.CSSProperties = {};
     if (btnRect) {
-        // Center modal horizontally above the button, and place tail at the bottom center
         modalStyle.bottom = window.innerHeight - btnRect.top + 56;
         arrowStyle = {
             position: "absolute",
@@ -144,20 +152,20 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         <>
             {/* Darkened, blurred background overlay */}
             <div className="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-[2px]" />
-            <div style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative">
-                <div className="relative text-gray-900 flex flex-col" style={{overflow: 'hidden'}}>
+            <div ref={modalRef} style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative speech-bubble-modal">
+              <div className="relative text-gray-900 flex flex-col" style={{overflow: 'hidden'}}>
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-white/30 min-h-[44px]">
-                    <div className="flex items-center gap-2">
-                        <Lightbulb className="w-5 h-5 text-blue-400" />
-                        <span className="font-bold text-lg whitespace-nowrap">Ask Mistral AI</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-blue-400" />
+                    <span className="font-bold text-lg whitespace-nowrap">Ask Mistral AI</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>
+                  </div>
                 </div>
                 {/* Chat area: show all history as a continuous chat */}
-                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-64 min-h-[120px]" style={{background: "rgba(255,255,255,0.13)"}}>
+                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-64 min-h-[120px]" style={{background: "rgba(255,255,255,0.04)"}}>
                     {history.length === 0 && markdown === "" && (
                         <div className="text-gray-400 italic text-center pt-6 text-sm sm:text-base">Ask anything about German or your learning progress!</div>
                     )}
@@ -182,19 +190,18 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                     <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                                     <div className="relative w-full" style={{maxWidth: 480, margin: '0 auto'}}>
                                         <div
-                                            className="bg-white/40 text-gray-900 rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
+                                            className="rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
                                             style={{
-                                                backdropFilter: 'blur(6px)',
-                                                WebkitBackdropFilter: 'blur(6px)',
-                                                background: 'rgba(255,255,255,0.75)',
-                                                border: '1.5px solid #e0e7ef',
-                                                boxShadow: '0 2px 12px 0 rgba(80,120,200,0.07)',
-                                                fontSize: '0.95rem',
+                                                backdropFilter: 'blur(12px)',
+                                                WebkitBackdropFilter: 'blur(12px)',
+                                                background: 'rgba(255,255,255,0.18)', // more transparent
+                                                border: '1.5px solid rgba(255,255,255,0.18)',
+                                                boxShadow: '0 2px 16px 0 rgba(80,120,200,0.10)',
+                                                fontSize: '0.97rem',
                                                 fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
                                                 color: '#1a237e',
                                                 lineHeight: 1.5,
                                                 wordBreak: 'break-word',
-                                                whiteSpace: undefined, // Remove pre-line from the bubble
                                                 margin: '6px 0 10px 0',
                                                 padding: '14px 16px',
                                                 borderRadius: '20px',
@@ -222,7 +229,12 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                                     }}
                                                 />
                                             )}
-                                            <span className="absolute left-[-10px] bottom-0 w-0 h-0 border-t-[12px] border-t-white/70 border-r-[12px] border-r-transparent border-b-0 border-l-0" />
+                                            <span className="absolute left-[-10px] bottom-0 w-0 h-0" style={{
+                                                borderTop: '12px solid rgba(255,255,255,0.18)',
+                                                borderRight: '12px solid transparent',
+                                                borderBottom: 0,
+                                                borderLeft: 0,
+                                            }} />
                                         </div>
                                     </div>
                                 </div>
@@ -320,16 +332,16 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                         <Send className="w-5 h-5 sm:w-6 sm:h-6" />
                     </button>
                 </form>
-                {/* Speech bubble tail (unified with modal) */}
+                {/* Speech bubble tail (SVG) */}
                 {btnRect && (
-                    <svg style={arrowStyle} viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 0 Q24 32 48 0" fill="rgba(255,255,255,0.38)" filter="url(#shadow)" />
-                        <filter id="shadow" x="-10" y="0" width="68" height="34">
-                            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
-                        </filter>
-                    </svg>
+                  <svg style={arrowStyle} viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 0 Q24 32 48 0" fill="rgba(255,255,255,0.10)" filter="url(#shadow)" />
+                    <filter id="shadow" x="-10" y="0" width="68" height="34">
+                      <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
+                    </filter>
+                  </svg>
                 )}
-                </div>
+              </div>
             </div>
         </>
     );
