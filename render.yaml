@@ -16,7 +16,7 @@ services:
     name: backend
     env: python
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: gunicorn --chdir backend/src --bind 0.0.0.0:5050 app:app
+    startCommand: python backend/src/app/migration_script.py && gunicorn --chdir backend/src --bind 0.0.0.0:5050 app:app
     envVars:
       - key: REDIS_HOST
         value: redis
