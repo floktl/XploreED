@@ -731,3 +731,24 @@ export const askAiQuestion = async (question) => {
     return res.json();
 };
 
+// Get Mistral chat history
+export const getMistralChatHistory = async () => {
+    const res = await fetch(`${BASE_URL}/api/mistral-chat-history`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to fetch chat history");
+    return res.json();
+};
+
+// Add to Mistral chat history
+export const addMistralChatHistory = async (question, answer) => {
+    const res = await fetch(`${BASE_URL}/api/mistral-chat-history`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ question, answer }),
+    });
+    if (!res.ok) throw new Error("Failed to save chat history");
+    return res.json();
+};
+

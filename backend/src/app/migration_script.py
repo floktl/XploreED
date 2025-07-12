@@ -406,6 +406,19 @@ if "ai_enabled" not in columns:
     )
     print("✅ 'ai_enabled' column added.")
 
+# ✅ Create mistral_chat_history table
+cursor.execute(
+    """
+    CREATE TABLE IF NOT EXISTS mistral_chat_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        question TEXT NOT NULL,
+        answer TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """
+)
+print("✅ 'mistral_chat_history' table created (if not exists).")
 
 conn.commit()
 print("✅ Migration completed.")

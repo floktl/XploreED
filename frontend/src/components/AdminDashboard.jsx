@@ -168,8 +168,8 @@ export default function AdminDashboard() {
         }
     };
     return (
-        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container>
+        <Container>
+            <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
                 <Title>📊 Admin Dashboard</Title>
                 <div className="mb-4 text-right">
                     <Link to="/admin-users" className="text-blue-600 hover:underline">
@@ -190,18 +190,24 @@ export default function AdminDashboard() {
                             </tr>
                         </thead>
                         <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-                            {Object.values(userSummary).map((u) => (
-                                <tr key={u.username} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
-                                    <td className="px-4 py-2 font-semibold">{u.username}</td>
-                                    <td className="px-4 py-2">{u.lastLevel ?? "—"}</td>
-                                    <td className="px-4 py-2">{u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}</td>
-                                    <td className="px-4 py-2">
-                                        <Link to="/profile-stats" state={{ username: u.username }} className="text-blue-600 hover:underline">
-                                            View Stats →
-                                        </Link>
-                                    </td>
+                            {Object.values(userSummary).length === 0 ? (
+                                <tr>
+                                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 italic">No user found.</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                Object.values(userSummary).map((u) => (
+                                    <tr key={u.username} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
+                                        <td className="px-4 py-2 font-semibold">{u.username}</td>
+                                        <td className="px-4 py-2">{u.lastLevel ?? "—"}</td>
+                                        <td className="px-4 py-2">{u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}</td>
+                                        <td className="px-4 py-2">
+                                            <Link to="/profile-stats" state={{ username: u.username }} className="text-blue-600 hover:underline">
+                                                View Stats →
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </Card>
@@ -354,90 +360,90 @@ export default function AdminDashboard() {
                         </ul>
                     )}
                 </Card>
-            </Container>
 
-            {modalContent && (
-                <Modal onClose={() => setModalContent(null)}>
-                    <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
-                    <BlockContentRenderer html={modalContent.content} mode="admin-preview" />
-                </Modal>
-            )}
+                {modalContent && (
+                    <Modal onClose={() => setModalContent(null)}>
+                        <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
+                        <BlockContentRenderer html={modalContent.content} mode="admin-preview" />
+                    </Modal>
+                )}
 
-            {showEditorModal && (
-                <Modal onClose={() => setShowEditorModal(false)}>
-                    <h2 className="text-xl font-bold mb-4">
-                        {isEditing ? "✏️ Edit Lesson" : "📝 Create New Lesson"}
-                    </h2>
-                    <Input
-                        type="number"
-                        placeholder="Lesson ID"
-                        value={newLessonId}
-                        disabled={isEditing}
-                        onChange={(e) => setNewLessonId(e.target.value)}
-                        className="mb-3"
-                    />
-                    <Input
-                        type="text"
-                        placeholder="Lesson Title"
-                        value={newTitle}
-                        onChange={(e) => setNewTitle(e.target.value)}
-                        className="mb-3"
-                    />
+                {showEditorModal && (
+                    <Modal onClose={() => setShowEditorModal(false)}>
+                        <h2 className="text-xl font-bold mb-4">
+                            {isEditing ? "✏️ Edit Lesson" : "📝 Create New Lesson"}
+                        </h2>
+                        <Input
+                            type="number"
+                            placeholder="Lesson ID"
+                            value={newLessonId}
+                            disabled={isEditing}
+                            onChange={(e) => setNewLessonId(e.target.value)}
+                            className="mb-3"
+                        />
+                        <Input
+                            type="text"
+                            placeholder="Lesson Title"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            className="mb-3"
+                        />
 
-                    <div className="flex items-center mb-3 gap-2">
-                        <label className="flex items-center gap-2 m-0 whitespace-nowrap">
-                            <input
-                                type="checkbox"
-                                checked={aiEnabled}
-                                onChange={(e) => setAiEnabled(e.target.checked)}
-                            />
-                            <span>Include AI Exercises</span>
-                        </label>
-                    </div>
+                        <div className="flex items-center mb-3 gap-2">
+                            <label className="flex items-center gap-2 m-0 whitespace-nowrap">
+                                <input
+                                    type="checkbox"
+                                    checked={aiEnabled}
+                                    onChange={(e) => setAiEnabled(e.target.checked)}
+                                />
+                                <span>Include AI Exercises</span>
+                            </label>
+                        </div>
 
-                    {formError && (
-                        <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
-                    )}
+                        {formError && (
+                            <div className="text-red-600 text-sm mb-3 font-medium">{formError}</div>
+                        )}
 
-                    <LessonEditor
-                        content={newContent}
-                        onContentChange={setNewContent}
-                        aiEnabled={aiEnabled}
-                        onToggleAI={() => setAiEnabled((v) => !v)}
-                    />
-                    <div className="flex justify-end mt-4 gap-2">
-                        <Button variant="secondary" onClick={() => handleSaveLesson(false)} className="gap-2">
-                            <Save className="w-4 h-4" />
-                            Save as Draft
-                        </Button>
-                        <Button variant="success" onClick={() => handleSaveLesson(true)} className="gap-2">
-                            <Rocket className="w-4 h-4" />
-                            Save & Publish
-                        </Button>
-                    </div>
-                </Modal>
-            )}
+                        <LessonEditor
+                            content={newContent}
+                            onContentChange={setNewContent}
+                            aiEnabled={aiEnabled}
+                            onToggleAI={() => setAiEnabled((v) => !v)}
+                        />
+                        <div className="flex justify-end mt-4 gap-2">
+                            <Button variant="secondary" onClick={() => handleSaveLesson(false)} className="gap-2">
+                                <Save className="w-4 h-4" />
+                                Save as Draft
+                            </Button>
+                            <Button variant="success" onClick={() => handleSaveLesson(true)} className="gap-2">
+                                <Rocket className="w-4 h-4" />
+                                Save & Publish
+                            </Button>
+                        </div>
+                    </Modal>
+                )}
 
-            {showLessonModal && (
-                <Modal onClose={() => setShowLessonModal(null)}>
-                    <h2 className="text-xl font-bold mb-4">📘 Lesson {showLessonModal} – User Progress</h2>
-                    {lessonProgressDetails.length === 0 ? (
-                        <p>No progress data available.</p>
-                    ) : (
-                        <ul className="space-y-2">
-                            {lessonProgressDetails.map((entry, index) => (
-                                <li key={`${entry.user}-${index}`} className="flex justify-between">
-                                    <span className="font-medium">{entry.user}</span>
-                                    <span>{entry.percent}% ({entry.completed}/{entry.total})</span>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </Modal>
-            )}
+                {showLessonModal && (
+                    <Modal onClose={() => setShowLessonModal(null)}>
+                        <h2 className="text-xl font-bold mb-4">📘 Lesson {showLessonModal} – User Progress</h2>
+                        {lessonProgressDetails.length === 0 ? (
+                            <p>No progress data available.</p>
+                        ) : (
+                            <ul className="space-y-2">
+                                {lessonProgressDetails.map((entry, index) => (
+                                    <li key={`${entry.user}-${index}`} className="flex justify-between">
+                                        <span className="font-medium">{entry.user}</span>
+                                        <span>{entry.percent}% ({entry.completed}/{entry.total})</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </Modal>
+                )}
 
-            <Footer />
-        </div>
+                <Footer />
+            </div>
+        </Container>
     );
 
 }

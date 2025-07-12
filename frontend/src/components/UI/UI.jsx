@@ -36,13 +36,13 @@ export const Title = ({ children, className }) => {
     );
 };
 
-export const Container = ({ children, bottom, className }) => {
+export const Container = ({ children, bottom, className, showHeader = true, minimalHeader = false }) => {
     const darkMode = useAppStore((state) => state.darkMode);
 
     return (
         <>
-            <Header />
-            <div className="pt-20">
+            {showHeader && <Header minimal={minimalHeader} />}
+            <div className={showHeader ? "pt-20" : undefined}>
                 <div className="flex-1 overflow-auto flex flex-col items-center">
                     <div
                         className={clsx(

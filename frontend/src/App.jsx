@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import {
     createBrowserRouter,
     RouterProvider,
+    useLocation,
 } from "react-router-dom";
 
 import NameInput from "./components/NameInput";
@@ -29,9 +30,10 @@ import AIReading from "./components/AIReading";
 import LevelUpTest from "./components/LevelUpTest";
 import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
-import AskAiButton from "./components/AskAiButton";
 import TermsOfService from "./components/TermsOfService";
 import About from "./components/About";
+import AskAiButton from "./components/AskAiButton";
+import RootLayout from "./components/RootLayout";
 
 import useAppStore from "./store/useAppStore";
 import { getMe, getRole } from "./api";
@@ -60,44 +62,63 @@ function AppWrapper() {
         fetchUserAndRole();
     }, [setUsername, setIsAdmin, setIsLoading]);
 
-    return (
-        <>
-            <RouterProvider router={router} />
-            <AskAiButton />
-        </>
-    );
+    return <RouterProvider router={router} />;
+}
+
+// Renders AskAiButton everywhere except login/signup/admin
+function AskAiButtonGlobal() {
+    const location = useLocation();
+    const path = location.pathname;
+    if (
+        path === "/" ||
+        path === "/admin" ||
+        path === "/admin-login" ||
+        path === "/admin-panel" ||
+        path === "/admin-users" ||
+        path.startsWith("/admin/")
+    ) {
+        return null;
+    }
+    return <AskAiButton />;
 }
 
 // ✅ Route definitions
 const router = createBrowserRouter(
     [
+        // Auth/admin routes outside RootLayout
         { path: "/", element: <NameInput />, errorElement: <ErrorPage /> },
-        { path: "/placement-test", element: <PlacementTest />, errorElement: <ErrorPage /> },
-        { path: "/select-level", element: <LevelGuess />, errorElement: <ErrorPage /> },
-        { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
-        { path: "/translate", element: <Translator />, errorElement: <ErrorPage /> },
-        { path: "/level-game", element: <LevelGame />, errorElement: <ErrorPage /> },
-        { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
-        { path: "/vocabulary", element: <Vocabulary />, errorElement: <ErrorPage /> },
-        { path: "/topic-memory", element: <TopicMemory />, errorElement: <ErrorPage /> },
-        { path: "/grammar-map", element: <GrammarMap />, errorElement: <ErrorPage /> },
-        { path: "/vocab-trainer", element: <VocabTrainer />, errorElement: <ErrorPage /> },
         { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
         { path: "/admin-login", element: <AdminLogin />, errorElement: <ErrorPage /> },
         { path: "/admin-panel", element: <AdminDashboard />, errorElement: <ErrorPage /> },
         { path: "/admin-users", element: <AdminUserManagement />, errorElement: <ErrorPage /> },
-        { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
-        { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
-        { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },
-        { path: "/settings", element: <Settings />, errorElement: <ErrorPage /> },
-        { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
-        { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
-        { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> },
-        { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> },
-        { path: "/reading-exercise", element: <AIReading />, errorElement: <ErrorPage /> },
-        { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> },
-        { path: "/terms-of-service", element: <TermsOfService />, errorElement: <ErrorPage /> },
-        { path: "/about", element: <About />, errorElement: <ErrorPage /> }
+        // Main app routes with RootLayout
+        {
+            element: <RootLayout />,
+            children: [
+                { path: "/placement-test", element: <PlacementTest />, errorElement: <ErrorPage /> },
+                { path: "/select-level", element: <LevelGuess />, errorElement: <ErrorPage /> },
+                { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
+                { path: "/translate", element: <Translator />, errorElement: <ErrorPage /> },
+                { path: "/level-game", element: <LevelGame />, errorElement: <ErrorPage /> },
+                { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
+                { path: "/vocabulary", element: <Vocabulary />, errorElement: <ErrorPage /> },
+                { path: "/topic-memory", element: <TopicMemory />, errorElement: <ErrorPage /> },
+                { path: "/grammar-map", element: <GrammarMap />, errorElement: <ErrorPage /> },
+                { path: "/vocab-trainer", element: <VocabTrainer />, errorElement: <ErrorPage /> },
+                { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
+                { path: "/lesson/:lessonId", element: <LessonView />, errorElement: <ErrorPage /> },
+                { path: "/profile-stats", element: <ProfileStats />, errorElement: <ErrorPage /> },
+                { path: "/settings", element: <Settings />, errorElement: <ErrorPage /> },
+                { path: "/admin/lessons/:id", element: <LessonEdit />, errorElement: <ErrorPage /> },
+                { path: "/ai-feedback", element: <AIFeedback />, errorElement: <ErrorPage /> },
+                { path: "/ai-feedback/:feedbackId", element: <AIFeedbackView />, errorElement: <ErrorPage /> },
+                { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> },
+                { path: "/reading-exercise", element: <AIReading />, errorElement: <ErrorPage /> },
+                { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> },
+                { path: "/terms-of-service", element: <TermsOfService />, errorElement: <ErrorPage /> },
+                { path: "/about", element: <About />, errorElement: <ErrorPage /> },
+            ],
+        },
     ],
     {
         future: {
