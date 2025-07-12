@@ -7748,3 +7748,23 @@
 2025-07-12 14:33:44,327 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:33:44] "POST /api/ask-ai-stream HTTP/1.1" 200 -
 2025-07-12 14:33:55,188 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:33:55] "POST /api/mistral-chat-history HTTP/1.1" 200 -
 2025-07-12 14:33:55,763 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:33:55] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:36:10,696 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:36:10] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:36:11,132 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:36:11] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:36:54,852 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:36:54] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:37:05,174 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 14:37:05,177 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.'}, {'role': 'user', 'content': 'App info: XplorED is a German learning platform. Features include: user management, AI-powered exercises (gap-fills, translations, sentence ordering), vocab trainer with spaced repetition, lesson progress tracking, skill levels, feedback, and admin tools. You can ask about your progress, how to use features, or for feedback on your learning.\nUser info: Skill level: 2. Recent results: No recent results.. Vocab words: 0. Weakest topics: haben (100% weak), personal pronouns (100% weak), sein (100% weak). Lesson progress: No recent lessons.. User question: what are my biggest weaknesses?'}], 'temperature': 0.3, 'stream': True}
+2025-07-12 14:37:05,182 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 14:37:09,338 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 14:37:09,339 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:37:09] "POST /api/ask-ai-stream HTTP/1.1" 200 -
+2025-07-12 14:37:31,375 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:37:31] "POST /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:37:31,950 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:37:31] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:40:05,688 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:40:05] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:40:09,326 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:40:09] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:40:09,975 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:40:09] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:41:05,251 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-12 14:41:05,255 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.'}, {'role': 'user', 'content': 'App info: XplorED is a German learning platform. Features include: user management, AI-powered exercises (gap-fills, translations, sentence ordering), vocab trainer with spaced repetition, lesson progress tracking, skill levels, feedback, and admin tools. You can ask about your progress, how to use features, or for feedback on your learning.\nUser info: Skill level: 2. Recent results: No recent results.. Vocab words: 0. Weakest topics: haben (100% weak), personal pronouns (100% weak), sein (100% weak). Lesson progress: No recent lessons.. User question: wjat are my biggest weaknesses'}], 'temperature': 0.3, 'stream': True}
+2025-07-12 14:41:05,258 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 14:41:05,564 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 14:41:05,566 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:05] "POST /api/ask-ai-stream HTTP/1.1" 200 -
+2025-07-12 14:41:09,502 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:09] "POST /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-12 14:41:10,009 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 14:41:10] "GET /api/mistral-chat-history HTTP/1.1" 200 -

@@ -86,6 +86,8 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
             // After streaming, if no answer, show placeholder
             if (!fullAnswerRef.current.trim()) {
                 setAnswerBlocks([{ type: "paragraph", text: "[No answer returned by AI]" }]);
+            } else {
+                console.log("[DEBUG] Full AI answer after streaming:", fullAnswerRef.current);
             }
 
             // Save to backend history
@@ -247,57 +249,55 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                     <div className="rounded-full bg-blue-500 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><User className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                                 </div>
                             </div>
-                            {/* AI bubbles */}
-                            {answerBlocks.map((block, idx) => (
-                                <div key={idx} className="flex items-end gap-1 sm:gap-2 justify-start w-full">
-                                    <div className="flex items-end gap-1 sm:gap-2 w-full justify-start">
-                                        <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
-                                        <div className="relative w-full" style={{maxWidth: 480, margin: '0 auto'}}>
-                                            <div
-                                                className="bg-white/40 text-gray-900 rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
-                                                style={{
-                                                    backdropFilter: 'blur(6px)',
-                                                    WebkitBackdropFilter: 'blur(6px)',
-                                                    background: 'rgba(255,255,255,0.75)',
-                                                    border: '1.5px solid #e0e7ef',
-                                                    boxShadow: '0 2px 12px 0 rgba(80,120,200,0.07)',
-                                                    fontSize: '0.95rem',
-                                                    fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
-                                                    color: '#1a237e',
-                                                    lineHeight: 1.5,
-                                                    wordBreak: 'break-word',
-                                                    whiteSpace: undefined, // Remove pre-line from the bubble
-                                                    margin: '6px 0 10px 0',
-                                                    padding: '14px 16px',
-                                                    borderRadius: '20px',
-                                                    maxWidth: '100%',
+                            {/* AI bubble (single, live-updating) */}
+                            <div className="flex items-end gap-1 sm:gap-2 justify-start w-full">
+                                <div className="flex items-end gap-1 sm:gap-2 w-full justify-start">
+                                    <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
+                                    <div className="relative w-full" style={{maxWidth: 480, margin: '0 auto'}}>
+                                        <div
+                                            className="bg-white/40 text-gray-900 rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
+                                            style={{
+                                                backdropFilter: 'blur(6px)',
+                                                WebkitBackdropFilter: 'blur(6px)',
+                                                background: 'rgba(255,255,255,0.75)',
+                                                border: '1.5px solid #e0e7ef',
+                                                boxShadow: '0 2px 12px 0 rgba(80,120,200,0.07)',
+                                                fontSize: '0.95rem',
+                                                fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
+                                                color: '#1a237e',
+                                                lineHeight: 1.5,
+                                                wordBreak: 'break-word',
+                                                whiteSpace: undefined, // Remove pre-line from the bubble
+                                                margin: '6px 0 10px 0',
+                                                padding: '14px 16px',
+                                                borderRadius: '20px',
+                                                maxWidth: '100%',
+                                            }}
+                                        >
+                                            <ReactMarkdown
+                                                children={answerBlocks[0].text}
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
+                                                    h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,
+                                                    h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
+                                                    strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
+                                                    em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
+                                                    table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
+                                                    th: ({isHeader, node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
+                                                    td: ({isHeader, node, ...props}) => <td className="border px-2 py-1" {...props} />,
+                                                    ul: ({ordered, node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
+                                                    ol: ({ordered, node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
+                                                    li: ({ordered, node, ...props}) => <li className="mb-1" {...props} />,
+                                                    p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
+                                                    blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" {...props} />,
                                                 }}
-                                            >
-                                                <ReactMarkdown
-                                                    children={block.text}
-                                                    remarkPlugins={[remarkGfm]}
-                                                    components={{
-                                                        h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
-                                                        h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,
-                                                        h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
-                                                        strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
-                                                        em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
-                                                        table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                        th: ({isHeader, node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
-                                                        td: ({isHeader, node, ...props}) => <td className="border px-2 py-1" {...props} />,
-                                                        ul: ({ordered, node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
-                                                        ol: ({ordered, node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
-                                                        li: ({ordered, node, ...props}) => <li className="mb-1" {...props} />,
-                                                        p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
-                                                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" {...props} />,
-                                                    }}
-                                                />
-                                                <span className="absolute left-[-10px] bottom-0 w-0 h-0 border-t-[12px] border-t-white/70 border-r-[12px] border-r-transparent border-b-0 border-l-0" />
-                                            </div>
+                                            />
+                                            <span className="absolute left-[-10px] bottom-0 w-0 h-0 border-t-[12px] border-t-white/70 border-r-[12px] border-r-transparent border-b-0 border-l-0" />
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     )}
                     <div ref={chatEndRef} />
