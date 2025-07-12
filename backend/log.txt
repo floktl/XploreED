@@ -4291,3 +4291,1509 @@
 2025-07-11 20:51:59,513 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
 2025-07-11 20:51:59,873 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 20:51:59] "POST /api/ask-ai-stream HTTP/1.1" 200 -
 2025-07-11 20:52:33,576 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 20:52:33] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-11 21:00:28,172 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 21:00:28] "GET /api/me HTTP/1.1" 200 -
+2025-07-11 21:00:28,175 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 21:00:28] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-11 21:00:28,189 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 21:00:28] "GET /api/role HTTP/1.1" 200 -
+2025-07-11 21:00:28,195 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 21:00:28] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-11 21:00:28,205 - werkzeug - INFO - 172.18.0.3 - - [11/Jul/2025 21:00:28] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:03:37,249 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:03:37] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:03:37,252 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:03:37] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:03:37,264 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:03:37] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:03:37,264 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:03:37] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:03:37,278 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:03:37] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:05:00,858 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:00] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:05:00,877 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:00] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:05:00,887 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:00] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:05:04,035 - app - INFO - User test4 requesting account deactivation
+2025-07-12 07:05:04,039 - app - INFO - Deleted 1 records from ai_user_data for user test4
+2025-07-12 07:05:04,039 - app - INFO - Deleted 0 records from vocab_log for user test4
+2025-07-12 07:05:04,040 - app - INFO - Deleted 3 records from topic_memory for user test4
+2025-07-12 07:05:04,040 - app - INFO - Deleted 0 records from results for user test4
+2025-07-12 07:05:04,040 - app - INFO - Deleted 0 records from exercise_submissions for user test4
+2025-07-12 07:05:04,041 - app - INFO - Deleted 0 records from lesson_progress for user test4
+2025-07-12 07:05:04,041 - app - INFO - Deleted 1 records from users for user test4
+2025-07-12 07:05:04,047 - app - INFO - Destroyed all sessions for user test4
+2025-07-12 07:05:04,047 - app - INFO - Account deactivation completed for user test4. Deleted: AI data=1, vocab=0, topic_memory=3, results=0, exercise_submissions=0, lesson_progress=0, user=1
+2025-07-12 07:05:04,049 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:04] "POST /api/settings/deactivate HTTP/1.1" 200 -
+2025-07-12 07:05:16,061 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:16] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-12 07:05:16,181 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:16] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:05:16,189 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:16] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:05:16,197 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:16] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:05:20,491 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:20] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:05:20,524 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:20] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:05:37,317 - routes.ai.training_routes - INFO - Training exercises request from user: test4
+2025-07-12 07:05:37,318 - routes.ai.training_routes - INFO - Training request data for user test4: answers_count=0
+2025-07-12 07:05:37,319 - routes.ai.training_routes - INFO - User test4 has no answers, checking cached exercises
+2025-07-12 07:05:37,321 - routes.ai.training_routes - INFO - Generating new training exercises for user test4
+2025-07-12 07:05:37,321 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_training_exercises for user test4
+2025-07-12 07:05:37,321 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user test4, limit=20
+2025-07-12 07:05:37,322 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user test4
+2025-07-12 07:05:37,322 - routes.ai.helpers.exercise_helpers - INFO - Detected new user test4, generating two unique blocks with different contexts
+2025-07-12 07:05:37,323 - routes.ai.helpers.exercise_helpers - INFO - Generating blocks for new user test4
+2025-07-12 07:05:37,323 - routes.ai.helpers.exercise_helpers - INFO - Generating first block for new user test4
+2025-07-12 07:05:37,327 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user test4, limit=20
+2025-07-12 07:05:37,328 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user test4
+2025-07-12 07:05:37,328 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 0 recent questions for user test4
+2025-07-12 07:05:37,328 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:05:37,329 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:05:37,329 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:05:37,329 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:05:37,330 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:05:37,330 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=0
+2025-07-12 07:05:37,331 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:05:37,336 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:05:41,301 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:05:41,319 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:05:41,321 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1166 characters
+2025-07-12 07:05:41,321 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:05:41,322 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:05:41,324 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user test4
+2025-07-12 07:05:41,324 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user test4
+2025-07-12 07:05:41,325 - routes.ai.helpers.exercise_helpers - INFO - Generated first block for new user test4 with 3 exercises
+2025-07-12 07:05:41,325 - routes.ai.helpers.exercise_helpers - INFO - Extracted 3 questions from first block for new user test4
+2025-07-12 07:05:41,326 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user test4 with 3 new questions, limit=20
+2025-07-12 07:05:41,326 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user test4, limit=20
+2025-07-12 07:05:41,329 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user test4
+2025-07-12 07:05:41,329 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user test4: 3 total questions
+2025-07-12 07:05:41,338 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user test4
+2025-07-12 07:05:41,339 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user test4
+2025-07-12 07:05:41,350 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for test4 after after updating exercise history: {
+  "username": "test4",
+  "exercises": null,
+  "next_exercises": null,
+  "exercises_updated_at": null,
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"Ich _____ einen Hund. Er ist sehr freundlich.\", \"Wir _____ im Park. Es ist sch\\u00f6n hier.\", \"She has a cat.\"]"
+}
+2025-07-12 07:05:41,453 - routes.ai.helpers.exercise_helpers - INFO - Generating second block for new user test4 with different context
+2025-07-12 07:05:41,454 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block with variation for new user test4 with 3 exclude questions
+2025-07-12 07:05:41,465 - routes.ai.helpers.exercise_helpers - INFO - Using 3 exclude questions as recent questions for variation
+2025-07-12 07:05:41,466 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:05:41,466 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:05:41,466 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:05:41,466 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:05:41,466 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:05:41,467 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:05:41,467 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:05:41,471 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:05:45,484 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:05:45,490 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:05:45,491 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1198 characters
+2025-07-12 07:05:45,492 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:05:45,492 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:05:45,494 - routes.ai.helpers.exercise_helpers - INFO - Generated 3 exercises in variation block for new user test4
+2025-07-12 07:05:45,494 - routes.ai.helpers.exercise_helpers - INFO - Successfully created AI block with variation for new user test4: 3 exercises
+2025-07-12 07:05:45,495 - routes.ai.helpers.exercise_helpers - INFO - Generated second block for new user test4 with 3 exercises
+2025-07-12 07:05:45,495 - routes.ai.helpers.exercise_helpers - INFO - After filtering duplicates for new user test4: 3 exercises remain
+2025-07-12 07:05:45,496 - routes.ai.helpers.exercise_helpers - INFO - Final second block for new user test4: 3 exercises
+2025-07-12 07:05:45,496 - routes.ai.helpers.exercise_helpers - INFO - Storing exercise blocks for new user test4
+2025-07-12 07:05:45,507 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for test4 after after storing both blocks: {
+  "username": "test4",
+  "exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich _____ einen Hund. Er ist sehr freundlich.\", \"explanation\": \"No explanation.\", \"options\": [\"bin\", \"habe\", \"hat\", \"ist\"]}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"Wir _____ im Park. Es ist sch\\u00f6n hier.\", \"explanation\": \"No explanation.\", \"options\": [\"haben\", \"sind\", \"hat\", \"ist\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"She has a cat.\", \"explanation\": \"No explanation.\"}], \"feedbackPrompt\": \"How did you find these exercises? Did you encounter any difficulties?\", \"vocabHelp\": [{\"word\": \"freundlich\", \"meaning\": \"friendly\"}, {\"word\": \"sch\\u00f6n\", \"meaning\": \"beautiful, nice\"}, {\"word\": \"Park\", \"meaning\": \"park\"}, {\"word\": \"Hund\", \"meaning\": \"dog\"}, {\"word\": \"Katze\", \"meaning\": \"cat\"}]}",
+  "next_exercises": "{\"lessonId\": \"dynamic-ai-lesson\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich _____ eine Katze. Sie ist sehr s\\u00fc\\u00df.\", \"explanation\": \"No explanation.\", \"options\": [\"hat\", \"hast\", \"haben\", \"habe\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"We are in the garden.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"_____ ist mein Bruder. Er hei\\u00dft Tom.\", \"explanation\": \"No explanation.\", \"options\": [\"Das\", \"Er\", \"Sie\", \"Es\"]}], \"feedbackPrompt\": \"How did these exercises go? Let me know if you need more help with pronouns or verbs!\", \"vocabHelp\": [{\"word\": \"die Katze\", \"meaning\": \"the cat\"}, {\"word\": \"s\\u00fc\\u00df\", \"meaning\": \"cute\"}, {\"word\": \"der Garten\", \"meaning\": \"the garden\"}, {\"word\": \"der Bruder\", \"meaning\": \"the brother\"}, {\"word\": \"hei\\u00dfen\", \"meaning\": \"to be called\"}]}",
+  "exercises_updated_at": "2025-07-12T07:05:45.497238",
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"Ich _____ einen Hund. Er ist sehr freundlich.\", \"Wir _____ im Park. Es ist sch\\u00f6n hier.\", \"She has a cat.\"]"
+}
+2025-07-12 07:05:45,507 - routes.ai.helpers.exercise_helpers - INFO - Successfully completed generate_training_exercises for new user test4
+2025-07-12 07:05:45,508 - routes.ai.training_routes - INFO - Returning new training exercises for user test4
+2025-07-12 07:05:45,510 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:45] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:05:45,553 - routes.ai.training_routes - INFO - Training exercises request from user: test4
+2025-07-12 07:05:45,554 - routes.ai.training_routes - INFO - Training request data for user test4: answers_count=0
+2025-07-12 07:05:45,555 - routes.ai.training_routes - INFO - User test4 has no answers, checking cached exercises
+2025-07-12 07:05:45,557 - routes.ai.training_routes - INFO - Found cached exercises for user test4
+2025-07-12 07:05:45,557 - routes.ai.training_routes - INFO - Returning cached exercises for user test4
+2025-07-12 07:05:45,559 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:45] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:05:49,134 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:49] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:05:49,147 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:49] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:05:49,160 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:49] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:05:52,010 - app - INFO - User test4 requesting account deactivation
+2025-07-12 07:05:52,014 - app - INFO - Deleted 1 records from ai_user_data for user test4
+2025-07-12 07:05:52,014 - app - INFO - Deleted 0 records from vocab_log for user test4
+2025-07-12 07:05:52,015 - app - INFO - Deleted 3 records from topic_memory for user test4
+2025-07-12 07:05:52,015 - app - INFO - Deleted 0 records from results for user test4
+2025-07-12 07:05:52,016 - app - INFO - Deleted 0 records from exercise_submissions for user test4
+2025-07-12 07:05:52,016 - app - INFO - Deleted 0 records from lesson_progress for user test4
+2025-07-12 07:05:52,017 - app - INFO - Deleted 1 records from users for user test4
+2025-07-12 07:05:52,021 - app - INFO - Destroyed all sessions for user test4
+2025-07-12 07:05:52,021 - app - INFO - Account deactivation completed for user test4. Deleted: AI data=1, vocab=0, topic_memory=3, results=0, exercise_submissions=0, lesson_progress=0, user=1
+2025-07-12 07:05:52,022 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:52] "POST /api/settings/deactivate HTTP/1.1" 200 -
+2025-07-12 07:05:57,910 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:57] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-12 07:05:58,011 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:58] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:05:58,022 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:58] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:05:58,028 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:05:58] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:06:01,260 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:01] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:06:01,284 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:01] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:06:06,071 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:06] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:06:06,076 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:06:06,081 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:06] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:06:06,083 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:06:06,092 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:06:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:24,648 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:24] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:08:24,650 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:24] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:24,666 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:24] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:24,691 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:24] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:08:24,700 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:24] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:39,042 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:39] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:08:39,045 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:39,051 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:08:39,085 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:39] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:08:39,096 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:08:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:09:44,149 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:09:44] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:09:44,162 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:09:44] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:09:44,180 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:09:44] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:09:44,182 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:09:44] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:09:44,210 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:09:44] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:15:37,903 - routes.ai.training_routes - INFO - Training exercises request from user: hello
+2025-07-12 07:15:37,905 - routes.ai.training_routes - INFO - Training request data for user hello: answers_count=0
+2025-07-12 07:15:37,905 - routes.ai.training_routes - INFO - User hello has no answers, checking cached exercises
+2025-07-12 07:15:37,906 - routes.ai.training_routes - INFO - Generating new training exercises for user hello
+2025-07-12 07:15:37,907 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_training_exercises for user hello
+2025-07-12 07:15:37,907 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user hello, limit=20
+2025-07-12 07:15:37,908 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user hello
+2025-07-12 07:15:37,908 - routes.ai.helpers.exercise_helpers - INFO - Detected new user hello, generating two unique blocks with different contexts
+2025-07-12 07:15:37,908 - routes.ai.helpers.exercise_helpers - INFO - Generating blocks for new user hello
+2025-07-12 07:15:37,908 - routes.ai.helpers.exercise_helpers - INFO - Generating first block for new user hello
+2025-07-12 07:15:37,912 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user hello, limit=20
+2025-07-12 07:15:37,913 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user hello
+2025-07-12 07:15:37,914 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 0 recent questions for user hello
+2025-07-12 07:15:37,914 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:15:37,914 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:15:37,915 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:15:37,915 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:15:37,915 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:15:37,915 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=0
+2025-07-12 07:15:37,916 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:15:37,921 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:15:39,614 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:15:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:15:42,071 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:15:42,076 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:15:42,077 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1153 characters
+2025-07-12 07:15:42,077 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:15:42,078 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:15:42,080 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user hello
+2025-07-12 07:15:42,081 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user hello
+2025-07-12 07:15:42,082 - routes.ai.helpers.exercise_helpers - INFO - Generated first block for new user hello with 3 exercises
+2025-07-12 07:15:42,082 - routes.ai.helpers.exercise_helpers - INFO - Extracted 3 questions from first block for new user hello
+2025-07-12 07:15:42,084 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user hello with 3 new questions, limit=20
+2025-07-12 07:15:42,084 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user hello, limit=20
+2025-07-12 07:15:42,088 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user hello
+2025-07-12 07:15:42,089 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user hello: 3 total questions
+2025-07-12 07:15:42,098 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user hello
+2025-07-12 07:15:42,098 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user hello
+2025-07-12 07:15:42,100 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for hello after after updating exercise history: {
+  "username": "hello",
+  "exercises": null,
+  "next_exercises": null,
+  "exercises_updated_at": null,
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"She is a teacher.\", \"____ bist du? (Where are you?)\", \"Ich ____ einen Bruder. (I have a brother.)\"]"
+}
+2025-07-12 07:15:42,207 - routes.ai.helpers.exercise_helpers - INFO - Generating second block for new user hello with different context
+2025-07-12 07:15:42,207 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block with variation for new user hello with 3 exclude questions
+2025-07-12 07:15:42,212 - routes.ai.helpers.exercise_helpers - INFO - Using 3 exclude questions as recent questions for variation
+2025-07-12 07:15:42,212 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:15:42,212 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:15:42,213 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:15:42,213 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:15:42,213 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:15:42,213 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:15:42,214 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:15:42,216 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:15:45,889 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:15:45,892 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:15:45,892 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 994 characters
+2025-07-12 07:15:45,893 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:15:45,893 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:15:45,894 - routes.ai.helpers.exercise_helpers - INFO - Generated 3 exercises in variation block for new user hello
+2025-07-12 07:15:45,894 - routes.ai.helpers.exercise_helpers - INFO - Successfully created AI block with variation for new user hello: 3 exercises
+2025-07-12 07:15:45,894 - routes.ai.helpers.exercise_helpers - INFO - Generated second block for new user hello with 3 exercises
+2025-07-12 07:15:45,895 - routes.ai.helpers.exercise_helpers - INFO - After filtering duplicates for new user hello: 3 exercises remain
+2025-07-12 07:15:45,895 - routes.ai.helpers.exercise_helpers - INFO - Final second block for new user hello: 3 exercises
+2025-07-12 07:15:45,895 - routes.ai.helpers.exercise_helpers - INFO - Storing exercise blocks for new user hello
+2025-07-12 07:15:45,902 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for hello after after storing both blocks: {
+  "username": "hello",
+  "exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"She is a teacher.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"____ bist du? (Where are you?)\", \"explanation\": \"No explanation.\", \"options\": [\"Wo\", \"Was\", \"Wie\", \"Wann\"]}, {\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich ____ einen Bruder. (I have a brother.)\", \"explanation\": \"No explanation.\", \"options\": [\"bin\", \"habe\", \"ist\", \"hat\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you encounter any difficulties?\", \"vocabHelp\": [{\"word\": \"habe\", \"meaning\": \"have\"}, {\"word\": \"ist\", \"meaning\": \"is\"}, {\"word\": \"Wo\", \"meaning\": \"Where\"}, {\"word\": \"Lehrerin\", \"meaning\": \"teacher (female)\"}, {\"word\": \"Bruder\", \"meaning\": \"brother\"}]}",
+  "next_exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"____ habe einen Hund. (I have a dog.)\", \"explanation\": \"No explanation.\", \"options\": [\"Ich\", \"Du\", \"Er\", \"Sie\"]}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"____ sind wir? (Where are we?)\", \"explanation\": \"No explanation.\", \"options\": [\"Wo\", \"Wer\", \"Was\", \"Wann\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"He is a doctor.\", \"explanation\": \"No explanation.\"}], \"feedbackPrompt\": \"How did you find these exercises? Did you learn any new words?\", \"vocabHelp\": [{\"word\": \"Hund\", \"meaning\": \"dog\"}, {\"word\": \"Arzt\", \"meaning\": \"doctor\"}, {\"word\": \"Wo\", \"meaning\": \"where\"}]}",
+  "exercises_updated_at": "2025-07-12T07:15:45.896289",
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"She is a teacher.\", \"____ bist du? (Where are you?)\", \"Ich ____ einen Bruder. (I have a brother.)\"]"
+}
+2025-07-12 07:15:45,902 - routes.ai.helpers.exercise_helpers - INFO - Successfully completed generate_training_exercises for new user hello
+2025-07-12 07:15:45,903 - routes.ai.training_routes - INFO - Returning new training exercises for user hello
+2025-07-12 07:15:45,904 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:15:45] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:15:45,941 - routes.ai.training_routes - INFO - Training exercises request from user: hello
+2025-07-12 07:15:45,941 - routes.ai.training_routes - INFO - Training request data for user hello: answers_count=0
+2025-07-12 07:15:45,941 - routes.ai.training_routes - INFO - User hello has no answers, checking cached exercises
+2025-07-12 07:15:45,943 - routes.ai.training_routes - INFO - Found cached exercises for user hello
+2025-07-12 07:15:45,943 - routes.ai.training_routes - INFO - Returning cached exercises for user hello
+2025-07-12 07:15:45,944 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:15:45] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:16:25,543 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:25] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:16:25,553 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:25] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:16:25,565 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:25] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:16:29,276 - app - INFO - User hello requesting account deactivation
+2025-07-12 07:16:29,281 - app - INFO - Deleted 1 records from ai_user_data for user hello
+2025-07-12 07:16:29,282 - app - INFO - Deleted 0 records from vocab_log for user hello
+2025-07-12 07:16:29,282 - app - INFO - Deleted 3 records from topic_memory for user hello
+2025-07-12 07:16:29,283 - app - INFO - Deleted 0 records from results for user hello
+2025-07-12 07:16:29,283 - app - INFO - Deleted 0 records from exercise_submissions for user hello
+2025-07-12 07:16:29,283 - app - INFO - Deleted 0 records from lesson_progress for user hello
+2025-07-12 07:16:29,285 - app - INFO - Deleted 1 records from users for user hello
+2025-07-12 07:16:29,290 - app - INFO - Destroyed all sessions for user hello
+2025-07-12 07:16:29,290 - app - INFO - Account deactivation completed for user hello. Deleted: AI data=1, vocab=0, topic_memory=3, results=0, exercise_submissions=0, lesson_progress=0, user=1
+2025-07-12 07:16:29,291 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:29] "POST /api/settings/deactivate HTTP/1.1" 200 -
+2025-07-12 07:16:35,491 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:35] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-12 07:16:35,592 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:35] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:16:35,600 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:35] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:16:35,619 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:35] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:16:39,167 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:39] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:16:39,271 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:16:39] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:19:01,118 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 07:19:01,118 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 07:19:01,119 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 07:19:02,491 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 07:19:02,495 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 07:19:07,425 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:07] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:19:07,426 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:07] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:19:07,449 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:07] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:19:07,456 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:07] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:19:07,473 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:07] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:19:10,588 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:10] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:19:10,599 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:10] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:19:10,605 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:10] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:19:14,586 - app - INFO - User hello requesting account deactivation
+2025-07-12 07:19:14,589 - app - INFO - Deleted 0 records from ai_user_data for user hello
+2025-07-12 07:19:14,590 - app - INFO - Deleted 0 records from vocab_log for user hello
+2025-07-12 07:19:14,592 - app - INFO - Deleted 3 records from topic_memory for user hello
+2025-07-12 07:19:14,592 - app - INFO - Deleted 0 records from results for user hello
+2025-07-12 07:19:14,593 - app - INFO - Deleted 0 records from exercise_submissions for user hello
+2025-07-12 07:19:14,593 - app - INFO - Deleted 0 records from lesson_progress for user hello
+2025-07-12 07:19:14,594 - app - INFO - Deleted 1 records from users for user hello
+2025-07-12 07:19:14,602 - app - INFO - Destroyed all sessions for user hello
+2025-07-12 07:19:14,602 - app - INFO - Account deactivation completed for user hello. Deleted: AI data=0, vocab=0, topic_memory=3, results=0, exercise_submissions=0, lesson_progress=0, user=1
+2025-07-12 07:19:14,603 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:14] "POST /api/settings/deactivate HTTP/1.1" 200 -
+2025-07-12 07:19:24,580 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:24] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-12 07:19:24,678 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:24] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:19:24,690 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:24] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:19:24,699 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:24] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:19:27,570 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:27] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:19:27,600 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:19:27] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:21:34,307 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:21:34] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:21:34,321 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:21:34] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:21:34,327 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:21:34] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:21:43,923 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:21:43] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:22:07,295 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:07] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:22:07,306 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:07] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:22:07,313 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:07] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:22:07,335 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:07] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:22:17,653 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:22:17,655 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:22:17,655 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:22:17,657 - routes.ai.training_routes - INFO - Generating new training exercises for user dh
+2025-07-12 07:22:17,658 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_training_exercises for user dh
+2025-07-12 07:22:17,659 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:17,660 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user dh
+2025-07-12 07:22:17,660 - routes.ai.helpers.exercise_helpers - INFO - Detected new user dh, generating two unique blocks with different contexts
+2025-07-12 07:22:17,660 - routes.ai.helpers.exercise_helpers - INFO - Generating blocks for new user dh
+2025-07-12 07:22:17,661 - routes.ai.helpers.exercise_helpers - INFO - Generating first block for new user dh
+2025-07-12 07:22:17,667 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:17,669 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user dh
+2025-07-12 07:22:17,669 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 0 recent questions for user dh
+2025-07-12 07:22:17,670 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:22:17,670 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:22:17,670 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:22:17,671 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:22:17,671 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:22:17,672 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=0
+2025-07-12 07:22:17,672 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:22:17,698 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:21,834 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:21,839 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:22:21,840 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1055 characters
+2025-07-12 07:22:21,841 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:22:21,841 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:22:21,842 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:22:21,843 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:22:21,843 - routes.ai.helpers.exercise_helpers - INFO - Generated first block for new user dh with 3 exercises
+2025-07-12 07:22:21,844 - routes.ai.helpers.exercise_helpers - INFO - Extracted 3 questions from first block for new user dh
+2025-07-12 07:22:21,844 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions, limit=20
+2025-07-12 07:22:21,844 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:21,847 - routes.ai.helpers.exercise_helpers - INFO - No exercise history found for user dh
+2025-07-12 07:22:21,847 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user dh: 3 total questions
+2025-07-12 07:22:21,855 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user dh
+2025-07-12 07:22:21,855 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user dh
+2025-07-12 07:22:21,857 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for dh after after updating exercise history: {
+  "username": "dh",
+  "exercises": null,
+  "next_exercises": null,
+  "exercises_updated_at": null,
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"Ich ___ einen Bruder. (I have a brother.)\", \"She is a teacher.\", \"___ du m\\u00fcde? (Are you tired?)\"]"
+}
+2025-07-12 07:22:21,963 - routes.ai.helpers.exercise_helpers - INFO - Generating second block for new user dh with different context
+2025-07-12 07:22:21,965 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block with variation for new user dh with 3 exclude questions
+2025-07-12 07:22:21,972 - routes.ai.helpers.exercise_helpers - INFO - Using 3 exclude questions as recent questions for variation
+2025-07-12 07:22:21,973 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:22:21,973 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:22:21,974 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:22:21,974 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:22:21,974 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:22:21,975 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:22:21,975 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:22:21,977 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:25,522 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:25,523 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:22:25,523 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1033 characters
+2025-07-12 07:22:25,523 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:22:25,524 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:22:25,524 - routes.ai.helpers.exercise_helpers - INFO - Generated 3 exercises in variation block for new user dh
+2025-07-12 07:22:25,524 - routes.ai.helpers.exercise_helpers - INFO - Successfully created AI block with variation for new user dh: 3 exercises
+2025-07-12 07:22:25,524 - routes.ai.helpers.exercise_helpers - INFO - Generated second block for new user dh with 3 exercises
+2025-07-12 07:22:25,525 - routes.ai.helpers.exercise_helpers - INFO - After filtering duplicates for new user dh: 3 exercises remain
+2025-07-12 07:22:25,525 - routes.ai.helpers.exercise_helpers - INFO - Final second block for new user dh: 3 exercises
+2025-07-12 07:22:25,525 - routes.ai.helpers.exercise_helpers - INFO - Storing exercise blocks for new user dh
+2025-07-12 07:22:25,530 - routes.ai.helpers.exercise_helpers - INFO - [DB] ai_user_data for dh after after storing both blocks: {
+  "username": "dh",
+  "exercises": "{\"lessonId\": \"dynamic-ai-lesson\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"Ich ___ einen Bruder. (I have a brother.)\", \"explanation\": \"No explanation.\", \"options\": [\"bin\", \"hast\", \"hat\", \"habe\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"She is a teacher.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"___ du m\\u00fcde? (Are you tired?)\", \"explanation\": \"No explanation.\", \"options\": [\"Bist\", \"Hast\", \"Hat\", \"Hab\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you notice any patterns or have any questions?\", \"vocabHelp\": [{\"word\": \"habe\", \"meaning\": \"have (I)\"}, {\"word\": \"Lehrerin\", \"meaning\": \"teacher (female)\"}, {\"word\": \"m\\u00fcde\", \"meaning\": \"tired\"}]}",
+  "next_exercises": "{\"lessonId\": \"dynamic-ai-lesson-2\", \"title\": \"AI Generated Exercises\", \"instructions\": \"Fill in the blanks or translate the sentences.\", \"level\": \"A2\", \"exercises\": [{\"id\": \"ex1\", \"type\": \"gap-fill\", \"question\": \"___ habe einen Hund. (I have a dog.)\", \"explanation\": \"No explanation.\", \"options\": [\"Ich\", \"Du\", \"Er\", \"Sie\"]}, {\"id\": \"ex2\", \"type\": \"translation\", \"question\": \"He is a doctor.\", \"explanation\": \"No explanation.\"}, {\"id\": \"ex3\", \"type\": \"gap-fill\", \"question\": \"___ bist gl\\u00fccklich. (You are happy.)\", \"explanation\": \"No explanation.\", \"options\": [\"Ich\", \"Du\", \"Er\", \"Wir\"]}], \"feedbackPrompt\": \"How did you find these exercises? Did you notice any patterns in the grammar or vocabulary?\", \"vocabHelp\": [{\"word\": \"Hund\", \"meaning\": \"dog\"}, {\"word\": \"Arzt\", \"meaning\": \"doctor\"}, {\"word\": \"gl\\u00fccklich\", \"meaning\": \"happy\"}]}",
+  "exercises_updated_at": "2025-07-12T07:22:25.525456",
+  "weakness_lesson": null,
+  "weakness_topic": null,
+  "lesson_updated_at": null,
+  "exercise_history": "[\"Ich ___ einen Bruder. (I have a brother.)\", \"She is a teacher.\", \"___ du m\\u00fcde? (Are you tired?)\"]"
+}
+2025-07-12 07:22:25,530 - routes.ai.helpers.exercise_helpers - INFO - Successfully completed generate_training_exercises for new user dh
+2025-07-12 07:22:25,530 - routes.ai.training_routes - INFO - Returning new training exercises for user dh
+2025-07-12 07:22:25,531 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:25] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:22:25,542 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:22:25,542 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:22:25,543 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:22:25,544 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:22:25,544 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:22:25,544 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:25] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:22:39,119 - routes.ai.exercise_routes - INFO - Exercise submission request for user dh, block training
+2025-07-12 07:22:39,121 - routes.ai.exercise_routes - INFO - Received submission data for user dh: {
+  "answers": {
+    "ex1": "habe",
+    "ex2": "Sie ist ein Lehrer.",
+    "ex3": "Hast"
+  },
+  "exercise_block": {
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "exercises": [
+      {
+        "explanation": "No explanation.",
+        "id": "ex1",
+        "options": [
+          "bin",
+          "hast",
+          "hat",
+          "habe"
+        ],
+        "question": "Ich ___ einen Bruder. (I have a brother.)",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex2",
+        "question": "She is a teacher.",
+        "type": "translation"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex3",
+        "options": [
+          "Bist",
+          "Hast",
+          "Hat",
+          "Hab"
+        ],
+        "question": "___ du m\u00fcde? (Are you tired?)",
+        "type": "gap-fill"
+      }
+    ],
+    "vocabHelp": [
+      {
+        "meaning": "have (I)",
+        "word": "habe"
+      },
+      {
+        "meaning": "teacher (female)",
+        "word": "Lehrerin"
+      },
+      {
+        "meaning": "tired",
+        "word": "m\u00fcde"
+      }
+    ]
+  }
+}
+2025-07-12 07:22:39,122 - routes.ai.exercise_routes - INFO - Parsed submission for user dh: 3 exercises, 3 answers
+2025-07-12 07:22:39,122 - routes.ai.exercise_routes - INFO - Evaluating exercises for user dh
+2025-07-12 07:22:39,123 - routes.ai.helpers.ai_evaluation_helpers - INFO - Starting AI evaluation with mode=strict, exercises_count=3, answers_count=3
+2025-07-12 07:22:39,124 - routes.ai.helpers.ai_evaluation_helpers - INFO - Formatted 3 exercises for evaluation
+2025-07-12 07:22:39,124 - routes.ai.helpers.ai_evaluation_helpers - INFO - Generated evaluation instructions for mode=strict
+2025-07-12 07:22:39,124 - routes.ai.helpers.ai_evaluation_helpers - INFO - Sending evaluation request to Mistral API
+2025-07-12 07:22:39,128 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:42,227 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:42,229 - routes.ai.helpers.ai_evaluation_helpers - INFO - Mistral evaluation response successful
+2025-07-12 07:22:42,230 - routes.ai.helpers.ai_evaluation_helpers - INFO - Raw evaluation response length: 257 characters
+2025-07-12 07:22:42,230 - routes.ai.helpers.ai_evaluation_helpers - INFO - Successfully parsed evaluation JSON
+2025-07-12 07:22:42,231 - routes.ai.exercise_routes - INFO - Evaluation successful for user dh
+2025-07-12 07:22:42,232 - routes.ai.exercise_routes - INFO - Summary for user dh: {'correct': 1, 'total': 3, 'mistakes': [{'question': 'She is a teacher.', 'your_answer': 'Sie ist ein Lehrer.', 'correct_answer': 'Sie ist eine Lehrerin.'}, {'question': '___ du müde? (Are you tired?)', 'your_answer': 'Hast', 'correct_answer': 'Bist'}]}
+2025-07-12 07:22:42,232 - routes.ai.exercise_routes - INFO - Fetching vocab and topic data for user dh
+2025-07-12 07:22:42,237 - routes.ai.exercise_routes - INFO - Got 0 vocab and 3 topic entries for user dh
+2025-07-12 07:22:42,239 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:44,553 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:44,555 - routes.ai.exercise_routes - INFO - Generated feedback prompt for user dh
+2025-07-12 07:22:44,556 - routes.ai.exercise_routes - INFO - Saving exercise submission for user dh
+2025-07-12 07:22:44,556 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:22:44.556777",
+  "event_type": "submission_start",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "answers_count": 3,
+    "exercises_count": 3,
+    "answers": {
+      "ex1": "habe",
+      "ex2": "Sie ist ein Lehrer.",
+      "ex3": "Hast"
+    }
+  }
+}
+2025-07-12 07:22:44,557 - routes.ai.helpers.exercise_helpers - INFO - Processing AI answers for user dh, block training
+2025-07-12 07:22:44,558 - routes.ai.exercise_routes - INFO - Running prefetch next exercises for user dh
+2025-07-12 07:22:44,558 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing AI answers for user dh, block training, answers_count=3
+2025-07-12 07:22:44,560 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing 3 exercises for user dh
+2025-07-12 07:22:44,560 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex1 for user dh: correct=1, quality=5
+2025-07-12 07:22:44,562 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:22:44,562 - routes.ai.exercise_routes - INFO - Exercise submission completed for user dh, passed=False
+2025-07-12 07:22:44,563 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:44,564 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:44,567 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:44,572 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:22:44,572 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user dh
+2025-07-12 07:22:44,572 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:22:44,580 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:44,584 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:22:44,585 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user dh
+2025-07-12 07:22:44,585 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=0, topic_count=3
+2025-07-12 07:22:44,585 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:22:44,586 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:22:44,586 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:22:44,586 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:22:44,587 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:22:44,587 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:22:44,588 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:45,076 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:45,081 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:45,270 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:45,273 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex1: ['indefinite article', 'nominative case', 'present tense', 'verb conjugation']
+2025-07-12 07:22:45,273 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=indefinite article, skill=gap-fill
+2025-07-12 07:22:45,290 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=nominative case, skill=gap-fill
+2025-07-12 07:22:45,299 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=present tense, skill=gap-fill
+2025-07-12 07:22:45,305 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb conjugation, skill=gap-fill
+2025-07-12 07:22:45,321 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex1 for user dh
+2025-07-12 07:22:45,323 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:46,173 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:46,177 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:46,816 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:46,821 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:46,955 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:46,967 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:47,992 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:47,994 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:22:47,995 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1024 characters
+2025-07-12 07:22:47,995 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:22:47,996 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:22:47,997 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:22:47,998 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:22:47,998 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:22:47,998 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:22:47,999 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:22:47,999 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:22:47,999 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:22:48,004 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:22:48,223 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:48,227 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:48,509 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:48,523 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:48,820 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:48,823 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:49,797 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:49,830 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:50,383 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:50,388 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:50] "POST /api/ai-exercise/training/submit HTTP/1.1" 200 -
+2025-07-12 07:22:50,417 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:22:50,418 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=3
+2025-07-12 07:22:50,418 - routes.ai.training_routes - INFO - User dh has answers, checking cached next exercises
+2025-07-12 07:22:50,420 - routes.ai.training_routes - INFO - Found cached next exercises for user dh
+2025-07-12 07:22:50,420 - routes.ai.training_routes - INFO - Successfully loaded cached next exercises for user dh
+2025-07-12 07:22:50,420 - routes.ai.training_routes - INFO - Storing exercises for user dh
+2025-07-12 07:22:50,424 - routes.ai.training_routes - INFO - Running prefetch next exercises for user dh
+2025-07-12 07:22:50,425 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:22:50,425 - routes.ai.training_routes - INFO - Returning preloaded training exercises for user dh
+2025-07-12 07:22:50,426 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:50,427 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:22:50] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:22:50,429 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:22:50,430 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user dh
+2025-07-12 07:22:50,431 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:22:50,434 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:22:50,459 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:22:50,459 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user dh
+2025-07-12 07:22:50,460 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=3, topic_count=3
+2025-07-12 07:22:50,460 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:22:50,460 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 3 entries
+2025-07-12 07:22:50,460 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:22:50,461 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:22:50,461 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:22:50,474 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:22:50,476 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:22:53,886 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:22:53,890 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:22:53,892 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1009 characters
+2025-07-12 07:22:53,892 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:22:53,892 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:22:53,893 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:22:53,893 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:22:53,893 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:22:53,893 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:22:53,894 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:22:53,894 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:22:53,894 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:22:53,897 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:23:01,514 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:01,554 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:02,674 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:02,686 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex2 for user dh: correct=0, quality=2
+2025-07-12 07:23:02,687 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:03,521 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:03,523 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex2: ['indefinite article', 'noun', 'personal pronoun', 'verb']
+2025-07-12 07:23:03,523 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=indefinite article, skill=translation
+2025-07-12 07:23:03,532 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=noun, skill=translation
+2025-07-12 07:23:03,537 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=personal pronoun, skill=translation
+2025-07-12 07:23:03,542 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb, skill=translation
+2025-07-12 07:23:03,546 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex2 for user dh
+2025-07-12 07:23:03,548 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:06,483 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:06,506 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:07,198 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:23:07,198 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:23:07,199 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:23:07,200 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:23:07,200 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:23:07,201 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:23:07] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:23:07,771 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:07,781 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:13,427 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:13,452 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:15,484 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:15,517 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:16,922 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:16,936 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:18,105 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:18,112 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex3 for user dh: correct=0, quality=2
+2025-07-12 07:23:18,112 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:18,714 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:18,717 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex3: ['adjective', 'personal pronoun', 'question formation', 'subject-verb inversion', 'verb conjugation']
+2025-07-12 07:23:18,718 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=adjective, skill=gap-fill
+2025-07-12 07:23:18,730 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=personal pronoun, skill=gap-fill
+2025-07-12 07:23:18,735 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=question formation, skill=gap-fill
+2025-07-12 07:23:18,741 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=subject-verb inversion, skill=gap-fill
+2025-07-12 07:23:18,746 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb conjugation, skill=gap-fill
+2025-07-12 07:23:18,750 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 6 words from exercise ex3 for user dh
+2025-07-12 07:23:18,754 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:20,098 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:20,122 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:21,237 - routes.ai.exercise_routes - INFO - Exercise submission request for user dh, block training
+2025-07-12 07:23:21,238 - routes.ai.exercise_routes - INFO - Received submission data for user dh: {
+  "answers": {
+    "ex2": "Sie ist ein Lehrer.",
+    "ex3": "Hast",
+    "ex1": "hat"
+  },
+  "exercise_block": {
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "exercises": [
+      {
+        "explanation": "No explanation.",
+        "id": "ex1",
+        "options": [
+          "bin",
+          "hast",
+          "hat",
+          "habe"
+        ],
+        "question": "Ich ___ einen Bruder. (I have a brother.)",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex2",
+        "question": "She is a teacher.",
+        "type": "translation"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex3",
+        "options": [
+          "Bist",
+          "Hast",
+          "Hat",
+          "Hab"
+        ],
+        "question": "___ du m\u00fcde? (Are you tired?)",
+        "type": "gap-fill"
+      }
+    ],
+    "vocabHelp": [
+      {
+        "meaning": "have (I)",
+        "word": "habe"
+      },
+      {
+        "meaning": "teacher (female)",
+        "word": "Lehrerin"
+      },
+      {
+        "meaning": "tired",
+        "word": "m\u00fcde"
+      }
+    ]
+  }
+}
+2025-07-12 07:23:21,238 - routes.ai.exercise_routes - INFO - Parsed submission for user dh: 3 exercises, 3 answers
+2025-07-12 07:23:21,238 - routes.ai.exercise_routes - INFO - Evaluating exercises for user dh
+2025-07-12 07:23:21,239 - routes.ai.helpers.ai_evaluation_helpers - INFO - Starting AI evaluation with mode=strict, exercises_count=3, answers_count=3
+2025-07-12 07:23:21,239 - routes.ai.helpers.ai_evaluation_helpers - INFO - Formatted 3 exercises for evaluation
+2025-07-12 07:23:21,239 - routes.ai.helpers.ai_evaluation_helpers - INFO - Generated evaluation instructions for mode=strict
+2025-07-12 07:23:21,239 - routes.ai.helpers.ai_evaluation_helpers - INFO - Sending evaluation request to Mistral API
+2025-07-12 07:23:21,245 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:22,408 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:22,410 - routes.ai.helpers.ai_evaluation_helpers - INFO - Mistral evaluation response successful
+2025-07-12 07:23:22,410 - routes.ai.helpers.ai_evaluation_helpers - INFO - Raw evaluation response length: 257 characters
+2025-07-12 07:23:22,410 - routes.ai.helpers.ai_evaluation_helpers - INFO - Successfully parsed evaluation JSON
+2025-07-12 07:23:22,412 - routes.ai.exercise_routes - INFO - Evaluation successful for user dh
+2025-07-12 07:23:22,412 - routes.ai.exercise_routes - INFO - Summary for user dh: {'correct': 0, 'total': 3, 'mistakes': [{'question': 'Ich ___ einen Bruder. (I have a brother.)', 'your_answer': 'hat', 'correct_answer': 'habe'}, {'question': 'She is a teacher.', 'your_answer': 'Sie ist ein Lehrer.', 'correct_answer': 'Sie ist eine Lehrerin.'}, {'question': '___ du müde? (Are you tired?)', 'your_answer': 'Hast', 'correct_answer': 'Bist'}]}
+2025-07-12 07:23:22,413 - routes.ai.exercise_routes - INFO - Fetching vocab and topic data for user dh
+2025-07-12 07:23:22,416 - routes.ai.exercise_routes - INFO - Got 9 vocab and 12 topic entries for user dh
+2025-07-12 07:23:22,417 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:25,110 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:25,112 - routes.ai.exercise_routes - INFO - Generated feedback prompt for user dh
+2025-07-12 07:23:25,113 - routes.ai.exercise_routes - INFO - Saving exercise submission for user dh
+2025-07-12 07:23:25,114 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:23:25.113970",
+  "event_type": "submission_start",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "answers_count": 3,
+    "exercises_count": 3,
+    "answers": {
+      "ex2": "Sie ist ein Lehrer.",
+      "ex3": "Hast",
+      "ex1": "hat"
+    }
+  }
+}
+2025-07-12 07:23:25,115 - routes.ai.helpers.exercise_helpers - INFO - Processing AI answers for user dh, block training
+2025-07-12 07:23:25,116 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing AI answers for user dh, block training, answers_count=3
+2025-07-12 07:23:25,116 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing 3 exercises for user dh
+2025-07-12 07:23:25,117 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex2 for user dh: correct=0, quality=2
+2025-07-12 07:23:25,116 - routes.ai.exercise_routes - INFO - Running prefetch next exercises for user dh
+2025-07-12 07:23:25,120 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:25,120 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:23:25,120 - routes.ai.exercise_routes - INFO - Exercise submission completed for user dh, passed=False
+2025-07-12 07:23:25,122 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:25,122 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:25,127 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:23:25,127 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user dh
+2025-07-12 07:23:25,127 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:23:25,135 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:25,137 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:23:25,137 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user dh
+2025-07-12 07:23:25,137 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=9, topic_count=12
+2025-07-12 07:23:25,137 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:23:25,137 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:23:25,138 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:23:25,138 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:23:25,138 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:23:25,139 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:23:25,139 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:25,730 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:25,734 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:27,060 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:27,061 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:27,570 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:27,571 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:28,690 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:28,694 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:23:28,695 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1039 characters
+2025-07-12 07:23:28,695 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:23:28,696 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:23:28,696 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:23:28,697 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:23:28,697 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:23:28,697 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:23:28,697 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:23:28,697 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:23:28,698 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:23:28,703 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:23:28,996 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:29,001 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:29,645 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:29,647 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:29,647 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:29,650 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex2: ['indefinite article', 'noun', 'personal pronoun', 'sentence structure', 'verb']
+2025-07-12 07:23:29,652 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=indefinite article, skill=translation
+2025-07-12 07:23:29,652 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:29,673 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=noun, skill=translation
+2025-07-12 07:23:29,685 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:29,691 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=personal pronoun, skill=translation
+2025-07-12 07:23:29,699 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=sentence structure, skill=translation
+2025-07-12 07:23:29,704 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb, skill=translation
+2025-07-12 07:23:29,708 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex2 for user dh
+2025-07-12 07:23:29,709 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:31,037 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:31,049 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:23:31] "POST /api/ai-exercise/training/submit HTTP/1.1" 200 -
+2025-07-12 07:23:31,084 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:23:31,085 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=3
+2025-07-12 07:23:31,085 - routes.ai.training_routes - INFO - User dh has answers, checking cached next exercises
+2025-07-12 07:23:31,091 - routes.ai.training_routes - INFO - Found cached next exercises for user dh
+2025-07-12 07:23:31,091 - routes.ai.training_routes - INFO - Successfully loaded cached next exercises for user dh
+2025-07-12 07:23:31,091 - routes.ai.training_routes - INFO - Storing exercises for user dh
+2025-07-12 07:23:31,116 - routes.ai.training_routes - INFO - Running prefetch next exercises for user dh
+2025-07-12 07:23:31,122 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:23:31,122 - routes.ai.training_routes - INFO - Returning preloaded training exercises for user dh
+2025-07-12 07:23:31,137 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:31,140 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:23:31] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:23:31,145 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:23:31,145 - routes.ai.helpers.exercise_helpers - INFO - Got 3 recent questions for user dh
+2025-07-12 07:23:31,145 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:23:31,151 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:31,152 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:23:31,152 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 3 recent questions for user dh
+2025-07-12 07:23:31,152 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=10, topic_count=13
+2025-07-12 07:23:31,153 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:23:31,153 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:23:31,153 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:23:31,153 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:23:31,153 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=3
+2025-07-12 07:23:31,157 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:23:31,158 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:31,990 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:32,005 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:32,786 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:32,797 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:33,131 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:33,159 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:23:33,160 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:23:33,160 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:23:33,165 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:33,171 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:23:33,172 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:23:33,173 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:23:33] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:23:34,512 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:34,533 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:34,925 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:34,936 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:35,798 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:35,817 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:35,979 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:35,983 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:23:35,984 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1022 characters
+2025-07-12 07:23:35,984 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:23:35,985 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:23:35,986 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:23:35,987 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:23:35,988 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:23:35,988 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:23:35,989 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:23:35,989 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:23:35,990 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:23:35,987 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:35,994 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:23:36,004 - routes.ai.helpers.ai_evaluation_helpers - INFO - Completed processing AI answers for user dh: 13 results
+2025-07-12 07:23:36,004 - routes.ai.helpers.exercise_helpers - INFO - Checking auto level up for user dh
+2025-07-12 07:23:36,008 - routes.ai.helpers.exercise_helpers - INFO - Inserting exercise submission for user dh, block training
+2025-07-12 07:23:36,010 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions
+2025-07-12 07:23:36,010 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions, limit=20
+2025-07-12 07:23:36,010 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:36,012 - routes.ai.helpers.exercise_helpers - INFO - Found 3 recent questions for user dh
+2025-07-12 07:23:36,012 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user dh: 6 total questions
+2025-07-12 07:23:36,016 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user dh
+2025-07-12 07:23:36,016 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user dh
+2025-07-12 07:23:36,017 - routes.ai.helpers.exercise_helpers - INFO - Prefetching next exercises for user dh
+2025-07-12 07:23:36,017 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:23:36,017 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:36,018 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:23:36.017956",
+  "event_type": "submission_complete",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "new_questions_count": 3
+  }
+}
+2025-07-12 07:23:36,019 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user dh
+2025-07-12 07:23:36,019 - routes.ai.helpers.exercise_helpers - INFO - Got 6 recent questions for user dh
+2025-07-12 07:23:36,020 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:23:36,022 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:36,023 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user dh
+2025-07-12 07:23:36,023 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 6 recent questions for user dh
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=12, topic_count=13
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=6
+2025-07-12 07:23:36,024 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:23:36,028 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:36,839 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:36,848 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex3 for user dh: correct=0, quality=2
+2025-07-12 07:23:36,849 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:37,509 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:37,513 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex3: ['adjective', 'personal pronoun', 'question formation', 'subject-verb inversion', 'verb conjugation']
+2025-07-12 07:23:37,513 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=adjective, skill=gap-fill
+2025-07-12 07:23:37,527 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=personal pronoun, skill=gap-fill
+2025-07-12 07:23:37,535 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=question formation, skill=gap-fill
+2025-07-12 07:23:37,541 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=subject-verb inversion, skill=gap-fill
+2025-07-12 07:23:37,547 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb conjugation, skill=gap-fill
+2025-07-12 07:23:37,552 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 6 words from exercise ex3 for user dh
+2025-07-12 07:23:37,559 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:39,351 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:39,382 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:39,908 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:39,911 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:23:39,911 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1051 characters
+2025-07-12 07:23:39,911 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:23:39,913 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:23:39,916 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:23:39,916 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:23:39,916 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:23:39,917 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:23:39,918 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:23:39,919 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:23:39,919 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:23:39,928 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:23:40,941 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:41,047 - routes.ai.helpers.ai_evaluation_helpers - INFO - Exercise ex1 for user dh: correct=0, quality=2
+2025-07-12 07:23:41,055 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:41,882 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:41,885 - routes.ai.helpers.ai_evaluation_helpers - INFO - Detected features for exercise ex1: ['indefinite article', 'nominative case', 'present tense', 'verb conjugation']
+2025-07-12 07:23:41,885 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=indefinite article, skill=gap-fill
+2025-07-12 07:23:41,891 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=nominative case, skill=gap-fill
+2025-07-12 07:23:41,900 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=present tense, skill=gap-fill
+2025-07-12 07:23:41,907 - routes.ai.helpers.ai_evaluation_helpers - INFO - Updating topic memory for user dh, feature=verb conjugation, skill=gap-fill
+2025-07-12 07:23:41,914 - routes.ai.helpers.ai_evaluation_helpers - INFO - Extracted 7 words from exercise ex1 for user dh
+2025-07-12 07:23:41,919 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:43,453 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:43,477 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:44,982 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:44,994 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:46,417 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:46,432 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:51,665 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:51,692 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:52,780 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:52,796 - routes.ai.helpers.ai_evaluation_helpers - INFO - Completed processing AI answers for user dh: 14 results
+2025-07-12 07:23:52,797 - routes.ai.helpers.exercise_helpers - INFO - Checking auto level up for user dh
+2025-07-12 07:23:52,802 - routes.ai.helpers.exercise_helpers - INFO - Inserting exercise submission for user dh, block training
+2025-07-12 07:23:52,810 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions
+2025-07-12 07:23:52,810 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions, limit=20
+2025-07-12 07:23:52,810 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:52,812 - routes.ai.helpers.exercise_helpers - INFO - Found 6 recent questions for user dh
+2025-07-12 07:23:52,812 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user dh: 9 total questions
+2025-07-12 07:23:52,815 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user dh
+2025-07-12 07:23:52,815 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user dh
+2025-07-12 07:23:52,815 - routes.ai.helpers.exercise_helpers - INFO - Prefetching next exercises for user dh
+2025-07-12 07:23:52,815 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:23:52,816 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:52,816 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:23:52.816091",
+  "event_type": "submission_complete",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "new_questions_count": 3
+  }
+}
+2025-07-12 07:23:52,817 - routes.ai.helpers.exercise_helpers - INFO - Found 9 recent questions for user dh
+2025-07-12 07:23:52,817 - routes.ai.helpers.exercise_helpers - INFO - Got 9 recent questions for user dh
+2025-07-12 07:23:52,817 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:23:52,820 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:23:52,821 - routes.ai.helpers.exercise_helpers - INFO - Found 9 recent questions for user dh
+2025-07-12 07:23:52,821 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 9 recent questions for user dh
+2025-07-12 07:23:52,821 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=12, topic_count=16
+2025-07-12 07:23:52,821 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:23:52,821 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:23:52,822 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:23:52,822 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:23:52,822 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=9
+2025-07-12 07:23:52,822 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:23:52,823 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:23:56,962 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:23:56,965 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:23:56,965 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1101 characters
+2025-07-12 07:23:56,965 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:23:56,966 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:23:56,967 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:23:56,967 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:23:56,969 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:23:56,969 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:23:56,970 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:23:56,970 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:23:56,971 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:23:56,975 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:24:58,286 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:24:58,287 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:24:58,288 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:24:58,289 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:24:58,289 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:24:58,291 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:24:58] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:24:58,332 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:24:58,332 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:24:58,332 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:24:58,333 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:24:58,333 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:24:58,334 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:24:58] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:25:10,847 - routes.ai.exercise_routes - INFO - Exercise submission request for user dh, block training
+2025-07-12 07:25:10,850 - routes.ai.exercise_routes - INFO - Received submission data for user dh: {
+  "answers": {},
+  "exercise_block": {
+    "instructions": "Fill in the blanks or translate the sentences.",
+    "exercises": [
+      {
+        "explanation": "No explanation.",
+        "id": "ex3",
+        "options": [
+          "Ich",
+          "Du",
+          "Wir",
+          "Sie"
+        ],
+        "question": "___ bist gl\u00fccklich. (You are happy.)",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex1",
+        "options": [
+          "Ich",
+          "Du",
+          "Er",
+          "Sie"
+        ],
+        "question": "___ habe einen Hund. (I have a dog.)",
+        "type": "gap-fill"
+      },
+      {
+        "explanation": "No explanation.",
+        "id": "ex2",
+        "question": "He is a doctor.",
+        "type": "translation"
+      }
+    ],
+    "vocabHelp": [
+      {
+        "meaning": "dog",
+        "word": "Hund"
+      },
+      {
+        "meaning": "doctor",
+        "word": "Arzt"
+      },
+      {
+        "meaning": "happy",
+        "word": "gl\u00fccklich"
+      }
+    ]
+  }
+}
+2025-07-12 07:25:10,856 - routes.ai.exercise_routes - INFO - Parsed submission for user dh: 3 exercises, 0 answers
+2025-07-12 07:25:10,857 - routes.ai.exercise_routes - INFO - Evaluating exercises for user dh
+2025-07-12 07:25:10,857 - routes.ai.helpers.ai_evaluation_helpers - INFO - Starting AI evaluation with mode=strict, exercises_count=3, answers_count=0
+2025-07-12 07:25:10,858 - routes.ai.helpers.ai_evaluation_helpers - INFO - Formatted 3 exercises for evaluation
+2025-07-12 07:25:10,858 - routes.ai.helpers.ai_evaluation_helpers - INFO - Generated evaluation instructions for mode=strict
+2025-07-12 07:25:10,858 - routes.ai.helpers.ai_evaluation_helpers - INFO - Sending evaluation request to Mistral API
+2025-07-12 07:25:10,860 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:12,225 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:12,229 - routes.ai.helpers.ai_evaluation_helpers - INFO - Mistral evaluation response successful
+2025-07-12 07:25:12,229 - routes.ai.helpers.ai_evaluation_helpers - INFO - Raw evaluation response length: 375 characters
+2025-07-12 07:25:12,229 - routes.ai.helpers.ai_evaluation_helpers - INFO - Successfully parsed evaluation JSON
+2025-07-12 07:25:12,231 - routes.ai.exercise_routes - INFO - Evaluation successful for user dh
+2025-07-12 07:25:12,231 - routes.ai.exercise_routes - INFO - Summary for user dh: {'correct': 0, 'total': 3, 'mistakes': [{'question': '___ bist glücklich. (You are happy.)', 'your_answer': '', 'correct_answer': 'Du'}, {'question': '___ habe einen Hund. (I have a dog.)', 'your_answer': '', 'correct_answer': 'Ich'}, {'question': 'He is a doctor.', 'your_answer': '', 'correct_answer': 'Er ist ein Arzt.'}]}
+2025-07-12 07:25:12,231 - routes.ai.exercise_routes - INFO - Fetching vocab and topic data for user dh
+2025-07-12 07:25:12,236 - routes.ai.exercise_routes - INFO - Got 12 vocab and 16 topic entries for user dh
+2025-07-12 07:25:12,236 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:14,096 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:14,099 - routes.ai.exercise_routes - INFO - Generated feedback prompt for user dh
+2025-07-12 07:25:14,100 - routes.ai.exercise_routes - INFO - Saving exercise submission for user dh
+2025-07-12 07:25:14,100 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:25:14.100743",
+  "event_type": "submission_start",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "answers_count": 0,
+    "exercises_count": 3,
+    "answers": {}
+  }
+}
+2025-07-12 07:25:14,105 - routes.ai.helpers.exercise_helpers - INFO - Processing AI answers for user dh, block training
+2025-07-12 07:25:14,106 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing AI answers for user dh, block training, answers_count=0
+2025-07-12 07:25:14,106 - routes.ai.helpers.ai_evaluation_helpers - INFO - Processing 3 exercises for user dh
+2025-07-12 07:25:14,106 - routes.ai.helpers.ai_evaluation_helpers - INFO - Completed processing AI answers for user dh: 0 results
+2025-07-12 07:25:14,107 - routes.ai.helpers.exercise_helpers - INFO - Checking auto level up for user dh
+2025-07-12 07:25:14,105 - routes.ai.exercise_routes - INFO - Running prefetch next exercises for user dh
+2025-07-12 07:25:14,109 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:25:14,109 - routes.ai.exercise_routes - INFO - Exercise submission completed for user dh, passed=False
+2025-07-12 07:25:14,110 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:14,111 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:25:14,113 - routes.ai.helpers.exercise_helpers - INFO - Found 9 recent questions for user dh
+2025-07-12 07:25:14,113 - routes.ai.helpers.exercise_helpers - INFO - Inserting exercise submission for user dh, block training
+2025-07-12 07:25:14,113 - routes.ai.helpers.exercise_helpers - INFO - Got 9 recent questions for user dh
+2025-07-12 07:25:14,114 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:25:14,123 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions
+2025-07-12 07:25:14,124 - routes.ai.helpers.exercise_helpers - INFO - Updating exercise history for user dh with 3 new questions, limit=20
+2025-07-12 07:25:14,124 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:25:14,126 - routes.ai.helpers.exercise_helpers - INFO - Found 9 recent questions for user dh
+2025-07-12 07:25:14,127 - routes.ai.helpers.exercise_helpers - INFO - Updated history for user dh: 12 total questions
+2025-07-12 07:25:14,127 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:25:14,129 - routes.ai.helpers.exercise_helpers - INFO - Found 9 recent questions for user dh
+2025-07-12 07:25:14,129 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 9 recent questions for user dh
+2025-07-12 07:25:14,129 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=12, topic_count=16
+2025-07-12 07:25:14,130 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:25:14,130 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:25:14,130 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:25:14,131 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:25:14,131 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=9
+2025-07-12 07:25:14,131 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:25:14,132 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:14,134 - routes.ai.helpers.exercise_helpers - INFO - Database commit successful for user dh
+2025-07-12 07:25:14,134 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored updated exercise history for user dh
+2025-07-12 07:25:14,134 - routes.ai.helpers.exercise_helpers - INFO - Prefetching next exercises for user dh
+2025-07-12 07:25:14,134 - routes.ai.helpers.exercise_helpers - INFO - Starting prefetch_next_exercises for user dh
+2025-07-12 07:25:14,137 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:25:14,137 - routes.ai.helpers.exercise_helpers - INFO - EXERCISE_EVENT: {
+  "timestamp": "2025-07-12T07:25:14.137279",
+  "event_type": "submission_complete",
+  "username": "dh",
+  "details": {
+    "block_id": "training",
+    "new_questions_count": 3
+  }
+}
+2025-07-12 07:25:14,140 - routes.ai.helpers.exercise_helpers - INFO - Found 12 recent questions for user dh
+2025-07-12 07:25:14,140 - routes.ai.helpers.exercise_helpers - INFO - Got 12 recent questions for user dh
+2025-07-12 07:25:14,140 - routes.ai.helpers.exercise_helpers - INFO - Creating AI block for user dh
+2025-07-12 07:25:14,145 - routes.ai.helpers.exercise_helpers - INFO - Getting recent exercise questions for user dh, limit=20
+2025-07-12 07:25:14,148 - routes.ai.helpers.exercise_helpers - INFO - Found 12 recent questions for user dh
+2025-07-12 07:25:14,148 - routes.ai.helpers.helpers - INFO - _create_ai_block: Got 12 recent questions for user dh
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Starting generate_new_exercises with level=2, vocab_count=12, topic_count=16
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Processing topic memory for exercise generation
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Filtered topic memory: 5 entries
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Processing vocabulary for exercise generation
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Filtered vocabulary: 0 entries
+2025-07-12 07:25:14,149 - routes.ai.helpers.exercise_helpers - INFO - Preparing prompt with level=2, cefr_level=A2, recent_questions_count=12
+2025-07-12 07:25:14,150 - routes.ai.helpers.exercise_helpers - INFO - Sending request to Mistral API
+2025-07-12 07:25:14,151 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:14,599 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:14,600 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:15,606 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:15,607 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:17,910 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:17,912 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:25:17,915 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1081 characters
+2025-07-12 07:25:17,915 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:25:17,915 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:25:17,916 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:25:17,916 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:25:17,916 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:25:17,916 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:25:17,916 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:25:17,917 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:25:17,917 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:25:17,920 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:25:18,176 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:18,178 - routes.ai.helpers.exercise_helpers - INFO - Mistral API response successful
+2025-07-12 07:25:18,179 - routes.ai.helpers.exercise_helpers - INFO - Raw API response length: 1079 characters
+2025-07-12 07:25:18,179 - routes.ai.helpers.exercise_helpers - INFO - Successfully parsed JSON response
+2025-07-12 07:25:18,180 - routes.ai.helpers.exercise_helpers - INFO - Exercise generation successful, returning 3 exercises
+2025-07-12 07:25:18,180 - routes.ai.helpers.helpers - INFO - _create_ai_block: Generated 3 exercises for user dh
+2025-07-12 07:25:18,181 - routes.ai.helpers.helpers - INFO - _create_ai_block: Final block has 3 exercises for user dh
+2025-07-12 07:25:18,181 - routes.ai.helpers.exercise_helpers - INFO - AI block created for user dh: True
+2025-07-12 07:25:18,181 - routes.ai.helpers.exercise_helpers - INFO - Filtering exercises for user dh to avoid duplicates
+2025-07-12 07:25:18,181 - routes.ai.helpers.exercise_helpers - INFO - After filtering: 3 exercises for user dh
+2025-07-12 07:25:18,181 - routes.ai.helpers.exercise_helpers - INFO - Final next block for user dh: 3 exercises
+2025-07-12 07:25:18,181 - routes.ai.helpers.exercise_helpers - INFO - Storing next exercises for user dh
+2025-07-12 07:25:18,184 - routes.ai.helpers.exercise_helpers - INFO - Successfully stored next exercises for user dh
+2025-07-12 07:25:23,418 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:23,425 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:26,159 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:26,163 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:26,619 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:26,624 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-12 07:25:27,730 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-12 07:25:27,735 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:27] "POST /api/ai-exercise/training/submit HTTP/1.1" 200 -
+2025-07-12 07:25:27,760 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:25:27,760 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:25:27,760 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:25:27,762 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:25:27,763 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:25:27,763 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:27] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:25:30,713 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:25:30,715 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:25:30,716 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:25:30,723 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:25:30,724 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:25:30,734 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:30] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:25:32,422 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:32] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:25:32,431 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:32] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:25:32,438 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:32] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:25:32,449 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:32] "GET /api/profile HTTP/1.1" 200 -
+2025-07-12 07:25:48,164 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:48] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:25:48,178 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:48] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:25:48,186 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:48] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:25:48,209 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:25:48] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:26:03,994 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:26:03,995 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:26:03,995 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:26:03,996 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:26:03,997 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:26:03,998 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:03] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:26:04,011 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:26:04,012 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:26:04,012 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:26:04,015 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:26:04,015 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:26:04,016 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:04] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:26:26,784 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:26] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:26:26,795 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:26] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:26:26,807 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:26] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:26:26,824 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:26] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:26:51,848 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:26:51,849 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:26:51,849 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:26:51,851 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:26:51,852 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:26:51,853 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:51] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:26:51,877 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:26:51,877 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:26:51,878 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:26:51,880 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:26:51,880 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:26:51,881 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:26:51] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:29:05,093 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:05] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:29:05,486 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:05] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:29:06,059 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:06] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:29:06,647 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:29:14,121 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:29:14,122 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:29:14,122 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:29:14,125 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:29:14,126 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:29:14,127 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:14] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:29:14,682 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:29:14,682 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:29:14,682 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:29:14,683 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:29:14,683 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:29:14,684 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:14] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:29:38,572 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:38] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:29:40,158 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:40] "GET /api/vocab-train HTTP/1.1" 200 -
+2025-07-12 07:29:42,609 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:29:42] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:31:00,290 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:00] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:31:01,073 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:01] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:31:01,205 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:01] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:31:01,909 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:01] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:31:24,618 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:31:24,621 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:31:24,623 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:31:24,625 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:31:24,625 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:31:24,626 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:24] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:31:25,160 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:31:25,160 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:31:25,160 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:31:25,162 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:31:25,162 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:31:25,162 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:31:25] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:32:12,297 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:32:12,299 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:32:12,300 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:32:12,310 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:12] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:32:12,316 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:32:12,317 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:32:12,320 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:12] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:32:12,777 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:12] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:32:47,290 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:47] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:32:47,713 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:47] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:32:48,279 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:48] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:32:48,987 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:48] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:32:52,213 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:32:52,213 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:32:52,213 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:32:52,215 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:32:52,216 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:32:52,216 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:52] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:32:52,801 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:32:52,801 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:32:52,802 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:32:52,804 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:32:52,804 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:32:52,805 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:32:52] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:33:47,147 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:33:47,150 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:47] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:33:47,151 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:33:47,153 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:33:47,164 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:33:47,165 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:33:47,172 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:47] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:33:47,610 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:33:47,610 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:33:47,611 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:33:47,615 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:33:47,615 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:33:47,616 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:47] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:33:47,616 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:47] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:33:56,543 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:56] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:33:56,983 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:56] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:33:57,564 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:57] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:33:58,272 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:33:58] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:34:03,177 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:03,178 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:03,179 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:03,182 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:03,182 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:03,185 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:03] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:34:03,729 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:03,729 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:03,730 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:03,733 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:03,733 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:03,734 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:03] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:34:20,001 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:20,003 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:20] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:34:20,003 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:20,005 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:20,010 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:20,011 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:20,011 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:20] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:34:20,544 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:20,544 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:20,544 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:20,546 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:20] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:34:20,551 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:20,551 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:20,551 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:20] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:34:29,261 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:29] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:34:29,686 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:29] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:34:30,265 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:30] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:34:31,059 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:31] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:34:38,026 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:38,027 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:38,027 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:38,029 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:38,029 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:38,032 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:38] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:34:38,589 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:34:38,590 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:34:38,590 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:34:38,594 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:34:38,594 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:34:38,595 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:34:38] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:36:44,910 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:36:44,911 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:36:44,913 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:36:44,913 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:36:44,913 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:36:44,915 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:36:44,920 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:36:44,921 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:36:44,921 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:36:44,921 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:36:44,926 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:36:44] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:36:44,930 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:36:44] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:37:11,215 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:37:11,216 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:37:11,217 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:37:11,217 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:11] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:37:11,221 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:37:11,221 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:37:11,221 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:11] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:37:11,732 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:11] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:37:11,744 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:37:11,745 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:37:11,746 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:37:11,748 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:37:11,748 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:37:11,749 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:11] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:37:20,286 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:20] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:37:20,712 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:20] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:37:21,282 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:21] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:37:21,940 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:21] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:37:32,873 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:37:32,873 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:37:32,873 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:37:32,877 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:37:32,877 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:37:32,879 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:32] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:37:33,397 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:37:33,397 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:37:33,398 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:37:33,400 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:37:33,400 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:37:33,401 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:37:33] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:38:56,470 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:38:56,473 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:38:56,476 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:38:56,482 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:38:56,482 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:38:56,485 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:38:56] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:38:56,572 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:38:56,572 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:38:56,572 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:38:56,573 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:38:56,573 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:38:56,574 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 07:38:56] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:39:37,849 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-12 07:39:37,849 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-12 07:39:37,850 - werkzeug - INFO -  * Restarting with stat
+2025-07-12 07:39:39,398 - werkzeug - WARNING -  * Debugger is active!
+2025-07-12 07:39:39,400 - werkzeug - INFO -  * Debugger PIN: 426-268-969
+2025-07-12 07:39:46,302 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:39:46,304 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:46] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:39:46,304 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:39:46,307 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:39:46,309 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:39:46,309 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:39:46,310 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:46] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:39:46,858 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:46] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:39:46,862 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:39:46,863 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:39:46,863 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:39:46,865 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:39:46,865 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:39:46,866 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:46] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:39:54,952 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:54] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:39:55,360 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:55] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:39:55,932 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:55] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:39:56,562 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:39:56] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:40:02,216 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:40:02,217 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:40:02,217 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:40:02,221 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:40:02,222 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:40:02,226 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:40:02] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:40:02,756 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:40:02,757 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:40:02,757 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:40:02,759 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:40:02,759 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:40:02,760 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:40:02] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:41:15,178 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:41:15,179 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:41:15,180 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:41:15,184 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:41:15,184 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:41:15,187 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:15] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:41:17,227 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:41:17,231 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:41:17,232 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:41:17,236 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:41:17,237 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:41:17,239 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:17] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:41:17,576 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:41:17,576 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:41:17,576 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:41:17,578 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:41:17,580 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:41:17,581 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:17] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:41:46,101 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:46] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:41:46,553 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:46] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:41:47,122 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:47] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:41:47,752 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:47] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:41:47,775 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:41:47,776 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:41:47,776 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:41:47,779 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:41:47,780 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:41:47,780 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:47] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:41:48,362 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:41:48,362 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:41:48,362 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:41:48,364 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:41:48,364 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:41:48,365 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:41:48] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:44:31,189 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:31] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:44:31,864 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:31] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:44:31,931 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:31] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:44:32,661 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:32] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:44:36,313 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:44:36,314 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:44:36,314 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:44:36,321 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:44:36,321 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:44:36,322 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:36] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:44:36,902 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:44:36,902 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:44:36,903 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:44:36,905 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:44:36,905 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:44:36,906 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:44:36] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:46:13,480 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:13] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:46:13,480 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:46:13,482 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:46:13,482 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:46:13,493 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:46:13,493 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:46:13,495 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:13] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:46:14,047 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:14] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:46:38,368 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:38] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:46:38,368 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:46:38,370 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:46:38,371 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:46:38,375 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:46:38,375 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:46:38,376 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:38] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:46:38,884 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:38] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:46:38,895 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:46:38,895 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:46:38,895 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:46:38,901 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:46:38,902 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:46:38,902 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:38] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:46:51,868 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:51] "POST /api/login HTTP/1.1" 200 -
+2025-07-12 07:46:52,278 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:52] "GET /api/me HTTP/1.1" 200 -
+2025-07-12 07:46:52,854 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-12 07:46:53,476 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:53] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-12 07:46:57,152 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:46:57,153 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:46:57,153 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:46:57,154 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:46:57,155 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:46:57,156 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:57] "POST /api/training-exercises HTTP/1.1" 200 -
+2025-07-12 07:46:57,723 - routes.ai.training_routes - INFO - Training exercises request from user: dh
+2025-07-12 07:46:57,724 - routes.ai.training_routes - INFO - Training request data for user dh: answers_count=0
+2025-07-12 07:46:57,724 - routes.ai.training_routes - INFO - User dh has no answers, checking cached exercises
+2025-07-12 07:46:57,727 - routes.ai.training_routes - INFO - Found cached exercises for user dh
+2025-07-12 07:46:57,727 - routes.ai.training_routes - INFO - Returning cached exercises for user dh
+2025-07-12 07:46:57,728 - werkzeug - INFO - 172.18.0.2 - - [12/Jul/2025 07:46:57] "POST /api/training-exercises HTTP/1.1" 200 -

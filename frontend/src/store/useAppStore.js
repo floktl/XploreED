@@ -12,6 +12,15 @@ const useAppStore = create((set) => ({
     currentLevel: 0,
     isLoading: true,
     showOnboarding: initialOnboarding,
+    onboardingExerciseCount: 0,
+    setOnboardingExerciseCount: (count) => set({ onboardingExerciseCount: count }),
+    incrementOnboardingExerciseCount: () => set((state) => ({ onboardingExerciseCount: state.onboardingExerciseCount + 1 })),
+    onboardingStage: "main", // 'main', 'vocab', 'topic', 'done'
+    setOnboardingStage: (stage) => set({ onboardingStage: stage }),
+    onboardingStepIndex: 0,
+    setOnboardingStepIndex: (idx) => set({ onboardingStepIndex: idx }),
+    prevOnboardingStage: "main",
+    setPrevOnboardingStage: (stage) => set({ prevOnboardingStage: stage }),
 
     setUsername: (username) => set({ username }),
     setIsAdmin: (isAdmin) => set({ isAdmin }),

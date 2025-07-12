@@ -53,6 +53,7 @@ export default function Menu() {
 
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+            <div className="onboarding-root" />
             <Container>
 
                 <Card className="shadow-xl">

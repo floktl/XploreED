@@ -26,6 +26,8 @@ export default function NameInput() {
     const setUsername = useAppStore((state) => state.setUsername);
     const setIsAdmin = useAppStore((state) => state.setIsAdmin);
     const darkMode = useAppStore((state) => state.darkMode);
+    const setShowOnboarding = useAppStore((state) => state.setShowOnboarding);
+    const setOnboardingStage = useAppStore((state) => state.setOnboardingStage);
 
     const handleSubmit = async () => {
         const trimmed = name.trim();
@@ -54,6 +56,8 @@ export default function NameInput() {
                 setUsername(me.username);
                 setIsAdmin(role.is_admin);
                 localStorage.setItem("username", me.username);
+                setShowOnboarding(true);
+                setOnboardingStage("main");
                 setShowChoice(true);
                 return;
             } else {
@@ -67,6 +71,8 @@ export default function NameInput() {
             setUsername(me.username);
             setIsAdmin(role.is_admin);
             localStorage.setItem("username", me.username);
+            setShowOnboarding(true);
+            setOnboardingStage("main");
             navigate("/menu");
         } catch (err) {
             console.error("[CLIENT] Auth failed:", err);

@@ -13,6 +13,7 @@ import {
 } from "../api";
 import diffWords from "../utils/diffWords";
 import ReportExerciseModal from "./ReportExerciseModal";
+import useAppStore from "../store/useAppStore";
 
 export default function AIExerciseBlock({
     data,
@@ -43,6 +44,17 @@ export default function AIExerciseBlock({
     const [replacingId, setReplacingId] = useState(null);
 
     const answersRef = useRef(answers);
+
+    const incrementOnboardingExerciseCount = useAppStore((s) => s.incrementOnboardingExerciseCount);
+    const onboardingExerciseCount = useAppStore((s) => s.onboardingExerciseCount);
+    const setOnboardingStage = useAppStore((s) => s.setOnboardingStage);
+
+    useEffect(() => {
+        console.log('[AIExerciseBlock] MOUNTED, mode:', mode);
+    }, []);
+    useEffect(() => {
+        console.log('[AIExerciseBlock] loadingInit:', loadingInit);
+    }, [loadingInit]);
 
     // keep answersRef synchronized with state in case other updates setAnswers
     useEffect(() => {
@@ -225,6 +237,10 @@ export default function AIExerciseBlock({
         } finally {
             setSubmitting(false);
             fetchNext({ answers: currentAnswers });
+            incrementOnboardingExerciseCount();
+            if (onboardingExerciseCount + 1 === 2) {
+                setOnboardingStage("vocab");
+            }
         }
     };
 
@@ -336,24 +352,29 @@ export default function AIExerciseBlock({
     };
 
     if (mode !== "student") {
+        console.log('[AIExerciseBlock] Not student mode, rendering Card');
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
 
     if (loadingInit) {
+        console.log('[AIExerciseBlock] loadingInit true, rendering loading Card');
         return <Card className="text-center py-4">Loading personalized AI exercises...</Card>;
     }
 
     if (current === "API_ERROR_500") {
+        console.log('[AIExerciseBlock] API_ERROR_500, rendering error Card');
         return <Card className="bg-red-100 text-red-800">🚨 500: Mistral API Error.</Card>;
     }
 
     if (!Array.isArray(exercises)) {
+        console.log('[AIExerciseBlock] exercises not array, rendering error Card');
         return <Card className="bg-red-100 text-red-800">Failed to load AI exercise.</Card>;
     }
 
+    console.log('[AIExerciseBlock] RENDERING OUTERMOST DIV WITH data-tour=ai-feedback');
     return (
-        <>
-            <Card data-tour="ai-feedback" className="space-y-4">
+        <div data-tour="ai-feedback">
+            <Card className="space-y-4">
 
                 {stage === 1 && current.title && (
                     <h3 className="text-xl font-semibold">{current.title}</h3>
@@ -500,6 +521,6 @@ export default function AIExerciseBlock({
                     onClose={() => setReportExerciseId(null)}
                 />
             )}
-        </>
+        </div>
     );
 }
