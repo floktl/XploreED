@@ -6,6 +6,8 @@ import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import Footer from "./UI/Footer";
 import { getAiFeedbackItem, generateAiFeedback } from "../api";
+import AskAiButton from "./AskAiButton";
+import AskAiModal from "./AskAiModal";
 
 export default function AIFeedbackView() {
     const { feedbackId } = useParams();
@@ -15,6 +17,7 @@ export default function AIFeedbackView() {
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
     const isAdmin = useAppStore((state) => state.isAdmin);
+    const [aiModalOpen, setAiModalOpen] = useState(false);
 
     useEffect(() => {
         if (isAdmin) {
@@ -183,6 +186,18 @@ export default function AIFeedbackView() {
             <Footer>
                 <Button variant="link" type="button" onClick={() => navigate("/ai-feedback")}>⬅ Back to AI Feedback</Button>
             </Footer>
+            <AskAiButton onClick={() => setAiModalOpen(true)} />
+            {aiModalOpen && (
+                <AskAiModal
+                    onClose={() => setAiModalOpen(false)}
+                    pageContext={{
+                        page: "ai-feedback",
+                        feedback: feedback?.feedbackPrompt,
+                        exercises: feedback?.exercises,
+                        answers,
+                    }}
+                />
+            )}
         </div>
     );
 }

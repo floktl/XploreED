@@ -7,7 +7,7 @@ from utils.ai.ai_api import send_prompt
 
 def stream_ai_answer(context: str) -> Response:
     """Stream a long answer from Mistral as Server-Sent Events, using context-aware prompt."""
-
+    print("[stream_ai_answer] Full AI prompt:\n" + context, flush=True)
     def generate():
         try:
             with send_prompt(
@@ -32,11 +32,12 @@ def stream_ai_answer(context: str) -> Response:
                             .get("content")
                         )
                         if chunk:
-                            buffer += chunk
-                            if buffer.endswith((".", "!", "?")):
+                            # Stream word by word
+                            words = chunk.split()
+                            for word in words:
+                                buffer += (" " if buffer else "") + word
                                 structured = {"type": "paragraph", "text": buffer.strip()}
                                 yield f"data: {json.dumps(structured, ensure_ascii=False)}\n\n"
-                                buffer = ""
                     except Exception:
                         continue
                 if buffer.strip():
