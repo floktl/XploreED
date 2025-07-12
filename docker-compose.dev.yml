@@ -21,7 +21,7 @@ services:
       sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
       pip install -r requirements.txt &&
       python src/app/migration_script.py &&
-      FLASK_ENV=development PYTHONPATH=src python src/app.py"
+      FLASK_ENV=development PYTHONPATH=src python src/main.py"
 
 
     ports:
