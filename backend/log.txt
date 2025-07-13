@@ -8913,3 +8913,174 @@
 2025-07-12 18:12:35,171 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
 2025-07-12 18:12:35,173 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
 2025-07-12 18:12:35,197 - werkzeug - INFO - 172.18.0.3 - - [12/Jul/2025 18:12:35] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:04:36,681 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-13 07:04:36,681 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 07:04:36,682 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 07:04:37,513 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 07:04:37,514 - werkzeug - INFO -  * Debugger PIN: 605-772-736
+2025-07-13 07:10:53,078 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:10:53] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-13 07:10:53,080 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:10:53] "[31m[1mPOST /api/training-exercises HTTP/1.1[0m" 401 -
+2025-07-13 07:10:57,528 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:10:57] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-07-13 07:11:02,163 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:02] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-13 07:11:02,245 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:02] "POST /api/login HTTP/1.1" 200 -
+2025-07-13 07:11:02,252 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:02] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 07:11:02,258 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:02] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:11:04,974 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:04] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:11:05,001 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:11:05] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:21:11,390 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:21:11] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-13 07:21:55,719 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:21:55] "POST /api/login HTTP/1.1" 200 -
+2025-07-13 07:21:55,746 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:21:55] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 07:21:55,771 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:21:55] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:21:55,896 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:21:55] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:23:55,155 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:23:55] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-13 07:24:00,210 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:24:00] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-13 07:24:02,923 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:24:02] "GET /api/mistral-chat-history HTTP/1.1" 200 -
+2025-07-13 07:24:07,477 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:24:07] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:30:04,567 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:04] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-13 07:30:18,049 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "POST /api/admin/login HTTP/1.1" 200 -
+2025-07-13 07:30:18,183 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:30:18,228 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:30:18,311 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:30:18,330 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:30:18,338 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:30:18,339 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:30:18] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:31:52,609 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:31:52,690 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:31:52,755 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:31:52,758 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:31:52,759 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:31:52,777 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:31:52] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:32:17,914 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:17] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-13 07:32:17,918 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:17] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:32:17,910 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:17] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:32:18,399 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:18] "[31m[1mGET /api/me HTTP/1.1[0m" 401 -
+2025-07-13 07:32:18,400 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:18] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:32:18,403 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:18] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:32:18,758 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:18] "[31m[1mGET /api/user-level HTTP/1.1[0m" 401 -
+2025-07-13 07:32:22,153 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:22,155 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 07:32:22,170 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:22,187 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:22,190 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:32:22,195 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:32:22,195 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:32:22,197 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:22] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:32:29,654 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:29] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:29,665 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:29] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:32:34,198 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:34,219 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:32:34,230 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:34,281 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:32:34,282 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:32:34,283 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:32:34,284 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:34] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:32:41,756 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:41] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:41,762 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:41] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:32:45,416 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:45,524 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 07:32:45,529 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:45,664 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:32:45,667 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:32:45,678 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:32:45,682 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:45] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:32:47,471 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:47] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:32:47,479 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:32:47] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:34:04,369 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:04] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:34:04,407 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:04] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:34:26,109 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:26] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:34:26,118 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:26] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:34:45,056 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:45] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:34:45,065 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:45] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:34:52,786 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:34:52,826 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:34:52] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:35:00,080 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:00,107 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:00,342 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:35:00,359 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:35:00,361 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:35:00,396 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:00] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:35:02,007 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:02] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:02,012 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:02] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:35:36,223 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:36] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:36,235 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:36] "GET /api/admin/users HTTP/1.1" 200 -
+2025-07-13 07:35:52,435 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:52,464 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:35:52,505 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:35:52,508 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:35:52,515 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:35:52,522 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:35:52] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:36:22,984 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:22] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:36:23,763 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:23] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:36:23,900 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:23] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:36:23,902 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:23] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:36:23,907 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:23] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:36:23,915 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:23] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:36:46,082 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:36:46,096 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:36:46,121 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:36:46,125 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:36:46,126 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:36:46,130 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:36:46] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:41:43,543 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:41:43,547 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 07:41:43,566 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:41:43,582 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 07:41:43,592 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/admin/lesson-content HTTP/1.1" 200 -
+2025-07-13 07:41:43,594 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/admin/results HTTP/1.1" 200 -
+2025-07-13 07:41:43,597 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/support/feedback HTTP/1.1" 200 -
+2025-07-13 07:41:43,625 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 07:41:43] "GET /api/admin/lesson-progress-summary HTTP/1.1" 200 -
+2025-07-13 07:46:08,578 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.10:5050
+2025-07-13 07:46:08,580 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 07:46:08,582 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 07:46:17,229 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 07:46:17,253 - werkzeug - INFO -  * Debugger PIN: 790-600-333
+2025-07-13 07:50:26,954 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.10:5050
+2025-07-13 07:50:26,955 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 07:50:26,962 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 07:50:36,151 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 07:50:36,170 - werkzeug - INFO -  * Debugger PIN: 790-600-333
+2025-07-13 07:59:31,021 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.10:5050
+2025-07-13 07:59:31,022 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 07:59:31,027 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 07:59:38,202 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 07:59:38,212 - werkzeug - INFO -  * Debugger PIN: 790-600-333
+2025-07-13 08:03:36,033 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.10:5050
+2025-07-13 08:03:36,035 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 08:03:36,037 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 08:03:42,797 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 08:03:42,809 - werkzeug - INFO -  * Debugger PIN: 790-600-333
+2025-07-13 08:08:01,385 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5050
+ * Running on http://172.18.0.4:5050
+2025-07-13 08:08:01,387 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-13 08:08:01,397 - werkzeug - INFO -  * Restarting with stat
+2025-07-13 08:08:10,181 - werkzeug - WARNING -  * Debugger is active!
+2025-07-13 08:08:10,218 - werkzeug - INFO -  * Debugger PIN: 605-772-736
+2025-07-13 08:08:10,464 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:10] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-07-13 08:08:22,769 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:22] "POST /api/login HTTP/1.1" 200 -
+2025-07-13 08:08:23,278 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:23] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 08:08:23,530 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:23] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 08:08:23,700 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:23] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-13 08:08:36,550 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:36] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+2025-07-13 08:08:42,572 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:42] "[35m[1mPOST /api/signup HTTP/1.1[0m" 201 -
+2025-07-13 08:08:43,628 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:43] "POST /api/login HTTP/1.1" 200 -
+2025-07-13 08:08:43,730 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:43] "GET /api/me HTTP/1.1" 200 -
+2025-07-13 08:08:43,753 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:43] "GET /api/role HTTP/1.1" 200 -
+2025-07-13 08:08:49,009 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:49] "POST /api/user-level HTTP/1.1" 200 -
+2025-07-13 08:08:49,091 - werkzeug - INFO - 172.18.0.2 - - [13/Jul/2025 08:08:49] "GET /api/user-level HTTP/1.1" 200 -

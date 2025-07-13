@@ -19,6 +19,25 @@ import { TaskBlock } from "../extensions/TaskBlock";
 import Modal from "./UI/Modal";
 import BlockContentRenderer from "./BlockContentRenderer";
 import { getAiLesson } from "../api";
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Highlighter,
+  Code2,
+  List,
+  ListOrdered,
+  Heading2,
+  Image as ImageIcon,
+  Table as TableIcon,
+  CheckSquare,
+  Bot,
+  Eye,
+  BookOpen,
+  Pencil,
+  XCircle,
+  Search
+} from "lucide-react";
 
 export default function LessonEditor({ content, onContentChange, aiEnabled = false, onToggleAI }) {
     const [showPreview, setShowPreview] = useState(false);
@@ -81,7 +100,7 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
                             content: [
                                 {
                                     type: "text",
-                                    text: "✍️ Describe your task here...",
+                                    text: "Describe your task here...",
                                 },
                             ],
                         },
@@ -111,8 +130,6 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
         }
     };
 
-
-
     return (
         <div>
             {/* Toolbar */}
@@ -120,52 +137,60 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     active={editor.isActive("bold")}
+                    title="Bold"
                 >
-                    <strong>B</strong>
+                    <Bold className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleItalic().run()}
                     active={editor.isActive("italic")}
+                    title="Italic"
                 >
-                    <em>I</em>
+                    <Italic className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleUnderline().run()}
                     active={editor.isActive("underline")}
+                    title="Underline"
                 >
-                    <u>U</u>
+                    <UnderlineIcon className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleHighlight().run()}
                     active={editor.isActive("highlight")}
+                    title="Highlight"
                 >
-                    <span className="bg-yellow-200">H</span>
+                    <Highlighter className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                     active={editor.isActive("codeBlock")}
+                    title="Code Block"
                 >
-                    {"</>"}
+                    <Code2 className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
                     active={editor.isActive("bulletList")}
+                    title="Bullet List"
                 >
-                    • List
+                    <List className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => editor.chain().focus().toggleOrderedList().run()}
                     active={editor.isActive("orderedList")}
+                    title="Ordered List"
                 >
-                    1. List
+                    <ListOrdered className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 2 }).run()
                     }
                     active={editor.isActive("heading", { level: 2 })}
+                    title="Heading 2"
                 >
-                    H2
+                    <Heading2 className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() => {
@@ -174,8 +199,9 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
                             editor.chain().focus().setImage({ src: url }).run();
                         }
                     }}
+                    title="Insert Image"
                 >
-                    🖼️ Image
+                    <ImageIcon className="w-5 h-5" />
                 </EditorButton>
                 <EditorButton
                     onClick={() =>
@@ -185,15 +211,23 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
                             .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
                             .run()
                     }
+                    title="Insert Table"
                 >
-                    📊 Table
+                    <TableIcon className="w-5 h-5" />
                 </EditorButton>
-                <EditorButton onClick={insertInteractiveBlock}>✅ Block</EditorButton>
-                <EditorButton onClick={insertAiLesson}>🤖 Add AI Lesson</EditorButton>
-                <EditorButton onClick={onToggleAI}>
-                    {aiEnabled ? "🤖 AI On" : "🤖 AI Off"}
+                <EditorButton onClick={insertInteractiveBlock} title="Insert Task Block">
+                    <CheckSquare className="w-5 h-5" />
                 </EditorButton>
-                <EditorButton onClick={() => setShowPreview(true)}>👁️ Preview</EditorButton>
+                <EditorButton onClick={insertAiLesson} title="Add AI Lesson">
+                    <Bot className="w-5 h-5" />
+                </EditorButton>
+                <EditorButton onClick={onToggleAI} title="Toggle AI">
+                    <Bot className={`w-5 h-5 ${aiEnabled ? "text-green-500" : "text-gray-400"}`} />
+                    <span className="ml-1 text-xs font-semibold">AI {aiEnabled ? "On" : "Off"}</span>
+                </EditorButton>
+                <EditorButton onClick={() => setShowPreview(true)} title="Preview">
+                    <Eye className="w-5 h-5" />
+                </EditorButton>
             </div>
 
             {/* Editor */}
@@ -205,7 +239,10 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
             {/* Preview Modal */}
             {showPreview && (
                 <Modal onClose={() => setShowPreview(false)}>
-                    <h2 className="text-xl font-bold mb-3">🔍 Lesson Preview</h2>
+                    <div className="flex items-center gap-3 mb-4">
+                        <BookOpen className="w-6 h-6 text-blue-500" />
+                        <h2 className="text-xl font-bold">Lesson Preview</h2>
+                    </div>
                     <BlockContentRenderer html={editor.getHTML()} mode="admin-preview" />
                 </Modal>
             )}
@@ -213,13 +250,14 @@ export default function LessonEditor({ content, onContentChange, aiEnabled = fal
     );
 }
 
-function EditorButton({ onClick, children, active }) {
+function EditorButton({ onClick, children, active, title }) {
     return (
         <button
             type="button"
             onMouseDown={(e) => e.preventDefault()} // prevents focus loss in editor
             onClick={onClick}
-            className={`px-2 py-1 rounded border text-sm font-medium ${active
+            title={title}
+            className={`px-2 py-1 rounded border text-sm font-medium flex items-center justify-center ${active
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white"
                 }`}

@@ -6,10 +6,25 @@ import Card from "./UI/Card";
 import Button from "./UI/Button";
 import Modal from "./UI/Modal";
 import Alert from "./UI/Alert";
-import Footer from "./UI/Footer";
+
 import useAppStore from "../store/useAppStore";
 import { fetchUsers, updateUserAccount, deleteUserAccount } from "../api";
 import { signup } from "../api";
+import {
+    Users,
+    Plus,
+    ArrowLeft,
+    Edit,
+    Trash2,
+    Save,
+    X,
+    User,
+    Target,
+    Calendar,
+    Shield,
+    UserPlus,
+    Settings
+} from "lucide-react";
 
 interface User {
     username: string;
@@ -100,87 +115,168 @@ export default function AdminUserManagement() {
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
-                <div className="flex items-center justify-between mb-4">
-                    <Title>👥 Manage Users</Title>
-                    <Button variant="success" size="sm" onClick={() => { setShowCreate(true); setError(""); }}>
-                        +
+                                {/* Header Section */}
+                <div className="mb-6">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Shield className={`w-8 h-8 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                        <Title className="mb-0">User Management</Title>
+                    </div>
+                    <Button
+                        variant="success"
+                        size="auto"
+                        onClick={() => { setShowCreate(true); setError(""); }}
+                        className="gap-2"
+                    >
+                        <UserPlus className="w-4 h-4" />
+                        Add User
                     </Button>
                 </div>
-                <div className="mb-4">
-                    <Link to="/admin-panel" className="text-blue-600 hover:underline">
-                        ← Back to Dashboard
-                    </Link>
-                </div>
+
+
+
+                {/* Alerts */}
                 {error && <Alert type="danger">{error}</Alert>}
                 {skippedCount > 0 && (
                     <Alert type="warning">
                         {skippedCount} user(s) skipped due to missing or invalid username.
                     </Alert>
                 )}
-                <Card fit className="overflow-x-auto">
-                    <div className="hidden sm:block">
-                        <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
-                            <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
-                                <tr>
-                                    <th className="px-4 py-2 text-left">User</th>
-                                    <th className="px-4 py-2 text-left">Skill Level</th>
-                                    <th className="px-4 py-2 text-left">Created</th>
-                                    <th className="px-4 py-2"></th>
-                                </tr>
-                            </thead>
-                            <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-                                {validUsers.length === 0 ? (
+
+                {/* Users Table */}
+                <Card className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Users className={`w-6 h-6 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                        <h2 className="text-xl font-bold">All Users</h2>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <div className="hidden sm:block">
+                            <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+                                <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
                                     <tr>
-                                        <td colSpan={4} className="px-4 py-6 text-center text-gray-400 italic">No user found.</td>
+                                        <th className="px-4 py-3 text-left font-semibold">User</th>
+                                        <th className="px-4 py-3 text-left font-semibold">Skill Level</th>
+                                        <th className="px-4 py-3 text-left font-semibold">Created</th>
+                                        <th className="px-4 py-3 text-left font-semibold">Actions</th>
                                     </tr>
-                                ) : (
-                                    validUsers.map((u) => (
-                                        <tr key={u.username} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
-                                            <td className="px-4 py-2 font-semibold">{u.username}</td>
-                                            <td className="px-4 py-2">{u.skill_level ?? "—"}</td>
-                                            <td className="px-4 py-2">{u.created_at ? new Date(u.created_at).toLocaleString() : "—"}</td>
-                                            <td className="px-4 py-2 flex gap-2">
-                                                <Button size="auto" variant="secondary" onClick={() => setEditUser({ ...u, original: u.username })}>
-                                                    Edit
-                                                </Button>
-                                                <Button size="auto" variant="danger" onClick={() => handleDelete(u.username)}>
-                                                    Delete
-                                                </Button>
+                                </thead>
+                                <tbody className={darkMode ? "bg-gray-800 divide-gray-700" : "bg-white divide-gray-200"}>
+                                    {validUsers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={4} className="px-4 py-8 text-center text-gray-400 italic">
+                                                <User className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                                No users found
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* Mobile layout */}
-                    <div className="sm:hidden flex flex-col gap-4">
-                        {validUsers.length === 0 ? (
-                            <div className="px-4 py-6 text-center text-gray-400 italic">No user found.</div>
-                        ) : (
-                            validUsers.map((u) => (
-                                <div key={u.username} className={`rounded-lg border p-4 flex flex-col gap-2 ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}>
-                                    <div><span className="font-semibold">User:</span> {u.username}</div>
-                                    <div><span className="font-semibold">Skill Level:</span> {u.skill_level ?? "—"}</div>
-                                    <div><span className="font-semibold">Created:</span> {u.created_at ? new Date(u.created_at).toLocaleString() : "—"}</div>
-                                    <div className="flex gap-2 mt-2">
-                                        <Button size="auto" variant="secondary" onClick={() => setEditUser({ ...u, original: u.username })}>
-                                            Edit
-                                        </Button>
-                                        <Button size="auto" variant="danger" onClick={() => handleDelete(u.username)}>
-                                            Delete
-                                        </Button>
-                                    </div>
+                                    ) : (
+                                        validUsers.map((u) => (
+                                            <tr key={u.username} className={`${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"} transition-colors`}>
+                                                <td className="px-4 py-3 font-semibold">{u.username}</td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <Target className="w-4 h-4 text-green-500" />
+                                                        {u.skill_level ?? "—"}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <Calendar className="w-4 h-4 text-gray-400" />
+                                                        {u.created_at ? new Date(u.created_at).toLocaleString() : "—"}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex gap-2">
+                                                        <Button
+                                                            size="auto"
+                                                            variant="secondary"
+                                                            onClick={() => setEditUser({ ...u, original: u.username })}
+                                                            className="gap-2"
+                                                        >
+                                                            <Edit className="w-4 h-4" />
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            size="auto"
+                                                            variant="danger"
+                                                            onClick={() => handleDelete(u.username)}
+                                                            className="gap-2"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile layout */}
+                        <div className="sm:hidden flex flex-col gap-4">
+                            {validUsers.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400">
+                                    <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                    <p>No users found</p>
                                 </div>
-                            ))
-                        )}
+                            ) : (
+                                validUsers.map((u) => (
+                                    <div key={u.username} className={`rounded-lg border p-4 ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <User className="w-5 h-5 text-blue-500" />
+                                                <span className="font-semibold">{u.username}</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2 mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <Target className="w-4 h-4 text-green-500" />
+                                                <span className="text-sm text-gray-600">Skill Level: {u.skill_level ?? "—"}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-gray-400" />
+                                                <span className="text-sm text-gray-600">
+                                                    Created: {u.created_at ? new Date(u.created_at).toLocaleString() : "—"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="auto"
+                                                variant="secondary"
+                                                onClick={() => setEditUser({ ...u, original: u.username })}
+                                                className="gap-2 flex-1"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                size="auto"
+                                                variant="danger"
+                                                onClick={() => handleDelete(u.username)}
+                                                className="gap-2 flex-1"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </Card>
             </Container>
 
+            {/* Edit User Modal */}
             {editUser && (
                 <Modal onClose={() => setEditUser(null)}>
-                    <h2 className="text-xl font-bold mb-4">Edit {editUser.original}</h2>
+                    <div className="flex items-center gap-3 mb-4">
+                        <Settings className="w-6 h-6 text-blue-500" />
+                        <h2 className="text-xl font-bold">Edit User: {editUser.original}</h2>
+                    </div>
+
                     <Input
                         type="text"
                         value={editUser.username}
@@ -190,7 +286,7 @@ export default function AdminUserManagement() {
                     />
                     <Input
                         type="password"
-                        placeholder="New Password"
+                        placeholder="New Password (leave blank to keep current)"
                         onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
                         className="mb-3"
                     />
@@ -199,21 +295,29 @@ export default function AdminUserManagement() {
                         value={editUser.skill_level ?? 0}
                         onChange={(e) => setEditUser({ ...editUser, skill_level: parseInt(e.target.value) })}
                         className="mb-4"
+                        placeholder="Skill Level"
                     />
                     <div className="flex gap-2">
-                        <Button variant="success" onClick={handleSave}>
-                            Save
+                        <Button variant="success" onClick={handleSave} className="gap-2">
+                            <Save className="w-4 h-4" />
+                            Save Changes
                         </Button>
-                        <Button variant="secondary" onClick={() => setEditUser(null)}>
+                        <Button variant="secondary" onClick={() => setEditUser(null)} className="gap-2">
+                            <X className="w-4 h-4" />
                             Cancel
                         </Button>
                     </div>
                 </Modal>
             )}
 
+            {/* Create User Modal */}
             {showCreate && (
                 <Modal onClose={() => { setShowCreate(false); setRepeatPassword(""); }}>
-                    <h2 className="text-xl font-bold mb-4">Create New User</h2>
+                    <div className="flex items-center gap-3 mb-4">
+                        <UserPlus className="w-6 h-6 text-blue-500" />
+                        <h2 className="text-xl font-bold">Create New User</h2>
+                    </div>
+
                     <Input
                         type="text"
                         value={newUser.username}
@@ -233,24 +337,38 @@ export default function AdminUserManagement() {
                         value={repeatPassword}
                         onChange={(e) => setRepeatPassword(e.target.value)}
                         className="mb-3"
-                        placeholder="Repeat Password"
+                        placeholder="Confirm Password"
                     />
                     {!passwordsMatch && repeatPassword && (
                         <Alert type="warning">Passwords do not match.</Alert>
                     )}
                     {error && <Alert type="danger">{error}</Alert>}
-                    <div className="flex gap-2 mt-2">
-                        <Button variant="success" onClick={handleCreate} disabled={!passwordsMatch}>
-                            Create
+                    <div className="flex gap-2 mt-4">
+                        <Button variant="success" onClick={handleCreate} disabled={!passwordsMatch} className="gap-2">
+                            <UserPlus className="w-4 h-4" />
+                            Create User
                         </Button>
-                        <Button variant="secondary" onClick={() => setShowCreate(false)}>
+                        <Button variant="secondary" onClick={() => setShowCreate(false)} className="gap-2">
+                            <X className="w-4 h-4" />
                             Cancel
                         </Button>
                     </div>
                 </Modal>
             )}
 
-            <Footer />
+                        <div className="mt-8 text-center pb-8">
+                <Link
+                    to="/admin-panel"
+                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                        darkMode
+                            ? "bg-gray-700 hover:bg-gray-600 text-white"
+                            : "bg-blue-50 hover:bg-blue-100 text-blue-700"
+                    }`}
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Dashboard
+                </Link>
+            </div>
         </div>
     );
 }
