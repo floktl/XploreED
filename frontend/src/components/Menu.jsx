@@ -86,11 +86,6 @@ export default function Menu() {
                             AI Weakness Lesson
                         </Button>
 
-                        <Button type="button" variant="ghost" onClick={() => navigate("/progress-test-demo")} className="justify-start gap-3">
-                            <Target className="w-5 h-5" />
-                            Progress Bar Test
-                        </Button>
-
                     </div>
                 </Card>
             </Container>

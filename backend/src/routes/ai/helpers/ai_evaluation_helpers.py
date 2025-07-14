@@ -144,9 +144,16 @@ def generate_explanation(question: str, user_answer: str, correct_answer: str) -
     return ""
 
 
+def _strip_final_punct(s):
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
+
 def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
-    logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)}")
+    logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)})")
 
     if not exercise_block:
         logger.error(f"Missing exercise block for processing user {username}")
@@ -167,6 +174,10 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
 
         correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
         user_ans = str(user_ans).strip().lower()
+        # Ignore final . or ? for translation exercises only
+        if ex.get("type") == "translation":
+            correct_ans = _strip_final_punct(correct_ans)
+            user_ans = _strip_final_punct(user_ans)
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
 

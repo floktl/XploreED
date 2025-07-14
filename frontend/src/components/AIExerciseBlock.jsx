@@ -625,9 +625,9 @@ export default function AIExerciseBlock({
                                                 ))}
                                         </div>
                                         <div className="flex flex-wrap gap-2">
-                                            {ex.options.map((opt) => (
+                                            {ex.options.map((opt, idx) => (
                                                 <Button
-                                                    key={opt}
+                                                    key={opt + '-' + idx}
                                                     variant={answers[ex.id] === opt ? "primary" : "secondary"}
                                                     type="button"
                                                     onClick={() => handleSelect(ex.id, opt)}
@@ -660,7 +660,7 @@ export default function AIExerciseBlock({
                             {submitted && evaluation[ex.id] !== undefined && (
                                 <div className="mt-2">
                                     <FeedbackBlock
-                                        status={String(answers[ex.id]).trim().toLowerCase() === String(evaluation[ex.id]?.correct).trim().toLowerCase() ? "correct" : "incorrect"}
+                                        status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
                                         correct={evaluation[ex.id]?.correct}
                                         alternatives={evaluation[ex.id]?.alternatives}
                                         explanation={evaluation[ex.id]?.explanation}
