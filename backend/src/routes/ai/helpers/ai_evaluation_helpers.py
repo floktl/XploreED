@@ -214,4 +214,3 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             review_vocab_word(username, vocab, quality, seen=reviewed)
 
     logger.info(f"Completed processing AI answers for user {username}: {len(results)} results")
-    # print("AI submission results (HJSON):\n", json.dumps(results, indent=2), flush=True)

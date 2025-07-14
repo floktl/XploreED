@@ -40,6 +40,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Suppress werkzeug info logs except for errors
+import logging
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
+
 def log_exercise_event(event_type: str, username: str, details: dict = None):
     """Log exercise-related events with timestamp and user context."""
     log_data = {
@@ -268,7 +272,6 @@ def get_ai_exercises():
         error_msg = f"Mistral error for user {username}: {e}"
         logger.error(error_msg)
         log_exercise_event("exercise_generation_error", username, {"error": str(e)})
-        print("[ai-exercise]", e, flush=True)
         return jsonify({"error": "Mistral error"}), 500
 
     if not ai_block or not ai_block.get("exercises"):
@@ -343,8 +346,7 @@ def generate_new_exercises(
         logger.info(f"Filtered topic memory: {len(filtered_topic_memory)} entries")
     except Exception as e:
         logger.error(f"Failed to filter topic_memory: {e}")
-        print("❌ Failed to filter topic_memory:", e, flush=True)
-        filtered_topic_memory = []
+        return None
 
     logger.info(f"Processing vocabulary for exercise generation")
     try:
@@ -365,7 +367,7 @@ def generate_new_exercises(
         logger.info(f"Filtered vocabulary: {len(vocabular)} entries")
     except Exception as e:
         logger.error(f"Error stripping vocabulary fields: {e}")
-        print("❌ Error stripping vocabulary fields:", e, flush=True)
+        return None
 
     level_val = int(level or 0)
     level_val = max(0, min(level_val, 10))
@@ -403,12 +405,9 @@ def generate_new_exercises(
             return parsed
         else:
             logger.error(f"Failed to parse JSON from Mistral response")
-            print("❌ Failed to parse JSON. Raw content:", flush=True)
-            print(content, flush=True)
             return None
     else:
         logger.error(f"Mistral API request failed: {response.status_code} - {response.text}")
-        print(f"❌ API request failed: {response.status_code} - {response.text}", flush=True)
         return None
 
 
@@ -616,7 +615,6 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
         )
     except ValueError as e:
         logger.error(f"Failed to generate AI block with variation for new user {username}: {e}")
-        print("[_create_ai_block_with_variation]", e, flush=True)
         return None
 
     if not ai_block or not ai_block.get("exercises"):
