@@ -123,8 +123,10 @@ def evaluate_translation_prompt(english: str, student: str) -> dict:
         "content": f"""
 You are a helpful German teacher verifying a student's translation.
 
-English sentence: "{english}"
-Student translation: "{student}"
+English sentence: \"{english}\"
+Student translation: \"{student}\"
+
+Ignore a missing or extra period (.) or question mark (?) at the end of the student's answer when evaluating correctness.
 
 Answer in JSON with keys `correct` (true/false) and `reason` in one short English sentence.
 """,

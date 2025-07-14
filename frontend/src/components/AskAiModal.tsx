@@ -33,6 +33,8 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     const [isStreaming, setIsStreaming] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     useClickOutside(modalRef, onClose);
+    const [bufferedMarkdown, setBufferedMarkdown] = useState("");
+    const [displayedMarkdown, setDisplayedMarkdown] = useState("");
 
     // Prevent background scroll when modal is open
     useEffect(() => {
@@ -67,6 +69,58 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
       }
     }, [history.length]);
 
+    // Helper to check if markdown ends with an incomplete table or code block
+    function isMarkdownBlockComplete(md: string) {
+        // Check for code block
+        const codeBlocks = (md.match(/```/g) || []).length;
+        if (codeBlocks % 2 !== 0) return false; // Odd number of code block markers
+        // Check for table: if last non-empty line starts with | or contains table header, wait for blank line
+        const lines = md.split(/\r?\n/);
+        let inTable = false;
+        for (let i = lines.length - 1; i >= 0; i--) {
+            const line = lines[i].trim();
+            if (line === "") break;
+            if (line.startsWith("|")) { inTable = true; continue; }
+            if (inTable && !line.startsWith("|")) return false;
+        }
+        return true;
+    }
+
+    // Helper to clean up markdown tables
+    function fixMarkdownTables(md: string) {
+        // Find all table blocks and clean them up
+        return md.replace(/((?:^|\n)(?:\|[^\n]*\|\s*\n)+)/g, (tableBlock) => {
+            // Remove extra spaces around pipes and ensure separator row is present
+            const lines = tableBlock.trim().split(/\r?\n/).map(line => line.trim());
+            if (lines.length < 2) return tableBlock; // Not a table
+            // Ensure header separator row exists
+            if (!/^\|?\s*-+\s*(\|\s*-+\s*)+\|?$/.test(lines[1])) {
+                // Insert a separator row after the header
+                const colCount = lines[0].split('|').length - 2;
+                const sep = '|' + Array(colCount).fill(' --- ').join('|') + '|';
+                lines.splice(1, 0, sep);
+            }
+            // Clean up each line
+            return lines.map(line =>
+                '|' + line.split('|').slice(1, -1).map(cell => cell.trim()).join(' | ') + '|'
+            ).join('\n') + '\n';
+        });
+    }
+
+    // Helper to strip outer code fences (``` and language label)
+    function stripOuterCodeFences(md: string) {
+        // Remove leading/trailing whitespace
+        let text = md.trim();
+        // Match triple backtick block with optional language
+        const codeBlockRegex = /^```[a-zA-Z0-9]*\n([\s\S]*?)\n```$/;
+        const match = text.match(codeBlockRegex);
+        if (match) {
+            text = match[1].trim();
+        }
+        // Remove leading 'markdown', 'text', or similar label (with optional colon or newline)
+        text = text.replace(/^(markdown|text|md)[:\s-]*\n?/i, '');
+        return text;
+    }
 
     const handleAsk = async () => {
         if (!question.trim()) {
@@ -78,11 +132,18 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
             setLoading(true);
             setIsStreaming(true);
             setMarkdown("");
+            setBufferedMarkdown("");
+            setDisplayedMarkdown("");
             fullAnswerRef.current = "";
 
             await streamAiAnswer(question.trim(), (chunk) => {
                 fullAnswerRef.current = chunk.text;
-                setMarkdown(chunk.text);
+                let cleaned = stripOuterCodeFences(chunk.text);
+                cleaned = fixMarkdownTables(cleaned);
+                setBufferedMarkdown(cleaned);
+                if (isMarkdownBlockComplete(cleaned)) {
+                    setDisplayedMarkdown(cleaned);
+                }
             }, pageContext);
 
             setIsStreaming(false);
@@ -90,7 +151,10 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
             // After streaming, if no answer, show placeholder
             if (!fullAnswerRef.current.trim()) {
                 setMarkdown("[No answer returned by AI]");
+                setDisplayedMarkdown("[No answer returned by AI]");
             } else {
+                setMarkdown(fullAnswerRef.current);
+                setDisplayedMarkdown(fullAnswerRef.current);
                 console.log("[DEBUG] Full AI answer after streaming:", fullAnswerRef.current);
             }
 
@@ -282,9 +346,9 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                             }}
                                         >
                                             <ReactMarkdown
-                                                key={markdown}
+                                                key={displayedMarkdown}
                                                 remarkPlugins={[remarkGfm]}
-                                                children={markdown}
+                                                children={displayedMarkdown}
                                                 components={{
                                                     h1: ({node, ...props}) => <h1 className="font-bold text-lg mt-2 mb-1" {...props} />,
                                                     h2: ({node, ...props}) => <h2 className="font-bold text-base mt-2 mb-1" {...props} />,

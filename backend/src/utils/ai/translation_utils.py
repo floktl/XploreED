@@ -44,8 +44,18 @@ def _extract_json(text: str):
     print("[_extract_json] Returning None.", flush=True)
     return None
 
+def _strip_final_punct(s: str) -> str:
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
+
 def evaluate_translation_ai(english: str, reference: str, student: str):
-    """Return ``(correct, reason)`` after scoring ``student`` against ``reference``."""
+    """Return ``(correct, reason)`` after scoring ``student`` against ``reference``. Ignores missing/extra . or ? at end."""
+    # Ignore final . or ? for both student and reference
+    reference = _strip_final_punct(reference)
+    student = _strip_final_punct(student)
     # print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
     # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
