@@ -50,7 +50,6 @@ def execute_query(query, params=(), fetch=False, many=False):
                 else:
                     cursor.execute(query, params)
             except Exception as e:
-                print("❌ EXECUTE ERROR:", str(e), flush=True)
                 raise
 
             if fetch:
@@ -58,18 +57,15 @@ def execute_query(query, params=(), fetch=False, many=False):
                     results = [dict(row) for row in cursor.fetchall()]
                     return results
                 except Exception as e:
-                    print("❌ FETCH ERROR:", str(e), flush=True)
                     raise
 
             try:
                 conn.commit()
                 return True
             except Exception as e:
-                print("❌ COMMIT ERROR:", str(e), flush=True)
                 raise
 
     except Exception as e:
-        print("❌ DB Error (outer):", str(e), flush=True)
         return None
 
 
