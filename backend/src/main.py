@@ -36,7 +36,6 @@ import routes.user
 import routes.ai
 import routes.support
 import routes.settings
-import routes.progress_test
 
 from app.extensions import limiter
 from app.blueprint import registered_blueprints
