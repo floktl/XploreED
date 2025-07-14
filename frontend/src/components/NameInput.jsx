@@ -7,7 +7,7 @@ import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
-import { PenSquare, Lock, Rocket } from "lucide-react";
+import { PenSquare, Lock, Rocket, Eye, EyeOff, UserPlus, LogIn } from "lucide-react";
 import { login, signup, getMe, getRole } from "../api";
 import PlacementTest from "./PlacementTest";
 import LevelGuess from "./LevelGuess";
@@ -22,6 +22,7 @@ export default function NameInput() {
     const [showTest, setShowTest] = useState(false);
     const [showChoice, setShowChoice] = useState(false);
     const [showLevelSelect, setShowLevelSelect] = useState(false);
+    const [autoSignupPrompt, setAutoSignupPrompt] = useState(false);
     const navigate = useNavigate();
 
     const setUsername = useAppStore((state) => state.setUsername);
@@ -34,7 +35,7 @@ export default function NameInput() {
         const pwConfirm = confirmPassword.trim();
 
         if (!trimmed || !pw || (isSignup && !pwConfirm)) {
-            setError("⚠️ Please fill out all fields.");
+            setError("Please fill out all fields.");
             return;
         }
 
@@ -59,7 +60,17 @@ export default function NameInput() {
                 return;
             } else {
                 res = await login(trimmed, pw);
-                if (res.error) throw new Error(res.error);
+                if (res.error) {
+                    // If login fails with invalid credentials, auto-switch to signup
+                    if (res.error.toLowerCase().includes("invalid username or password")) {
+                        setIsSignup(true);
+                        setAutoSignupPrompt(true);
+                        setError("");
+                        return;
+                    } else {
+                        throw new Error(res.error);
+                    }
+                }
             }
 
             const me = await getMe();
@@ -79,9 +90,9 @@ export default function NameInput() {
 
     const getPasswordStrength = (pw) => {
         if (!pw) return "";
-        if (pw.length < 6) return "Weak 🔴";
-        if (pw.match(/[A-Z]/) && pw.match(/[0-9]/) && pw.length >= 8) return "Strong 🟢";
-        return "Moderate 🟡";
+        if (pw.length < 6) return "Weak";
+        if (pw.match(/[A-Z]/) && pw.match(/[0-9]/) && pw.length >= 8) return "Strong";
+        return "Moderate";
     };
 
     if (showTest) {
@@ -113,19 +124,26 @@ export default function NameInput() {
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container showHeader={true} minimalHeader={true}>
-                <Title>{isSignup ? "👋 Create an Account" : "🎓 Willkommen!"}</Title>
+                <Title>{isSignup ? "Create an Account" : "Welcome"}</Title>
                 <p className={`text-center mb-6 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
                     {isSignup ? "Choose your username and password." : "Please enter your name and password to begin:"}
                 </p>
 
                 <Card>
                     <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-                        <Input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your name"
-                        />
+                        <div className="relative">
+                            <Input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Enter your name"
+                                autoFocus
+                                className="pl-10"
+                            />
+                            <span className="absolute left-3 top-2.5 text-gray-400">
+                                <PenSquare className="w-5 h-5" />
+                            </span>
+                        </div>
 
                         <div className="relative">
                             <Input
@@ -133,40 +151,58 @@ export default function NameInput() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter your password"
+                                className="pl-10"
                             />
+                            <span className="absolute left-3 top-2.5 text-gray-400">
+                                <Lock className="w-5 h-5" />
+                            </span>
                             <span
-                                className="absolute right-3 top-2 text-xl cursor-pointer select-none"
+                                className="absolute right-3 top-2.5 text-gray-400 cursor-pointer select-none"
                                 onClick={() => setShowPassword(!showPassword)}
+                                title={showPassword ? "Hide password" : "Show password"}
                             >
-                                {showPassword ? "🙈" : "👁️"}
+                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </span>
                             {isSignup && password && (
                                 <p className="text-sm mt-1 text-gray-500 italic">
-                                    Strength: {getPasswordStrength(password)}
+                                    Strength: <span className={
+                                        getPasswordStrength(password) === "Strong" ? "text-green-600" :
+                                        getPasswordStrength(password) === "Moderate" ? "text-yellow-600" :
+                                        getPasswordStrength(password) === "Weak" ? "text-red-600" : ""
+                                    }>{getPasswordStrength(password)}</span>
                                 </p>
                             )}
                         </div>
 
                         {isSignup && (
-                            <Input
-                                type={showPassword ? "text" : "password"}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                placeholder="Repeat your password"
-                            />
+                            <div className="relative">
+                                <Input
+                                    type={showPassword ? "text" : "password"}
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Repeat your password"
+                                    className="pl-10"
+                                />
+                                <span className="absolute left-3 top-2.5 text-gray-400">
+                                    <Lock className="w-5 h-5" />
+                                </span>
+                            </div>
                         )}
 
                         {error && <Alert type="warning">{error}</Alert>}
+                        {autoSignupPrompt && (
+                            <Alert type="info">No account found for this username. You can create a new account below!</Alert>
+                        )}
 
                         <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
                             <Button variant="primary" type="submit" className="w-full sm:w-auto gap-2">
                                 {isSignup ? (
                                     <>
-                                        <PenSquare className="w-4 h-4" /> Sign Up
+                                        <UserPlus className="w-4 h-4" /> Sign Up
                                     </>
                                 ) : (
                                     <>
-                                        <Rocket className="w-4 h-4" /> Continue
+                                        <LogIn className="w-4 h-4" /> Log In
                                     </>
                                 )}
                             </Button>
@@ -180,7 +216,7 @@ export default function NameInput() {
                             {isSignup ? (
                                 <>
                                     Already have an account?{" "}
-                                    <button type="button" onClick={() => setIsSignup(false)} className="text-blue-500 underline">
+                                    <button type="button" onClick={() => { setIsSignup(false); setAutoSignupPrompt(false); }} className="text-blue-500 underline">
                                         Log in
                                     </button>
                                 </>
@@ -206,8 +242,6 @@ export default function NameInput() {
                     Terms of Service
                 </Button>
             </Footer>
-            {/* Only show AskAiButton after signup and level placement, i.e., not on login/signup screens */}
-            {/* No AskAiButton here */}
         </div>
     );
 }
