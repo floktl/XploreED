@@ -238,6 +238,9 @@ export default function AIExerciseBlock({
         setSubmitting(true);
         setSubmitted(true);
 
+        // Log answers before sending
+        console.log("Submitting answers:", answersRef.current);
+
         // Start submission progress simulation
         const submissionSteps = [
             { percentage: 20, status: "Analyzing your answers..." },
@@ -269,9 +272,12 @@ export default function AIExerciseBlock({
             });
 
             if (result?.results) {
+                // Log the full feedback block for all exercises
+                console.log("Full feedback block (result.results):", result.results);
                 const map = {};
                 result.results.forEach((r) => {
                     map[r.id] = {
+                        is_correct: r.is_correct, // <-- Add this line to preserve backend correctness
                         correct: r.correct_answer,
                         alternatives:
                             r.alternatives ||
@@ -280,6 +286,10 @@ export default function AIExerciseBlock({
                             [],
                         explanation: r.explanation || "",
                     };
+                    // Log feedback for translation exercises
+                    if (r.type === "translation") {
+                        console.log(`Feedback for translation exercise (id: ${r.id}):`, r);
+                    }
                 });
                 setEvaluation(map);
             }
@@ -350,6 +360,7 @@ export default function AIExerciseBlock({
                 const map = {};
                 result.results.forEach((r) => {
                     map[r.id] = {
+                        is_correct: r.is_correct, // Preserve backend correctness
                         correct: r.correct_answer,
                         alternatives:
                             r.alternatives ||
