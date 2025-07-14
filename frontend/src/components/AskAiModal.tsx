@@ -3,6 +3,7 @@ import Modal from "./UI/Modal";
 import Button from "./UI/Button";
 import Spinner from "./UI/Spinner";
 import { Lightbulb, User, Bot, Send } from "lucide-react";
+import ConsoleLog, { LogEntry } from "./ConsoleLog";
 import { streamAiAnswer } from "../utils/streamAi";
 import { getMistralChatHistory, addMistralChatHistory } from "../api";
 import ReactMarkdown from "react-markdown";
@@ -28,6 +29,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ChatHistory[]>([]);
+    const [logs, setLogs] = useState<LogEntry[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
     const fullAnswerRef = useRef("");
     const [isStreaming, setIsStreaming] = useState(false);
@@ -35,6 +37,16 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
     useClickOutside(modalRef, onClose);
     const [bufferedMarkdown, setBufferedMarkdown] = useState("");
     const [displayedMarkdown, setDisplayedMarkdown] = useState("");
+
+    const addLog = (text: string) => {
+        setLogs((prev) => {
+            const last = prev[prev.length - 1];
+            if (last && last.text === text) {
+                return [...prev.slice(0, -1), { ...last, count: last.count + 1 }];
+            }
+            return [...prev, { text, count: 1 }];
+        });
+    };
 
     // Prevent background scroll when modal is open
     useEffect(() => {
@@ -77,11 +89,15 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         // Check for table: if last non-empty line starts with | or contains table header, wait for blank line
         const lines = md.split(/\r?\n/);
         let inTable = false;
+        let inList = false;
         for (let i = lines.length - 1; i >= 0; i--) {
             const line = lines[i].trim();
             if (line === "") break;
-            if (line.startsWith("|")) { inTable = true; continue; }
+            if (line.startsWith("|") ) { inTable = true; continue; }
             if (inTable && !line.startsWith("|")) return false;
+
+            if (/^(\*|-|\+)\s+/.test(line) || /^\d+[.)]\s+/.test(line)) { inList = true; continue; }
+            if (inList && !(/^(\*|-|\+)\s+/.test(line) || /^\d+[.)]\s+/.test(line))) return false;
         }
         return true;
     }
@@ -131,6 +147,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         try {
             setLoading(true);
             setIsStreaming(true);
+            addLog("[info] Streaming request sent");
             setMarkdown("");
             setBufferedMarkdown("");
             setDisplayedMarkdown("");
@@ -144,6 +161,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                 if (isMarkdownBlockComplete(cleaned)) {
                     setDisplayedMarkdown(cleaned);
                 }
+                addLog(`[debug] chunk: ${cleaned.slice(-40)}`);
             }, pageContext);
 
             setIsStreaming(false);
@@ -171,8 +189,10 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
             setError("");
         } catch (err) {
             console.error("❌ AI streaming error:", err);
+            addLog("[error] stream failed");
             setError("Failed to get answer.");
         } finally {
+            addLog("[info] streaming finished");
             setLoading(false);
             setQuestion("");
         }
@@ -188,7 +208,8 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
         transform: 'translateX(-50%)',
         border: "none",
         boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
-        background: "rgba(255,255,255,0.10)", // more transparent
+        background: "#000",
+        color: "#fff",
         backdropFilter: "blur(22px)",
         WebkitBackdropFilter: "blur(22px)",
         borderRadius: 28,
@@ -217,7 +238,7 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
             {/* Darkened, blurred background overlay */}
             <div className="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-[2px]" />
             <div ref={modalRef} style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative speech-bubble-modal">
-              <div className="relative text-gray-900 flex flex-col" style={{overflow: 'hidden'}}>
+              <div className="relative text-white flex flex-col" style={{overflow: 'hidden'}}>
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-white/30 min-h-[44px]">
                   <div className="flex items-center gap-2">
@@ -254,16 +275,16 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                     <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                                     <div className="relative w-full" style={{maxWidth: 480, margin: '0 auto'}}>
                                         <div
-                                            className="rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
+                                            className="rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full bg-black text-white"
                                             style={{
                                                 backdropFilter: 'blur(12px)',
                                                 WebkitBackdropFilter: 'blur(12px)',
-                                                background: 'rgba(255,255,255,0.18)', // more transparent
-                                                border: '1.5px solid rgba(255,255,255,0.18)',
+                                                background: 'rgba(0,0,0,0.6)',
+                                                border: '1.5px solid #1e3a8a',
                                                 boxShadow: '0 2px 16px 0 rgba(80,120,200,0.10)',
                                                 fontSize: '0.97rem',
                                                 fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
-                                                color: '#1a237e',
+                                                color: '#fff',
                                                 lineHeight: 1.5,
                                                 wordBreak: 'break-word',
                                                 margin: '6px 0 10px 0',
@@ -326,19 +347,19 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                                     <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                                     <div className="relative w-full" style={{maxWidth: 480, margin: '0 auto'}}>
                                         <div
-                                            className="bg-white/40 text-gray-900 rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
+                                            className="bg-black text-white rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px] w-full"
                                             style={{
                                                 backdropFilter: 'blur(6px)',
                                                 WebkitBackdropFilter: 'blur(6px)',
-                                                background: 'rgba(255,255,255,0.75)',
-                                                border: '1.5px solid #e0e7ef',
+                                                background: 'rgba(0,0,0,0.75)',
+                                                border: '1.5px solid #1e3a8a',
                                                 boxShadow: '0 2px 12px 0 rgba(80,120,200,0.07)',
                                                 fontSize: '0.95rem',
                                                 fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
-                                                color: '#1a237e',
+                                                color: '#fff',
                                                 lineHeight: 1.5,
                                                 wordBreak: 'break-word',
-                                                whiteSpace: undefined, // Remove pre-line from the bubble
+                                                whiteSpace: undefined,
                                                 margin: '6px 0 10px 0',
                                                 padding: '14px 16px',
                                                 borderRadius: '20px',
@@ -374,11 +395,12 @@ export default function AskAiModal({ onClose, btnRect, pageContext }: Props) {
                     )}
                     <div ref={chatEndRef} />
                 </div>
+                <ConsoleLog logs={logs} />
                 {/* Input area */}
                 <form className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-white/30 bg-transparent" onSubmit={e => { e.preventDefault(); handleAsk(); }}>
-                    <div className="flex-1 flex items-center bg-white/45 rounded-full shadow border border-blue-100 px-3 py-1" style={{backdropFilter: 'blur(8px)'}}>
+                    <div className="flex-1 flex items-center bg-black rounded-full shadow border border-blue-800 px-3 py-1" style={{backdropFilter: 'blur(8px)'}}>
                         <textarea
-                            className="flex-1 h-10 sm:h-11 max-h-20 min-h-[40px] sm:min-h-[44px] bg-transparent text-gray-900 resize-none focus:ring-0 focus:outline-none placeholder-gray-500 border-0 p-0 m-0 align-middle text-sm sm:text-base"
+                            className="flex-1 h-10 sm:h-11 max-h-20 min-h-[40px] sm:min-h-[44px] bg-transparent text-white resize-none focus:ring-0 focus:outline-none placeholder-gray-500 border-0 p-0 m-0 align-middle text-sm sm:text-base"
                             placeholder="Type your question..."
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
