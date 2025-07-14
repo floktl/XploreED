@@ -18335,3 +18335,31 @@ Anna sieht einen ___ Hund., correctAnswer: großen
 2025-07-14 07:47:33,865 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
 2025-07-14 07:47:35,774 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
 2025-07-14 07:47:41,408 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:47:41] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:48:46,571 - root - INFO - Sending request to Mistral API: https://api.mistral.ai/v1/chat/completions
+2025-07-14 07:48:46,572 - root - DEBUG - Request payload: {'model': 'mistral-medium', 'messages': [{'role': 'system', 'content': 'You are a helpful German teacher. Always use Markdown for tables, lists, and formatting.'}, {'role': 'user', 'content': "Create a short HTML lesson in English for a German learner. Explain the topic 'present tense' (reading)Return only valid HTML."}], 'temperature': 0.7}
+2025-07-14 07:48:46,618 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-14 07:48:48,154 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:48:48] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:00,003 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:00] "GET /api/me HTTP/1.1" 200 -
+2025-07-14 07:49:00,005 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:00] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:00,577 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:00] "GET /api/role HTTP/1.1" 200 -
+2025-07-14 07:49:00,583 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:00] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:00,947 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-14 07:49:00,960 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:00] "GET /api/weakness-lesson HTTP/1.1" 200 -
+2025-07-14 07:49:01,160 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:01] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:04,306 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:04] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:05,910 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:05] "GET /api/lessons HTTP/1.1" 200 -
+2025-07-14 07:49:06,691 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:06] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:49:08,783 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:08] "GET /api/weakness-lesson HTTP/1.1" 200 -
+2025-07-14 07:49:09,875 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:49:09] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:50:14,490 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:50:14] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:54:08,693 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:08] "GET /api/me HTTP/1.1" 200 -
+2025-07-14 07:54:08,696 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:08] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:54:09,265 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:09] "GET /api/role HTTP/1.1" 200 -
+2025-07-14 07:54:09,272 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:09] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:54:09,849 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:09] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:54:32,215 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:32] "GET /api/lessons HTTP/1.1" 200 -
+2025-07-14 07:54:33,409 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:33] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:54:36,897 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:36] "GET /api/weakness-lesson HTTP/1.1" 200 -
+2025-07-14 07:54:38,100 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:54:38] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:55:02,824 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:55:02] "GET /api/user-level HTTP/1.1" 200 -
+2025-07-14 07:55:13,787 - werkzeug - INFO - 172.18.0.2 - - [14/Jul/2025 07:55:13] "GET /api/mistral-chat-history HTTP/1.1" 200 -

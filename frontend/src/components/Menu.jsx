@@ -51,7 +51,7 @@ export default function Menu() {
     }, [username, setUsername, isAdmin, isLoading, navigate]);
 
     return (
-        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+        <div className={`relative min-h-screen pb-20 overflow-hidden ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
 
                 <Card className="shadow-xl">
