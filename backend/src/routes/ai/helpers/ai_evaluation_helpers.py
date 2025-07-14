@@ -78,7 +78,6 @@ def evaluate_answers_with_ai(
 
 def generate_alternative_answers(correct_sentence: str) -> list:
     """Use the AI to generate 2-3 alternative ways to say the same thing in German."""
-    from utils.ai.ai_api import send_prompt
     import re
     prompt = {
         "role": "user",
@@ -96,7 +95,6 @@ def generate_alternative_answers(correct_sentence: str) -> list:
         if resp.status_code == 200:
             import json as _json
             content = resp.json()["choices"][0]["message"]["content"]
-            print("[generate_alternative_answers] Raw AI response:", content, flush=True)
             # Try to extract a JSON array from the response robustly
             try:
                 # Find the first [ ... ] block in the response
@@ -111,8 +109,7 @@ def generate_alternative_answers(correct_sentence: str) -> list:
                 if isinstance(alternatives, list):
                     return alternatives
             except Exception as e:
-                print(f"[generate_alternative_answers] Failed to parse alternatives: {e}", flush=True)
-                print(f"[generate_alternative_answers] Full response: {content}", flush=True)
+                pass
     except Exception as e:
         logger.error(f"generate_alternative_answers failed: {e}")
     return []
@@ -120,7 +117,6 @@ def generate_alternative_answers(correct_sentence: str) -> list:
 
 def generate_explanation(question: str, user_answer: str, correct_answer: str) -> str:
     """Use the AI to generate a short explanation for why the correct answer is correct or why the user's answer is wrong."""
-    from utils.ai.ai_api import send_prompt
     prompt = {
         "role": "user",
         "content": (
@@ -157,7 +153,6 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
 
     if not exercise_block:
         logger.error(f"Missing exercise block for processing user {username}")
-        print("❌ Missing exercise block for processing", flush=True)
         return
 
     all_exercises = exercise_block.get("exercises", [])

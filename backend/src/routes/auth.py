@@ -31,7 +31,6 @@ def login():
         row = fetch_one("users", "WHERE username = ?", (username,))
 
         if not row or not check_password_hash(row["password"], password):
-            print("❌ Invalid login attempt: password check failed", flush=True)
             return jsonify({"error": "Invalid username or password"}), 401
 
         session_id = session_manager.create_session(username)
@@ -40,7 +39,6 @@ def login():
         resp.set_cookie("session_id", session_id, httponly=True, samesite="Lax")
         return resp
     except Exception as e:
-        print(f"❌ Exception during login: {e}", flush=True)
         return jsonify({"error": "Server error"}), 500
 
 
@@ -99,7 +97,6 @@ def signup():
             return jsonify({"error": "User could not be created"}), 500
         initialize_topic_memory_for_level(username, 0)
     except Exception as e:
-        print("❌ DB Exception:", e, flush=True)
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
     return jsonify({"msg": "User created"}), 201

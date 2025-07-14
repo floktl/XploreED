@@ -7,7 +7,6 @@ from utils.ai.ai_api import send_prompt
 
 def stream_ai_answer(context: str) -> Response:
     """Stream a long answer from Mistral as Server-Sent Events, using context-aware prompt."""
-    print("[stream_ai_answer] Full AI prompt:\n" + context, flush=True)
     def generate():
         try:
             with send_prompt(

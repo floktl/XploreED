@@ -24,12 +24,9 @@ def get_training_exercises():
     """Return AI-generated exercises and prefetch the next block."""
     username = require_user()
     logger.info(f"Training exercises request from user: {username}")
-    print("Training request from user:", username, flush=True)
-
     data = request.get_json() or {}
     answers = data.get("answers", {})
     logger.info(f"Training request data for user {username}: answers_count={len(answers)}")
-    # print("Training answers received:", answers, flush=True)
 
     if answers:
         logger.info(f"User {username} has answers, checking cached next exercises")
@@ -65,7 +62,6 @@ def get_training_exercises():
         )
         logger.info(f"Running prefetch next exercises for user {username}")
         run_in_background(prefetch_next_exercises, username)
-        # print("Returned preloaded training exercises", flush=True)
         logger.info(f"Returning preloaded training exercises for user {username}")
         return jsonify(ai_block)
 
@@ -93,7 +89,6 @@ def get_training_exercises():
     if not ai_block:
         logger.error(f"Failed to generate training exercises for user {username}")
         return jsonify({"error": "Mistral error"}), 500
-    # print("Returning new training exercises", flush=True)
     logger.info(f"Returning new training exercises for user {username}")
     return jsonify(ai_block)
 
