@@ -3,11 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
 import Card from "./UI/Card";
 import Button from "./UI/Button";
+import ProgressRing from "./UI/ProgressRing";
+import Spinner from "./UI/Spinner";
 import { Container, Title } from "./UI/UI";
 import Footer from "./UI/Footer";
-import { getAiFeedbackItem, generateAiFeedback } from "../api";
+import { getAiFeedbackItem, generateAiFeedbackWithProgress, getFeedbackProgress, getFeedbackResult } from "../api";
 import AskAiButton from "./AskAiButton";
 import AskAiModal from "./AskAiModal";
+import { Brain, CheckCircle, Target, BookOpen, Sparkles } from "lucide-react";
+import FeedbackBlock from "./FeedbackBlock";
 
 export default function AIFeedbackView() {
     const { feedbackId } = useParams();
@@ -17,7 +21,23 @@ export default function AIFeedbackView() {
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
     const isAdmin = useAppStore((state) => state.isAdmin);
+    const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
+    const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
     const [aiModalOpen, setAiModalOpen] = useState(false);
+
+    // Progress tracking states
+    const [generatingFeedback, setGeneratingFeedback] = useState(false);
+    const [progressPercentage, setProgressPercentage] = useState(0);
+    const [progressStatus, setProgressStatus] = useState("");
+    const [progressIcon, setProgressIcon] = useState(Brain);
+    const [sessionId, setSessionId] = useState(null);
+
+    // Check if all exercises have answers
+    const exercises = feedback?.exercises || [];
+    const allExercisesAnswered = exercises.length > 0 && exercises.every(ex => {
+        const answer = answers[ex.id];
+        return answer && answer.trim().length > 0;
+    });
 
     useEffect(() => {
         if (isAdmin) {
@@ -42,30 +62,107 @@ export default function AIFeedbackView() {
     };
 
     const handleSubmit = async () => {
+        setGeneratingFeedback(true);
+        setSubmitted(true);
+
+        // Add background activity for topic memory update
+        const topicActivityId = `feedback-topic-${Date.now()}`;
+        addBackgroundActivity({
+            id: topicActivityId,
+            label: "Updating topic memory from feedback...",
+            status: "In progress"
+        });
+
         try {
-            const result = await generateAiFeedback({ answers, feedbackId });
-            if (result && result.feedbackPrompt) {
-                setFeedback((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
+            // Start the feedback generation with progress tracking
+            const startResult = await generateAiFeedbackWithProgress({
+                answers,
+                exercise_block: {
+                    exercises: feedback?.exercises || [],
+                    lessonId: feedbackId
+                }
+            });
+
+            if (!startResult.session_id) {
+                throw new Error("Failed to start feedback generation");
             }
-            if (result && Array.isArray(result.results)) {
-                const map = {};
-                result.results.forEach((r) => {
-                    map[r.id] = r.correct_answer;
-                });
-                setFeedback((prev) => ({
-                    ...prev,
-                    exercises: Array.isArray(prev?.exercises)
-                        ? prev.exercises.map((ex) => ({
-                            ...ex,
-                            correctAnswer: map[ex.id],
-                        }))
-                        : prev?.exercises,
-                }));
-            }
+
+            setSessionId(startResult.session_id);
+
+            // Poll for progress updates
+            const progressInterval = setInterval(async () => {
+                try {
+                    const progress = await getFeedbackProgress(startResult.session_id);
+
+                    setProgressPercentage(progress.percentage);
+                    setProgressStatus(progress.status);
+
+                    // Set icon based on step
+                    const stepIcons = {
+                        'init': Brain,
+                        'analyzing': Target,
+                        'evaluating': Brain,
+                        'processing': BookOpen,
+                        'fetching_data': BookOpen,
+                        'generating_feedback': Sparkles,
+                        'updating_progress': Sparkles,
+                        'complete': CheckCircle,
+                        'error': Brain
+                    };
+
+                    const IconComponent = stepIcons[progress.step] || Brain;
+                    setProgressIcon(IconComponent);
+
+                    // If complete, get the result
+                    if (progress.completed) {
+                        clearInterval(progressInterval);
+
+                        if (progress.error) {
+                            throw new Error(progress.error);
+                        }
+
+                        const result = await getFeedbackResult(startResult.session_id);
+
+                        if (result && result.feedbackPrompt) {
+                            setFeedback((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
+                        }
+                        if (result && Array.isArray(result.results)) {
+                            const map = {};
+                            result.results.forEach((r) => {
+                                map[r.id] = r.correct_answer;
+                            });
+                            setFeedback((prev) => ({
+                                ...prev,
+                                exercises: Array.isArray(prev?.exercises)
+                                    ? prev.exercises.map((ex) => ({
+                                        ...ex,
+                                        correctAnswer: map[ex.id],
+                                    }))
+                                    : prev?.exercises,
+                            }));
+                        }
+
+                        setGeneratingFeedback(false);
+
+                        // Remove background activity after completion
+                        setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
+                    }
+                } catch (err) {
+                    clearInterval(progressInterval);
+                    console.error("Progress polling failed:", err);
+                    setGeneratingFeedback(false);
+
+                    // Remove background activity on error
+                    setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
+                }
+            }, 500); // Poll every 500ms
+
         } catch (err) {
             console.error("Failed to generate AI feedback", err);
-        } finally {
-            setSubmitted(true);
+            setGeneratingFeedback(false);
+
+            // Remove background activity on error
+            setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
         }
     };
 
@@ -93,75 +190,138 @@ export default function AIFeedbackView() {
                         )}
                         {feedback.exercises && (
                             <div className="mt-4 space-y-6">
-                                {feedback.exercises.map((ex) => (
-                                    <div key={ex.id} className="mb-4">
-                                        {ex.type === "gap-fill" ? (
-                                            <>
-                                                <div className="mb-2 font-medium">
-                                                    {String(ex.question)
-                                                        .split("___")
-                                                        .map((part, idx, arr) => (
-                                                            <React.Fragment key={idx}>
-                                                                {part}
-                                                                {idx < arr.length - 1 && (
-                                                                    answers[ex.id] ? (
-                                                                        <span className="text-blue-600">{answers[ex.id]}</span>
-                                                                    ) : (
-                                                                        <span className="text-gray-400">___</span>
-                                                                    )
-                                                                )}
-                                                            </React.Fragment>
+                                {!submitted && exercises.length > 0 && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-blue-700 dark:text-blue-300 text-sm font-medium">
+                                                Progress: {Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length} of {exercises.length} exercises completed
+                                            </span>
+                                            <div className="w-24 bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                                                <div
+                                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                                    style={{
+                                                        width: `${(Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length / exercises.length) * 100}%`
+                                                    }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {feedback.exercises.map((ex, idx) => {
+                                    const hasAnswer = answers[ex.id] && answers[ex.id].trim().length > 0;
+                                    const isIncomplete = !submitted && !hasAnswer;
+
+                                    return (
+                                        <div key={ex.id} className={`mb-4 ${isIncomplete ? 'border-l-4 border-orange-400 pl-4' : ''}`}>
+                                            {ex.type === "gap-fill" ? (
+                                                <>
+                                                    <div className="mb-2 font-medium">
+                                                        {String(ex.question)
+                                                            .split("___")
+                                                            .map((part, idx, arr) => (
+                                                                <React.Fragment key={idx}>
+                                                                    {part}
+                                                                    {idx < arr.length - 1 && (
+                                                                        answers[ex.id] ? (
+                                                                            <span className="text-blue-600">{answers[ex.id]}</span>
+                                                                        ) : (
+                                                                            <span className="text-gray-400">___</span>
+                                                                        )
+                                                                    )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                    </div>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {ex.options.map(opt => (
+                                                            <Button
+                                                                key={opt}
+                                                                variant={answers[ex.id] === opt ? "primary" : "secondary"}
+                                                                type="button"
+                                                                onClick={() => handleSelect(ex.id, opt)}
+                                                                disabled={submitted}
+                                                            >
+                                                                {opt}
+                                                            </Button>
                                                         ))}
+                                                    </div>
+                                                    {isIncomplete && (
+                                                        <p className="text-orange-600 dark:text-orange-400 text-sm mt-2">
+                                                            ⚠️ Please select an answer
+                                                        </p>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <label className="block mb-2 font-medium">{ex.question}</label>
+                                                    <input
+                                                        type="text"
+                                                        className={`border rounded p-2 w-full ${isIncomplete ? 'border-orange-400 focus:border-orange-500' : ''}`}
+                                                        value={answers[ex.id] || ""}
+                                                        onChange={(e) => handleSelect(ex.id, e.target.value)}
+                                                        disabled={submitted}
+                                                        placeholder="Your answer"
+                                                    />
+                                                    {isIncomplete && (
+                                                        <p className="text-orange-600 dark:text-orange-400 text-sm mt-2">
+                                                            ⚠️ Please enter your answer
+                                                        </p>
+                                                    )}
+                                                </>
+                                            )}
+                                            {submitted && feedback.feedbackBlocks && feedback.feedbackBlocks[idx] && (
+                                                <div className="mt-2">
+                                                    <FeedbackBlock {...feedback.feedbackBlocks[idx]} />
                                                 </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {ex.options.map(opt => (
-                                                        <Button
-                                                            key={opt}
-                                                            variant={answers[ex.id] === opt ? "primary" : "secondary"}
-                                                            type="button"
-                                                            onClick={() => handleSelect(ex.id, opt)}
-                                                            disabled={submitted}
-                                                        >
-                                                            {opt}
-                                                        </Button>
-                                                    ))}
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                                {!submitted && (
+                                    <Button
+                                        type="button"
+                                        variant="success"
+                                        onClick={handleSubmit}
+                                        disabled={!allExercisesAnswered}
+                                    >
+                                        {allExercisesAnswered ? "Submit Answers" : `Complete ${exercises.length - Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length} more answer${exercises.length - Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length === 1 ? '' : 's'}`}
+                                    </Button>
+                                )}
+                                {generatingFeedback && (
+                                    <div className="mt-6 text-center">
+                                        <div className="flex justify-center mb-4">
+                                            <ProgressRing
+                                                percentage={progressPercentage}
+                                                size={100}
+                                                color={progressPercentage === 100 ? "#10B981" : "#3B82F6"}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-center gap-3 mb-3">
+                                            {(() => {
+                                                const IconComponent = progressIcon;
+                                                return <IconComponent className="w-5 h-5 text-blue-600 dark:text-blue-400" />;
+                                            })()}
+                                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                                {progressStatus}
+                                            </h4>
+                                        </div>
+                                        <p className="text-gray-600 dark:text-gray-400">
+                                            {progressPercentage < 100
+                                                ? "We're analyzing your answers and generating personalized feedback."
+                                                : "Your feedback is ready!"
+                                            }
+                                        </p>
+                                        {progressPercentage < 100 && (
+                                            <div className="mt-4 flex justify-center">
+                                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                                    <Spinner />
+                                                    <span>Please wait...</span>
                                                 </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <label className="block mb-2 font-medium">{ex.question}</label>
-                                                <input
-                                                    type="text"
-                                                    className="border rounded p-2 w-full"
-                                                    value={answers[ex.id] || ""}
-                                                    onChange={(e) => handleSelect(ex.id, e.target.value)}
-                                                    disabled={submitted}
-                                                    placeholder="Your answer"
-                                                />
-                                            </>
-                                        )}
-                                        {submitted && (
-                                            <div className="mt-2">
-                                                {String(answers[ex.id]).trim().toLowerCase() ===
-                                                    String(ex.correctAnswer || "").trim().toLowerCase() ? (
-                                                    <span className="text-green-600">✅ Correct!</span>
-                                                ) : (
-                                                    <span className="text-red-600">
-                                                        ❌ Incorrect{ex.correctAnswer ? (
-                                                            <>. Correct answer: <b>{ex.correctAnswer}</b></>
-                                                        ) : null}
-                                                    </span>
-                                                )}
                                             </div>
                                         )}
                                     </div>
-                                ))}
-                                {!submitted && (
-                                    <Button type="button" variant="success" onClick={handleSubmit}>
-                                        Submit Answers
-                                    </Button>
                                 )}
-                                {submitted && feedback.feedbackPrompt && (
+                                {submitted && !generatingFeedback && feedback.feedbackPrompt && (
                                     <div className="mt-4 italic text-blue-700 dark:text-blue-300">
                                         {feedback.feedbackPrompt}
                                     </div>

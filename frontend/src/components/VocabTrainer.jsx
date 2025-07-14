@@ -15,6 +15,8 @@ export default function VocabTrainer() {
     const [loading, setLoading] = useState(true);
     const username = useAppStore((state) => state.username);
     const darkMode = useAppStore((state) => state.darkMode);
+    const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
+    const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,7 +38,23 @@ export default function VocabTrainer() {
 
     const handleAnswer = async (quality) => {
         if (!card) return;
-        await submitVocabAnswer(card.id, quality);
+
+        // Add background activity for vocab update
+        const vocabActivityId = `vocab-update-${Date.now()}`;
+        addBackgroundActivity({
+            id: vocabActivityId,
+            label: "Updating vocabulary progress...",
+            status: "In progress"
+        });
+
+        try {
+            await submitVocabAnswer(card.id, quality);
+            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
+        } catch (error) {
+            console.error("Failed to submit vocab answer:", error);
+            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
+        }
+
         loadCard();
     };
 

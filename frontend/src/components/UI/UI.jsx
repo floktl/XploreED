@@ -42,7 +42,7 @@ export const Container = ({ children, bottom, className, showHeader = true, mini
     return (
         <>
             {showHeader && <Header minimal={minimalHeader} />}
-            <div className={showHeader ? "pt-20" : undefined}>
+            <div>
                 <div className="flex-1 overflow-auto flex flex-col items-center">
                     <div
                         className={clsx(
