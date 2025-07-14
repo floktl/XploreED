@@ -30,6 +30,8 @@ export default function LevelGame() {
     const username = useAppStore((state) => state.username);
     const darkMode = useAppStore((state) => state.darkMode);
     const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
+    const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
+    const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -272,8 +274,20 @@ export default function LevelGame() {
     const handleSubmit = async () => {
         try {
             const answer = typedAnswer.trim() || currentOrder.join(" ");
+
+            // Add background activity for vocab saving
+            const vocabActivityId = `level-vocab-${Date.now()}`;
+            addBackgroundActivity({
+                id: vocabActivityId,
+                label: "Saving vocabulary from game...",
+                status: "In progress"
+            });
+
             const result = await submitLevelAnswer(level, answer, sentence);
             setFeedback(result);
+
+            // Remove background activity after a delay
+            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
         } catch (error) {
             console.error("Submission error:", error);
             setFeedback({
@@ -281,6 +295,13 @@ export default function LevelGame() {
                 feedback: "Failed to submit answer. Please try again.",
                 correct_sentence: ""
             });
+            const vocabActivityId = `level-vocab-${Date.now()}`;
+            addBackgroundActivity({
+                id: vocabActivityId,
+                label: "Saving vocabulary from game...",
+                status: "In progress"
+            });
+            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
         }
     };
 

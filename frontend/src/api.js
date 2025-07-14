@@ -626,6 +626,34 @@ export const generateAiFeedback = async (payload = {}) => {
     return res.json();
 };
 
+// New progress tracking functions for AI feedback
+export const generateAiFeedbackWithProgress = async (payload = {}) => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback/generate-with-progress`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error("Failed to start AI feedback generation");
+    return res.json();
+};
+
+export const getFeedbackProgress = async (sessionId) => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback/progress/${sessionId}`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to get feedback progress");
+    return res.json();
+};
+
+export const getFeedbackResult = async (sessionId) => {
+    const res = await fetch(`${BASE_URL}/api/ai-feedback/result/${sessionId}`, {
+        credentials: "include",
+    });
+    if (!res.ok) throw new Error("Failed to get feedback result");
+    return res.json();
+};
+
 export const submitExerciseAnswers = async (
     blockId,
     answers = {},
@@ -690,12 +718,12 @@ export const getReadingExercise = async (style = "story") => {
     return res.json();
 };
 
-export const submitReadingAnswers = async (answers = {}, exercise = null) => {
+export const submitReadingAnswers = async (answers = {}, exercise_id = null) => {
     const res = await fetch(`${BASE_URL}/api/reading-exercise/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ answers, exercise }),
+        body: JSON.stringify({ answers, exercise_id }),
     });
     if (!res.ok) throw new Error("Failed to submit answers");
     return res.json();
