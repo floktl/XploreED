@@ -175,6 +175,7 @@ def reading_exercise_prompt(style: str, cefr_level: str, extra: str) -> dict:
             "Create a short "
             f"{style} in German for level {cefr_level}. "
             f"{extra}"
+            "In the 'text' field, use double newlines (\\n\\n) between paragraphs for clear Absätze (paragraphs). "
             "Return JSON with keys 'text', 'questions' (each with id, question, options, correctAnswer)."
         ),
     }

@@ -28,6 +28,7 @@ import GrammarMap from "./components/GrammarMap";
 import AIWeaknessLesson from "./components/AIWeaknessLesson";
 import AIReading from "./components/AIReading";
 import LevelUpTest from "./components/LevelUpTest";
+import ProgressTest from "./components/ProgressTest";
 import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
 import TermsOfService from "./components/TermsOfService";
@@ -115,6 +116,7 @@ const router = createBrowserRouter(
                 { path: "/weakness-lesson", element: <AIWeaknessLesson />, errorElement: <ErrorPage /> },
                 { path: "/reading-exercise", element: <AIReading />, errorElement: <ErrorPage /> },
                 { path: "/progress-test", element: <LevelUpTest />, errorElement: <ErrorPage /> },
+                { path: "/progress-test-demo", element: <ProgressTest />, errorElement: <ErrorPage /> },
                 { path: "/terms-of-service", element: <TermsOfService />, errorElement: <ErrorPage /> },
                 { path: "/about", element: <About />, errorElement: <ErrorPage /> },
             ],

@@ -10,6 +10,7 @@ import Footer from "./UI/Footer";
 import useAppStore from "../store/useAppStore";
 import { translateSentence, translateSentenceStream } from "../api";
 import PrettyFeedback from "./PrettyFeedback";
+import FeedbackBlock from "./FeedbackBlock";
 
 
 export default function Translator() {
@@ -19,11 +20,14 @@ export default function Translator() {
     const [studentInput, setStudentInput] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [feedbackBlock, setFeedbackBlock] = useState(null);
 
     const username = useAppStore((state) => state.username);
     const setUsername = useAppStore((state) => state.setUsername);
     const darkMode = useAppStore((state) => state.darkMode);
     const isAdmin = useAppStore((state) => state.isAdmin);
+    const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
+    const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,7 +50,7 @@ export default function Translator() {
     const handleTranslate = async () => {
         setError("");
         setGerman("");
-        setFeedback("");
+        setFeedbackBlock(null);
 
         if (!english.trim() || !studentInput.trim()) {
             setError("⚠️ Please fill out both fields before submitting.");
@@ -60,15 +64,39 @@ export default function Translator() {
 
         try {
             setLoading(true);
-            let streamed = "";
-            await translateSentenceStream(payload, (chunk) => {
-                streamed += chunk;
-                setFeedback(streamed);
+
+            // Add background activity for topic memory update
+            const topicActivityId = `topic-${Date.now()}`;
+            addBackgroundActivity({
+                id: topicActivityId,
+                label: "Updating topic memory...",
+                status: "In progress"
             });
-            setGerman("(see feedback)");
+
+            await translateSentenceStream(payload, (chunk) => {
+                // Parse the JSON chunk to get feedbackBlock
+                try {
+                    const data = JSON.parse(chunk);
+                    console.log("[CLIENT] Received chunk:", data);
+                    if (data.feedbackBlock) {
+                        setFeedbackBlock(data.feedbackBlock);
+                        // Set the German translation from the feedback block
+                        if (data.feedbackBlock.correct) {
+                            setGerman(data.feedbackBlock.correct);
+                        }
+                    }
+                } catch (e) {
+                    console.log("[CLIENT] Failed to parse chunk:", chunk, e);
+                    // fallback: ignore
+                }
+            });
+            // Remove the hardcoded "(see feedback)" since we now get it from the feedback block
+
+            setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
         } catch (err) {
             console.error("[CLIENT] Translation request failed:", err);
             setError("Something went wrong. Please try again.");
+            setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
         } finally {
             setLoading(false);
         }
@@ -79,6 +107,7 @@ export default function Translator() {
         setStudentInput("");
         setGerman("");
         setFeedback("");
+        setFeedbackBlock(null);
         setError("");
     };
 
@@ -130,7 +159,17 @@ export default function Translator() {
                                 🗣️ Correct German:
                             </p>
                             <p className={`mb-3 ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
-                            <PrettyFeedback feedback={feedback} />
+                            {/* Use FeedbackBlock for feedback rendering */}
+                            {feedbackBlock && (
+                                <FeedbackBlock
+                                    status={feedbackBlock.status}
+                                    correct={feedbackBlock.correct}
+                                    alternatives={feedbackBlock.alternatives}
+                                    explanation={feedbackBlock.explanation}
+                                    userAnswer={feedbackBlock.userAnswer}
+                                    diff={feedbackBlock.diff}
+                                />
+                            )}
                         </Card>
 
                         <div className="mt-6 text-center">

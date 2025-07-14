@@ -9,6 +9,7 @@ import redis
 import json
 import os
 from flask import Response, stream_with_context
+from .ai.helpers.helpers import format_feedback_block
 
 # Connect to Redis (host from env, default 'localhost')
 redis_host = os.getenv('REDIS_HOST', 'localhost')
@@ -28,18 +29,30 @@ def translate_async():
     def process():
         try:
             print(f"[translate_async] Starting job {job_id} for user {username}", flush=True)
+            print(f"[translate_async] Payload: english={english}, student_input={student_input}", flush=True)
             german = translate_to_german(english, username)
             print(f"[translate_async] German result: {german}", flush=True)
             if not isinstance(german, str) or "❌" in german:
                 result = {"german": german, "feedback": "❌ Translation failed."}
+                print(f"[translate_async] Early fail result: {result}", flush=True)
                 redis_client.set(f"translation_job:{job_id}", json.dumps({"status": "done", "result": result}))
                 return
             correct, reason = evaluate_translation_ai(english, german, student_input)
             print(f"[translate_async] Feedback: {correct}, {reason}", flush=True)
             update_memory_async(username, english, german, student_input)
             prefix = "✅" if correct else "❌"
-            feedback = f"{prefix} {reason}"
-            result = {"german": german, "feedback": feedback}
+            # Build feedback block
+            feedbackBlock = format_feedback_block(
+                user_answer=student_input,
+                correct_answer=german,
+                alternatives=[],
+                explanation=reason,
+                diff=None,
+                status="correct" if correct else "incorrect"
+            )
+            print(f"[translate_async] FeedbackBlock: {json.dumps(feedbackBlock, ensure_ascii=False)}", flush=True)
+            result = {"german": german, "feedbackBlock": feedbackBlock}
+            print(f"[translate_async] Final result to Redis: {json.dumps(result, ensure_ascii=False)}", flush=True)
             redis_client.set(f"translation_job:{job_id}", json.dumps({"status": "done", "result": result}))
         except Exception as e:
             print("[translate_async] Background job error:", e, flush=True)
@@ -68,38 +81,60 @@ def translate_stream():
     english = data.get("english", "")
     student_input = data.get("student_input", "")
 
+    print(f"[translate_stream] Starting for user {username}, english={english}, student_input={student_input}", flush=True)
+
     def event_stream():
         buffer = ""
         try:
-            resp = send_prompt(
-                "You are a helpful German teacher.",
-                {"role": "user", "content": f"Translate and evaluate: {english} | Student: {student_input}"},
-                temperature=0.3,
-                stream=True,
+            # First, get the German translation
+            german = translate_to_german(english, username)
+            print(f"[translate_stream] German translation: {german}", flush=True)
+
+            if not isinstance(german, str) or "❌" in german:
+                # Send error feedback block
+                error_feedback = format_feedback_block(
+                    user_answer=student_input,
+                    correct_answer="",
+                    alternatives=[],
+                    explanation="Translation failed",
+                    diff=None,
+                    status="error"
+                )
+                yield f"data: {json.dumps({'feedbackBlock': error_feedback})}\n\n"
+                return
+
+            # Evaluate the student's translation (single main API call)
+            correct, reason = evaluate_translation_ai(english, german, student_input)
+            print(f"[translate_stream] Evaluation: correct={correct}, reason={reason}", flush=True)
+
+            # Build the feedback block
+            feedback_block = format_feedback_block(
+                user_answer=student_input,
+                correct_answer=german,
+                alternatives=[],
+                explanation=reason,
+                diff=None,
+                status="correct" if correct else "incorrect"
             )
-            for line in resp.iter_lines(decode_unicode=True):
-                if not line:
-                    continue
-                if line.strip() == "data: [DONE]":
-                    break
-                if line.startswith("data:"):
-                    line = line[len("data:"):].strip()
-                try:
-                    data_json = json.loads(line)
-                    chunk = (
-                        data_json.get("choices", [{}])[0]
-                        .get("delta", {})
-                        .get("content")
-                    )
-                    if chunk:
-                        buffer += chunk
-                        yield f"data: {chunk}\n\n"
-                except Exception:
-                    continue
+            print(f"[translate_stream] Feedback block: {json.dumps(feedback_block, ensure_ascii=False)}", flush=True)
+
+            # Stream the feedback block as JSON immediately
+            yield f"data: {json.dumps({'feedbackBlock': feedback_block})}\n\n"
+
+            # Optionally, trigger grammar/dictionary analysis in the background (async, not blocking feedback)
+            Thread(target=update_memory_async, args=(username, english, german, student_input), daemon=True).start()
+            # If you want to add more async enrichment, do it here (e.g., grammar/dictionary info)
+
         except Exception as e:
-            yield f"data: [ERROR] {e}\n\n"
-        # After streaming, save vocab/topic memory in background
-        if buffer.strip():
-            Thread(target=update_memory_async, args=(username, english, buffer.strip(), student_input), daemon=True).start()
+            print(f"[translate_stream] Error: {e}", flush=True)
+            error_feedback = format_feedback_block(
+                user_answer=student_input,
+                correct_answer="",
+                alternatives=[],
+                explanation=f"Error: {str(e)}",
+                diff=None,
+                status="error"
+            )
+            yield f"data: {json.dumps({'feedbackBlock': error_feedback})}\n\n"
 
     return Response(stream_with_context(event_stream()), mimetype="text/event-stream")

@@ -251,3 +251,17 @@ def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | N
             pass_val = False
     evaluation["pass"] = pass_val
     return evaluation
+
+
+def format_feedback_block(user_answer, correct_answer, alternatives=None, explanation=None, diff=None, status=None):
+    """
+    Return a standardized feedback dict for frontend rendering.
+    """
+    return {
+        "status": status or ("correct" if str(user_answer).strip().lower() == str(correct_answer).strip().lower() else "incorrect"),
+        "correct": correct_answer,
+        "alternatives": alternatives or [],
+        "explanation": explanation or "",
+        "userAnswer": user_answer,
+        "diff": diff,
+    }

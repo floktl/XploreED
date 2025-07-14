@@ -3,7 +3,28 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "./UI/Button";
 import { Container, Title } from "./UI/UI";
 import { Input } from "./UI/UI";
-import { Search, Pencil, Ban, Megaphone, X, Save, Rocket } from "lucide-react";
+import {
+    Search,
+    Pencil,
+    Ban,
+    Megaphone,
+    X,
+    Save,
+    Rocket,
+    Users,
+    BookOpen,
+    MessageSquare,
+    BarChart3,
+    Plus,
+    Eye,
+    Trash2,
+    Settings,
+    Calendar,
+    User,
+    Target,
+    ArrowRight,
+    Shield
+} from "lucide-react";
 import Card from "./UI/Card";
 import Alert from "./UI/Alert";
 import ErrorPage from "./ErrorPage";
@@ -45,7 +66,6 @@ export default function AdminDashboard() {
     const [isEditing, setIsEditing] = useState(false);
     const [fatalError, setFatalError] = useState(false);
     const setIsAdmin = useAppStore((state) => state.setIsAdmin);
-
 
     const navigate = useNavigate();
     const darkMode = useAppStore((state) => state.darkMode);
@@ -111,7 +131,7 @@ export default function AdminDashboard() {
         setFormError("");
 
         if (!newTitle || !newContent || !newLessonId) {
-            setFormError("❗ Please fill out all fields.");
+            setFormError("Please fill out all fields.");
             return;
         }
 
@@ -167,212 +187,298 @@ export default function AdminDashboard() {
             setFatalError(true);
         }
     };
+
     return (
         <Container>
-            <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Title>📊 Admin Dashboard</Title>
-                <div className="mb-4 text-right">
-                    <Link to="/admin-users" className="text-blue-600 hover:underline">
-                        Manage Users →
-                    </Link>
-                </div>
+                                            <div className={`relative min-h-screen pb-20 overflow-hidden ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+                    <div className="h-full overflow-y-auto px-4">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <Shield className={`w-8 h-8 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                                <Title className="mb-0">Admin Dashboard</Title>
+                            </div>
+                            <Link
+                                to="/admin-users"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                    darkMode
+                                        ? "bg-gray-700 hover:bg-gray-600 text-white"
+                                        : "bg-blue-50 hover:bg-blue-100 text-blue-700"
+                                }`}
+                            >
+                                <Users className="w-4 h-4" />
+                                Manage Users
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
 
-                {error && <Alert type="danger">{error}</Alert>}
+                        {error && <Alert type="danger">{error}</Alert>}
 
-                <Card fit className="overflow-x-auto mb-10">
-                    <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
-                        <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
-                            <tr>
-                                <th className="px-4 py-2 text-left">User</th>
-                                <th className="px-4 py-2 text-left">Game Level</th>
-                                <th className="px-4 py-2 text-left">Last Activity</th>
-                                <th className="px-4 py-2 text-left">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-                            {Object.values(userSummary).length === 0 ? (
+                {/* User Activity Section */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Users className={`w-6 h-6 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                        <h2 className="text-xl font-bold">User Activity</h2>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className={`min-w-full border rounded-lg ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+                            <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
                                 <tr>
-                                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 italic">No user found.</td>
+                                    <th className="px-4 py-3 text-left font-semibold">User</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Level</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Last Activity</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Actions</th>
                                 </tr>
-                            ) : (
-                                Object.values(userSummary).map((u) => (
-                                    <tr key={u.username} className={darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"}>
-                                        <td className="px-4 py-2 font-semibold">{u.username}</td>
-                                        <td className="px-4 py-2">{u.lastLevel ?? "—"}</td>
-                                        <td className="px-4 py-2">{u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}</td>
-                                        <td className="px-4 py-2">
-                                            <Link to="/profile-stats" state={{ username: u.username }} className="text-blue-600 hover:underline">
-                                                View Stats →
-                                            </Link>
+                            </thead>
+                            <tbody className={darkMode ? "bg-gray-800 divide-gray-700" : "bg-white divide-gray-200"}>
+                                {Object.values(userSummary).length === 0 ? (
+                                    <tr>
+                                        <td colSpan={4} className="px-4 py-8 text-center text-gray-400 italic">
+                                            <User className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                            No users found
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </Card>
+                                ) : (
+                                    Object.values(userSummary).map((u) => (
+                                        <tr key={u.username} className={`${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"} transition-colors`}>
+                                            <td className="px-4 py-3 font-semibold">{u.username}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <Target className="w-4 h-4 text-green-500" />
+                                                    {u.lastLevel ?? "—"}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar className="w-4 h-4 text-gray-400" />
+                                                    {u.lastTime ? new Date(u.lastTime).toLocaleString() : "—"}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <Link
+                                                    to="/profile-stats"
+                                                    state={{ username: u.username }}
+                                                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                                                        darkMode
+                                                            ? "text-blue-400 hover:text-blue-300 hover:bg-gray-700"
+                                                            : "text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                    }`}
+                                                >
+                                                    <BarChart3 className="w-4 h-4" />
+                                                    View Stats
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                <Card fit>
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold">📚 All Lessons</h2>
-                        <Button variant="success" onClick={() => {
-                            setIsEditing(false);
-                            setNewLessonId("");
-                            setNewTitle("");
-                            setNewContent("");
-                            setFormError("");
-                            setAiEnabled(false);
-                            setShowEditorModal(true);
-                        }}>
-                            ➕ Add Lesson
+                {/* Lessons Management Section */}
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center gap-3">
+                            <BookOpen className={`w-6 h-6 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                            <h2 className="text-xl font-bold">Lesson Management</h2>
+                        </div>
+                        <Button
+                            variant="success"
+                            size="auto"
+                            onClick={() => {
+                                setIsEditing(false);
+                                setNewLessonId("");
+                                setNewTitle("");
+                                setNewContent("");
+                                setFormError("");
+                                setAiEnabled(false);
+                                setShowEditorModal(true);
+                            }}
+                            className="gap-2"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Add Lesson
                         </Button>
                     </div>
+                    <div className="overflow-x-auto">
+                        <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
+                            <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
+                                <tr>
+                                    <th className="px-4 py-3 text-left font-semibold">ID</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Title</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Progress</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Target</th>
+                                    <th className="px-4 py-3 text-left font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className={darkMode ? "bg-gray-800 divide-gray-700" : "bg-white divide-gray-200"}>
+                                {lessons.map((lesson) => {
+                                    const isDraft = lesson.published === 0;
 
-                    <table className={`min-w-full border rounded-lg overflow-hidden ${darkMode ? "border-gray-600" : "border-gray-200"}`}>
-                        <thead className={darkMode ? "bg-gray-700 text-gray-200" : "bg-blue-50 text-blue-700"}>
-                            <tr>
-                                <th className="px-4 py-2 text-left">Lesson ID</th>
-                                <th className="px-4 py-2 text-left">Title</th>
-                                <th className="px-4 py-2 text-left">Progress</th>
-                                <th className="px-4 py-2 text-left">Target User</th>
-                                <th className="px-4 py-2 text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className={darkMode ? "bg-gray-900 divide-gray-700" : "bg-white divide-gray-200"}>
-                            {lessons.map((lesson) => {
-                                const isDraft = lesson.published === 0;
-
-                                return (
-                                    <tr key={lesson.lesson_id}>
-                                        <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-                                            {lesson.lesson_id}
-                                        </td>
-                                        <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-                                            {lesson.title}
-                                        </td>
-                                        <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-                                            {lesson.published ? (
-                                                lesson.num_blocks === 0 ? (
-                                                    <Button
-                                                        variant="outline"
-                                                        disabled
-                                                        className="opacity-60 cursor-not-allowed"
-                                                    >
-                                                        🧱
-                                                    </Button>
+                                    return (
+                                        <tr key={lesson.lesson_id} className={`${darkMode ? "hover:bg-gray-700" : "hover:bg-gray-50"} transition-colors`}>
+                                            <td className={`px-4 py-3 ${isDraft ? "text-gray-400 italic" : ""}`}>
+                                                {lesson.lesson_id}
+                                            </td>
+                                            <td className={`px-4 py-3 ${isDraft ? "text-gray-400 italic" : ""}`}>
+                                                {lesson.title}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                {lesson.published ? (
+                                                    lesson.num_blocks === 0 ? (
+                                                        <Button
+                                                            variant="outline"
+                                                            disabled
+                                                            className="opacity-60 cursor-not-allowed"
+                                                        >
+                                                            <Settings className="w-4 h-4" />
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="progress"
+                                                            size="auto"
+                                                            onClick={async () => {
+                                                                try {
+                                                                    const data = await getLessonProgressDetails(lesson.lesson_id);
+                                                                    setLessonProgressDetails(data);
+                                                                    setShowLessonModal(lesson.lesson_id);
+                                                                } catch (err) {
+                                                                    console.error("❌ Failed to fetch progress details", err);
+                                                                    setFatalError(true);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {lessonProgress[lesson.lesson_id]
+                                                                ? `${Math.round(lessonProgress[lesson.lesson_id].percent)}%`
+                                                                : "View Progress"}
+                                                        </Button>
+                                                    )
                                                 ) : (
+                                                    <span className="text-sm italic text-gray-400">Draft</span>
+                                                )}
+                                            </td>
+
+                                            <td className={`px-4 py-3 ${isDraft ? "text-gray-400 italic" : ""}`}>
+                                                {lesson.target_user ?? "All Users"}
+                                            </td>
+
+                                            <td className="px-4 py-3">
+                                                <div className="flex gap-2">
                                                     <Button
-                                                        variant="progress"
+                                                        variant="ghost"
+                                                        size="auto"
+                                                        onClick={() => setModalContent(lesson)}
+                                                        className="p-2"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="auto"
+                                                        onClick={() => handleEditLesson(lesson)}
+                                                        className="p-2"
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant={lesson.published ? "danger" : "success"}
+                                                        size="auto"
                                                         onClick={async () => {
                                                             try {
-                                                                const data = await getLessonProgressDetails(lesson.lesson_id);
-                                                                setLessonProgressDetails(data);
-                                                                setShowLessonModal(lesson.lesson_id);
+                                                                const updated = await togglePublishLesson(lesson.lesson_id, {
+                                                                    ...lesson,
+                                                                    published: lesson.published ? 0 : 1,
+                                                                });
+                                                                if (updated.ok || updated === true) {
+                                                                    const refreshed = await getLessons();
+                                                                    setLessons(Array.isArray(refreshed) ? refreshed : []);
+                                                                }
                                                             } catch (err) {
-                                                                console.error("❌ Failed to fetch progress details", err);
+                                                                console.error("❌ Failed to toggle publish status", err);
                                                                 setFatalError(true);
                                                             }
                                                         }}
+                                                        className="p-2"
                                                     >
-                                                        {lessonProgress[lesson.lesson_id]
-                                                            ? `${Math.round(lessonProgress[lesson.lesson_id].percent)}%`
-                                                            : "📊 View"}
+                                                        {lesson.published ? <Ban className="w-4 h-4" /> : <Megaphone className="w-4 h-4" />}
                                                     </Button>
-                                                )
-                                            ) : (
-                                                <span className="text-sm italic text-gray-400">Draft</span>
-                                            )}
-                                        </td>
+                                                    <Button
+                                                        variant="danger"
+                                                        size="auto"
+                                                        onClick={async () => {
+                                                            if (!window.confirm("Are you sure you want to delete this lesson?")) return;
+                                                            try {
+                                                                const deleted = await deleteLesson(lesson.lesson_id);
+                                                                if (deleted.ok || deleted === true) {
+                                                                    setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
+                                                                }
+                                                            } catch (err) {
+                                                                console.error("❌ Failed to delete lesson", err);
+                                                                setFatalError(true);
+                                                            }
+                                                        }}
+                                                        className="p-2"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                                        <td className={`px-4 py-2 ${isDraft ? "text-gray-400 italic" : ""}`}>
-                                            {lesson.target_user ?? "🌍"}
-                                        </td>
-
-                                        <td className="px-4 py-2 flex gap-2">
-                                            <Button variant="ghost" onClick={() => setModalContent(lesson)}>
-                                                <Search className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" onClick={() => handleEditLesson(lesson)}>
-                                                <Pencil className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant={lesson.published ? "danger" : "success"}
-                                                onClick={async () => {
-                                                    try {
-                                                        const updated = await togglePublishLesson(lesson.lesson_id, {
-                                                            ...lesson,
-                                                            published: lesson.published ? 0 : 1,
-                                                        });
-                                                        if (updated.ok || updated === true) {
-                                                            const refreshed = await getLessons();
-                                                            setLessons(Array.isArray(refreshed) ? refreshed : []);
-                                                        }
-                                                    } catch (err) {
-                                                        console.error("❌ Failed to toggle publish status", err);
-                                                        setFatalError(true);
-                                                    }
-                                                }}
-                                            >
-                                                {lesson.published ? <Ban className="w-4 h-4" /> : <Megaphone className="w-4 h-4" />}
-                                            </Button>
-                                            <Button
-                                                variant="danger"
-                                                onClick={async () => {
-                                                    if (!window.confirm("Are you sure you want to delete this lesson?")) return;
-                                                    try {
-                                                        const deleted = await deleteLesson(lesson.lesson_id);
-                                                        if (deleted.ok || deleted === true) {
-                                                            setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
-                                                        }
-                                                    } catch (err) {
-                                                        console.error("❌ Failed to delete lesson", err);
-                                                        setFatalError(true);
-                                                    }
-                                                }}
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </Button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-
-                    </table>
-                </Card>
-
-                <Card fit className="mt-8">
-                    <h2 className="text-xl font-bold mb-4">📮 User Feedback</h2>
+                {/* User Feedback Section */}
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <MessageSquare className={`w-6 h-6 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
+                        <h2 className="text-xl font-bold">User Feedback</h2>
+                    </div>
                     {supportFeedback.length === 0 ? (
-                        <p>No feedback messages.</p>
+                        <div className="text-center py-8 text-gray-400">
+                            <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                            <p>No feedback messages yet</p>
+                        </div>
                     ) : (
-                        <ul className="space-y-2 max-h-64 overflow-y-auto">
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
                             {supportFeedback.map((fb) => (
-                                <li key={fb.id} className="border-b pb-1 last:border-none">
-                                    <p className="whitespace-pre-wrap">{fb.message}</p>
+                                <div key={fb.id} className={`p-4 rounded-lg border ${darkMode ? "border-gray-600 bg-gray-700" : "border-gray-200 bg-gray-50"}`}>
+                                    <p className="whitespace-pre-wrap mb-2">{fb.message}</p>
                                     {fb.created_at && (
-                                        <span className="text-xs text-gray-400">
+                                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                                            <Calendar className="w-3 h-3" />
                                             {new Date(fb.created_at).toLocaleString()}
-                                        </span>
+                                        </div>
                                     )}
-                                </li>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     )}
-                </Card>
+                </div>
 
+                {/* Modals */}
                 {modalContent && (
                     <Modal onClose={() => setModalContent(null)}>
-                        <h2 className="text-xl font-bold mb-2">📘 {modalContent.title}</h2>
+                        <div className="flex items-center gap-3 mb-4">
+                            <BookOpen className="w-6 h-6 text-blue-500" />
+                            <h2 className="text-xl font-bold">{modalContent.title}</h2>
+                        </div>
                         <BlockContentRenderer html={modalContent.content} mode="admin-preview" />
                     </Modal>
                 )}
 
                 {showEditorModal && (
                     <Modal onClose={() => setShowEditorModal(false)}>
-                        <h2 className="text-xl font-bold mb-4">
-                            {isEditing ? "✏️ Edit Lesson" : "📝 Create New Lesson"}
-                        </h2>
+                        <div className="flex items-center gap-3 mb-4">
+                            <Pencil className="w-6 h-6 text-blue-500" />
+                            <h2 className="text-xl font-bold">
+                                {isEditing ? "Edit Lesson" : "Create New Lesson"}
+                            </h2>
+                        </div>
+
                         <Input
                             type="number"
                             placeholder="Lesson ID"
@@ -425,25 +531,32 @@ export default function AdminDashboard() {
 
                 {showLessonModal && (
                     <Modal onClose={() => setShowLessonModal(null)}>
-                        <h2 className="text-xl font-bold mb-4">📘 Lesson {showLessonModal} – User Progress</h2>
+                        <div className="flex items-center gap-3 mb-4">
+                            <BarChart3 className="w-6 h-6 text-blue-500" />
+                            <h2 className="text-xl font-bold">Lesson {showLessonModal} – User Progress</h2>
+                        </div>
+
                         {lessonProgressDetails.length === 0 ? (
-                            <p>No progress data available.</p>
+                            <div className="text-center py-8 text-gray-400">
+                                <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                                <p>No progress data available</p>
+                            </div>
                         ) : (
-                            <ul className="space-y-2">
+                            <div className="space-y-3">
                                 {lessonProgressDetails.map((entry, index) => (
-                                    <li key={`${entry.user}-${index}`} className="flex justify-between">
+                                    <div key={`${entry.user}-${index}`} className={`flex justify-between items-center p-3 rounded-lg ${darkMode ? "bg-gray-700" : "bg-gray-50"}`}>
                                         <span className="font-medium">{entry.user}</span>
-                                        <span>{entry.percent}% ({entry.completed}/{entry.total})</span>
-                                    </li>
+                                        <span className="text-sm text-gray-600">{entry.percent}% ({entry.completed}/{entry.total})</span>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
                         )}
                     </Modal>
                 )}
 
                 <Footer />
-            </div>
+                    </div>
+                </div>
         </Container>
     );
-
 }

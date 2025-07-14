@@ -16,9 +16,9 @@ export default function RootLayout() {
     return <Outlet />;
   }
   return (
-    <>
+    <div className="pt-16">
       <Outlet />
       <AskAiButton />
-    </>
+    </div>
   );
 }

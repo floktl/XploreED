@@ -51,7 +51,7 @@ export default function Menu() {
     }, [username, setUsername, isAdmin, isLoading, navigate]);
 
     return (
-        <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+        <div className={`relative min-h-screen pb-20 overflow-hidden ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container>
 
                 <Card className="shadow-xl">
@@ -84,6 +84,11 @@ export default function Menu() {
                         <Button type="button" variant="secondary" onClick={() => navigate("/weakness-lesson")} className="justify-start gap-3">
                             <Bot className="w-5 h-5" />
                             AI Weakness Lesson
+                        </Button>
+
+                        <Button type="button" variant="ghost" onClick={() => navigate("/progress-test-demo")} className="justify-start gap-3">
+                            <Target className="w-5 h-5" />
+                            Progress Bar Test
                         </Button>
 
                     </div>
