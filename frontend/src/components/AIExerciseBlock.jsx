@@ -463,12 +463,10 @@ export default function AIExerciseBlock({
     };
 
     if (mode !== "student") {
-        // console.log('[AIExerciseBlock] Not student mode, rendering Card');
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
 
     if (loadingInit) {
-        // console.log('[AIExerciseBlock] loadingInit true, rendering loading Card');
         const IconComponent = progressIcon;
         return (
             <Card className="text-center py-8">
@@ -504,12 +502,10 @@ export default function AIExerciseBlock({
     }
 
     if (current === "API_ERROR_500") {
-        // console.log('[AIExerciseBlock] API_ERROR_500, rendering error Card');
         return <Card className="bg-red-100 text-red-800">🚨 500: Mistral API Error.</Card>;
     }
 
     if (!Array.isArray(exercises)) {
-        // console.log('[AIExerciseBlock] exercises not array, rendering error Card');
         return <Card className="bg-red-100 text-red-800">Failed to load AI exercise.</Card>;
     }
 
@@ -585,7 +581,6 @@ export default function AIExerciseBlock({
         );
     }
 
-    // console.log('[AIExerciseBlock] RENDERING OUTERMOST DIV WITH data-tour=ai-feedback');
     return (
         <div data-tour="ai-feedback">
             {/* Sticky progress bar directly under header, above Card */}
