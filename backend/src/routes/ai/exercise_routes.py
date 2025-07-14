@@ -81,9 +81,9 @@ def submit_ai_exercise(block_id):
         is_correct = False
         if ex and ex.get("type") == "translation":
             from .helpers.exercise_helpers import _strip_final_punct
-            ua = _strip_final_punct(user_answer)
-            ca = _strip_final_punct(correct_answer)
-            is_correct = str(ua).strip().lower() == str(ca).strip().lower()
+            ua = _strip_final_punct(user_answer).strip().lower()
+            ca = _strip_final_punct(correct_answer).strip().lower()
+            is_correct = ua == ca
         else:
             is_correct = str(user_answer).strip().lower() == str(correct_answer).strip().lower()
         # Generate up to 3 alternatives using AI, fallback to []

@@ -105,10 +105,9 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         cid = str(ex.get("id"))
         user_ans = answers.get(cid, "")
         correct_ans = id_map.get(cid, "")
-        # Ignore final . or ? for translation exercises only
-        if ex.get("type") == "translation":
-            user_ans = _strip_final_punct(user_ans)
-            correct_ans = _strip_final_punct(correct_ans)
+        # Ignore final . or ? for all exercise types
+        user_ans = _strip_final_punct(user_ans)
+        correct_ans = _strip_final_punct(correct_ans)
         if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
             correct += 1
         else:

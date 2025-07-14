@@ -169,10 +169,9 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
 
         correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
         user_ans = str(user_ans).strip().lower()
-        # Ignore final . or ? for translation exercises only
-        if ex.get("type") == "translation":
-            correct_ans = _strip_final_punct(correct_ans)
-            user_ans = _strip_final_punct(user_ans)
+        # Ignore final . or ? for all exercise types
+        correct_ans = _strip_final_punct(correct_ans)
+        user_ans = _strip_final_punct(user_ans)
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
 

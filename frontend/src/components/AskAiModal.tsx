@@ -328,9 +328,15 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                             className="flex-1 h-10 sm:h-11 max-h-20 min-h-[40px] sm:min-h-[44px] bg-transparent text-gray-900 resize-none focus:ring-0 focus:outline-none placeholder-gray-500 border-0 p-0 m-0 align-middle text-sm sm:text-base"
                             placeholder="Type your question..."
                             value={question}
+                            rows={1}
+                            style={{boxShadow: 'none', paddingTop: '10px', paddingBottom: '10px', lineHeight: '1.5', minHeight: '40px', overflow: 'hidden'}}
+                            onInput={e => {
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = '40px'; // reset to min height
+                                target.style.height = target.scrollHeight + 'px';
+                            }}
                             onChange={(e) => setQuestion(e.target.value)}
                             onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAsk(); } }}
-                            style={{boxShadow: 'none'}}
                         />
                     </div>
                     <button
