@@ -127,6 +127,7 @@ English sentence: \"{english}\"
 Student translation: \"{student}\"
 
 Ignore a missing or extra period (.) or question mark (?) at the end of the student's answer when evaluating correctness.
+If the german translation has an 'Umlaut' (ä, ö, ü) and the student types instead of ä ae, ö oe, ü ue, then the student is correct.
 
 Answer in JSON with keys `correct` (true/false) and `reason` in one short English sentence.
 """,

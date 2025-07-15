@@ -155,8 +155,26 @@ def get_scrambled_sentence(sentence):
     return words
 
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+def _strip_final_punct(s):
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
 def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None):
     """Return evaluation feedback comparing ``user_answer`` to ``correct_sentence``."""
+    # Normalize answers for comparison
+    user_answer = _strip_final_punct(user_answer)
+    correct_sentence = _strip_final_punct(correct_sentence)
+    user_answer = _normalize_umlauts(user_answer)
+    correct_sentence = _normalize_umlauts(correct_sentence)
+
     user_words = user_answer.strip().split()
     correct_words = correct_sentence.strip().split()
 
@@ -196,6 +214,12 @@ def evaluate_order(user_answer, correct_sentence, vocab=None, topic_memory=None)
 
 def get_feedback(student_version, correct_version, vocab=None, topic_memory=None):
     """Return visual diff plus short AI comment."""
+    # Normalize answers for comparison
+    student_version = _strip_final_punct(student_version)
+    correct_version = _strip_final_punct(correct_version)
+    student_version = _normalize_umlauts(student_version)
+    correct_version = _normalize_umlauts(correct_version)
+
     student_words = student_version.strip().split()
     correct_words = correct_version.strip().split()
 
