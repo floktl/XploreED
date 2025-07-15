@@ -22,6 +22,18 @@ import re
 
 logger = logging.getLogger(__name__)
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+def _strip_final_punct(s):
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
     """Evaluate a submitted exercise block and save results."""
@@ -77,15 +89,15 @@ def submit_ai_exercise(block_id):
         correct_answer = res.get("correct_answer")
         ex = next((e for e in exercises if str(e.get("id")) == str(res.get("id"))), None)
         user_answer = answers.get(str(res.get("id")), "")
-        # Use the same logic as compile_score_summary for translation exercises
+        # Use the same logic as compile_score_summary for all exercise types
         is_correct = False
-        if ex and ex.get("type") == "translation":
-            from .helpers.exercise_helpers import _strip_final_punct
-            ua = _strip_final_punct(user_answer).strip().lower()
-            ca = _strip_final_punct(correct_answer).strip().lower()
-            is_correct = ua == ca
-        else:
-            is_correct = str(user_answer).strip().lower() == str(correct_answer).strip().lower()
+        # Ignore final . or ? for all exercise types
+        ua = _strip_final_punct(user_answer).strip().lower()
+        ca = _strip_final_punct(correct_answer).strip().lower()
+        # Normalize umlauts for both answers
+        ua = _normalize_umlauts(ua)
+        ca = _normalize_umlauts(ca)
+        is_correct = ua == ca
         # Generate up to 3 alternatives using AI, fallback to []
         try:
             alternatives = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
@@ -103,7 +115,7 @@ def submit_ai_exercise(block_id):
             explanation = ""
         # If backend says incorrect, but AI feedback says correct, double-check with AI
         ai_feedback_says_correct = False
-        if not is_correct and ex and ex.get("type") == "translation":
+        if not is_correct and ex:
             if re.search(r"user'?s answer is correct", explanation, re.IGNORECASE):
                 # Ask AI for a final yes/no
                 from utils.ai.ai_api import send_prompt

@@ -18,6 +18,18 @@ from utils.helpers.helper import run_in_background, require_user
 # Store progress for each feedback generation session
 feedback_progress = {}
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+def _strip_final_punct(s):
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
 @ai_bp.route("/ai-feedback/progress/<session_id>", methods=["GET"])
 def get_feedback_progress(session_id):
     """Get the current progress of AI feedback generation."""
@@ -87,11 +99,13 @@ def generate_ai_feedback_with_progress():
                 cid = str(ex.get("id"))
                 user_ans = answers.get(cid, "")
                 correct_ans = id_map.get(cid, "")
-                # Ignore final . or ? for translation exercises only
-                if ex.get("type") == "translation":
-                    user_ans = _strip_final_punct(user_ans)
-                    correct_ans = _strip_final_punct(correct_ans)
-                if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
+                # Ignore final . or ? for all exercise types
+                user_ans = _strip_final_punct(user_ans)
+                correct_ans = _strip_final_punct(correct_ans)
+                # Normalize umlauts for both answers
+                user_ans = _normalize_umlauts(user_ans)
+                correct_ans = _normalize_umlauts(correct_ans)
+                if user_ans == correct_ans:
                     summary["correct"] += 1
                 else:
                     summary["mistakes"].append({
@@ -242,7 +256,13 @@ def generate_ai_feedback():
             cid = str(ex.get("id"))
             user_ans = answers.get(cid, "")
             correct_ans = id_map.get(cid, "")
-            if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
+            # Ignore final . or ? for all exercise types
+            user_ans = _strip_final_punct(user_ans)
+            correct_ans = _strip_final_punct(correct_ans)
+            # Normalize umlauts for both answers
+            user_ans = _normalize_umlauts(user_ans)
+            correct_ans = _normalize_umlauts(correct_ans)
+            if user_ans == correct_ans:
                 summary["correct"] += 1
             else:
                 summary["mistakes"].append(

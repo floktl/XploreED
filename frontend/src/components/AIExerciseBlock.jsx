@@ -667,11 +667,11 @@ export default function AIExerciseBlock({
                                 <div className="mt-2">
                                     <FeedbackBlock
                                         status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
-                                        correct={evaluation[ex.id]?.correct}
+                                        {...(!evaluation[ex.id]?.is_correct && { correct: evaluation[ex.id]?.correct })}
                                         alternatives={evaluation[ex.id]?.alternatives}
                                         explanation={evaluation[ex.id]?.explanation}
                                         userAnswer={answers[ex.id]}
-                                        diff={diffWords(answers[ex.id], evaluation[ex.id]?.correct)}
+                                        {...(!evaluation[ex.id]?.is_correct && { diff: diffWords(answers[ex.id], evaluation[ex.id]?.correct) })}
                                     />
                                 </div>
                             )}
