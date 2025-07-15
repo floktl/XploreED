@@ -247,18 +247,42 @@ def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | N
         cid = str(ex.get("id"))
         ans = str(answers.get(cid, "")).strip().lower()
         corr = str(id_map.get(cid, "")).strip().lower()
+        # Ignore final . or ? for all exercise types
+        ans = _strip_final_punct(ans)
+        corr = _strip_final_punct(corr)
+        # Normalize umlauts for both answers
+        ans = _normalize_umlauts(ans)
+        corr = _normalize_umlauts(corr)
         if ans != corr:
             pass_val = False
     evaluation["pass"] = pass_val
     return evaluation
 
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+def _strip_final_punct(s):
+    s = s.strip()
+    if s and s[-1] in ".?":
+        return s[:-1].strip()
+    return s
+
 def format_feedback_block(user_answer, correct_answer, alternatives=None, explanation=None, diff=None, status=None):
     """
     Return a standardized feedback dict for frontend rendering.
     """
+    # Normalize answers for comparison
+    ua = _strip_final_punct(str(user_answer)).strip().lower()
+    ca = _strip_final_punct(str(correct_answer)).strip().lower()
+    ua = _normalize_umlauts(ua)
+    ca = _normalize_umlauts(ca)
+
     return {
-        "status": status or ("correct" if str(user_answer).strip().lower() == str(correct_answer).strip().lower() else "incorrect"),
+        "status": status or ("correct" if ua == ca else "incorrect"),
         "correct": correct_answer,
         "alternatives": alternatives or [],
         "explanation": explanation or "",

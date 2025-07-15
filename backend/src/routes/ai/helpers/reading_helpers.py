@@ -147,10 +147,28 @@ def submit_reading_exercise():
     feedback_blocks = []
     mistakes = []
     from utils.ai.ai_api import send_prompt
+    def _normalize_umlauts(s):
+        # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+        s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+        s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+        return s
+
+    def _strip_final_punct(s):
+        s = s.strip()
+        if s and s[-1] in ".?":
+            return s[:-1].strip()
+        return s
+
     for q in questions:
         qid = str(q.get("id"))
         sol = str(q.get("correctAnswer", "")).strip().lower()
         ans = str(answers.get(qid, "")).strip().lower()
+        # Ignore final . or ? for all exercise types
+        sol = _strip_final_punct(sol)
+        ans = _strip_final_punct(ans)
+        # Normalize umlauts for both answers
+        sol = _normalize_umlauts(sol)
+        ans = _normalize_umlauts(ans)
         status = "correct" if ans == sol else "incorrect"
         explanation = ""
         if status == "incorrect":

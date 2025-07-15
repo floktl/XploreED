@@ -21,7 +21,11 @@ export default function diffWords(
         } else {
             if (u) {
                 parts.push(
-                    <span key={"u" + i} className="text-red-600">
+                    <span
+                        key={"u" + i}
+                        className="text-red-600 underline decoration-dotted cursor-help"
+                        title={c ? `Expected: '${c}'` : "Unexpected word"}
+                    >
                         {u}
                     </span>
                 );

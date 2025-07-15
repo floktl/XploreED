@@ -40,6 +40,12 @@ def _extract_json(text: str):
                 pass
     return None
 
+def _normalize_umlauts(s: str) -> str:
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
 def _strip_final_punct(s: str) -> str:
     s = s.strip()
     if s and s[-1] in ".?":
@@ -52,6 +58,17 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
     # Ignore final . or ? for both student and reference
     reference = _strip_final_punct(reference)
     student = _strip_final_punct(student)
+    # Normalize umlauts for both answers
+    reference = _normalize_umlauts(reference)
+    student = _normalize_umlauts(student)
+
+    # Direct comparison with normalized strings
+    if student.strip().lower() == reference.strip().lower():
+        return True, "Your translation is correct!"
+
+    # If direct comparison fails, use AI evaluation
+    # print("[evaluate_translation_ai] Evaluating translation using Mistral...", flush=True)
+    # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     user_prompt = evaluate_translation_prompt(english, student)
 

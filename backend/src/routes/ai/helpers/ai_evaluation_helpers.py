@@ -147,6 +147,13 @@ def _strip_final_punct(s):
     return s
 
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+
 def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
     logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)})")
@@ -172,6 +179,9 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         # Ignore final . or ? for all exercise types
         correct_ans = _strip_final_punct(correct_ans)
         user_ans = _strip_final_punct(user_ans)
+        # Normalize umlauts for both answers
+        correct_ans = _normalize_umlauts(correct_ans)
+        user_ans = _normalize_umlauts(user_ans)
         is_correct = int(user_ans == correct_ans)
         quality = 5 if is_correct else 2
 
