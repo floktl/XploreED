@@ -97,6 +97,13 @@ def _strip_final_punct(s):
     return s
 
 
+def _normalize_umlauts(s):
+    # Accept ae == ä, oe == ö, ue == ü (and vice versa)
+    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
+    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
+    return s
+
+
 def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
     """Return score summary for the evaluated answers."""
     mistakes = []
@@ -108,7 +115,10 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         # Ignore final . or ? for all exercise types
         user_ans = _strip_final_punct(user_ans)
         correct_ans = _strip_final_punct(correct_ans)
-        if str(user_ans).strip().lower() == str(correct_ans).strip().lower():
+        # Normalize umlauts for both answers
+        user_ans = _normalize_umlauts(user_ans)
+        correct_ans = _normalize_umlauts(correct_ans)
+        if user_ans == correct_ans:
             correct += 1
         else:
             mistakes.append({

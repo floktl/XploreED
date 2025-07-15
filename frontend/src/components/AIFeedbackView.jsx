@@ -271,7 +271,11 @@ export default function AIFeedbackView() {
                                             )}
                                             {submitted && feedback.feedbackBlocks && feedback.feedbackBlocks[idx] && (
                                                 <div className="mt-2">
-                                                    <FeedbackBlock {...feedback.feedbackBlocks[idx]} />
+                                                    <FeedbackBlock
+                                                        {...feedback.feedbackBlocks[idx]}
+                                                        {...(feedback.feedbackBlocks[idx]?.status !== "correct" && feedback.feedbackBlocks[idx]?.diff ? { diff: feedback.feedbackBlocks[idx].diff } : { diff: undefined })}
+                                                        {...(feedback.feedbackBlocks[idx]?.status !== "correct" && feedback.feedbackBlocks[idx]?.correct ? { correct: feedback.feedbackBlocks[idx].correct } : { correct: undefined })}
+                                                    />
                                                 </div>
                                             )}
                                         </div>
