@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import AskAiButton from "./AskAiButton";
+import Header from "./UI/Header";
 
 export default function RootLayout() {
   const location = useLocation();
@@ -16,9 +17,12 @@ export default function RootLayout() {
     return <Outlet />;
   }
   return (
-    <div className="pt-16">
-      <Outlet />
-      <AskAiButton />
-    </div>
+    <>
+      <Header />
+      <div className="pt-16">
+        <Outlet />
+        <AskAiButton />
+      </div>
+    </>
   );
 }

@@ -8,7 +8,7 @@ import Alert from "./UI/Alert";
 import Footer from "./UI/Footer";
 import Modal from "./UI/Modal";
 import ReportVocabModal from "./ReportVocabModal";
-import { getVocabulary, deleteVocab, reportVocab } from "../api";
+import { getVocabulary, deleteVocab, reportVocab, deleteAllVocab } from "../api";
 import useAppStore from "../store/useAppStore";
 import useMediaQuery from "../utils/useMediaQuery";
 import { Listbox } from "@headlessui/react";
@@ -18,7 +18,7 @@ export default function Vocabulary() {
     const [vocab, setVocab] = useState([]);
     const [selected, setSelected] = useState(null);
     const [showReport, setShowReport] = useState(false);
-    const [showDelete, setShowDelete] = useState(false);
+    const [showDeleteAll, setShowDeleteAll] = useState(false);
     const username = useAppStore((state) => state.username);
     const setUsername = useAppStore((state) => state.setUsername);
     const darkMode = useAppStore((state) => state.darkMode);
@@ -49,14 +49,15 @@ export default function Vocabulary() {
         }
     }, [username, isAdmin]);
 
-    const handleForget = async () => {
-        if (!selected) return;
+    const handleForget = async (vocabEntry = null) => {
+        const entry = vocabEntry || selected;
+        if (!entry) return;
         try {
-            await deleteVocab(selected.id);
-            setVocab((v) => v.filter((w) => w.id !== selected.id));
-            setSelected(null);
+            await deleteVocab(entry.id);
+            setVocab((v) => v.filter((w) => w.id !== entry.id));
+            if (!vocabEntry) setSelected(null);
         } catch (err) {
-            console.error("Failed to delete vocab", err);
+            console.error('Failed to delete vocab', err);
         }
     };
 
@@ -73,7 +74,7 @@ export default function Vocabulary() {
     const handleDeleteClick = (vocabEntry, e) => {
         e.stopPropagation();
         setSelected(vocabEntry);
-        setShowDelete(true);
+        handleForget(vocabEntry);
     };
 
     // Compute unique types for dropdown
@@ -95,9 +96,8 @@ export default function Vocabulary() {
                     </div>
                 </Title>
                 {/* Vocab type filter */}
-                {vocabTypes.length > 0 && (
-                    <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full max-w-xs">
-                        <label htmlFor="typeFilter" className="text-sm font-medium">Filter</label>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                    <div className="flex-1">
                         <Listbox value={typeFilter} onChange={setTypeFilter}>
                             <div className="relative w-full">
                                 <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-white dark:bg-gray-800 py-2 pl-3 pr-10 text-left shadow-md border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition text-base">
@@ -131,6 +131,25 @@ export default function Vocabulary() {
                             </div>
                         </Listbox>
                     </div>
+                    {vocab.length > 0 && (
+                        <Button variant="danger" onClick={() => setShowDeleteAll(true)}>
+                            <Trash2 className="w-4 h-4 mr-2" /> Delete All
+                        </Button>
+                    )}
+                </div>
+                {showDeleteAll && (
+                    <Modal onClose={() => setShowDeleteAll(false)}>
+                        <h2 className="text-lg font-bold mb-2">Delete All Vocabulary</h2>
+                        <p>Are you sure you want to delete <strong>ALL</strong> vocabulary? This cannot be undone.</p>
+                        <div className="flex justify-end gap-2 mt-4">
+                            <Button variant="secondary" onClick={() => setShowDeleteAll(false)}>Cancel</Button>
+                            <Button variant="danger" onClick={async () => {
+                                await deleteAllVocab();
+                                setVocab([]);
+                                setShowDeleteAll(false);
+                            }}>Delete All</Button>
+                        </div>
+                    </Modal>
                 )}
 
                 {filteredVocab.length === 0 ? (
@@ -150,13 +169,6 @@ export default function Vocabulary() {
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="font-bold text-lg">{v.vocab}</div>
-                                            <button
-                                                className="text-red-500 hover:text-red-700 z-10"
-                                                onClick={e => { e.stopPropagation(); handleDeleteClick(v, e); }}
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
                                         </div>
                                         {v.article && <div className="text-xs text-blue-700 font-semibold">{v.article}</div>}
                                         <div className="text-sm"><span className="font-semibold">Translation:</span> {v.translation}</div>
@@ -187,13 +199,7 @@ export default function Vocabulary() {
                                                 <td className="px-4 py-2 capitalize">{v.word_type || ""}</td>
                                                 <td className="px-4 py-2">{v.next_review ? new Date(v.next_review).toLocaleDateString() : ""}</td>
                                                 <td className="px-2 py-2">
-                                                    <button
-                                                        className="text-red-500 hover:text-red-700"
-                                                        onClick={e => handleDeleteClick(v, e)}
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 className="w-5 h-5" />
-                                                    </button>
+                                                    {/* Removed delete button from table row */}
                                                 </td>
                                             </tr>
                                         ))}
@@ -240,7 +246,7 @@ export default function Vocabulary() {
                     {selected.context && (<p className="mb-2"><strong>Context:</strong> {selected.context}</p>)}
                     {selected.exercise && (<p className="mb-2"><strong>Exercise:</strong> {selected.exercise}</p>)}
                     <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="danger" onClick={handleForget}>Forget</Button>
+                        <Button variant="danger" onClick={() => handleForget(selected)}>Forget</Button>
                         <Button variant="secondary" onClick={() => setShowReport(true)}>Report</Button>
                     </div>
                 </Modal>
@@ -252,17 +258,6 @@ export default function Vocabulary() {
                     onSend={handleSendReport}
                     onClose={() => setShowReport(false)}
                 />
-            )}
-
-            {showDelete && selected && (
-                <Modal onClose={() => setShowDelete(false)}>
-                    <h2 className="text-lg font-bold mb-2">Delete Vocabulary</h2>
-                    <p>Are you sure you want to delete <strong>{selected.article ? `${selected.article} ${selected.vocab}` : selected.vocab}</strong> from your vocabulary?</p>
-                    <div className="flex justify-end gap-2 mt-4">
-                        <Button variant="secondary" onClick={() => setShowDelete(false)}>Cancel</Button>
-                        <Button variant="danger" onClick={async () => { await handleForget(); setShowDelete(false); }}>Delete</Button>
-                    </div>
-                </Modal>
             )}
         </div>
     );

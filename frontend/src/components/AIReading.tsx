@@ -61,13 +61,16 @@ export default function AIReading() {
     const [feedback, setFeedback] = useState<Record<string, string>>({});
     const [progressPercentage, setProgressPercentage] = useState(0);
     const [progressStatus, setProgressStatus] = useState("Initializing...");
-    const [progressIcon, setProgressIcon] = useState(Brain);
+    // Change progressIcon state to use React.ElementType
+    const [progressIcon, setProgressIcon] = useState<React.ElementType>(Brain);
     const [feedbackBlocks, setFeedbackBlocks] = useState<any[]>([]); // Add this after other useState declarations
     const navigate = useNavigate();
     const darkMode = useAppStore((s) => s.darkMode);
     const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
     const updateBackgroundActivity = useAppStore((s) => s.updateBackgroundActivity);
     const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
+    // Add error state for API error
+    const [apiError, setApiError] = useState(false);
 
     const startExercise = async () => {
         setLoading(true);
@@ -93,7 +96,7 @@ export default function AIReading() {
                 const step = progressSteps[currentStep];
                 setProgressPercentage(step.percentage);
                 setProgressStatus(step.status);
-                setProgressIcon(() => step.icon);
+                setProgressIcon(step.icon);
                 currentStep++;
             } else {
                 clearInterval(progressInterval);
@@ -105,9 +108,11 @@ export default function AIReading() {
             setExerciseId((d as any).exercise_id || null); // Store exercise_id
             setProgressPercentage(100);
             setProgressStatus("Ready!");
-            setProgressIcon(() => CheckCircle);
+            setProgressIcon(CheckCircle);
+            setApiError(false);
         } catch {
-            setData("API_ERROR_500" as any);
+            setApiError(true);
+            setData(null);
             setExerciseId(null);
         } finally {
             setLoading(false);
@@ -128,7 +133,7 @@ export default function AIReading() {
         addBackgroundActivity({ id: activityId, label: "Saving vocab and updating memory...", status: "In progress" });
         try {
             // Only send answers and exercise_id
-            const result = await submitReadingAnswers(answers, exerciseId);
+            const result = await submitReadingAnswers(answers, exerciseId as any);
             console.log("Reading submit result:", result);
             let map: Record<string, string> = {};
             if (result?.results) {
@@ -180,11 +185,11 @@ export default function AIReading() {
         })
     );
 
-    if (data === "API_ERROR_500") {
+    if (apiError) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container >
-                    <Title>
+                <Container className="" bottom={null}>
+                    <Title className="">
                         <div className="flex items-center gap-2">
                             <BookOpen className="w-6 h-6" />
                             <span>AI Reading Exercise</span>
@@ -207,8 +212,8 @@ export default function AIReading() {
     if (!data || typeof data !== "object" || !Array.isArray((data as any).questions)) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container >
-                    <Title>
+                <Container className="" bottom={null}>
+                    <Title className="">
                         <div className="flex items-center gap-2">
                             <BookOpen className="w-6 h-6" />
                             <span>AI Reading Exercise</span>
@@ -279,8 +284,8 @@ export default function AIReading() {
                     </div>
                 </div>
             )}
-            <Container>
-                <Title>
+            <Container className="" bottom={null}>
+                <Title className="">
                     <div className="flex items-center gap-2">
                         <BookOpen className="w-6 h-6" />
                         <span>Reading Exercise</span>
