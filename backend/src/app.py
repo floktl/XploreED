@@ -49,23 +49,29 @@ app = Flask(__name__)
 debug_mode = os.getenv("FLASK_ENV", "development") == "development"
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
-app.config["JWT_COOKIE_SECURE"] = os.getenv("JWT_COOKIE_SECURE", "false").lower() == "true"
-app.config["JWT_COOKIE_CSRF_PROTECT"] = os.getenv("JWT_COOKIE_CSRF_PROTECT", "false").lower() == "true"
-app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
-app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
+
+# --- DEV MODE: Relax cookie and CORS restrictions for Fusion and local tools ---
 if debug_mode:
-    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-    app.config["SESSION_COOKIE_SECURE"] = False
+    app.config["SESSION_COOKIE_SAMESITE"] = None  # Allow cross-site cookies
+    app.config["SESSION_COOKIE_SECURE"] = False   # Allow non-HTTPS cookies
+    app.config["JWT_COOKIE_SECURE"] = False
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+    allowed_origin = ["*"]  # Allow all origins in dev
 else:
     app.config["SESSION_COOKIE_SAMESITE"] = "None"
     app.config["SESSION_COOKIE_SECURE"] = True
+    app.config["JWT_COOKIE_SECURE"] = True
+    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+    allowed_origin = os.getenv("FRONTEND_URL", "").split(",")
+
+app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
+app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
 
 # === Register Blueprints ===
 for bp in registered_blueprints:
     app.register_blueprint(bp)
 
 # === Enable CORS ===
-allowed_origin = os.getenv("FRONTEND_URL", "").split(",")
 CORS(app, origins=allowed_origin, supports_credentials=True)
 
 

@@ -76,6 +76,17 @@ def vocabulary():
     return jsonify(entries)
 
 
+@user_bp.route("/vocabulary", methods=["DELETE"])
+def delete_all_vocab():
+    """Delete all vocabulary entries for the logged in user."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    delete_rows("vocab_log", "WHERE username = ?", (user,))
+    return jsonify({"msg": "all deleted"})
+
+
 @user_bp.route("/vocab-train", methods=["GET", "POST"])
 def vocab_train():
     """Serve spaced repetition training data and record reviews."""
@@ -131,6 +142,7 @@ def save_vocab_words():
 def delete_vocab_word(vocab_id: int):
     """Delete a single vocabulary entry for the logged in user."""
     user = get_current_user()
+    print(f"[DELETE VOCAB] Called for user={user}, vocab_id={vocab_id}", flush=True)
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 

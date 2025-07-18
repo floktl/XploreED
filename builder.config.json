@@ -1,0 +1,6 @@
+{
+  "command": "make run",
+  "serverUrl": "http://localhost:5173",
+  "authenticateProxy": false,
+  "commitMode": "commits"
+}
