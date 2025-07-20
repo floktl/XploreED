@@ -19,11 +19,14 @@ from .helpers.exercise_helpers import (
     parse_submission_data,
 )
 import re
+import os
+import redis
 
 logger = logging.getLogger(__name__)
 
-# Global storage for enhanced results (in production, use Redis or database)
-_enhanced_results = {}
+# Connect to Redis (host from env, default 'localhost')
+redis_host = os.getenv('REDIS_HOST', 'localhost')
+redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 def _normalize_umlauts(s):
     # Accept ae == ä, oe == ö, ue == ü (and vice versa)
@@ -134,111 +137,47 @@ def submit_ai_exercise(block_id):
 def get_ai_exercise_results(block_id):
     """Get the latest results for an exercise block, including alternatives and explanations."""
     username = require_user()
-
-    result_key = f"{username}_{block_id}"
-    test_key = f"{username}_{block_id}_test"
-    print(f"[Results Endpoint] Checking for results with key: {result_key}", flush=True)
-    print(f"[Results Endpoint] Available keys: {list(_enhanced_results.keys())}", flush=True)
-
-    # Check if background task is running
-    if test_key in _enhanced_results:
-        print(f"[Results Endpoint] Background task marker found: {_enhanced_results[test_key]}", flush=True)
-    else:
-        print(f"[Results Endpoint] Background task marker NOT found - task may not be running", flush=True)
-
-    if result_key in _enhanced_results:
-        enhanced_data = _enhanced_results[result_key]
-        print(f"[Results Endpoint] Found data for {username}: {enhanced_data.keys()}", flush=True)
-        print(f"[Results Endpoint] Full data structure: {type(enhanced_data)}", flush=True)
-
-        # Log the actual results to see what's in them
-        results = enhanced_data.get("results", [])
-        print(f"[Results Endpoint] Number of results: {len(results)}", flush=True)
-
-        # Check if alternatives and explanations are actually generated for ALL exercises
-        all_enhanced = True
-        for i, result in enumerate(results):
-            alternatives_count = len(result.get('alternatives', []))
-            explanation_length = len(result.get('explanation', ''))
-            print(f"[Results Endpoint] Result {i}: id={result.get('id')}, alternatives={alternatives_count}, explanation_length={explanation_length}", flush=True)
-
-            if alternatives_count == 0 and explanation_length == 0:
-                all_enhanced = False
-
-        # Return results even if not all exercises have enhanced content yet
-        # This allows the frontend to show progressive updates
-        if all_enhanced:
-            print(f"[Results Endpoint] Returning complete results - ALL exercises have enhanced content", flush=True)
-            return jsonify({
-                "status": "complete",
-                "results": enhanced_data.get("results", []),
-                "pass": enhanced_data.get("pass", False),
-                "summary": enhanced_data.get("summary", {})
-            })
-        else:
-            print(f"[Results Endpoint] Returning partial results - some exercises still processing", flush=True)
-            return jsonify({
-                "status": "processing",
-                "results": enhanced_data.get("results", []),
-                "pass": enhanced_data.get("pass", False),
-                "summary": enhanced_data.get("summary", {}),
-                "message": "Alternatives and explanations are being generated in the background"
-            })
-    else:
-        print(f"[Results Endpoint] No data found for key: {result_key}", flush=True)
+    result_key = f"exercise_result:{username}:{block_id}"
+    result_json = redis_client.get(result_key)
+    if not result_json:
         return jsonify({
             "status": "processing",
             "message": "Alternatives and explanations are being generated in the background"
         })
-
-
-def _add_alternatives_and_explanations_async(username, block_id, exercises, answers, basic_results):
-    """Background task to add alternatives and explanations to results."""
-    print(f"[Background] Starting alternatives/explanations for user {username}", flush=True)
-
-    enhanced_results = []
-    for i, res in enumerate(basic_results):
-        try:
-            correct_answer = res.get("correct_answer")
-            ex = next((e for e in exercises if str(e.get("id")) == str(res.get("id"))), None)
-            user_answer = answers.get(str(res.get("id")), "")
-
-            enhanced_result = dict(res)
-
-            # Generate alternatives (optional, don't block if it fails)
-            try:
-                alternatives = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
-                if isinstance(alternatives, list):
-                    enhanced_result["alternatives"] = alternatives
-                else:
-                    enhanced_result["alternatives"] = []
-            except Exception as e:
-                print(f"[Background] Failed to generate alternatives for result {i}: {e}", flush=True)
-                enhanced_result["alternatives"] = []
-
-            # Generate explanation (optional, don't block if it fails)
-            try:
-                question = ex.get("question") if ex else ""
-                explanation = generate_explanation(question, user_answer, correct_answer) if correct_answer else ""
-                if isinstance(explanation, str):
-                    enhanced_result["explanation"] = explanation
-                else:
-                    enhanced_result["explanation"] = ""
-            except Exception as e:
-                print(f"[Background] Failed to generate explanation for result {i}: {e}", flush=True)
-                enhanced_result["explanation"] = ""
-
-            enhanced_results.append(enhanced_result)
-
-        except Exception as e:
-            print(f"[Background] Error processing result {i}: {e}")
-            enhanced_results.append(res)  # Keep original result if processing fails
-
-    # Store the enhanced results
-    result_key = f"{username}_{block_id}"
-    _enhanced_results[result_key] = enhanced_results
-
-    print(f"[Background] Completed alternatives/explanations for user {username}, stored {len(enhanced_results)} results", flush=True)
+    enhanced_data = json.loads(result_json)
+    ready_index = enhanced_data.get("ready_index", 1)
+    results = enhanced_data.get("results", [])
+    exercise_order = enhanced_data.get("exercise_order", [r.get("id") for r in results])
+    # Build a mapping from id to result
+    result_map = {str(r.get("id")): r for r in results}
+    visible_results = []
+    for idx, ex_id in enumerate(exercise_order):
+        res = result_map.get(str(ex_id), {})
+        base = {
+            "id": res.get("id", ex_id),
+            "is_correct": res.get("is_correct"),
+            "correct_answer": res.get("correct_answer"),
+        }
+        if idx < ready_index:
+            visible_results.append({
+                **base,
+                "alternatives": res.get("alternatives", []),
+                "explanation": res.get("explanation", ""),
+                "loading": False
+            })
+        else:
+            visible_results.append({
+                **base,
+                "alternatives": [],
+                "explanation": "",
+                "loading": True
+            })
+    return jsonify({
+        "status": "processing" if ready_index < len(visible_results) else "complete",
+        "results": visible_results,
+        "pass": enhanced_data.get("pass", False),
+        "summary": enhanced_data.get("summary", {})
+    })
 
 
 def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result):
@@ -289,13 +228,16 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
                 print(f"[Background] Error processing basic result {i}: {e}", flush=True)
                 basic_results.append(res)
 
-        # Store basic results immediately so frontend can show them
-        result_key = f"{username}_{block_id}"
-        _enhanced_results[result_key] = {
+        # Store basic results in Redis with ready=False
+        result_key = f"exercise_result:{username}:{block_id}"
+        exercise_ids = [str(ex.get("id")) for ex in exercises]
+        redis_client.set(result_key, json.dumps({
             "results": basic_results,
             "pass": bool(evaluation.get("pass")),
-            "summary": {"correct": 0, "total": len(exercises), "mistakes": []}
-        }
+            "summary": {"correct": 0, "total": len(exercises), "mistakes": []},
+            "ready_index": 1,  # Only the first result is ready initially
+            "exercise_order": exercise_ids
+        }))
         basic_end = time.time()
         print(f"[Background] Basic results stored in {basic_end - basic_start:.2f}s for user {username}", flush=True)
 
@@ -313,10 +255,12 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
             run_in_background(prefetch_next_exercises, username)
 
             # Update with summary data
-            _enhanced_results[result_key].update({
+            partial = json.loads(redis_client.get(result_key))
+            partial.update({
                 "pass": passed,
                 "summary": summary
             })
+            redis_client.set(result_key, json.dumps(partial))
 
             feedback_end = time.time()
             print(f"[Background] Summary generated in {feedback_end - feedback_start:.2f}s for user {username}", flush=True)
@@ -340,7 +284,7 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
 
         # Test if background task is working by adding a simple marker
         test_key = f"{username}_{block_id}_test"
-        _enhanced_results[test_key] = {"test": "background_task_started", "timestamp": time.time()}
+        redis_client.set(test_key, json.dumps({"test": "background_task_started", "timestamp": time.time()}))
         print(f"[Background] Added test marker: {test_key}", flush=True)
 
         bg_end = time.time()
@@ -392,38 +336,28 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
                     enhanced_result["explanation"] = ""
 
                 # Update the stored results immediately after each exercise is processed
-                result_key = f"{username}_{block_id}"
-                if result_key in _enhanced_results:
-                    # Get current results and update only this specific result
-                    current_results = _enhanced_results[result_key]["results"]
-                    if i < len(current_results):
-                        current_results[i] = enhanced_result
-                        print(f"[Background] ✅ UPDATED result {i} (exercise {i+1}) immediately for user {username}", flush=True)
-                        print(f"[Background] Result {i} has {len(enhanced_result['alternatives'])} alternatives and {len(enhanced_result['explanation'])} chars explanation", flush=True)
-
-                        # CRITICAL: Wait for this exercise to be fully processed before moving to the next
-                        # This ensures the frontend receives feedback in the correct order
-                        print(f"[Background] ⏳ Waiting 1.5s before processing next exercise to ensure order...", flush=True)
-                        time.sleep(1.5)  # 1.5 second delay to ensure frontend picks up this update
-                        print(f"[Background] ✅ Ready to process next exercise", flush=True)
-                    else:
-                        print(f"[Background] ❌ ERROR: Result index {i} out of range for user {username}", flush=True)
+                result_key = f"exercise_result:{username}:{block_id}"
+                partial = json.loads(redis_client.get(result_key))
+                current_results = partial["results"]
+                if i < len(current_results):
+                    current_results[i] = enhanced_result
+                partial["results"] = current_results
+                # Increment ready_index after each exercise is processed
+                partial["ready_index"] = i + 1  # Reveal up to this exercise (1-based)
+                redis_client.set(result_key, json.dumps(partial))
+                # Add a short delay for smooth reveal
+                time.sleep(0.7)
 
             except Exception as e:
                 print(f"[Background] Error processing result {i}: {e}", flush=True)
                 import traceback
                 traceback.print_exc()
 
-        # Final update
-        result_key = f"{username}_{block_id}"
-        if result_key in _enhanced_results:
-            parallel_end = time.time()
-            print(f"[Background] ✅ FINAL UPDATE: All alternatives/explanations completed for user {username} in {parallel_end - parallel_start:.2f}s", flush=True)
-            print(f"[Background] Final results for {username}: {len(_enhanced_results[result_key]['results'])} results", flush=True)
-            for i, result in enumerate(_enhanced_results[result_key]["results"]):
-                print(f"[Background] Final result {i}: {len(result.get('alternatives', []))} alternatives, {len(result.get('explanation', ''))} chars explanation", flush=True)
-        else:
-            print(f"[Background] ❌ ERROR: Result key {result_key} not found in _enhanced_results", flush=True)
+        # After all are processed, set ready=True
+        result_key = f"exercise_result:{username}:{block_id}"
+        partial = json.loads(redis_client.get(result_key))
+        redis_client.set(result_key, json.dumps(partial))
+        print(f"[Background] All alternatives/explanations processed and ready flag set for user {username}", flush=True)
 
     except Exception as e:
         print(f"[Background] ❌ CRITICAL ERROR in _add_alternatives_and_explanations_parallel: {e}", flush=True)
@@ -431,10 +365,8 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
         traceback.print_exc()
 
         # Store error information so frontend knows something went wrong
-        result_key = f"{username}_{block_id}"
-        if result_key in _enhanced_results:
-            _enhanced_results[result_key]["error"] = str(e)
-            _enhanced_results[result_key]["error_timestamp"] = time.time()
+        error_key = f"{username}_{block_id}"
+        redis_client.set(error_key, json.dumps({"error": str(e), "error_timestamp": time.time()}))
 
 
 @ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])

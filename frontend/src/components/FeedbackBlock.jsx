@@ -100,18 +100,6 @@ export default function FeedbackBlock({
   loading,
   exerciseLoading = false,  // New prop for exercise-level loading
 }) {
-  // If the entire exercise is still loading, show a loading state
-  if (exerciseLoading) {
-    return (
-      <div className="p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
-        <div className="flex items-center justify-center gap-2 py-4">
-          <Spinner size="sm" />
-          <span className="text-gray-600 dark:text-gray-400 text-sm">Evaluating exercise...</span>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 space-y-2">
       <div className="flex items-center gap-2 font-bold">
@@ -125,9 +113,10 @@ export default function FeedbackBlock({
           </span>
         )}
       </div>
-      {loading && (
-        <div className="flex justify-center items-center py-4">
+      {(loading || exerciseLoading) && (
+        <div className="flex justify-center items-center py-2">
           <Spinner />
+          <span className="ml-2 text-gray-600 dark:text-gray-400 text-sm">Generating detailed feedback...</span>
         </div>
       )}
       {/* Only show the difference (diff) for incorrect answers, if present */}

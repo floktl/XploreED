@@ -819,6 +819,26 @@ export default function AIExerciseBlock({
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [submitted, exercises.length, currentExerciseIndex]);
 
+    // Helper to check if feedback for an exercise is fully loaded
+    const isFeedbackLoaded = (idx) => {
+        const ex = exercises[idx];
+        if (!ex) return false;
+        const evalObj = evaluation[ex.id];
+        return evalObj && evalObj.loading === false;
+    };
+
+    // Helper to check if all feedback up to a given index is loaded
+    const allPreviousFeedbackLoaded = (idx) => {
+        for (let i = 0; i < idx; i++) {
+            if (!isFeedbackLoaded(i)) return false;
+        }
+        return true;
+    };
+
+    // Update navigation functions
+    const disableNext = !isFeedbackLoaded(currentExerciseIndex);
+    const disablePrev = currentExerciseIndex === 0;
+
     if (mode !== "student") {
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
@@ -1132,7 +1152,7 @@ export default function AIExerciseBlock({
                                         </>
                                     )}
 
-                                    {submitted && evaluation[ex.id] !== undefined && (
+                                    {submitted && allPreviousFeedbackLoaded(currentExerciseIndex) && evaluation[ex.id] !== undefined && (
                                         <div className="mt-2">
                                             <FeedbackBlock
                                                 status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
@@ -1140,7 +1160,7 @@ export default function AIExerciseBlock({
                                                 alternatives={evaluation[ex.id]?.alternatives}
                                                 explanation={evaluation[ex.id]?.explanation}
                                                 userAnswer={answers[ex.id]}
-                                                loading={false} // Never show loading for basic feedback - always show correct/incorrect
+                                                loading={false}
                                                 exerciseLoading={evaluation[ex.id]?.loading || false}
                                                 {...(!evaluation[ex.id]?.is_correct && { diff: diffWords(answers[ex.id], evaluation[ex.id]?.correct) })}
                                             />
@@ -1159,7 +1179,7 @@ export default function AIExerciseBlock({
                             variant="secondary"
                             size="sm"
                             onClick={goToPreviousExercise}
-                            disabled={currentExerciseIndex === 0}
+                            disabled={disablePrev}
                             className="flex items-center gap-2"
                         >
                             ← Previous
@@ -1173,7 +1193,7 @@ export default function AIExerciseBlock({
                             variant="secondary"
                             size="sm"
                             onClick={goToNextExercise}
-                            disabled={currentExerciseIndex === exercises.length - 1}
+                            disabled={disableNext}
                             className="flex items-center gap-2"
                         >
                             Next →
