@@ -169,12 +169,10 @@ export const saveVocabWords = async (words) => {
 };
 
 export const deleteVocab = async (id) => {
-  console.log("[API] deleteVocab called for id:", id);
   const res = await fetch(`${BASE_URL}/api/vocabulary/${id}`, {
     method: "DELETE",
     credentials: "include",
   });
-  console.log("[API] deleteVocab response:", res.status, res);
   if (!res.ok) throw new Error("Failed to delete vocab");
   return res.json();
 };

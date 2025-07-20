@@ -81,14 +81,14 @@ def translate_stream():
     english = data.get("english", "")
     student_input = data.get("student_input", "")
 
-    print(f"[translate_stream] Starting for user {username}, english={english}, student_input={student_input}", flush=True)
+    # print(f"[translate_stream] Starting for user {username}, english={english}, student_input={student_input}", flush=True)
 
     def event_stream():
         buffer = ""
         try:
             # First, get the German translation
             german = translate_to_german(english, username)
-            print(f"[translate_stream] German translation: {german}", flush=True)
+            # print(f"[translate_stream] German translation: {german}", flush=True)
 
             if not isinstance(german, str) or "❌" in german:
                 # Send error feedback block
@@ -105,7 +105,7 @@ def translate_stream():
 
             # Evaluate the student's translation (single main API call)
             correct, reason = evaluate_translation_ai(english, german, student_input)
-            print(f"[translate_stream] Evaluation: correct={correct}, reason={reason}", flush=True)
+            # print(f"[translate_stream] Evaluation: correct={correct}, reason={reason}", flush=True)
 
             # Build the feedback block
             feedback_block = format_feedback_block(
@@ -116,7 +116,7 @@ def translate_stream():
                 diff=None,
                 status="correct" if correct else "incorrect"
             )
-            print(f"[translate_stream] Feedback block: {json.dumps(feedback_block, ensure_ascii=False)}", flush=True)
+            # print(f"[translate_stream] Feedback block: {json.dumps(feedback_block, ensure_ascii=False)}", flush=True)
 
             # Stream the feedback block as JSON immediately
             yield f"data: {json.dumps({'feedbackBlock': feedback_block})}\n\n"
@@ -126,7 +126,7 @@ def translate_stream():
             # If you want to add more async enrichment, do it here (e.g., grammar/dictionary info)
 
         except Exception as e:
-            print(f"[translate_stream] Error: {e}", flush=True)
+            # print(f"[translate_stream] Error: {e}", flush=True)
             error_feedback = format_feedback_block(
                 user_answer=student_input,
                 correct_answer="",

@@ -24,7 +24,7 @@ def get_training_exercises():
     """Return AI-generated exercises and prefetch the next block."""
     username = require_user()
     logger.info(f"Training exercises request from user: {username}")
-    print("Training request from user:", username, flush=True)
+    # print("Training request from user:", username, flush=True)
 
     data = request.get_json() or {}
     answers = data.get("answers", {})

@@ -142,7 +142,6 @@ def save_vocab_words():
 def delete_vocab_word(vocab_id: int):
     """Delete a single vocabulary entry for the logged in user."""
     user = get_current_user()
-    print(f"[DELETE VOCAB] Called for user={user}, vocab_id={vocab_id}", flush=True)
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 

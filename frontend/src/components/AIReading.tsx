@@ -134,7 +134,6 @@ export default function AIReading() {
         try {
             // Only send answers and exercise_id
             const result = await submitReadingAnswers(answers, exerciseId as any);
-            console.log("Reading submit result:", result);
             let map: Record<string, string> = {};
             if (result?.results) {
                 result.results.forEach((r: { id: string; correct_answer: string }) => {
