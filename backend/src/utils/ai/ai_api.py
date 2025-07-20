@@ -31,38 +31,39 @@ def send_request(messages: list[dict], temperature: float = 0.7, stream: bool = 
     """Send a request to the Mistral API and return the raw response."""
     try:
         payload = build_payload(messages, temperature, stream)
-        logging.info("Sending request to Mistral API: %s", MISTRAL_API_URL)
-        logging.debug("Request payload: %s", payload)
+        # logging.info("Sending request to Mistral API: %s", MISTRAL_API_URL)
+        # logging.debug("Request payload: %s", payload)
 
         response = requests.post(MISTRAL_API_URL, headers=HEADERS, json=payload, timeout=60, stream=stream)
 
         if response.status_code != 200:
-            logging.error("=== MISTRAL API ERROR ===")
-            logging.error("Status code: %s", response.status_code)
-            logging.error("Response text: %s", response.text)
-            logging.error("Request payload: %s", payload)
-            logging.error("Headers: %s", HEADERS)
+            # logging.error("=== MISTRAL API ERROR ===")
+            # logging.error("Status code: %s", response.status_code)
+            # logging.error("Response text: %s", response.text)
+            # logging.error("Request payload: %s", payload)
+            # logging.error("Headers: %s", HEADERS)
+            pass
 
         return response
     except requests.exceptions.Timeout as e:
-        logging.error("=== MISTRAL API TIMEOUT ===")
-        logging.error("Timeout after 60 seconds")
-        logging.error("Request payload: %s", payload)
-        logging.error("Full stack trace:\n%s", traceback.format_exc())
+        # logging.error("=== MISTRAL API TIMEOUT ===")
+        # logging.error("Timeout after 60 seconds")
+        # logging.error("Request payload: %s", payload)
+        # logging.error("Full stack trace:\n%s", traceback.format_exc())
         raise
     except requests.exceptions.RequestException as e:
-        logging.error("=== MISTRAL API REQUEST ERROR ===")
-        logging.error("Error type: %s", type(e).__name__)
-        logging.error("Error message: %s", str(e))
-        logging.error("Request payload: %s", payload)
-        logging.error("Full stack trace:\n%s", traceback.format_exc())
+        # logging.error("=== MISTRAL API REQUEST ERROR ===")
+        # logging.error("Error type: %s", type(e).__name__)
+        # logging.error("Error message: %s", str(e))
+        # logging.error("Request payload: %s", payload)
+        # logging.error("Full stack trace:\n%s", traceback.format_exc())
         raise
     except Exception as e:
-        logging.error("=== MISTRAL API UNEXPECTED ERROR ===")
-        logging.error("Error type: %s", type(e).__name__)
-        logging.error("Error message: %s", str(e))
-        logging.error("Request payload: %s", payload)
-        logging.error("Full stack trace:\n%s", traceback.format_exc())
+        # logging.error("=== MISTRAL API UNEXPECTED ERROR ===")
+        # logging.error("Error type: %s", type(e).__name__)
+        # logging.error("Error message: %s", str(e))
+        # logging.error("Request payload: %s", payload)
+        # logging.error("Full stack trace:\n%s", traceback.format_exc())
         raise
 
 
