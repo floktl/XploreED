@@ -12,7 +12,7 @@ from flask import Response, stream_with_context
 from .ai.helpers.helpers import format_feedback_block
 
 # Connect to Redis (host from env, default 'localhost')
-redis_host = os.getenv('REDIS_HOST', 'localhost')
+redis_host = os.getenv('cREDIS_HOST', 'localhost')
 redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 @translate_bp.route("/translate", methods=["POST"])
