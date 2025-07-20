@@ -157,7 +157,8 @@ def get_ai_exercise_results(block_id):
             if alternatives_count == 0 and explanation_length == 0:
                 all_enhanced = False
 
-        # Only return "complete" if ALL exercises have enhanced content
+        # Return results even if not all exercises have enhanced content yet
+        # This allows the frontend to show progressive updates
         if all_enhanced:
             print(f"[Results Endpoint] Returning complete results - ALL exercises have enhanced content", flush=True)
             return jsonify({
@@ -167,9 +168,12 @@ def get_ai_exercise_results(block_id):
                 "summary": enhanced_data.get("summary", {})
             })
         else:
-            print(f"[Results Endpoint] Results found but not all exercises have enhanced content yet, returning processing status", flush=True)
+            print(f"[Results Endpoint] Returning partial results - some exercises still processing", flush=True)
             return jsonify({
                 "status": "processing",
+                "results": enhanced_data.get("results", []),
+                "pass": enhanced_data.get("pass", False),
+                "summary": enhanced_data.get("summary", {}),
                 "message": "Alternatives and explanations are being generated in the background"
             })
     else:
@@ -333,16 +337,19 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
 
 
 def _add_alternatives_and_explanations_parallel(username, block_id, basic_results, exercises, answers):
-    """Background task to add alternatives and explanations in parallel."""
+    """Background task to add alternatives and explanations in sequential order."""
     import time
     parallel_start = time.time()
-    print(f"[Background] 🚀 PARALLEL FUNCTION CALLED for user {username}", flush=True)
-    print(f"[Background] This confirms the background task is running!", flush=True)
+    print(f"[Background] 🚀 SEQUENTIAL FUNCTION CALLED for user {username}", flush=True)
+    print(f"[Background] Processing exercises in order to maintain sequence!", flush=True)
 
     try:
         enhanced_results = []
+        # Process exercises sequentially to maintain order
         for i, res in enumerate(basic_results):
             try:
+                print(f"[Background] 🎯 Processing exercise {i+1}/{len(basic_results)} in order", flush=True)
+
                 correct_answer = res.get("correct_answer")
                 ex = next((e for e in exercises if str(e.get("id")) == str(res.get("id"))), None)
                 user_answer = answers.get(str(res.get("id")), "")
@@ -358,7 +365,7 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
 
                 def get_alternatives():
                     try:
-                        print(f"[Background] Generating alternatives for result {i}", flush=True)
+                        print(f"[Background] Generating alternatives for result {i} (exercise {i+1})", flush=True)
                         alts = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
                         result = alts if isinstance(alts, list) else []
                         print(f"[Background] Generated {len(result)} alternatives for result {i}: {result}", flush=True)
@@ -369,7 +376,7 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
 
                 def get_explanation():
                     try:
-                        print(f"[Background] Generating explanation for result {i}", flush=True)
+                        print(f"[Background] Generating explanation for result {i} (exercise {i+1})", flush=True)
                         question = ex.get("question") if ex else ""
                         expl = generate_explanation(question, user_answer, correct_answer) if correct_answer else ""
                         result = expl if isinstance(expl, str) else ""
@@ -401,14 +408,21 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
                 enhanced_results.append(enhanced_result)
                 print(f"[Background] Enhanced result {i}: {len(alternatives)} alternatives, {len(explanation)} chars explanation", flush=True)
 
-                # Update the stored results immediately after each exercise is processed
+                                # Update the stored results immediately after each exercise is processed
                 result_key = f"{username}_{block_id}"
                 if result_key in _enhanced_results:
                     # Get current results and update only this specific result
                     current_results = _enhanced_results[result_key]["results"]
                     if i < len(current_results):
                         current_results[i] = enhanced_result
-                        print(f"[Background] ✅ UPDATED result {i} immediately for user {username}", flush=True)
+                        print(f"[Background] ✅ UPDATED result {i} (exercise {i+1}) immediately for user {username}", flush=True)
+
+                        # CRITICAL: Wait for this exercise to be fully processed before moving to the next
+                        # This ensures the frontend receives feedback in the correct order
+                        # The frontend polls every 1 second, so we wait 1.5 seconds to ensure it picks up this update
+                        print(f"[Background] ⏳ Waiting 1.5s before processing next exercise to ensure order...", flush=True)
+                        time.sleep(1.5)  # 1.5 second delay to ensure frontend picks up this update
+                        print(f"[Background] ✅ Ready to process next exercise", flush=True)
                     else:
                         print(f"[Background] ❌ ERROR: Result index {i} out of range for user {username}", flush=True)
 

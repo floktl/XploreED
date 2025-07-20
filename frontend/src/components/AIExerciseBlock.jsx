@@ -331,11 +331,9 @@ export default function AIExerciseBlock({
                 setEvaluation(map);
                 console.log("[AIExerciseBlock] Results set in state");
 
-                // If this is a streaming response, start polling for enhanced results
-                if (apiResult.streaming) {
-                    console.log("[AIExerciseBlock] Streaming response detected, starting enhanced results polling");
-                    startEnhancedResultsPolling();
-                }
+                // Always start polling for enhanced results, regardless of streaming response
+                console.log("[AIExerciseBlock] Starting enhanced results polling for progressive updates");
+                startEnhancedResultsPolling();
             }
 
             if (apiResult?.pass) {
@@ -434,20 +432,39 @@ export default function AIExerciseBlock({
                             const hasAlternatives = result.alternatives && result.alternatives.length > 0;
                             const hasExplanation = result.explanation && result.explanation.length > 0;
 
-                            if (hasAlternatives || hasExplanation) {
-                                console.log(`[AIExerciseBlock] Progressive update for ${result.id}:`, {
-                                    alternatives: result.alternatives,
-                                    explanation: result.explanation
-                                });
+                            // Always update with the latest result data
+                            if (result.id) {
+                                const existingResult = currentEvaluation[result.id];
+                                const hasEnhancedContent = hasAlternatives || hasExplanation;
 
-                                currentEvaluation[result.id] = {
-                                    is_correct: result.is_correct,
-                                    correct: result.correct_answer,
-                                    alternatives: result.alternatives || [],
-                                    explanation: result.explanation || "",
-                                    loading: false,  // Remove loading state
-                                };
-                                hasUpdates = true;
+                                // Show results as soon as they have either alternatives OR explanations
+                                // Don't wait for both - show partial results immediately
+                                if (hasEnhancedContent) {
+                                    console.log(`[AIExerciseBlock] Progressive update for ${result.id}:`, {
+                                        alternatives: result.alternatives,
+                                        explanation: result.explanation
+                                    });
+
+                                    currentEvaluation[result.id] = {
+                                        is_correct: result.is_correct,
+                                        correct: result.correct_answer,
+                                        alternatives: result.alternatives || [],
+                                        explanation: result.explanation || "",
+                                        loading: false,  // Remove loading state
+                                    };
+                                    hasUpdates = true;
+                                } else if (!existingResult || existingResult.loading) {
+                                    // If we have a result but no alternatives/explanation yet, show basic result
+                                    console.log(`[AIExerciseBlock] Showing basic result for ${result.id}`);
+                                    currentEvaluation[result.id] = {
+                                        is_correct: result.is_correct,
+                                        correct: result.correct_answer,
+                                        alternatives: [],
+                                        explanation: "",
+                                        loading: true,  // Keep loading state for basic results
+                                    };
+                                    hasUpdates = true;
+                                }
                             }
                         });
 
@@ -460,7 +477,7 @@ export default function AIExerciseBlock({
                     console.error("[AIExerciseBlock] Failed to fetch enhanced results:", error);
                     // Continue polling on error
                 }
-            }, 1000); // Poll every second
+            }, 1000); // Poll every 1 second to match backend timing
 
             // Stop polling after 15 seconds to avoid infinite polling
             setTimeout(() => {
