@@ -138,9 +138,9 @@ def submit_reading_exercise():
     # Debug: log questions and their fields
     import logging
     logger = logging.getLogger("reading_debug")
-    for q in questions:
-        logger.info(f"Q: {q}")
-        logger.info(f"id: {q.get('id')}, question: {q.get('question')}, correctAnswer: {q.get('correctAnswer')}")
+    # for q in questions:
+    #     logger.info(f"Q: {q}")
+    #     logger.info(f"id: {q.get('id')}, question: {q.get('question')}, correctAnswer: {q.get('correctAnswer')}")
 
     correct = 0
     results = []
@@ -180,7 +180,7 @@ def submit_reading_exercise():
                     {"role": "user", "content": prompt},
                     temperature=0.3
                 )
-                current_app.logger.info(f"AI explanation response: {resp.status_code} {resp.text}")
+                # current_app.logger.info(f"AI explanation response: {resp.status_code} {resp.text}")
                 if resp.status_code == 200:
                     explanation = resp.json()["choices"][0]["message"]["content"].strip()
             except Exception as e:

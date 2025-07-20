@@ -36,43 +36,43 @@ def deactivate_account_route():
         if not user_row:
             return jsonify({'error': 'User not found'}), 404
 
-        current_app.logger.info(f"User {user} requesting account deactivation")
+        # current_app.logger.info(f"User {user} requesting account deactivation")
 
         with get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM ai_user_data WHERE username = ?", (user,))
             ai_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {ai_deleted} records from ai_user_data for user {user}")
+            # current_app.logger.info(f"Deleted {ai_deleted} records from ai_user_data for user {user}")
 
             cursor.execute("DELETE FROM vocab_log WHERE username = ?", (user,))
             vocab_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {vocab_deleted} records from vocab_log for user {user}")
+            # current_app.logger.info(f"Deleted {vocab_deleted} records from vocab_log for user {user}")
 
             cursor.execute("DELETE FROM topic_memory WHERE username = ?", (user,))
             topic_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {topic_deleted} records from topic_memory for user {user}")
+            # current_app.logger.info(f"Deleted {topic_deleted} records from topic_memory for user {user}")
 
             cursor.execute("DELETE FROM results WHERE username = ?", (user,))
             results_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {results_deleted} records from results for user {user}")
+            # current_app.logger.info(f"Deleted {results_deleted} records from results for user {user}")
 
             cursor.execute("DELETE FROM exercise_submissions WHERE username = ?", (user,))
             submissions_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {submissions_deleted} records from exercise_submissions for user {user}")
+            # current_app.logger.info(f"Deleted {submissions_deleted} records from exercise_submissions for user {user}")
 
             cursor.execute("DELETE FROM lesson_progress WHERE user_id = ?", (user,))
             lesson_progress_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {lesson_progress_deleted} records from lesson_progress for user {user}")
+            # current_app.logger.info(f"Deleted {lesson_progress_deleted} records from lesson_progress for user {user}")
 
             cursor.execute("DELETE FROM users WHERE username = ?", (user,))
             user_deleted = cursor.rowcount
-            current_app.logger.info(f"Deleted {user_deleted} records from users for user {user}")
+            # current_app.logger.info(f"Deleted {user_deleted} records from users for user {user}")
 
             conn.commit()
 
         session_manager.destroy_user_sessions(user)
-        current_app.logger.info(f"Destroyed all sessions for user {user}")
-        current_app.logger.info(f"Account deactivation completed for user {user}. Deleted: AI data={ai_deleted}, vocab={vocab_deleted}, topic_memory={topic_deleted}, results={results_deleted}, exercise_submissions={submissions_deleted}, lesson_progress={lesson_progress_deleted}, user={user_deleted}")
+        # current_app.logger.info(f"Destroyed all sessions for user {user}")
+        # current_app.logger.info(f"Account deactivation completed for user {user}. Deleted: AI data={ai_deleted}, vocab={vocab_deleted}, topic_memory={topic_deleted}, results={results_deleted}, exercise_submissions={submissions_deleted}, lesson_progress={lesson_progress_deleted}, user={user_deleted}")
 
         resp = make_response(jsonify({'message': 'Account deactivated successfully'}))
         resp.set_cookie('session_id', '', max_age=0)

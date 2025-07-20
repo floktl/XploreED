@@ -156,7 +156,7 @@ def _create_ai_block(username: str) -> dict | None:
     try:
         from .exercise_helpers import get_recent_exercise_questions
         recent_questions = get_recent_exercise_questions(username)
-        logger.info(f"_create_ai_block: Got {len(recent_questions)} recent questions for user {username}")
+        # logger.info(f"_create_ai_block: Got {len(recent_questions)} recent questions for user {username}")
     except Exception as e:
         logger.error(f"_create_ai_block: Failed to get recent questions for user {username}: {e}")
         recent_questions = []
@@ -176,12 +176,9 @@ def _create_ai_block(username: str) -> dict | None:
         logger.error(f"_create_ai_block: No exercises generated for user {username}")
         return None
 
-    exercises = ai_block.get("exercises", [])
-    logger.info(f"_create_ai_block: Generated {len(exercises)} exercises for user {username}")
-
     # Ensure we have at least 3 exercises, retry if needed
-    if len(exercises) < 3:
-        logger.warning(f"_create_ai_block: Only {len(exercises)} exercises generated for user {username}, retrying...")
+    if len(ai_block.get("exercises", [])) < 3:
+        # logger.warning(f"_create_ai_block: Only {len(exercises)} exercises generated for user {username}, retrying...")
         # Try to generate more exercises
         for attempt in range(2):  # Try up to 2 more times
             try:
@@ -191,24 +188,24 @@ def _create_ai_block(username: str) -> dict | None:
                 if additional_block and additional_block.get("exercises"):
                     additional_exercises = additional_block.get("exercises", [])
                     # Add unique exercises
-                    existing_questions = {ex.get("question") for ex in exercises}
+                    existing_questions = {ex.get("question") for ex in ai_block.get("exercises", [])}
                     for ex in additional_exercises:
-                        if ex.get("question") not in existing_questions and len(exercises) < 3:
-                            exercises.append(ex)
+                        if ex.get("question") not in existing_questions and len(ai_block.get("exercises", [])) < 3:
+                            ai_block["exercises"].append(ex)
                             existing_questions.add(ex.get("question"))
-                    logger.info(f"_create_ai_block: Added {len(exercises)} total exercises for user {username}")
-                    if len(exercises) >= 3:
+                    # logger.info(f"_create_ai_block: Added {len(exercises)} total exercises for user {username}")
+                    if len(ai_block.get("exercises", [])) >= 3:
                         break
             except Exception as e:
                 logger.error(f"_create_ai_block: Failed to generate additional exercises for user {username}: {e}")
 
-    random.shuffle(exercises)
-    ai_block["exercises"] = exercises[:3]  # Take exactly 3 exercises
+    random.shuffle(ai_block["exercises"])
+    ai_block["exercises"] = ai_block["exercises"][:3]  # Take exactly 3 exercises
 
     for ex in ai_block.get("exercises", []):
         ex.pop("correctAnswer", None)
 
-    logger.info(f"_create_ai_block: Final block has {len(ai_block.get('exercises', []))} exercises for user {username}")
+    # logger.info(f"_create_ai_block: Final block has {len(ai_block.get('exercises', []))} exercises for user {username}")
     return ai_block
 
 

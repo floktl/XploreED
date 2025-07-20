@@ -19,7 +19,7 @@ def evaluate_answers_with_ai(
     exercises: list, answers: dict, mode: str = "strict"
 ) -> dict | None:
     """Ask Mistral to evaluate student answers and return JSON results."""
-    logger.info(f"Starting AI evaluation with mode={mode}, exercises_count={len(exercises)}, answers_count={len(answers)}")
+    # logger.info(f"Starting AI evaluation with mode={mode}, exercises_count={len(exercises)}, answers_count={len(answers)}")
 
     formatted = [
         {
@@ -30,7 +30,7 @@ def evaluate_answers_with_ai(
         }
         for ex in exercises
     ]
-    logger.info(f"Formatted {len(formatted)} exercises for evaluation")
+    # logger.info(f"Formatted {len(formatted)} exercises for evaluation")
 
     instructions = (
         "Evaluate these answers for a German exercise. "
@@ -45,24 +45,24 @@ def evaluate_answers_with_ai(
             + instructions
         )
 
-    logger.info(f"Generated evaluation instructions for mode={mode}")
+    # logger.info(f"Generated evaluation instructions for mode={mode}")
     user_prompt = answers_evaluation_prompt(instructions, formatted)
 
     try:
-        logger.info(f"Sending evaluation request to Mistral API")
+        # logger.info(f"Sending evaluation request to Mistral API")
         resp = send_prompt(
             "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher.",
             user_prompt,
             temperature=0.3,
         )
         if resp.status_code == 200:
-            logger.info(f"Mistral evaluation response successful")
+            # logger.info(f"Mistral evaluation response successful")
             content = resp.json()["choices"][0]["message"]["content"]
-            logger.info(f"Raw evaluation response length: {len(content)} characters")
+            # logger.info(f"Raw evaluation response length: {len(content)} characters")
 
             parsed = extract_json(content)
             if parsed:
-                logger.info(f"Successfully parsed evaluation JSON")
+                # logger.info(f"Successfully parsed evaluation JSON")
                 return parsed
             else:
                 logger.error(f"Failed to parse evaluation JSON from response")
@@ -72,7 +72,7 @@ def evaluate_answers_with_ai(
         logger.error(f"AI evaluation failed: {e}")
         current_app.logger.error("AI evaluation failed: %s", e)
 
-    logger.error(f"AI evaluation failed - returning None")
+    # logger.error(f"AI evaluation failed - returning None")
     return None
 
 
@@ -157,45 +157,39 @@ def _normalize_umlauts(s):
 
 def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
-    logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)})")
+    # logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)})")
 
     if not exercise_block:
         logger.error(f"Missing exercise block for processing user {username}")
-        return
+        return []
 
     all_exercises = exercise_block.get("exercises", [])
     exercise_map = {str(e.get("id")): e for e in all_exercises}
-    logger.info(f"Processing {len(all_exercises)} exercises for user {username}")
+    # logger.info(f"Processing {len(all_exercises)} exercises for user {username}")
 
     results = []
-    reviewed: set[str] = set()
-    for ex_id, user_ans in answers.items():
+    reviewed = set()
+
+    for ex_id, user_answer in answers.items():
         ex = exercise_map.get(str(ex_id))
         if not ex:
-            logger.warning(f"Exercise {ex_id} not found in exercise map for user {username}")
+            # logger.warning(f"Exercise {ex_id} not found in exercise map for user {username}")
             continue
 
-        correct_ans = str(ex.get("correctAnswer", "")).strip().lower()
-        user_ans = str(user_ans).strip().lower()
-        # Ignore final . or ? for all exercise types
-        correct_ans = _strip_final_punct(correct_ans)
-        user_ans = _strip_final_punct(user_ans)
-        # Normalize umlauts for both answers
-        correct_ans = _normalize_umlauts(correct_ans)
-        user_ans = _normalize_umlauts(user_ans)
-        is_correct = int(user_ans == correct_ans)
+        correct_ans = ex.get("correctAnswer", "")
+        is_correct = user_answer.strip().lower() == correct_ans.strip().lower()
         quality = 5 if is_correct else 2
 
-        logger.info(f"Exercise {ex_id} for user {username}: correct={is_correct}, quality={quality}")
+        # logger.info(f"Exercise {ex_id} for user {username}: correct={is_correct}, quality={quality}")
 
         features = detect_language_topics(
             f"{ex.get('question', '')} {correct_ans}"
         ) or ["unknown"]
         skill = ex.get("type", "")
-        logger.info(f"Detected features for exercise {ex_id}: {features}")
+        # logger.info(f"Detected features for exercise {ex_id}: {features}")
 
         for feature in features:
-            logger.info(f"Updating topic memory for user {username}, feature={feature}, skill={skill}")
+            # logger.info(f"Updating topic memory for user {username}, feature={feature}, skill={skill}")
             _update_single_topic(
                 username,
                 feature,
@@ -204,24 +198,15 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
                 quality,
             )
 
-            results.append(
-                {
-                    "topic_memory": {
-                        "grammar": feature,
-                        "skill_type": skill,
-                        "quality": quality,
-                        "correct": is_correct,
-                    }
-                }
-            )
-
-        words = set(
+        # Extract and review vocabulary
+        words = (
             [w for w, _ in extract_words(ex.get("question", ""))]
             + [w for w, _ in extract_words(correct_ans)]
         )
-        logger.info(f"Extracted {len(words)} words from exercise {ex_id} for user {username}")
+        # logger.info(f"Extracted {len(words)} words from exercise {ex_id} for user {username}")
 
         for vocab in words:
             review_vocab_word(username, vocab, quality, seen=reviewed)
 
-    logger.info(f"Completed processing AI answers for user {username}: {len(results)} results")
+    # logger.info(f"Completed processing AI answers for user {username}: {len(results)} results")
+    return results

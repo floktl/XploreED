@@ -41,8 +41,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Suppress werkzeug info logs except for errors
-import logging
-logging.getLogger('werkzeug').setLevel(logging.ERROR)
+# import logging
+# logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 def log_exercise_event(event_type: str, username: str, details: dict = None):
     """Log exercise-related events with timestamp and user context."""
@@ -52,7 +52,7 @@ def log_exercise_event(event_type: str, username: str, details: dict = None):
         "username": username,
         "details": details or {}
     }
-    logger.info(f"EXERCISE_EVENT: {json.dumps(log_data, indent=2)}")
+    # logger.info(f"EXERCISE_EVENT: {json.dumps(log_data, indent=2)}")
 
 def log_ai_user_data(username: str, context: str):
     """Log the current ai_user_data row for the user with context info."""
@@ -64,7 +64,7 @@ def log_ai_user_data(username: str, context: str):
         where="username = ?",
         params=(username,),
     )
-    logger.info(f"[DB] ai_user_data for {username} after {context}: {json.dumps(row, indent=2, ensure_ascii=False)}")
+    # logger.info(f"[DB] ai_user_data for {username} after {context}: {json.dumps(row, indent=2, ensure_ascii=False)}")
 
 def log_vocab_log(username: str, context: str):
     import logging
@@ -75,7 +75,7 @@ def log_vocab_log(username: str, context: str):
         where="username = ?",
         params=(username,),
     )
-    logger.info(f"[DB] vocab_log for {username} after {context}: {json.dumps(rows, indent=2, ensure_ascii=False)}")
+    # logger.info(f"[DB] vocab_log for {username} after {context}: {json.dumps(rows, indent=2, ensure_ascii=False)}")
 
 def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
     """Return vocab and topic memory data for the given user."""
@@ -151,17 +151,17 @@ def save_exercise_submission_async(
     def run():
         with app.app_context():
             try:
-                logger.info(f"Processing AI answers for user {username}, block {block_id}")
+                # logger.info(f"Processing AI answers for user {username}, block {block_id}")
                 process_ai_answers(
                     username,
                     str(block_id),
                     answers,
                     {"exercises": exercises},
                 )
-                logger.info(f"Checking auto level up for user {username}")
+                # logger.info(f"Checking auto level up for user {username}")
                 check_auto_level_up(username)
 
-                logger.info(f"Inserting exercise submission for user {username}, block {block_id}")
+                # logger.info(f"Inserting exercise submission for user {username}, block {block_id}")
                 insert_row(
                     "exercise_submissions",
                     {
@@ -173,11 +173,11 @@ def save_exercise_submission_async(
 
                 # Update exercise history with new questions
                 new_questions = [ex.get("question") for ex in exercises if ex.get("question")]
-                logger.info(f"Updating exercise history for user {username} with {len(new_questions)} new questions")
+                # logger.info(f"Updating exercise history for user {username} with {len(new_questions)} new questions")
                 update_exercise_history(username, new_questions)
 
                 # Prefetch next block with updated history
-                logger.info(f"Prefetching next exercises for user {username}")
+                # logger.info(f"Prefetching next exercises for user {username}")
                 prefetch_next_exercises(username)
 
                 log_exercise_event("submission_complete", username, {
@@ -231,7 +231,7 @@ def get_ai_exercises():
 
     example_block = EXERCISE_TEMPLATE.copy()
 
-    logger.info(f"Fetching vocab data for user {username}")
+    # logger.info(f"Fetching vocab data for user {username}")
     vocab_rows = select_rows(
         "vocab_log",
         columns="vocab,translation,interval_days,next_review,ef,repetitions,last_review",
@@ -240,49 +240,39 @@ def get_ai_exercises():
     ) or []
     vocab_data = [
         {
-            "type": "string",
             "word": row["vocab"],
             "translation": row.get("translation"),
-            "sm2_interval": row.get("interval_days"),
-            "sm2_due_date": row.get("next_review"),
-            "sm2_ease": row.get("ef"),
+            "interval_days": row.get("interval_days"),
+            "next_review": row.get("next_review"),
+            "ef": row.get("ef"),
             "repetitions": row.get("repetitions"),
-            "sm2_last_review": row.get("last_review"),
-            "quality": 0,
+            "last_review": row.get("last_review"),
         }
         for row in vocab_rows
     ]
-    logger.info(f"Found {len(vocab_data)} vocab entries for user {username}")
+    # logger.info(f"Found {len(vocab_data)} vocab entries for user {username}")
 
-    logger.info(f"Fetching topic memory for user {username}")
-    topic_rows = fetch_topic_memory(username) or []
-    topic_memory = [dict(row) for row in topic_rows]
-    logger.info(f"Found {len(topic_memory)} topic memory entries for user {username}")
+    # logger.info(f"Fetching topic memory for user {username}")
+    topic_memory = fetch_topic_memory(username) or []
+    # logger.info(f"Found {len(topic_memory)} topic memory entries for user {username}")
 
-    logger.info(f"Fetching user level for user {username}")
-    row = fetch_one("users", "WHERE username = ?", (username,)) if username else None
-    level = row.get("skill_level", 0) if row else 0
-    logger.info(f"User {username} has skill level {level}")
+    # logger.info(f"Fetching user level for user {username}")
+    level = get_user_level(username)
+    # logger.info(f"User {username} has skill level {level}")
 
-    logger.info(f"Getting recent exercise questions for user {username}")
+    # logger.info(f"Getting recent exercise questions for user {username}")
     recent_questions = get_recent_exercise_questions(username)
-    logger.info(f"Found {len(recent_questions) if recent_questions else 0} recent questions for user {username}")
+    # logger.info(f"Found {len(recent_questions) if recent_questions else 0} recent questions for user {username}")
 
-    try:
-        logger.info(f"Generating new exercises for user {username} with level {level}")
-        ai_block = generate_new_exercises(
-            vocab_data or [],
-            topic_memory or [],
-            example_block or {},
-            level=level,
-            recent_questions=recent_questions or []
-        )
-        logger.info(f"Generated AI block for user {username}: {ai_block is not None}")
-    except ValueError as e:
-        error_msg = f"Mistral error for user {username}: {e}"
-        logger.error(error_msg)
-        log_exercise_event("exercise_generation_error", username, {"error": str(e)})
-        return jsonify({"error": "Mistral error"}), 500
+    # logger.info(f"Generating new exercises for user {username} with level {level}")
+    ai_block = generate_new_exercises(
+        vocabular=vocab_data,
+        topic_memory=topic_memory,
+        example_exercise_block=example_block,
+        level=level,
+        recent_questions=recent_questions,
+    )
+    # logger.info(f"Generated AI block for user {username}: {ai_block is not None}")
 
     if not ai_block or not ai_block.get("exercises"):
         error_msg = f"No exercises generated for user {username}"
@@ -290,13 +280,13 @@ def get_ai_exercises():
         log_exercise_event("exercise_generation_empty", username, {})
         return jsonify({"error": "Mistral error"}), 500
 
-    logger.info(f"Filtering exercises for user {username} to avoid recent questions")
+    # logger.info(f"Filtering exercises for user {username} to avoid recent questions")
     filtered = [ex for ex in ai_block["exercises"] if ex.get("question") not in recent_questions]
-    logger.info(f"After filtering: {len(filtered)} exercises for user {username}")
+    # logger.info(f"After filtering: {len(filtered)} exercises for user {username}")
 
     tries = 0
     while len(filtered) < 3 and tries < 3:
-        logger.info(f"Retry {tries + 1} for user {username} - need more exercises")
+        # logger.info(f"Retry {tries + 1} for user {username} - need more exercises")
         ai_block = generate_new_exercises(
             vocab_data or [],
             topic_memory or [],
@@ -322,7 +312,7 @@ def get_ai_exercises():
         "topic_memory_count": len(topic_memory)
     })
 
-    logger.info(f"Returning {len(ai_block.get('exercises', []))} exercises for user {username}")
+    # logger.info(f"Returning {len(ai_block.get('exercises', []))} exercises for user {username}")
     return jsonify(ai_block)
 
 
@@ -334,12 +324,12 @@ def generate_new_exercises(
     recent_questions=None,
 ) -> dict | None:
     """Request a new exercise block from Mistral, passing recent questions to avoid repeats."""
-    logger.info(f"Starting generate_new_exercises with level={level}, vocab_count={len(vocabular) if vocabular else 0}, topic_count={len(topic_memory) if topic_memory else 0}")
+    # logger.info(f"Starting generate_new_exercises with level={level}, vocab_count={len(vocabular) if vocabular else 0}, topic_count={len(topic_memory) if topic_memory else 0}")
 
     if recent_questions is None:
         recent_questions = []
 
-    logger.info(f"Processing topic memory for exercise generation")
+    # logger.info(f"Processing topic memory for exercise generation")
     try:
         upcoming = sorted(
             (entry for entry in topic_memory if "next_repeat" in entry),
@@ -353,12 +343,12 @@ def generate_new_exercises(
             }
             for entry in upcoming
         ]
-        logger.info(f"Filtered topic memory: {len(filtered_topic_memory)} entries")
+        # logger.info(f"Filtered topic memory: {len(filtered_topic_memory)} entries")
     except Exception as e:
         logger.error(f"Failed to filter topic_memory: {e}")
         return None
 
-    logger.info(f"Processing vocabulary for exercise generation")
+    # logger.info(f"Processing vocabulary for exercise generation")
     try:
         vocabular = [
             {
@@ -374,7 +364,7 @@ def generate_new_exercises(
                 <= datetime.date.today()
             )
         ]
-        logger.info(f"Filtered vocabulary: {len(vocabular)} entries")
+        # logger.info(f"Filtered vocabulary: {len(vocabular)} entries")
     except Exception as e:
         logger.error(f"Error stripping vocabulary fields: {e}")
         return None
@@ -384,7 +374,7 @@ def generate_new_exercises(
     cefr_level = CEFR_LEVELS[level_val]
     example_exercise_block["level"] = cefr_level
 
-    logger.info(f"Preparing prompt with level={level_val}, cefr_level={cefr_level}, recent_questions_count={len(recent_questions)}")
+    # logger.info(f"Preparing prompt with level={level_val}, cefr_level={cefr_level}, recent_questions_count={len(recent_questions)}")
 
     # Add recent questions to the prompt
     recent_str = "\n".join(recent_questions)
@@ -397,21 +387,21 @@ def generate_new_exercises(
         recent_str,
     )
 
-    logger.info(f"Sending request to Mistral API")
+    # logger.info(f"Sending request to Mistral API")
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
     response = send_request(messages)
 
     if response.status_code == 200:
-        logger.info(f"Mistral API response successful")
+        # logger.info(f"Mistral API response successful")
         content = response.json()["choices"][0]["message"]["content"]
-        logger.info(f"Raw API response length: {len(content)} characters")
+        # logger.info(f"Raw API response length: {len(content)} characters")
 
         parsed = extract_json(content)
         if parsed is not None:
-            logger.info(f"Successfully parsed JSON response")
+            # logger.info(f"Successfully parsed JSON response")
             parsed = _ensure_schema(parsed)
             parsed["level"] = cefr_level
-            logger.info(f"Exercise generation successful, returning {len(parsed.get('exercises', []))} exercises")
+            # logger.info(f"Exercise generation successful, returning {len(parsed.get('exercises', []))} exercises")
             return parsed
         else:
             logger.error(f"Failed to parse JSON from Mistral response")
@@ -423,36 +413,36 @@ def generate_new_exercises(
 
 def generate_training_exercises(username: str) -> dict | None:
     """Generate current and next exercise blocks and store them. Ensures next block is unique."""
-    logger.info(f"Starting generate_training_exercises for user {username}")
+    # logger.info(f"Starting generate_training_exercises for user {username}")
 
     # Check if this is a new user (no exercise history)
     recent_questions = get_recent_exercise_questions(username)
     is_new_user = len(recent_questions) == 0
 
     if is_new_user:
-        logger.info(f"Detected new user {username}, generating two unique blocks with different contexts")
+        # logger.info(f"Detected new user {username}, generating two unique blocks with different contexts")
         return _generate_blocks_for_new_user(username)
     else:
-        logger.info(f"Existing user {username} with {len(recent_questions)} recent questions")
+        # logger.info(f"Existing user {username} with {len(recent_questions)} recent questions")
         return _generate_blocks_for_existing_user(username)
 
 
 def _generate_blocks_for_new_user(username: str) -> dict | None:
     """Generate two unique blocks for new users by using different generation contexts."""
-    logger.info(f"Generating blocks for new user {username}")
+    # logger.info(f"Generating blocks for new user {username}")
 
     # Generate first block with empty history
-    logger.info(f"Generating first block for new user {username}")
+    # logger.info(f"Generating first block for new user {username}")
     ai_block = _create_ai_block(username)
     if not ai_block or not ai_block.get("exercises"):
-        logger.error(f"Failed to generate first block for new user {username}")
+        # logger.error(f"Failed to generate first block for new user {username}")
         return None
 
-    logger.info(f"Generated first block for new user {username} with {len(ai_block.get('exercises', []))} exercises")
+    # logger.info(f"Generated first block for new user {username} with {len(ai_block.get('exercises', []))} exercises")
 
     # Extract questions from first block and update history
     new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
-    logger.info(f"Extracted {len(new_questions)} questions from first block for new user {username}")
+    # logger.info(f"Extracted {len(new_questions)} questions from first block for new user {username}")
 
     # Update exercise history and ensure it's committed
     update_exercise_history(username, new_questions)
@@ -463,19 +453,19 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
     time.sleep(0.1)
 
     # Generate second block with different approach to ensure uniqueness
-    logger.info(f"Generating second block for new user {username} with different context")
+    # logger.info(f"Generating second block for new user {username} with different context")
     next_block = _create_ai_block_with_variation(username, new_questions)
 
     if next_block and next_block.get("exercises"):
-        logger.info(f"Generated second block for new user {username} with {len(next_block.get('exercises', []))} exercises")
+        # logger.info(f"Generated second block for new user {username} with {len(next_block.get('exercises', []))} exercises")
 
         # Filter out questions that are already in recent history
         filtered = [ex for ex in next_block["exercises"] if ex.get("question") not in new_questions]
-        logger.info(f"After filtering duplicates for new user {username}: {len(filtered)} exercises remain")
+        # logger.info(f"After filtering duplicates for new user {username}: {len(filtered)} exercises remain")
 
         tries = 0
         while len(filtered) < 3 and tries < 3:
-            logger.info(f"Retry {tries + 1} for new user {username} - need more unique exercises")
+            # logger.info(f"Retry {tries + 1} for new user {username} - need more unique exercises")
             next_block = _create_ai_block_with_variation(username, new_questions)
             if not next_block or not next_block.get("exercises"):
                 break
@@ -484,12 +474,13 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
 
         random.shuffle(filtered)
         next_block["exercises"] = filtered[:3]
-        logger.info(f"Final second block for new user {username}: {len(next_block.get('exercises', []))} exercises")
+        # logger.info(f"Final second block for new user {username}: {len(next_block.get('exercises', []))} exercises")
     else:
-        logger.warning(f"Failed to generate second block for new user {username}")
+        # logger.warning(f"Failed to generate second block for new user {username}")
+        pass
 
     # Store both blocks
-    logger.info(f"Storing exercise blocks for new user {username}")
+    # logger.info(f"Storing exercise blocks for new user {username}")
     store_user_ai_data(
         username,
         {
@@ -500,25 +491,25 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
     )
     log_ai_user_data(username, "after storing both blocks")
 
-    logger.info(f"Successfully completed generate_training_exercises for new user {username}")
+    # logger.info(f"Successfully completed generate_training_exercises for new user {username}")
     return ai_block
 
 
 def _generate_blocks_for_existing_user(username: str) -> dict | None:
     """Generate blocks for existing users with proper history management."""
-    logger.info(f"Generating blocks for existing user {username}")
+    # logger.info(f"Generating blocks for existing user {username}")
 
     # Generate first block
     ai_block = _create_ai_block(username)
     if not ai_block or not ai_block.get("exercises"):
-        logger.error(f"Failed to generate first block for existing user {username}")
+        # logger.error(f"Failed to generate first block for existing user {username}")
         return None
 
-    logger.info(f"Generated first block for existing user {username} with {len(ai_block.get('exercises', []))} exercises")
+    # logger.info(f"Generated first block for existing user {username} with {len(ai_block.get('exercises', []))} exercises")
 
     # Extract questions from first block and update history
     new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
-    logger.info(f"Extracted {len(new_questions)} questions from first block for existing user {username}")
+    # logger.info(f"Extracted {len(new_questions)} questions from first block for existing user {username}")
 
     # Update exercise history and ensure it's committed
     update_exercise_history(username, new_questions)
@@ -530,22 +521,22 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
 
     # Get the updated recent questions to ensure uniqueness
     recent_questions = get_recent_exercise_questions(username)
-    logger.info(f"Updated recent questions for existing user {username}: {len(recent_questions)} questions")
+    # logger.info(f"Updated recent questions for existing user {username}: {len(recent_questions)} questions")
 
     # Generate next block with updated history
-    logger.info(f"Generating next block for existing user {username} with updated history")
+    # logger.info(f"Generating next block for existing user {username} with updated history")
     next_block = _create_ai_block(username)
 
     if next_block and next_block.get("exercises"):
-        logger.info(f"Generated next block for existing user {username} with {len(next_block.get('exercises', []))} exercises")
+        # logger.info(f"Generated next block for existing user {username} with {len(next_block.get('exercises', []))} exercises")
 
         # Filter out questions that are already in recent history
         filtered = [ex for ex in next_block["exercises"] if ex.get("question") not in recent_questions]
-        logger.info(f"After filtering duplicates for existing user {username}: {len(filtered)} exercises remain")
+        # logger.info(f"After filtering duplicates for existing user {username}: {len(filtered)} exercises remain")
 
         tries = 0
         while len(filtered) < 3 and tries < 3:
-            logger.info(f"Retry {tries + 1} for existing user {username} - need more unique exercises")
+            # logger.info(f"Retry {tries + 1} for existing user {username} - need more unique exercises")
             next_block = _create_ai_block(username)
             if not next_block or not next_block.get("exercises"):
                 break
@@ -554,12 +545,13 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
 
         random.shuffle(filtered)
         next_block["exercises"] = filtered[:3]
-        logger.info(f"Final next block for existing user {username}: {len(next_block.get('exercises', []))} exercises")
+        # logger.info(f"Final next block for existing user {username}: {len(next_block.get('exercises', []))} exercises")
     else:
-        logger.warning(f"Failed to generate next block for existing user {username}")
+        # logger.warning(f"Failed to generate next block for existing user {username}")
+        pass
 
     # Store both blocks
-    logger.info(f"Storing exercise blocks for existing user {username}")
+    # logger.info(f"Storing exercise blocks for existing user {username}")
     store_user_ai_data(
         username,
         {
@@ -570,13 +562,13 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
     )
     log_ai_user_data(username, "after storing both blocks")
 
-    logger.info(f"Successfully completed generate_training_exercises for existing user {username}")
+    # logger.info(f"Successfully completed generate_training_exercises for existing user {username}")
     return ai_block
 
 
 def _create_ai_block_with_variation(username: str, exclude_questions: list) -> dict | None:
     """Create an AI block with variation to ensure uniqueness for new users."""
-    logger.info(f"Creating AI block with variation for new user {username} with {len(exclude_questions)} exclude questions")
+    # logger.info(f"Creating AI block with variation for new user {username} with {len(exclude_questions)} exclude questions")
 
     example_block = EXERCISE_TEMPLATE.copy()
 
@@ -617,7 +609,7 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
 
     # Use the exclude_questions as recent questions to ensure uniqueness
     recent_questions = exclude_questions
-    logger.info(f"Using {len(recent_questions)} exclude questions as recent questions for variation")
+    # logger.info(f"Using {len(recent_questions)} exclude questions as recent questions for variation")
 
     try:
         ai_block = generate_new_exercises(
@@ -628,15 +620,15 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
         return None
 
     if not ai_block or not ai_block.get("exercises"):
-        logger.error(f"No exercises generated in variation block for new user {username}")
+        # logger.error(f"No exercises generated in variation block for new user {username}")
         return None
 
     exercises = ai_block.get("exercises", [])
-    logger.info(f"Generated {len(exercises)} exercises in variation block for new user {username}")
+    # logger.info(f"Generated {len(exercises)} exercises in variation block for new user {username}")
 
     # Ensure we have at least 3 exercises, retry if needed
     if len(exercises) < 3:
-        logger.warning(f"Only {len(exercises)} exercises in variation block for new user {username}, retrying...")
+        # logger.warning(f"Only {len(exercises)} exercises in variation block for new user {username}, retrying...")
         # Try to generate more exercises
         for attempt in range(2):  # Try up to 2 more times
             try:
@@ -651,7 +643,7 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
                         if ex.get("question") not in existing_questions and len(exercises) < 3:
                             exercises.append(ex)
                             existing_questions.add(ex.get("question"))
-                    logger.info(f"Added {len(exercises)} total exercises in variation block for new user {username}")
+                    # logger.info(f"Added {len(exercises)} total exercises in variation block for new user {username}")
                     if len(exercises) >= 3:
                         break
             except Exception as e:
@@ -663,32 +655,32 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
     for ex in ai_block.get("exercises", []):
         ex.pop("correctAnswer", None)
 
-    logger.info(f"Successfully created AI block with variation for new user {username}: {len(ai_block.get('exercises', []))} exercises")
+    # logger.info(f"Successfully created AI block with variation for new user {username}: {len(ai_block.get('exercises', []))} exercises")
     return ai_block
 
 
 def prefetch_next_exercises(username: str) -> None:
     """Generate and store a new next exercise block asynchronously, ensuring uniqueness."""
-    logger.info(f"Starting prefetch_next_exercises for user {username}")
+    # logger.info(f"Starting prefetch_next_exercises for user {username}")
 
     def run():
         try:
             # Get recent questions first to ensure we have the latest
             recent_questions = get_recent_exercise_questions(username)
-            logger.info(f"Got {len(recent_questions) if recent_questions else 0} recent questions for user {username}")
+            # logger.info(f"Got {len(recent_questions) if recent_questions else 0} recent questions for user {username}")
 
-            logger.info(f"Creating AI block for user {username}")
+            # logger.info(f"Creating AI block for user {username}")
             next_block = _create_ai_block(username)
-            logger.info(f"AI block created for user {username}: {next_block is not None}")
+            # logger.info(f"AI block created for user {username}: {next_block is not None}")
 
             if next_block and next_block.get("exercises"):
-                logger.info(f"Filtering exercises for user {username} to avoid duplicates")
+                # logger.info(f"Filtering exercises for user {username} to avoid duplicates")
                 filtered = [ex for ex in next_block["exercises"] if ex.get("question") not in recent_questions]
-                logger.info(f"After filtering: {len(filtered)} exercises for user {username}")
+                # logger.info(f"After filtering: {len(filtered)} exercises for user {username}")
 
                 tries = 0
                 while len(filtered) < 3 and tries < 3:
-                    logger.info(f"Retry {tries + 1} for user {username} - need more exercises")
+                    # logger.info(f"Retry {tries + 1} for user {username} - need more exercises")
                     next_block = _create_ai_block(username)
                     if not next_block or not next_block.get("exercises"):
                         break
@@ -697,18 +689,19 @@ def prefetch_next_exercises(username: str) -> None:
 
                 random.shuffle(filtered)
                 next_block["exercises"] = filtered[:3]
-                logger.info(f"Final next block for user {username}: {len(next_block.get('exercises', []))} exercises")
+                # logger.info(f"Final next block for user {username}: {len(next_block.get('exercises', []))} exercises")
             else:
-                logger.warning(f"No exercises in next block for user {username}")
+                # logger.warning(f"No exercises in next block for user {username}")
+                pass
 
-            logger.info(f"Storing next exercises for user {username}")
+            # logger.info(f"Storing next exercises for user {username}")
             store_user_ai_data(
                 username,
                 {
                     "next_exercises": json.dumps(next_block or {}),
                 },
             )
-            logger.info(f"Successfully stored next exercises for user {username}")
+            # logger.info(f"Successfully stored next exercises for user {username}")
 
         except Exception as e:
             logger.error(f"Error in prefetch_next_exercises for user {username}: {e}")
@@ -718,25 +711,25 @@ def prefetch_next_exercises(username: str) -> None:
 
 
 def get_recent_exercise_questions(username, limit=20):
-    logger.info(f"Getting recent exercise questions for user {username}, limit={limit}")
+    # logger.info(f"Getting recent exercise questions for user {username}, limit={limit}")
     row = fetch_one("ai_user_data", "WHERE username = ?", (username,), columns="exercise_history")
     if row and row.get("exercise_history"):
         try:
             history = json.loads(row["exercise_history"])[:limit]
-            logger.info(f"Found {len(history)} recent questions for user {username}")
+            # logger.info(f"Found {len(history)} recent questions for user {username}")
             return history
         except Exception as e:
             logger.error(f"Failed to parse exercise history for user {username}: {e}")
             return []
     else:
-        logger.info(f"No exercise history found for user {username}")
-    return []
+        # logger.info(f"No exercise history found for user {username}")
+        return []
 
 def update_exercise_history(username, new_questions, limit=20):
-    logger.info(f"Updating exercise history for user {username} with {len(new_questions)} new questions, limit={limit}")
+    # logger.info(f"Updating exercise history for user {username} with {len(new_questions)} new questions, limit={limit}")
     history = get_recent_exercise_questions(username, limit)
     updated = (new_questions + history)[:limit]
-    logger.info(f"Updated history for user {username}: {len(updated)} total questions")
+    # logger.info(f"Updated history for user {username}: {len(updated)} total questions")
     store_user_ai_data(username, {"exercise_history": json.dumps(updated)})
 
     # Force database commit to ensure the update is visible immediately
@@ -744,10 +737,10 @@ def update_exercise_history(username, new_questions, limit=20):
         from database import get_connection
         with get_connection() as conn:
             conn.commit()
-        logger.info(f"Database commit successful for user {username}")
+        # logger.info(f"Database commit successful for user {username}")
     except Exception as e:
         logger.error(f"Database commit failed for user {username}: {e}")
 
-    logger.info(f"Successfully stored updated exercise history for user {username}")
+    # logger.info(f"Successfully stored updated exercise history for user {username}")
 
 
