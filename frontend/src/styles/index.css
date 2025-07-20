@@ -125,6 +125,16 @@
     animation: feedback-fade-in 0.15s ease;
 }
 
+/* 🔄 Spinning animation for navigation dots */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* 🧠 Lesson Content Styling */
 .lesson-content {
     color: inherit;

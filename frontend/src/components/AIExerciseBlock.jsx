@@ -26,6 +26,7 @@ export default function AIExerciseBlock({
     mode = "student",
     fetchExercisesFn = getAiExercises,
     setFooterActions,
+    onSubmissionChange,
 }) {
     const [current, setCurrent] = useState(data || null);
     const currentBlockRef = useRef(null);
@@ -56,6 +57,16 @@ export default function AIExerciseBlock({
     const [submissionStatus, setSubmissionStatus] = useState("");
     const [enhancedResults, setEnhancedResults] = useState(null);
     const [enhancedResultsLoading, setEnhancedResultsLoading] = useState(false);
+
+    // Swipeable interface state
+    const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+    const [exercisesWithNewFeedback, setExercisesWithNewFeedback] = useState(new Set());
+
+    // Swipe gesture state
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
 
     const answersRef = useRef(answers);
 
@@ -241,6 +252,9 @@ export default function AIExerciseBlock({
         console.log("[AIExerciseBlock] Starting submission...");
         setSubmitting(true);
         setSubmitted(true);
+        if (onSubmissionChange) {
+            onSubmissionChange(true);
+        }
 
         // Start submission progress simulation with adaptive timing
         const submissionSteps = [
@@ -325,13 +339,13 @@ export default function AIExerciseBlock({
                             r.other_answers ||
                             [],
                         explanation: r.explanation || "",
-                        loading: r.loading || false,  // Add loading state
+                        loading: true,  // Start with loading state for enhanced feedback
                     };
                 });
                 setEvaluation(map);
-                console.log("[AIExerciseBlock] Results set in state");
+                console.log("[AIExerciseBlock] Basic results set in state - correct/incorrect feedback should be visible immediately");
 
-                // Always start polling for enhanced results, regardless of streaming response
+                // Start polling for enhanced results in the background
                 console.log("[AIExerciseBlock] Starting enhanced results polling for progressive updates");
                 startEnhancedResultsPolling();
             }
@@ -408,7 +422,7 @@ export default function AIExerciseBlock({
                                 correct: r.correct_answer,
                                 alternatives: r.alternatives || [],
                                 explanation: r.explanation || "",
-                                loading: false,  // Remove loading state
+                                loading: false,  // Enhanced feedback complete
                             };
                         });
 
@@ -453,6 +467,12 @@ export default function AIExerciseBlock({
                                         loading: false,  // Remove loading state
                                     };
                                     hasUpdates = true;
+
+                                    // Mark this exercise as having new feedback
+                                    const exerciseIndex = exercises.findIndex(ex => ex.id === result.id);
+                                    if (exerciseIndex !== -1) {
+                                        setExercisesWithNewFeedback(prev => new Set([...prev, exerciseIndex]));
+                                    }
                                 } else if (!existingResult || existingResult.loading) {
                                     // If we have a result but no alternatives/explanation yet, show basic result
                                     console.log(`[AIExerciseBlock] Showing basic result for ${result.id}`);
@@ -621,6 +641,169 @@ export default function AIExerciseBlock({
         await replaceExercise(exerciseId);
     };
 
+    // Swipeable interface navigation functions
+    const goToNextExercise = () => {
+        if (currentExerciseIndex < exercises.length - 1) {
+            console.log(`[Swipe] Going to next exercise: ${currentExerciseIndex + 1} -> ${currentExerciseIndex + 2}`);
+            setCurrentExerciseIndex(currentExerciseIndex + 1);
+        } else {
+            console.log(`[Swipe] Cannot go next: already at last exercise (${currentExerciseIndex + 1}/${exercises.length})`);
+        }
+    };
+
+    const goToPreviousExercise = () => {
+        if (currentExerciseIndex > 0) {
+            console.log(`[Swipe] Going to previous exercise: ${currentExerciseIndex + 1} -> ${currentExerciseIndex}`);
+            setCurrentExerciseIndex(currentExerciseIndex - 1);
+        } else {
+            console.log(`[Swipe] Cannot go previous: already at first exercise (${currentExerciseIndex + 1}/${exercises.length})`);
+        }
+    };
+
+    const goToExercise = (index) => {
+        if (index >= 0 && index < exercises.length) {
+            setCurrentExerciseIndex(index);
+        }
+    };
+
+                        // Progress bar click handler - segmented navigation
+    const handleProgressBarClick = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        console.log(`[Progress Bar] Click event triggered!`);
+        console.log(`[Progress Bar] Submitted: ${submitted}, Exercises length: ${exercises.length}`);
+
+        if (exercises.length <= 1) {
+            console.log(`[Progress Bar] Click ignored - only one exercise`);
+            return;
+        }
+
+        const rect = event.currentTarget.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const progressBarWidth = rect.width;
+        const clickPercentage = clickX / progressBarWidth;
+
+        // Calculate which exercise to go to based on click position
+        const targetIndex = Math.floor(clickPercentage * exercises.length);
+        const clampedIndex = Math.max(0, Math.min(targetIndex, exercises.length - 1));
+
+        console.log(`[Progress Bar] Clicked at ${clickPercentage * 100}% -> Exercise ${clampedIndex + 1}`);
+        goToExercise(clampedIndex);
+    };
+
+        // Swipe gesture handlers with live dragging
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+        setIsDragging(true);
+        setDragOffset(0);
+    };
+
+    const onTouchMove = (e) => {
+        if (!isDragging) return;
+
+        const currentX = e.targetTouches[0].clientX;
+        setTouchEnd(currentX);
+
+        if (touchStart) {
+            const offset = currentX - touchStart;
+            setDragOffset(offset);
+        }
+    };
+
+        const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) {
+            setIsDragging(false);
+            setDragOffset(0);
+            return;
+        }
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > 30; // Reduced threshold for easier swiping
+        const isRightSwipe = distance < -30; // Reduced threshold for easier swiping
+
+        console.log(`[Swipe] Touch end - Distance: ${distance}px, Left: ${isLeftSwipe}, Right: ${isRightSwipe}, Current: ${currentExerciseIndex + 1}/${exercises.length}`);
+
+        if (isLeftSwipe && currentExerciseIndex < exercises.length - 1) {
+            console.log(`[Swipe] Triggering left swipe (next)`);
+            goToNextExercise();
+        } else if (isRightSwipe && currentExerciseIndex > 0) {
+            console.log(`[Swipe] Triggering right swipe (previous)`);
+            goToPreviousExercise();
+        } else {
+            console.log(`[Swipe] No navigation triggered - conditions not met`);
+        }
+
+        setIsDragging(false);
+        setDragOffset(0);
+    };
+
+    // Mouse drag handlers for desktop
+    const onMouseDown = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.clientX);
+        setIsDragging(true);
+        setDragOffset(0);
+    };
+
+    const onMouseMove = (e) => {
+        if (!isDragging) return;
+
+        const currentX = e.clientX;
+        setTouchEnd(currentX);
+
+        if (touchStart) {
+            const offset = currentX - touchStart;
+            setDragOffset(offset);
+        }
+    };
+
+    const onMouseUp = () => {
+        if (!touchStart || !touchEnd) {
+            setIsDragging(false);
+            setDragOffset(0);
+            return;
+        }
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > 30; // Reduced threshold for easier swiping
+        const isRightSwipe = distance < -30; // Reduced threshold for easier swiping
+
+        console.log(`[Swipe] Mouse up - Distance: ${distance}px, Left: ${isLeftSwipe}, Right: ${isRightSwipe}, Current: ${currentExerciseIndex + 1}/${exercises.length}`);
+
+        if (isLeftSwipe && currentExerciseIndex < exercises.length - 1) {
+            console.log(`[Swipe] Triggering left swipe (next)`);
+            goToNextExercise();
+        } else if (isRightSwipe && currentExerciseIndex > 0) {
+            console.log(`[Swipe] Triggering right swipe (previous)`);
+            goToPreviousExercise();
+        } else {
+            console.log(`[Swipe] No navigation triggered - conditions not met`);
+        }
+
+        setIsDragging(false);
+        setDragOffset(0);
+    };
+
+    // Keyboard navigation
+    useEffect(() => {
+        if (!submitted || exercises.length <= 1) return;
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                goToPreviousExercise();
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                goToNextExercise();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [submitted, exercises.length, currentExerciseIndex]);
+
     if (mode !== "student") {
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
@@ -741,105 +924,254 @@ export default function AIExerciseBlock({
     }
 
     return (
-        <div data-tour="ai-feedback">
+        <div
+            data-tour="ai-feedback"
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+            onMouseLeave={onMouseUp}
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
             {/* Sticky progress bar directly under header, above Card */}
-            {!submitted && exercises.length > 0 && (
+            {exercises.length > 0 && (
                 <div className="sticky top-16 z-30 w-full bg-white dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>
-                    <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-800">
-                        <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{
-                                width: `${(Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length / exercises.length) * 100}%`
-                            }}
-                        ></div>
+                                                                                <div
+                        className={`w-full rounded-full transition-all duration-300 ${
+                            exercises.length > 1
+                                ? 'cursor-pointer hover:h-4 hover:shadow-md bg-blue-50 dark:bg-blue-900/20 h-3'
+                                : 'cursor-default h-2'
+                        }`}
+                        onClick={exercises.length > 1 ? handleProgressBarClick : undefined}
+                        title={exercises.length > 1 ? `Click to jump to exercise (1-${exercises.length})` : 'Progress'}
+                                                style={{
+                            minHeight: exercises.length > 1 ? '12px' : '8px'
+                        }}
+                        onMouseDown={(e) => exercises.length > 1 && console.log('[Progress Bar] Mouse down detected')}
+                        onMouseUp={(e) => exercises.length > 1 && console.log('[Progress Bar] Mouse up detected')}
+                    >
+                        {/* Background track */}
+                        <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-800 relative">
+                            {/* Progress fill */}
+                            <div
+                                className={`h-full rounded-full transition-all duration-300 ${
+                                    submitted
+                                        ? 'bg-blue-500 hover:bg-blue-600'
+                                        : 'bg-blue-600'
+                                }`}
+                                style={{
+                                    width: submitted
+                                        ? `${((currentExerciseIndex + 1) / exercises.length) * 100}%`
+                                        : `${(Object.keys(answers).filter(k => answers[k] && answers[k].trim().length > 0).length / exercises.length) * 100}%`
+                                }}
+                            ></div>
+
+
+                        </div>
                     </div>
+
+
+
+                    {/* Exercise navigation dots - always visible when multiple exercises */}
+                    {exercises.length > 1 && (
+                        <div className="flex justify-center items-center gap-2 mt-2">
+                            {exercises.map((_, index) => {
+                                const hasNewFeedback = exercisesWithNewFeedback.has(index);
+                                const isCurrent = index === currentExerciseIndex;
+                                const isIncorrect = submitted && evaluation[exercises[index]?.id] && !evaluation[exercises[index]?.id].is_correct;
+                                const isLoading = submitted && evaluation[exercises[index]?.id] && evaluation[exercises[index]?.id].loading;
+
+                                // Debug logging
+                                console.log(`[Navigation Dots] Exercise ${index + 1}:`, {
+                                    exerciseId: exercises[index]?.id,
+                                    submitted,
+                                    hasEvaluation: !!evaluation[exercises[index]?.id],
+                                    loading: evaluation[exercises[index]?.id]?.loading,
+                                    isIncorrect,
+                                    isCurrent
+                                });
+
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            goToExercise(index);
+                                            // Clear new feedback indicator when visiting
+                                            if (hasNewFeedback) {
+                                                setExercisesWithNewFeedback(prev => {
+                                                    const newSet = new Set(prev);
+                                                    newSet.delete(index);
+                                                    return newSet;
+                                                });
+                                            }
+                                        }}
+                                        className={`w-3 h-3 rounded-full transition-all duration-200 relative ${
+                                            isLoading
+                                                ? 'bg-blue-500 dark:bg-blue-400'
+                                                : isCurrent
+                                                ? `border-2 border-blue-500 dark:border-blue-400 ${isIncorrect ? 'bg-red-500 dark:bg-red-400' : submitted ? 'bg-green-500 dark:bg-green-400' : 'bg-gray-300 dark:bg-gray-600'}`
+                                                : isIncorrect
+                                                ? 'bg-red-500 dark:bg-red-400'
+                                                : submitted
+                                                ? 'bg-green-500 dark:bg-green-400'
+                                                : 'bg-gray-300 dark:bg-gray-600'
+                                        }`}
+                                        style={{
+                                            transform: isLoading ? 'rotate(0deg)' : 'none',
+                                            animation: isLoading ? 'spin 1s linear infinite' : 'none'
+                                        }}
+                                        title={`Exercise ${index + 1}${hasNewFeedback ? ' - New feedback available!' : ''}${isIncorrect ? ' - Incorrect answer' : ''}${isLoading ? ' - Loading feedback...' : ''}`}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             )}
             <Card className="space-y-4">
 
-                {stage === 1 && current.title && (
+                {stage === 1 && current.title && !submitted && (
                     <h3 className="text-xl font-semibold">{current.title}</h3>
                 )}
-                {instructions && <p>{instructions}</p>}
+                {instructions && !submitted && <p>{instructions}</p>}
 
-                <div className="space-y-6">
-                    {exercises.map((ex) => {
-                        const hasAnswer = answers[ex.id] && answers[ex.id].trim().length > 0;
-                        const isIncomplete = !submitted && !hasAnswer;
 
-                        return (
-                            <div key={ex.id} className="mb-4">
-                                {ex.type === "gap-fill" ? (
-                                    <>
-                                        <div className="mb-2 font-medium">
-                                            {String(ex.question)
-                                                .split("___")
-                                                .map((part, idx, arr) => (
-                                                    <React.Fragment key={idx}>
-                                                        {part}
-                                                        {idx < arr.length - 1 && (
-                                                            submitted ? (
-                                                                <span className="text-gray-400">___</span>
-                                                            ) : answers[ex.id] ? (
-                                                                <span className="text-blue-600">{answers[ex.id]}</span>
-                                                            ) : (
-                                                                <span className="text-gray-400">___</span>
-                                                            )
-                                                        )}
-                                                    </React.Fragment>
-                                                ))}
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {ex.options.map((opt, idx) => (
-                                                <Button
-                                                    key={opt + '-' + idx}
-                                                    variant={answers[ex.id] === opt ? "primary" : "secondary"}
-                                                    type="button"
-                                                    onClick={() => handleSelect(ex.id, opt)}
-                                                    disabled={submitted}
-                                                >
-                                                    {opt}
-                                                </Button>
-                                            ))}
-                                        </div>
-                                        {isIncomplete && (
-                                            null
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        <label className="block mb-2 font-medium">{ex.question}</label>
-                                        <Input
-                                            type="text"
-                                            value={answers[ex.id] || ""}
-                                            onChange={(e) => handleSelect(ex.id, e.target.value)}
-                                            disabled={submitted}
-                                            placeholder="Your answer"
-                                            className={isIncomplete ? 'border-orange-400 focus:border-orange-500' : ''}
-                                        />
-                                        {isIncomplete && (
-                                            null
-                                        )}
-                                    </>
-                                )}
-                            {submitted && evaluation[ex.id] !== undefined && (
-                                <div className="mt-2">
-                                    <FeedbackBlock
-                                        status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
-                                        {...(!evaluation[ex.id]?.is_correct && { correct: evaluation[ex.id]?.correct })}
-                                        alternatives={evaluation[ex.id]?.alternatives}
-                                        explanation={evaluation[ex.id]?.explanation}
-                                        userAnswer={answers[ex.id]}
-                                        loading={enhancedResultsLoading && (!evaluation[ex.id]?.alternatives?.length && !evaluation[ex.id]?.explanation)}
-                                        exerciseLoading={evaluation[ex.id]?.loading || false}
-                                        {...(!evaluation[ex.id]?.is_correct && { diff: diffWords(answers[ex.id], evaluation[ex.id]?.correct) })}
+
+                                                                        {/* Current Exercise Display */}
+                {exercises.length > 0 && (
+                    <div className="space-y-6 relative">
+                        {/* Navigation tap areas */}
+                        {submitted && exercises.length > 1 && (
+                            <>
+                                {currentExerciseIndex > 0 && (
+                                    <div
+                                        className="absolute left-0 top-0 bottom-0 w-1/3 z-10 cursor-pointer"
+                                        onClick={() => goToPreviousExercise()}
+                                        title="Previous exercise"
                                     />
+                                )}
+                                {currentExerciseIndex < exercises.length - 1 && (
+                                    <div
+                                        className="absolute right-0 top-0 bottom-0 w-1/3 z-10 cursor-pointer"
+                                        onClick={() => goToNextExercise()}
+                                        title="Next exercise"
+                                    />
+                                )}
+                            </>
+                        )}
+
+
+                        {(() => {
+                            const ex = exercises[currentExerciseIndex];
+                            const hasAnswer = answers[ex.id] && answers[ex.id].trim().length > 0;
+                            const isIncomplete = !submitted && !hasAnswer;
+
+                            return (
+                                <div key={ex.id} className="mb-4">
+                                                        {/* Exercise Counter */}
+
+
+                                    {ex.type === "gap-fill" ? (
+                                        <>
+                                            <div className="mb-2 font-medium">
+                                                {String(ex.question)
+                                                    .split("___")
+                                                    .map((part, idx, arr) => (
+                                                        <React.Fragment key={idx}>
+                                                            {part}
+                                                            {idx < arr.length - 1 && (
+                                                                submitted ? (
+                                                                    <span className="text-gray-400">___</span>
+                                                                ) : answers[ex.id] ? (
+                                                                    <span className="text-blue-600">{answers[ex.id]}</span>
+                                                                ) : (
+                                                                    <span className="text-gray-400">___</span>
+                                                                )
+                                                            )}
+                                                        </React.Fragment>
+                                                    ))}
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {ex.options.map((opt, idx) => (
+                                                    <Button
+                                                        key={opt + '-' + idx}
+                                                        variant={answers[ex.id] === opt ? "primary" : "secondary"}
+                                                        type="button"
+                                                        onClick={() => handleSelect(ex.id, opt)}
+                                                        disabled={submitted}
+                                                    >
+                                                        {opt}
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                            {isIncomplete && (
+                                                null
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <label className="block mb-2 font-medium">{ex.question}</label>
+                                            <Input
+                                                type="text"
+                                                value={answers[ex.id] || ""}
+                                                onChange={(e) => handleSelect(ex.id, e.target.value)}
+                                                disabled={submitted}
+                                                placeholder="Your answer"
+                                                className={isIncomplete ? 'border-orange-400 focus:border-orange-500' : ''}
+                                            />
+                                            {isIncomplete && (
+                                                null
+                                            )}
+                                        </>
+                                    )}
+
+                                    {submitted && evaluation[ex.id] !== undefined && (
+                                        <div className="mt-2">
+                                            <FeedbackBlock
+                                                status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
+                                                {...(!evaluation[ex.id]?.is_correct && { correct: evaluation[ex.id]?.correct })}
+                                                alternatives={evaluation[ex.id]?.alternatives}
+                                                explanation={evaluation[ex.id]?.explanation}
+                                                userAnswer={answers[ex.id]}
+                                                loading={false} // Never show loading for basic feedback - always show correct/incorrect
+                                                exerciseLoading={evaluation[ex.id]?.loading || false}
+                                                {...(!evaluation[ex.id]?.is_correct && { diff: diffWords(answers[ex.id], evaluation[ex.id]?.correct) })}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    );
-                })}
-                </div>
+                            );
+                        })()}
+                    </div>
+                )}
+
+                {/* Navigation Buttons */}
+                {submitted && exercises.length > 1 && (
+                    <div className="flex justify-between items-center mt-6">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={goToPreviousExercise}
+                            disabled={currentExerciseIndex === 0}
+                            className="flex items-center gap-2"
+                        >
+                            ← Previous
+                        </Button>
+
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {currentExerciseIndex + 1} of {exercises.length}
+                        </span>
+
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={goToNextExercise}
+                            disabled={currentExerciseIndex === exercises.length - 1}
+                            className="flex items-center gap-2"
+                        >
+                            Next →
+                        </Button>
+                    </div>
+                )}
                 {showVocab && current.vocabHelp && current.vocabHelp.length > 0 && (
                     <div className="mt-4">
                         <strong>Vocabulary Help:</strong>
@@ -854,17 +1186,7 @@ export default function AIExerciseBlock({
                 )}
 
 
-                {enhancedResultsLoading && (
-                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                        <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 text-sm">
-                            <Spinner size="sm" />
-                            <span>Generating detailed explanations and alternative answers...</span>
-                        </div>
-                        <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
-                            {Object.values(evaluation).filter(e => !e.loading).length} of {exercises.length} exercises evaluated
-                        </div>
-                    </div>
-                )}
+                {/* Removed enhanced results loading banner - basic feedback should always be visible */}
 
             </Card>
             {reportExerciseId !== null && (
