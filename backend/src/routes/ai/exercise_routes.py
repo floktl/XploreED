@@ -38,10 +38,10 @@ def _strip_final_punct(s):
 def submit_ai_exercise(block_id):
     """Evaluate a submitted exercise block and save results."""
     username = require_user()
-    logger.info(f"Exercise submission request for user {username}, block {block_id}")
+    # logger.info(f"Exercise submission request for user {username}, block {block_id}")
 
     data = request.get_json() or {}
-    logger.info(f"Received submission data for user {username}: {json.dumps(data, indent=2)}")
+    # logger.info(f"Received submission data for user {username}: {json.dumps(data, indent=2)}")
 
     exercises, answers, error = parse_submission_data(data)
     if error:
@@ -54,20 +54,20 @@ def submit_ai_exercise(block_id):
         return jsonify({"msg": "Evaluation failed"}), 500
 
     summary = compile_score_summary(exercises, answers, id_map)
-    logger.info(f"Summary for user {username}: {summary}")
+    # logger.info(f"Summary for user {username}: {summary}")
 
     vocab_data, topic_data = fetch_vocab_and_topic_data(username)
-    logger.info(f"Got {len(vocab_data)} vocab and {len(topic_data)} topic entries for user {username}")
+    # logger.info(f"Got {len(vocab_data)} vocab and {len(topic_data)} topic entries for user {username}")
 
     feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
-    logger.info(f"Generated feedback prompt for user {username}")
+    # logger.info(f"Generated feedback prompt for user {username}")
 
     save_exercise_submission_async(username, block_id, answers, exercises)
     passed = bool(evaluation.get("pass"))
 
     run_in_background(prefetch_next_exercises, username)
 
-    logger.info(f"Exercise submission completed for user {username}, passed={passed}")
+    # logger.info(f"Exercise submission completed for user {username}, passed={passed}")
 
     # Add robust per-exercise explanations and alternatives
     any_is_correct = False
