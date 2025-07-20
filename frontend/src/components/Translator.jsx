@@ -77,7 +77,6 @@ export default function Translator() {
                 // Parse the JSON chunk to get feedbackBlock
                 try {
                     const data = JSON.parse(chunk);
-                    console.log("[CLIENT] Received chunk:", data);
                     if (data.feedbackBlock) {
                         setFeedbackBlock(data.feedbackBlock);
                         // Set the German translation from the feedback block
@@ -86,7 +85,7 @@ export default function Translator() {
                         }
                     }
                 } catch (e) {
-                    console.log("[CLIENT] Failed to parse chunk:", chunk, e);
+                    console.error("[CLIENT] Failed to parse chunk:", chunk, e);
                     // fallback: ignore
                 }
             });

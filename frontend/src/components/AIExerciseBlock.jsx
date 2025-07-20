@@ -238,8 +238,6 @@ export default function AIExerciseBlock({
         setSubmitting(true);
         setSubmitted(true);
 
-        // Log answers before sending
-        console.log("Submitting answers:", answersRef.current);
 
         // Start submission progress simulation
         const submissionSteps = [
@@ -272,8 +270,6 @@ export default function AIExerciseBlock({
             });
 
             if (result?.results) {
-                // Log the full feedback block for all exercises
-                console.log("Full feedback block (result.results):", result.results);
                 const map = {};
                 result.results.forEach((r) => {
                     map[r.id] = {
@@ -286,10 +282,6 @@ export default function AIExerciseBlock({
                             [],
                         explanation: r.explanation || "",
                     };
-                    // Log feedback for translation exercises
-                    if (r.type === "translation") {
-                        console.log(`Feedback for translation exercise (id: ${r.id}):`, r);
-                    }
                 });
                 setEvaluation(map);
             }
