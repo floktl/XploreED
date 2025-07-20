@@ -15,6 +15,7 @@ export default function AIFeedback() {
     const isLoading = useAppStore((state) => state.isLoading);
     const isAdmin = useAppStore((state) => state.isAdmin);
     const [actions, setActions] = useState(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     useEffect(() => {
         if (!isLoading && (!username || isAdmin)) {
@@ -29,11 +30,12 @@ export default function AIFeedback() {
                 }`}
         >
             <Container>
-                <Title>{username}'s AI Exercises</Title>
+                <Title>{username}'s AI {isSubmitted ? 'Feedback' : 'Exercises'}</Title>
                 <AIExerciseBlock
                     blockId="training"
                     fetchExercisesFn={getTrainingExercises}
                     setFooterActions={setActions}
+                    onSubmissionChange={setIsSubmitted}
                 />
             </Container>
             <Footer>

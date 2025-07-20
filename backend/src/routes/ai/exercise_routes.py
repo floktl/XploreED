@@ -136,18 +136,26 @@ def get_ai_exercise_results(block_id):
     username = require_user()
 
     result_key = f"{username}_{block_id}"
+    test_key = f"{username}_{block_id}_test"
     print(f"[Results Endpoint] Checking for results with key: {result_key}", flush=True)
     print(f"[Results Endpoint] Available keys: {list(_enhanced_results.keys())}", flush=True)
+
+    # Check if background task is running
+    if test_key in _enhanced_results:
+        print(f"[Results Endpoint] Background task marker found: {_enhanced_results[test_key]}", flush=True)
+    else:
+        print(f"[Results Endpoint] Background task marker NOT found - task may not be running", flush=True)
 
     if result_key in _enhanced_results:
         enhanced_data = _enhanced_results[result_key]
         print(f"[Results Endpoint] Found data for {username}: {enhanced_data.keys()}", flush=True)
+        print(f"[Results Endpoint] Full data structure: {type(enhanced_data)}", flush=True)
 
         # Log the actual results to see what's in them
         results = enhanced_data.get("results", [])
         print(f"[Results Endpoint] Number of results: {len(results)}", flush=True)
 
-                # Check if alternatives and explanations are actually generated for ALL exercises
+        # Check if alternatives and explanations are actually generated for ALL exercises
         all_enhanced = True
         for i, result in enumerate(results):
             alternatives_count = len(result.get('alternatives', []))
@@ -319,6 +327,7 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
         # Now add alternatives and explanations in parallel (optional, don't block)
         print(f"[Background] Starting parallel alternatives/explanations generation", flush=True)
         print(f"[Background] About to call _add_alternatives_and_explanations_parallel for {len(basic_results)} results", flush=True)
+        print(f"[Background] Basic results: {basic_results}", flush=True)
         run_in_background(
             _add_alternatives_and_explanations_parallel,
             username,
@@ -328,6 +337,11 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
             answers
         )
         print(f"[Background] Background task for alternatives/explanations started", flush=True)
+
+        # Test if background task is working by adding a simple marker
+        test_key = f"{username}_{block_id}_test"
+        _enhanced_results[test_key] = {"test": "background_task_started", "timestamp": time.time()}
+        print(f"[Background] Added test marker: {test_key}", flush=True)
 
         bg_end = time.time()
         print(f"[Background] Main processing completed in {bg_end - bg_start:.2f}s for user {username}", flush=True)
@@ -342,9 +356,9 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
     parallel_start = time.time()
     print(f"[Background] 🚀 SEQUENTIAL FUNCTION CALLED for user {username}", flush=True)
     print(f"[Background] Processing exercises in order to maintain sequence!", flush=True)
+    print(f"[Background] Received {len(basic_results)} basic results to process", flush=True)
 
     try:
-        enhanced_results = []
         # Process exercises sequentially to maintain order
         for i, res in enumerate(basic_results):
             try:
@@ -356,59 +370,28 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
 
                 enhanced_result = dict(res)
 
-                # Generate alternatives and explanations in parallel (with timeouts)
-                import concurrent.futures
-                import threading
+                # Generate alternatives (simple, no parallel processing for now)
+                try:
+                    print(f"[Background] Generating alternatives for result {i} (exercise {i+1})", flush=True)
+                    alternatives = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
+                    enhanced_result["alternatives"] = alternatives if isinstance(alternatives, list) else []
+                    print(f"[Background] Generated {len(enhanced_result['alternatives'])} alternatives for result {i}", flush=True)
+                except Exception as e:
+                    print(f"[Background] Error generating alternatives for result {i}: {e}", flush=True)
+                    enhanced_result["alternatives"] = []
 
-                alternatives = []
-                explanation = ""
+                # Generate explanation (simple, no parallel processing for now)
+                try:
+                    print(f"[Background] Generating explanation for result {i} (exercise {i+1})", flush=True)
+                    question = ex.get("question") if ex else ""
+                    explanation = generate_explanation(question, user_answer, correct_answer) if correct_answer else ""
+                    enhanced_result["explanation"] = explanation if isinstance(explanation, str) else ""
+                    print(f"[Background] Generated explanation for result {i} (length: {len(enhanced_result['explanation'])}): {enhanced_result['explanation'][:100]}...", flush=True)
+                except Exception as e:
+                    print(f"[Background] Error generating explanation for result {i}: {e}", flush=True)
+                    enhanced_result["explanation"] = ""
 
-                def get_alternatives():
-                    try:
-                        print(f"[Background] Generating alternatives for result {i} (exercise {i+1})", flush=True)
-                        alts = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
-                        result = alts if isinstance(alts, list) else []
-                        print(f"[Background] Generated {len(result)} alternatives for result {i}: {result}", flush=True)
-                        return result
-                    except Exception as e:
-                        print(f"[Background] Error generating alternatives for result {i}: {e}", flush=True)
-                        return []
-
-                def get_explanation():
-                    try:
-                        print(f"[Background] Generating explanation for result {i} (exercise {i+1})", flush=True)
-                        question = ex.get("question") if ex else ""
-                        expl = generate_explanation(question, user_answer, correct_answer) if correct_answer else ""
-                        result = expl if isinstance(expl, str) else ""
-                        print(f"[Background] Generated explanation for result {i} (length: {len(result)}): {result[:100]}...", flush=True)
-                        return result
-                    except Exception as e:
-                        print(f"[Background] Error generating explanation for result {i}: {e}", flush=True)
-                        return ""
-
-                # Run both in parallel with 3-second timeout each
-                with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-                    future_alternatives = executor.submit(get_alternatives)
-                    future_explanation = executor.submit(get_explanation)
-
-                    try:
-                        alternatives = future_alternatives.result(timeout=3)
-                    except Exception as e:
-                        print(f"[Background] Timeout/error getting alternatives for result {i}: {e}", flush=True)
-                        alternatives = []
-
-                    try:
-                        explanation = future_explanation.result(timeout=3)
-                    except Exception as e:
-                        print(f"[Background] Timeout/error getting explanation for result {i}: {e}", flush=True)
-                        explanation = ""
-
-                enhanced_result["alternatives"] = alternatives
-                enhanced_result["explanation"] = explanation
-                enhanced_results.append(enhanced_result)
-                print(f"[Background] Enhanced result {i}: {len(alternatives)} alternatives, {len(explanation)} chars explanation", flush=True)
-
-                                # Update the stored results immediately after each exercise is processed
+                # Update the stored results immediately after each exercise is processed
                 result_key = f"{username}_{block_id}"
                 if result_key in _enhanced_results:
                     # Get current results and update only this specific result
@@ -416,10 +399,10 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
                     if i < len(current_results):
                         current_results[i] = enhanced_result
                         print(f"[Background] ✅ UPDATED result {i} (exercise {i+1}) immediately for user {username}", flush=True)
+                        print(f"[Background] Result {i} has {len(enhanced_result['alternatives'])} alternatives and {len(enhanced_result['explanation'])} chars explanation", flush=True)
 
                         # CRITICAL: Wait for this exercise to be fully processed before moving to the next
                         # This ensures the frontend receives feedback in the correct order
-                        # The frontend polls every 1 second, so we wait 1.5 seconds to ensure it picks up this update
                         print(f"[Background] ⏳ Waiting 1.5s before processing next exercise to ensure order...", flush=True)
                         time.sleep(1.5)  # 1.5 second delay to ensure frontend picks up this update
                         print(f"[Background] ✅ Ready to process next exercise", flush=True)
@@ -428,16 +411,16 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
 
             except Exception as e:
                 print(f"[Background] Error processing result {i}: {e}", flush=True)
-                enhanced_results.append(res)
+                import traceback
+                traceback.print_exc()
 
-        # Final update with all results (for consistency)
+        # Final update
         result_key = f"{username}_{block_id}"
         if result_key in _enhanced_results:
-            _enhanced_results[result_key]["results"] = enhanced_results
             parallel_end = time.time()
             print(f"[Background] ✅ FINAL UPDATE: All alternatives/explanations completed for user {username} in {parallel_end - parallel_start:.2f}s", flush=True)
-            print(f"[Background] Final results for {username}: {len(enhanced_results)} results", flush=True)
-            for i, result in enumerate(enhanced_results):
+            print(f"[Background] Final results for {username}: {len(_enhanced_results[result_key]['results'])} results", flush=True)
+            for i, result in enumerate(_enhanced_results[result_key]["results"]):
                 print(f"[Background] Final result {i}: {len(result.get('alternatives', []))} alternatives, {len(result.get('explanation', ''))} chars explanation", flush=True)
         else:
             print(f"[Background] ❌ ERROR: Result key {result_key} not found in _enhanced_results", flush=True)
@@ -446,6 +429,12 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
         print(f"[Background] ❌ CRITICAL ERROR in _add_alternatives_and_explanations_parallel: {e}", flush=True)
         import traceback
         traceback.print_exc()
+
+        # Store error information so frontend knows something went wrong
+        result_key = f"{username}_{block_id}"
+        if result_key in _enhanced_results:
+            _enhanced_results[result_key]["error"] = str(e)
+            _enhanced_results[result_key]["error_timestamp"] = time.time()
 
 
 @ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])
