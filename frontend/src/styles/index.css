@@ -411,6 +411,27 @@
 html, body {
   overflow-x: hidden;
   overscroll-behavior: contain;
+  transition: background-color 0.3s ease;
+}
+
+/* Dark mode viewport styling */
+html.dark {
+  background-color: #111827 !important;
+  color-scheme: dark;
+}
+
+body.dark {
+  background-color: #111827 !important;
+}
+
+/* Light mode viewport styling */
+html:not(.dark) {
+  background-color: #ffffff !important;
+  color-scheme: light;
+}
+
+body:not(.dark) {
+  background-color: #ffffff !important;
 }
 body.modal-open {
   overflow: hidden !important;

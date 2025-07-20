@@ -10,7 +10,7 @@ export default function PlacementFeedback({ summary, onDone }) {
     const darkMode = useAppStore((s) => s.darkMode);
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container
+            <Container className="pb-20"
                 bottom={
                     <Button variant="primary" type="button" onClick={onDone}>Continue</Button>
                 }

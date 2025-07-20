@@ -104,7 +104,7 @@ export default function LessonView() {
 
     return (
         <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-            <Container
+            <Container className="pb-20"
                 bottom={
                     <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
                         <ArrowLeft className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function LessonView() {
                     </Button>
                 }
             >
-                <Title>📘 Lesson {lessonId}</Title>
+                <Title className="mb-4 text-3xl font-bold">Lesson</Title>
 
                 {entries.length > 0 && (
                     <div className="mb-6">
