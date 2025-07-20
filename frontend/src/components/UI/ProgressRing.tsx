@@ -1,5 +1,6 @@
 import React from "react";
 import useAppStore from "../../store/useAppStore";
+import Spinner from "./Spinner";
 
 interface ProgressRingProps {
     percentage: number;
@@ -41,17 +42,25 @@ export default function ProgressRing({
                 strokeDashoffset={offset}
                 transform={`rotate(-90 ${size / 2} ${size / 2})`}
             />
-            <text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dy=".3em"
-                fontSize={size * 0.25}
-                fill={textColor}
-                fontWeight="bold"
-            >
-                {percentage}%
-            </text>
+            {percentage === 99 ? (
+                <foreignObject x="25%" y="25%" width="50%" height="50%">
+                    <div className="flex items-center justify-center h-full">
+                        <Spinner />
+                    </div>
+                </foreignObject>
+            ) : (
+                <text
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dy=".3em"
+                    fontSize={size * 0.25}
+                    fill={textColor}
+                    fontWeight="bold"
+                >
+                    {percentage}%
+                </text>
+            )}
         </svg>
     );
 }

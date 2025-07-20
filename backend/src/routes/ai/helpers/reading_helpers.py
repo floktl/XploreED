@@ -52,7 +52,7 @@ def generate_reading_exercise(
             if row.get("grammar") or row.get("topic")
         }
         if topics:
-            topics_str = ", ".join(list(topics)[:5])
+            topics_str = ", ".join(list(topics)[:10])  # Increased from 5 to 10
             extra += (
                 f"Focus on these weak topics: {topics_str}. "
                 "Questions should explicitly train these weaknesses. "

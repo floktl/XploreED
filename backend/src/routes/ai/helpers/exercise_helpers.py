@@ -334,7 +334,7 @@ def generate_new_exercises(
         upcoming = sorted(
             (entry for entry in topic_memory if "next_repeat" in entry),
             key=lambda x: datetime.datetime.fromisoformat(x["next_repeat"]),
-        )[:5]
+        )[:10]  # Increased from 5 to 10
         filtered_topic_memory = [
             {
                 "grammar": entry.get("grammar"),
@@ -363,7 +363,7 @@ def generate_new_exercises(
                 ).date()
                 <= datetime.date.today()
             )
-        ]
+        ][:10]  # Limit to 10 vocab entries to keep API calls shorter
         # logger.info(f"Filtered vocabulary: {len(vocabular)} entries")
     except Exception as e:
         logger.error(f"Error stripping vocabulary fields: {e}")

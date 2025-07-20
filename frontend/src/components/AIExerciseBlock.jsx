@@ -11,6 +11,7 @@ import {
     submitExerciseAnswers,
     argueExerciseAnswers,
     sendSupportFeedback,
+    getEnhancedResults,
 } from "../api";
 import diffWords from "../utils/diffWords";
 import ReportExerciseModal from "./ReportExerciseModal";
@@ -53,6 +54,8 @@ export default function AIExerciseBlock({
     // Submission progress states
     const [submissionProgress, setSubmissionProgress] = useState(0);
     const [submissionStatus, setSubmissionStatus] = useState("");
+    const [enhancedResults, setEnhancedResults] = useState(null);
+    const [enhancedResultsLoading, setEnhancedResultsLoading] = useState(false);
 
     const answersRef = useRef(answers);
 
@@ -67,7 +70,7 @@ export default function AIExerciseBlock({
 
     const exercises = current?.exercises || [];
     const instructions = current?.instructions;
-    const feedbackPrompt = current?.feedbackPrompt;
+
     const showVocab = stage > 1 && Array.isArray(current?.vocabHelp);
 
     // Check if all exercises have answers
@@ -99,7 +102,7 @@ export default function AIExerciseBlock({
                 { percentage: 55, status: "Identifying weak areas...", icon: Brain },
                 { percentage: 75, status: "Generating personalized exercises...", icon: Sparkles },
                 { percentage: 90, status: "Finalizing your lesson...", icon: Sparkles },
-                { percentage: 100, status: "Ready!", icon: CheckCircle }
+                { percentage: 99, status: "Ready!", icon: CheckCircle }
             ];
 
             let currentStep = 0;
@@ -113,7 +116,7 @@ export default function AIExerciseBlock({
                 } else {
                     clearInterval(progressInterval);
                 }
-            }, 800); // Update every 800ms
+            }, 400); // Update every 400ms for faster response
 
             fetchExercisesFn()
                 .then((d) => {
@@ -235,45 +238,86 @@ export default function AIExerciseBlock({
     };
 
     const handleSubmit = async () => {
+        console.log("[AIExerciseBlock] Starting submission...");
         setSubmitting(true);
         setSubmitted(true);
 
-
-        // Start submission progress simulation
+        // Start submission progress simulation with adaptive timing
         const submissionSteps = [
-            { percentage: 20, status: "Analyzing your answers..." },
-            { percentage: 40, status: "Checking grammar and vocabulary..." },
-            { percentage: 60, status: "Generating personalized feedback..." },
-            { percentage: 80, status: "Preparing explanations..." },
-            { percentage: 100, status: "Evaluation complete!" }
+            { percentage: 25, status: "Analyzing your answers..." },
+            { percentage: 50, status: "Evaluating with AI..." },
+            { percentage: 75, status: "Generating feedback..." },
+            { percentage: 99, status: "Evaluation complete!" }
         ];
 
         let currentStep = 0;
+        let apiCompleted = false;
+        let apiResult = null;
+
+        // Start the API call immediately
+        const currentAnswers = answersRef.current;
+        const apiPromise = (async () => {
+            try {
+                console.log("[AIExerciseBlock] Starting actual API call...");
+                const startTime = Date.now();
+                const blockToSubmit = currentBlockRef.current || current;
+                const result = await submitExerciseAnswers(blockId, currentAnswers, {
+                    instructions: blockToSubmit?.instructions || "",
+                    exercises: blockToSubmit?.exercises || [],
+                    vocabHelp: blockToSubmit?.vocabHelp || [],
+                });
+                const endTime = Date.now();
+                console.log(`[AIExerciseBlock] API call completed in ${endTime - startTime}ms`);
+                apiResult = result;
+                apiCompleted = true;
+            } catch (e) {
+                console.error("Submission failed:", e);
+                apiCompleted = true;
+            }
+        })();
+
+        // Progress simulation that adapts to API completion
         const submissionInterval = setInterval(() => {
             if (currentStep < submissionSteps.length) {
                 const step = submissionSteps[currentStep];
+                console.log(`[AIExerciseBlock] Progress simulation: ${step.percentage}% - ${step.status}`);
                 setSubmissionProgress(step.percentage);
                 setSubmissionStatus(step.status);
                 currentStep++;
             } else {
-                clearInterval(submissionInterval);
+                // If API is still running, keep showing 99% with spinner
+                if (!apiCompleted) {
+                    console.log("[AIExerciseBlock] Progress simulation complete, waiting for API...");
+                    setSubmissionProgress(99);
+                    setSubmissionStatus("Finalizing...");
+                } else {
+                    console.log("[AIExerciseBlock] Both progress and API complete, clearing interval");
+                    clearInterval(submissionInterval);
+                    processResults();
+                }
             }
-        }, 600); // Update every 600ms
+        }, 300); // Update every 300ms for faster response
 
-        const currentAnswers = answersRef.current;
-        try {
-            const blockToSubmit = currentBlockRef.current || current;
-            const result = await submitExerciseAnswers(blockId, currentAnswers, {
-                instructions: blockToSubmit?.instructions || "",
-                exercises: blockToSubmit?.exercises || [],
-                vocabHelp: blockToSubmit?.vocabHelp || [],
-            });
+        // Check if API completes before progress simulation
+        const checkApiCompletion = setInterval(() => {
+            if (apiCompleted) {
+                clearInterval(checkApiCompletion);
+                if (currentStep >= submissionSteps.length) {
+                    // Progress simulation is also complete
+                    clearInterval(submissionInterval);
+                    processResults();
+                }
+                // Otherwise, let the progress simulation continue
+            }
+        }, 100);
 
-            if (result?.results) {
+        const processResults = () => {
+            if (apiResult?.results) {
+                console.log("[AIExerciseBlock] Processing results...");
                 const map = {};
-                result.results.forEach((r) => {
+                apiResult.results.forEach((r) => {
                     map[r.id] = {
-                        is_correct: r.is_correct, // <-- Add this line to preserve backend correctness
+                        is_correct: r.is_correct,
                         correct: r.correct_answer,
                         alternatives:
                             r.alternatives ||
@@ -281,17 +325,24 @@ export default function AIExerciseBlock({
                             r.other_answers ||
                             [],
                         explanation: r.explanation || "",
+                        loading: r.loading || false,  // Add loading state
                     };
                 });
                 setEvaluation(map);
+                console.log("[AIExerciseBlock] Results set in state");
+
+                // If this is a streaming response, start polling for enhanced results
+                if (apiResult.streaming) {
+                    console.log("[AIExerciseBlock] Streaming response detected, starting enhanced results polling");
+                    startEnhancedResultsPolling();
+                }
             }
-            if (result?.feedbackPrompt) {
-                setCurrent((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
-            }
-            if (result?.pass) {
+
+            if (apiResult?.pass) {
+                console.log("[AIExerciseBlock] Exercise passed, saving vocab...");
                 setPassed(true);
-                if (Array.isArray(result.results)) {
-                    const words = result.results.map((r) => r.correct_answer);
+                if (Array.isArray(apiResult.results)) {
+                    const words = apiResult.results.map((r) => r.correct_answer);
 
                     // Add background activity for vocab saving
                     const vocabActivityId = `vocab-${Date.now()}`;
@@ -302,24 +353,122 @@ export default function AIExerciseBlock({
                     });
 
                     try {
-                        await saveVocabWords(words);
-                        // Update activity status
-                        setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
+                        saveVocabWords(words).then(() => {
+                            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
+                        }).catch((error) => {
+                            console.error("Failed to save vocab:", error);
+                            setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
+                        });
                     } catch (error) {
                         console.error("Failed to save vocab:", error);
                         setTimeout(() => removeBackgroundActivity(vocabActivityId), 1200);
                     }
                 }
             }
-        } catch (e) {
-            console.error("Submission failed:", e);
-        } finally {
-            clearInterval(submissionInterval);
+
+            console.log("[AIExerciseBlock] Processing complete, resetting state");
             setSubmitting(false);
             setSubmissionProgress(0);
             setSubmissionStatus("");
             fetchNext({ answers: currentAnswers });
-        }
+        };
+
+        const startEnhancedResultsPolling = () => {
+            console.log("[AIExerciseBlock] Starting enhanced results polling...");
+            setEnhancedResultsLoading(true);
+
+            const pollInterval = setInterval(async () => {
+                try {
+                    const enhancedData = await getEnhancedResults(blockId);
+                    console.log("[AIExerciseBlock] Enhanced results status:", enhancedData.status);
+                    console.log("[AIExerciseBlock] Enhanced data received:", enhancedData);
+
+                    if (enhancedData.status === "complete" && enhancedData.results) {
+                        console.log("[AIExerciseBlock] Enhanced results received, updating UI");
+                        console.log("[AIExerciseBlock] Number of results:", enhancedData.results.length);
+
+                        // Log each result to see what's in it
+                        enhancedData.results.forEach((result, index) => {
+                            console.log(`[AIExerciseBlock] Result ${index}:`, {
+                                id: result.id,
+                                alternatives: result.alternatives,
+                                explanation: result.explanation,
+                                alternativesLength: result.alternatives?.length || 0,
+                                explanationLength: result.explanation?.length || 0
+                            });
+                        });
+
+                        setEnhancedResults(enhancedData.results);
+                        setEnhancedResultsLoading(false);
+                        clearInterval(pollInterval);
+
+                        // Update the evaluation map with enhanced data
+                        const enhancedMap = {};
+                        enhancedData.results.forEach((r) => {
+                            enhancedMap[r.id] = {
+                                is_correct: r.is_correct,
+                                correct: r.correct_answer,
+                                alternatives: r.alternatives || [],
+                                explanation: r.explanation || "",
+                                loading: false,  // Remove loading state
+                            };
+                        });
+
+                        console.log("[AIExerciseBlock] Enhanced map created:", enhancedMap);
+                        setEvaluation(enhancedMap);
+
+
+
+                        if (enhancedData.pass !== undefined) {
+                            console.log("[AIExerciseBlock] Setting enhanced pass status:", enhancedData.pass);
+                            setPassed(enhancedData.pass);
+                        }
+                    } else if (enhancedData.status === "processing" && enhancedData.results) {
+                        // Progressive update: update each exercise individually as it becomes available
+                        console.log("[AIExerciseBlock] Progressive update - checking individual exercises");
+
+                        const currentEvaluation = { ...evaluation };
+                        let hasUpdates = false;
+
+                        enhancedData.results.forEach((result) => {
+                            const hasAlternatives = result.alternatives && result.alternatives.length > 0;
+                            const hasExplanation = result.explanation && result.explanation.length > 0;
+
+                            if (hasAlternatives || hasExplanation) {
+                                console.log(`[AIExerciseBlock] Progressive update for ${result.id}:`, {
+                                    alternatives: result.alternatives,
+                                    explanation: result.explanation
+                                });
+
+                                currentEvaluation[result.id] = {
+                                    is_correct: result.is_correct,
+                                    correct: result.correct_answer,
+                                    alternatives: result.alternatives || [],
+                                    explanation: result.explanation || "",
+                                    loading: false,  // Remove loading state
+                                };
+                                hasUpdates = true;
+                            }
+                        });
+
+                        if (hasUpdates) {
+                            console.log("[AIExerciseBlock] Progressive update applied:", currentEvaluation);
+                            setEvaluation(currentEvaluation);
+                        }
+                    }
+                } catch (error) {
+                    console.error("[AIExerciseBlock] Failed to fetch enhanced results:", error);
+                    // Continue polling on error
+                }
+            }, 1000); // Poll every second
+
+            // Stop polling after 15 seconds to avoid infinite polling
+            setTimeout(() => {
+                clearInterval(pollInterval);
+                setEnhancedResultsLoading(false);
+                console.log("[AIExerciseBlock] Enhanced results polling timeout");
+            }, 15000); // Reduced from 30000 to 15000
+        };
     };
 
     const handleArgue = async () => {
@@ -327,10 +476,11 @@ export default function AIExerciseBlock({
 
         // Start arguing progress simulation
         const arguingSteps = [
-            { percentage: 25, status: "Reviewing your argument..." },
-            { percentage: 50, status: "Re-evaluating the answer..." },
-            { percentage: 75, status: "Preparing response..." },
-            { percentage: 100, status: "Response ready!" }
+            { percentage: 20, status: "Reviewing your argument..." },
+            { percentage: 40, status: "Re-evaluating the answer..." },
+            { percentage: 60, status: "Consulting AI analysis..." },
+            { percentage: 80, status: "Preparing response..." },
+            { percentage: 99, status: "Response ready!" }
         ];
 
         let currentStep = 0;
@@ -343,7 +493,7 @@ export default function AIExerciseBlock({
             } else {
                 clearInterval(arguingInterval);
             }
-        }, 500); // Update every 500ms
+        }, 300); // Update every 300ms for faster response
 
         try {
             const currentAnswers = answersRef.current;
@@ -466,7 +616,7 @@ export default function AIExerciseBlock({
                     <ProgressRing
                         percentage={progressPercentage}
                         size={120}
-                        color={progressPercentage === 100 ? "#10B981" : "#3B82F6"}
+                        color={progressPercentage === 99 ? "#10B981" : "#3B82F6"}
                     />
                 </div>
                 <div className="flex items-center justify-center gap-3 mb-4">
@@ -476,12 +626,12 @@ export default function AIExerciseBlock({
                     </h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    {progressPercentage < 100
+                    {progressPercentage < 99
                         ? "We're crafting the perfect exercises tailored to your learning needs."
                         : "Your personalized exercises are ready!"
                     }
                 </p>
-                {progressPercentage < 100 && (
+                {progressPercentage < 99 && (
                     <div className="mt-6 flex justify-center">
                         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <Spinner />
@@ -510,7 +660,7 @@ export default function AIExerciseBlock({
                     <ProgressRing
                         percentage={submissionProgress}
                         size={120}
-                        color={submissionProgress === 100 ? "#10B981" : "#3B82F6"}
+                        color={submissionProgress === 99 ? "#10B981" : "#3B82F6"}
                     />
                 </div>
                 <div className="flex items-center justify-center gap-3 mb-4">
@@ -520,12 +670,12 @@ export default function AIExerciseBlock({
                     </h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    {submissionProgress < 100
+                    {submissionProgress < 99
                         ? "We're analyzing your answers and generating personalized feedback."
                         : "Your evaluation is complete!"
                     }
                 </p>
-                {submissionProgress < 100 && (
+                {submissionProgress < 99 && (
                     <div className="mt-6 flex justify-center">
                         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <Spinner />
@@ -546,7 +696,7 @@ export default function AIExerciseBlock({
                     <ProgressRing
                         percentage={submissionProgress}
                         size={120}
-                        color={submissionProgress === 100 ? "#10B981" : "#EF4444"}
+                        color={submissionProgress === 99 ? "#10B981" : "#EF4444"}
                     />
                 </div>
                 <div className="flex items-center justify-center gap-3 mb-4">
@@ -556,12 +706,12 @@ export default function AIExerciseBlock({
                     </h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                    {submissionProgress < 100
+                    {submissionProgress < 99
                         ? "We're reviewing your argument and re-evaluating the answer."
                         : "Response ready!"
                     }
                 </p>
-                {submissionProgress < 100 && (
+                {submissionProgress < 99 && (
                     <div className="mt-6 flex justify-center">
                         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <Spinner />
@@ -663,6 +813,8 @@ export default function AIExerciseBlock({
                                         alternatives={evaluation[ex.id]?.alternatives}
                                         explanation={evaluation[ex.id]?.explanation}
                                         userAnswer={answers[ex.id]}
+                                        loading={enhancedResultsLoading && (!evaluation[ex.id]?.alternatives?.length && !evaluation[ex.id]?.explanation)}
+                                        exerciseLoading={evaluation[ex.id]?.loading || false}
                                         {...(!evaluation[ex.id]?.is_correct && { diff: diffWords(answers[ex.id], evaluation[ex.id]?.correct) })}
                                     />
                                 </div>
@@ -683,9 +835,17 @@ export default function AIExerciseBlock({
                         </ul>
                     </div>
                 )}
-                {submitted && feedbackPrompt && (
-                    <div className="mt-4 italic text-blue-700 dark:text-blue-300">
-                        {feedbackPrompt}
+
+
+                {enhancedResultsLoading && (
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 text-sm">
+                            <Spinner size="sm" />
+                            <span>Generating detailed explanations and alternative answers...</span>
+                        </div>
+                        <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+                            {Object.values(evaluation).filter(e => !e.loading).length} of {exercises.length} exercises evaluated
+                        </div>
                     </div>
                 )}
 
