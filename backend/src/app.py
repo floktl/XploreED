@@ -5,6 +5,11 @@ from flask_cors import CORS  # type: ignore
 from pathlib import Path
 import os
 import sys
+import logging
+
+# === Configure logging to suppress urllib3 debug logs ===
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
 
 # === Load environment variables EARLY ===
 try:

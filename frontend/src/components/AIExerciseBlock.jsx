@@ -264,7 +264,6 @@ export default function AIExerciseBlock({
     };
 
     const handleSubmit = async () => {
-        console.log("[AIExerciseBlock] Starting submission...");
         setSubmitting(true);
         setSubmitted(true);
         if (onSubmissionChange) {
@@ -287,7 +286,6 @@ export default function AIExerciseBlock({
         const currentAnswers = answersRef.current;
         const apiPromise = (async () => {
             try {
-                console.log("[AIExerciseBlock] Starting actual API call...");
                 const startTime = Date.now();
                 const blockToSubmit = currentBlockRef.current || current;
                 const result = await submitExerciseAnswers(blockId, currentAnswers, {
@@ -296,7 +294,6 @@ export default function AIExerciseBlock({
                     vocabHelp: blockToSubmit?.vocabHelp || [],
                 });
                 const endTime = Date.now();
-                console.log(`[AIExerciseBlock] API call completed in ${endTime - startTime}ms`);
                 apiResult = result;
                 apiCompleted = true;
             } catch (e) {
@@ -309,18 +306,15 @@ export default function AIExerciseBlock({
         const submissionInterval = setInterval(() => {
             if (currentStep < submissionSteps.length) {
                 const step = submissionSteps[currentStep];
-                console.log(`[AIExerciseBlock] Progress simulation: ${step.percentage}% - ${step.status}`);
                 setSubmissionProgress(step.percentage);
                 setSubmissionStatus(step.status);
                 currentStep++;
             } else {
                 // If API is still running, keep showing 99% with spinner
                 if (!apiCompleted) {
-                    console.log("[AIExerciseBlock] Progress simulation complete, waiting for API...");
                     setSubmissionProgress(99);
                     setSubmissionStatus("Finalizing...");
                 } else {
-                    console.log("[AIExerciseBlock] Both progress and API complete, clearing interval");
                     clearInterval(submissionInterval);
                     processResults();
                 }
@@ -342,7 +336,6 @@ export default function AIExerciseBlock({
 
         const processResults = () => {
             if (apiResult?.results) {
-                console.log("[AIExerciseBlock] Processing results...");
                 const map = {};
                 apiResult.results.forEach((r) => {
                     map[r.id] = {
@@ -358,15 +351,12 @@ export default function AIExerciseBlock({
                     };
                 });
                 setEvaluation(map);
-                console.log("[AIExerciseBlock] Basic results set in state - correct/incorrect feedback should be visible immediately");
 
                 // Start polling for enhanced results in the background
-                console.log("[AIExerciseBlock] Starting enhanced results polling for progressive updates");
                 startEnhancedResultsPolling();
             }
 
             if (apiResult?.pass) {
-                console.log("[AIExerciseBlock] Exercise passed, saving vocab...");
                 setPassed(true);
                 if (Array.isArray(apiResult.results)) {
                     const words = apiResult.results.map((r) => r.correct_answer);
@@ -393,7 +383,6 @@ export default function AIExerciseBlock({
                 }
             }
 
-            console.log("[AIExerciseBlock] Processing complete, resetting state");
             setSubmitting(false);
             setSubmissionProgress(0);
             setSubmissionStatus("");
@@ -407,23 +396,7 @@ export default function AIExerciseBlock({
             const pollInterval = setInterval(async () => {
                 try {
                     const enhancedData = await getEnhancedResults(blockId);
-                    console.log("[AIExerciseBlock] Enhanced results status:", enhancedData.status);
-                    console.log("[AIExerciseBlock] Enhanced data received:", enhancedData);
-
                     if (enhancedData.status === "complete" && enhancedData.results) {
-                        console.log("[AIExerciseBlock] Enhanced results received, updating UI");
-                        console.log("[AIExerciseBlock] Number of results:", enhancedData.results.length);
-
-                        // Log each result to see what's in it
-                        enhancedData.results.forEach((result, index) => {
-                            console.log(`[AIExerciseBlock] Result ${index}:`, {
-                                id: result.id,
-                                alternatives: result.alternatives,
-                                explanation: result.explanation,
-                                alternativesLength: result.alternatives?.length || 0,
-                                explanationLength: result.explanation?.length || 0
-                            });
-                        });
 
                         setEnhancedResults(enhancedData.results);
                         setEnhancedResultsLoading(false);
@@ -441,19 +414,13 @@ export default function AIExerciseBlock({
                             };
                         });
 
-                        console.log("[AIExerciseBlock] Enhanced map created:", enhancedMap);
                         setEvaluation(enhancedMap);
 
-
-
                         if (enhancedData.pass !== undefined) {
-                            console.log("[AIExerciseBlock] Setting enhanced pass status:", enhancedData.pass);
                             setPassed(enhancedData.pass);
                         }
                     } else if (enhancedData.status === "processing" && enhancedData.results) {
                         // Progressive update: update each exercise individually as it becomes available
-                        console.log("[AIExerciseBlock] Progressive update - checking individual exercises");
-
                         const currentEvaluation = { ...evaluation };
                         let hasUpdates = false;
 
@@ -469,11 +436,6 @@ export default function AIExerciseBlock({
                                 // Show results as soon as they have either alternatives OR explanations
                                 // Don't wait for both - show partial results immediately
                                 if (hasEnhancedContent) {
-                                    console.log(`[AIExerciseBlock] Progressive update for ${result.id}:`, {
-                                        alternatives: result.alternatives,
-                                        explanation: result.explanation
-                                    });
-
                                     currentEvaluation[result.id] = {
                                         is_correct: result.is_correct,
                                         correct: result.correct_answer,
@@ -490,7 +452,6 @@ export default function AIExerciseBlock({
                                     }
                                 } else if (!existingResult || existingResult.loading) {
                                     // If we have a result but no alternatives/explanation yet, show basic result
-                                    console.log(`[AIExerciseBlock] Showing basic result for ${result.id}`);
                                     currentEvaluation[result.id] = {
                                         is_correct: result.is_correct,
                                         correct: result.correct_answer,
@@ -504,7 +465,6 @@ export default function AIExerciseBlock({
                         });
 
                         if (hasUpdates) {
-                            console.log("[AIExerciseBlock] Progressive update applied:", currentEvaluation);
                             setEvaluation(currentEvaluation);
                         }
                     }
@@ -518,7 +478,6 @@ export default function AIExerciseBlock({
             setTimeout(() => {
                 clearInterval(pollInterval);
                 setEnhancedResultsLoading(false);
-                console.log("[AIExerciseBlock] Enhanced results polling timeout");
             }, 15000); // Reduced from 30000 to 15000
         };
     };
@@ -659,19 +618,13 @@ export default function AIExerciseBlock({
     // Swipeable interface navigation functions
     const goToNextExercise = () => {
         if (currentExerciseIndex < exercises.length - 1) {
-            console.log(`[Swipe] Going to next exercise: ${currentExerciseIndex + 1} -> ${currentExerciseIndex + 2}`);
             setCurrentExerciseIndex(currentExerciseIndex + 1);
-        } else {
-            console.log(`[Swipe] Cannot go next: already at last exercise (${currentExerciseIndex + 1}/${exercises.length})`);
         }
     };
 
     const goToPreviousExercise = () => {
         if (currentExerciseIndex > 0) {
-            console.log(`[Swipe] Going to previous exercise: ${currentExerciseIndex + 1} -> ${currentExerciseIndex}`);
             setCurrentExerciseIndex(currentExerciseIndex - 1);
-        } else {
-            console.log(`[Swipe] Cannot go previous: already at first exercise (${currentExerciseIndex + 1}/${exercises.length})`);
         }
     };
 
@@ -686,11 +639,7 @@ export default function AIExerciseBlock({
         event.preventDefault();
         event.stopPropagation();
 
-        console.log(`[Progress Bar] Click event triggered!`);
-        console.log(`[Progress Bar] Submitted: ${submitted}, Exercises length: ${exercises.length}`);
-
         if (exercises.length <= 1) {
-            console.log(`[Progress Bar] Click ignored - only one exercise`);
             return;
         }
 
@@ -703,7 +652,6 @@ export default function AIExerciseBlock({
         const targetIndex = Math.floor(clickPercentage * exercises.length);
         const clampedIndex = Math.max(0, Math.min(targetIndex, exercises.length - 1));
 
-        console.log(`[Progress Bar] Clicked at ${clickPercentage * 100}% -> Exercise ${clampedIndex + 1}`);
         goToExercise(clampedIndex);
     };
 
@@ -727,32 +675,26 @@ export default function AIExerciseBlock({
         }
     };
 
-        const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) {
+                const onTouchEnd = () => {
+            if (!touchStart || !touchEnd) {
+                setIsDragging(false);
+                setDragOffset(0);
+                return;
+            }
+
+            const distance = touchStart - touchEnd;
+            const isLeftSwipe = distance > 30; // Reduced threshold for easier swiping
+            const isRightSwipe = distance < -30; // Reduced threshold for easier swiping
+
+            if (isLeftSwipe && currentExerciseIndex < exercises.length - 1) {
+                goToNextExercise();
+            } else if (isRightSwipe && currentExerciseIndex > 0) {
+                goToPreviousExercise();
+            }
+
             setIsDragging(false);
             setDragOffset(0);
-            return;
-        }
-
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > 30; // Reduced threshold for easier swiping
-        const isRightSwipe = distance < -30; // Reduced threshold for easier swiping
-
-        console.log(`[Swipe] Touch end - Distance: ${distance}px, Left: ${isLeftSwipe}, Right: ${isRightSwipe}, Current: ${currentExerciseIndex + 1}/${exercises.length}`);
-
-        if (isLeftSwipe && currentExerciseIndex < exercises.length - 1) {
-            console.log(`[Swipe] Triggering left swipe (next)`);
-            goToNextExercise();
-        } else if (isRightSwipe && currentExerciseIndex > 0) {
-            console.log(`[Swipe] Triggering right swipe (previous)`);
-            goToPreviousExercise();
-        } else {
-            console.log(`[Swipe] No navigation triggered - conditions not met`);
-        }
-
-        setIsDragging(false);
-        setDragOffset(0);
-    };
+        };
 
     // Mouse drag handlers for desktop
     const onMouseDown = (e) => {
@@ -785,16 +727,10 @@ export default function AIExerciseBlock({
         const isLeftSwipe = distance > 30; // Reduced threshold for easier swiping
         const isRightSwipe = distance < -30; // Reduced threshold for easier swiping
 
-        console.log(`[Swipe] Mouse up - Distance: ${distance}px, Left: ${isLeftSwipe}, Right: ${isRightSwipe}, Current: ${currentExerciseIndex + 1}/${exercises.length}`);
-
         if (isLeftSwipe && currentExerciseIndex < exercises.length - 1) {
-            console.log(`[Swipe] Triggering left swipe (next)`);
             goToNextExercise();
         } else if (isRightSwipe && currentExerciseIndex > 0) {
-            console.log(`[Swipe] Triggering right swipe (previous)`);
             goToPreviousExercise();
-        } else {
-            console.log(`[Swipe] No navigation triggered - conditions not met`);
         }
 
         setIsDragging(false);
@@ -974,8 +910,8 @@ export default function AIExerciseBlock({
                                                 style={{
                             minHeight: exercises.length > 1 ? '12px' : '8px'
                         }}
-                        onMouseDown={(e) => exercises.length > 1 && console.log('[Progress Bar] Mouse down detected')}
-                        onMouseUp={(e) => exercises.length > 1 && console.log('[Progress Bar] Mouse up detected')}
+                        onMouseDown={(e) => exercises.length > 1}
+                        onMouseUp={(e) => exercises.length > 1}
                     >
                         {/* Background track */}
                         <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-800 relative">
@@ -1008,15 +944,7 @@ export default function AIExerciseBlock({
                                 const isIncorrect = submitted && evaluation[exercises[index]?.id] && !evaluation[exercises[index]?.id].is_correct;
                                 const isLoading = submitted && evaluation[exercises[index]?.id] && evaluation[exercises[index]?.id].loading;
 
-                                // Debug logging
-                                console.log(`[Navigation Dots] Exercise ${index + 1}:`, {
-                                    exerciseId: exercises[index]?.id,
-                                    submitted,
-                                    hasEvaluation: !!evaluation[exercises[index]?.id],
-                                    loading: evaluation[exercises[index]?.id]?.loading,
-                                    isIncorrect,
-                                    isCurrent
-                                });
+
 
                                 return (
                                     <button
