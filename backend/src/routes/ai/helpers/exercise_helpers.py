@@ -147,6 +147,7 @@ def save_exercise_submission_async(
         "answers": answers
     })
 
+    from flask import current_app
     app = current_app._get_current_object()
     def run():
         with app.app_context():
@@ -194,7 +195,7 @@ def save_exercise_submission_async(
                 logger.error(f"Failed to save exercise submission for user {username}: {e}")
                 log_exercise_event("submission_error", username, error_details)
                 current_app.logger.error("Failed to save exercise submission: %s", e)
-    Thread(target=run).start()
+    Thread(target=run, daemon=True).start()
 
 
 def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dict]:
