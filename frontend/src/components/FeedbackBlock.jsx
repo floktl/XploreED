@@ -1,6 +1,7 @@
 import React from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import diffWords from "../utils/diffWords";
+import Spinner from "./UI/Spinner";
 
 function onlyWrongWords(userAnswer, correctAnswer) {
   if (!userAnswer && !correctAnswer) return null;
@@ -96,7 +97,21 @@ export default function FeedbackBlock({
   userAnswer,
   diff,
   children,
+  loading,
+  exerciseLoading = false,  // New prop for exercise-level loading
 }) {
+  // If the entire exercise is still loading, show a loading state
+  if (exerciseLoading) {
+    return (
+      <div className="p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100">
+        <div className="flex items-center justify-center gap-2 py-4">
+          <Spinner size="sm" />
+          <span className="text-gray-600 dark:text-gray-400 text-sm">Evaluating exercise...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 space-y-2">
       <div className="flex items-center gap-2 font-bold">
@@ -110,6 +125,11 @@ export default function FeedbackBlock({
           </span>
         )}
       </div>
+      {loading && (
+        <div className="flex justify-center items-center py-4">
+          <Spinner />
+        </div>
+      )}
       {/* Only show the difference (diff) for incorrect answers, if present */}
       {status !== 'correct' && typeof userAnswer !== 'undefined' && typeof correct !== 'undefined' && (
         <div className="mt-2">
@@ -132,7 +152,12 @@ export default function FeedbackBlock({
       )}
       <div>
         <strong className="text-blue-700 dark:text-blue-400">Alternative correct answers:</strong>
-        {alternatives.length > 0 ? (
+        {loading ? (
+          <div className="flex items-center gap-2 ml-2 mt-1">
+            <Spinner size="sm" />
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Generating alternatives...</span>
+          </div>
+        ) : alternatives.length > 0 ? (
           <ul className="list-disc ml-6 mt-1">
             {alternatives.map((alt, i) => (
               <li key={i} className="font-mono">{alt}</li>
@@ -144,9 +169,16 @@ export default function FeedbackBlock({
       </div>
       <div>
         <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>
-        <span className="ml-2 text-gray-800 dark:text-gray-100">
-          {explanation || <span>No explanation available.</span>}
-        </span>
+        {loading ? (
+          <div className="flex items-center gap-2 ml-2">
+            <Spinner size="sm" />
+            <span className="text-gray-600 dark:text-gray-400 text-sm">Generating explanation...</span>
+          </div>
+        ) : (
+          <span className="ml-2 text-gray-800 dark:text-gray-100">
+            {explanation || <span>No explanation available.</span>}
+          </span>
+        )}
       </div>
       {children}
     </div>

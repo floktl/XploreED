@@ -681,6 +681,9 @@ export const submitExerciseAnswers = async (
   answers = {},
   exerciseBlock = null,
 ) => {
+  console.log(`[API] submitExerciseAnswers called for block ${blockId}`);
+  const startTime = Date.now();
+
   const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/submit`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -690,6 +693,10 @@ export const submitExerciseAnswers = async (
       exercise_block: exerciseBlock || { exercises: [] },
     }),
   });
+
+  const endTime = Date.now();
+  console.log(`[API] submitExerciseAnswers completed in ${endTime - startTime}ms`);
+
   if (!res.ok) throw new Error("Failed to submit answers");
   return res.json();
 };
@@ -811,4 +818,26 @@ export const deleteAllVocab = async () => {
   });
   if (!res.ok) throw new Error("Failed to delete all vocab");
   return res.json();
+};
+
+export const getEnhancedResults = async (blockId) => {
+    try {
+        const response = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/results`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Failed to fetch enhanced results:", error);
+        throw error;
+    }
 };

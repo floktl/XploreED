@@ -94,6 +94,8 @@ export default function AIFeedbackView() {
                 try {
                     const progress = await getFeedbackProgress(startResult.session_id);
 
+                    console.log(`[Feedback Progress] ${progress.percentage}% - ${progress.status} - Step: ${progress.step} - Completed: ${progress.completed}`);
+
                     setProgressPercentage(progress.percentage);
                     setProgressStatus(progress.status);
 
@@ -115,18 +117,26 @@ export default function AIFeedbackView() {
 
                     // If complete, get the result
                     if (progress.completed) {
+                        console.log(`[Feedback] Progress completed, fetching result...`);
                         clearInterval(progressInterval);
 
                         if (progress.error) {
+                            console.error(`[Feedback] Error in progress: ${progress.error}`);
                             throw new Error(progress.error);
                         }
 
+                        console.log(`[Feedback] Calling getFeedbackResult...`);
+                        const startTime = Date.now();
                         const result = await getFeedbackResult(startResult.session_id);
+                        const endTime = Date.now();
+                        console.log(`[Feedback] getFeedbackResult took ${endTime - startTime}ms`);
 
                         if (result && result.feedbackPrompt) {
+                            console.log(`[Feedback] Setting feedback prompt`);
                             setFeedback((prev) => ({ ...prev, feedbackPrompt: result.feedbackPrompt }));
                         }
                         if (result && Array.isArray(result.results)) {
+                            console.log(`[Feedback] Setting exercise results`);
                             const map = {};
                             result.results.forEach((r) => {
                                 map[r.id] = r.correct_answer;
@@ -142,20 +152,21 @@ export default function AIFeedbackView() {
                             }));
                         }
 
+                        console.log(`[Feedback] Setting generatingFeedback to false`);
                         setGeneratingFeedback(false);
 
                         // Remove background activity after completion
                         setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
                     }
                 } catch (err) {
-                    clearInterval(progressInterval);
                     console.error("Progress polling failed:", err);
+                    clearInterval(progressInterval);
                     setGeneratingFeedback(false);
 
                     // Remove background activity on error
                     setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
                 }
-            }, 500); // Poll every 500ms
+            }, 200); // Poll every 200ms
 
         } catch (err) {
             console.error("Failed to generate AI feedback", err);
@@ -297,7 +308,7 @@ export default function AIFeedbackView() {
                                             <ProgressRing
                                                 percentage={progressPercentage}
                                                 size={100}
-                                                color={progressPercentage === 100 ? "#10B981" : "#3B82F6"}
+                                                color={progressPercentage === 99 ? "#10B981" : "#3B82F6"}
                                             />
                                         </div>
                                         <div className="flex items-center justify-center gap-3 mb-3">
@@ -310,12 +321,12 @@ export default function AIFeedbackView() {
                                             </h4>
                                         </div>
                                         <p className="text-gray-600 dark:text-gray-400">
-                                            {progressPercentage < 100
+                                            {progressPercentage < 99
                                                 ? "We're analyzing your answers and generating personalized feedback."
                                                 : "Your feedback is ready!"
                                             }
                                         </p>
-                                        {progressPercentage < 100 && (
+                                        {progressPercentage < 99 && (
                                             <div className="mt-4 flex justify-center">
                                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                                     <Spinner />

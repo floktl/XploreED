@@ -46,7 +46,7 @@ export default function AIWeaknessLesson() {
             { percentage: 55, status: "Identifying weak topics...", icon: Brain },
             { percentage: 75, status: "Generating personalized lesson...", icon: Sparkles },
             { percentage: 90, status: "Finalizing your lesson...", icon: Sparkles },
-            { percentage: 100, status: "Ready!", icon: CheckCircle }
+            { percentage: 99, status: "Ready!", icon: CheckCircle }
         ];
         let currentStep = 0;
         progressInterval = setInterval(() => {
@@ -65,7 +65,7 @@ export default function AIWeaknessLesson() {
                 if (isMounted) {
                     setHtml(data);
                     setLoading(false);
-                    setProgressPercentage(100);
+                    setProgressPercentage(99);
                     setProgressStatus("Ready!");
                     setProgressIcon(() => CheckCircle);
 
@@ -115,7 +115,7 @@ export default function AIWeaknessLesson() {
                             <ProgressRing
                                 percentage={progressPercentage}
                                 size={120}
-                                color={progressPercentage === 100 ? "#10B981" : "#3B82F6"}
+                                color={progressPercentage === 99 ? "#10B981" : "#3B82F6"}
                             />
                         </div>
                         <div className="flex items-center justify-center gap-3 mb-4">
@@ -125,11 +125,11 @@ export default function AIWeaknessLesson() {
                             </h3>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                            {progressPercentage < 100
+                            {progressPercentage < 99
                                 ? "We're crafting a personalized lesson based on your weaknesses."
                                 : "Your personalized lesson is ready!"}
                         </p>
-                        {progressPercentage < 100 && (
+                        {progressPercentage < 99 && (
                             <div className="mt-6 flex justify-center">
                                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                     <Spinner />

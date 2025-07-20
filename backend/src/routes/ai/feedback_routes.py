@@ -39,6 +39,7 @@ def get_feedback_progress(session_id):
         return jsonify({"error": "Session not found"}), 404
 
     progress = feedback_progress[session_id]
+    print(f"[Feedback Progress] Frontend requested progress for session {session_id}: {progress['percentage']}% - {progress['status']} - Completed: {progress.get('completed', False)}")
     return jsonify(progress)
 
 @ai_bp.route("/ai-feedback/generate-with-progress", methods=["POST"])
@@ -73,7 +74,7 @@ def generate_ai_feedback_with_progress():
             update_progress(10, "Analyzing your answers...", "analyzing")
 
             if not exercise_block:
-                update_progress(100, "No exercise block provided", "error")
+                update_progress(99, "No exercise block provided", "error")
                 return
 
             all_exercises = exercise_block.get("exercises", [])
@@ -84,7 +85,7 @@ def generate_ai_feedback_with_progress():
             evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
 
             if not evaluation:
-                update_progress(100, "AI evaluation failed", "error")
+                update_progress(99, "AI evaluation failed", "error")
                 return
 
             # Step 3: Processing results (50%)
@@ -156,19 +157,23 @@ def generate_ai_feedback_with_progress():
                 {"exercises": all_exercises},
             )
 
-            # Step 7: Complete (100%)
-            update_progress(100, "Feedback generation complete!", "complete")
+            # Step 7: Complete (99%)
+            print(f"[Feedback Backend] Reaching 99% completion for session {session_id}")
+            update_progress(99, "Feedback generation complete!", "complete")
+            print(f"[Feedback Backend] 99% progress updated for session {session_id}")
 
             # Store the result
+            print(f"[Feedback Backend] Storing result for session {session_id}")
             feedback_progress[session_id]["result"] = {
                 "feedbackPrompt": feedback_prompt,
                 "summary": summary,
                 "results": evaluation.get("results", []),
             }
             feedback_progress[session_id]["completed"] = True
+            print(f"[Feedback Backend] Result stored and completed=True set for session {session_id}")
 
         except Exception as e:
-            update_progress(100, f"Error: {str(e)}", "error")
+            update_progress(99, f"Error: {str(e)}", "error")
             feedback_progress[session_id]["error"] = str(e)
 
     # Run the feedback generation in background
@@ -180,19 +185,24 @@ def generate_ai_feedback_with_progress():
 def get_feedback_result(session_id):
     """Get the final result of AI feedback generation."""
     username = require_user()
+    print(f"[Feedback Result] Frontend requested result for session {session_id}")
 
     if session_id not in feedback_progress:
+        print(f"[Feedback Result] Session {session_id} not found")
         return jsonify({"error": "Session not found"}), 404
 
     progress = feedback_progress[session_id]
 
     if not progress.get("completed"):
+        print(f"[Feedback Result] Session {session_id} not completed yet")
         return jsonify({"error": "Generation not complete"}), 400
 
     result = progress.get("result")
     if not result:
+        print(f"[Feedback Result] No result available for session {session_id}")
         return jsonify({"error": "No result available"}), 400
 
+    print(f"[Feedback Result] Returning result for session {session_id}")
     # Clean up the session
     del feedback_progress[session_id]
 
