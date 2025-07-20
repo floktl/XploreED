@@ -25,8 +25,12 @@ import redis
 logger = logging.getLogger(__name__)
 
 # Connect to Redis (host from env, default 'localhost')
-redis_host = os.getenv('REDIS_HOST', 'localhost')
-redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
+redis_url = os.getenv('REDIS_URL')
+if redis_url:
+    redis_client = redis.from_url(redis_url, decode_responses=True)
+else:
+    redis_host = os.getenv('REDIS_HOST', 'localhost')
+    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 def _normalize_umlauts(s):
     # Accept ae == ä, oe == ö, ue == ü (and vice versa)
