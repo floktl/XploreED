@@ -12,9 +12,13 @@ from flask import Response, stream_with_context
 from .ai.helpers.helpers import format_feedback_block
 
 # Connect to Redis (host from env, default 'localhost')
-redis_host = os.getenv('REDIS_HOST', 'localhost')
-print("REDIS_HOST at startup:", redis_host)
-redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
+redis_url = os.getenv('REDIS_URL')
+if redis_url:
+    redis_client = redis.from_url(redis_url, decode_responses=True)
+else:
+    redis_host = os.getenv('REDIS_HOST', 'localhost')
+    print("REDIS_HOST at startup:", redis_host)
+    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 @translate_bp.route("/translate", methods=["POST"])
 def translate_async():
