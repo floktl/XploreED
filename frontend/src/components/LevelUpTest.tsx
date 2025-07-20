@@ -89,7 +89,7 @@ export default function LevelUpTest() {
     if (result !== null) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container
+                <Container className="pb-20"
                     bottom={
                         <Button variant="primary" onClick={() => navigate("/menu")}>Back</Button>
                     }
@@ -126,7 +126,7 @@ export default function LevelUpTest() {
     if (stage === 0) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container>
+                <Container className="pb-20">
                     <Title>AI Exercises</Title>
                     <AIExerciseBlock
                         data={data.exercise_block}
@@ -148,7 +148,7 @@ export default function LevelUpTest() {
     if (stage === 1) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container>
+                <Container className="pb-20">
                     <Title>Sentence Ordering</Title>
                     <Card className="space-y-4 p-4">
                         <p className="font-mono">{data.scrambled.join(" ")}</p>
@@ -179,7 +179,7 @@ export default function LevelUpTest() {
     if (stage === 2) {
         return (
             <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-                <Container>
+                <Container className="pb-20">
                     <Title>Translate</Title>
                     <Card className="space-y-4 p-4">
                         <p>{data.english}</p>
@@ -209,7 +209,7 @@ export default function LevelUpTest() {
 
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container>
+            <Container className="pb-20">
                 <Title>Reading Exercise</Title>
                 <Card className="space-y-4 p-4">
                     <p>{data.reading.text}</p>

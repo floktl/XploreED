@@ -43,6 +43,7 @@ function AppWrapper() {
   const setUsername = useAppStore((state) => state.setUsername);
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
   const setIsLoading = useAppStore((state) => state.setIsLoading);
+  const darkMode = useAppStore((state) => state.darkMode);
 
   useEffect(() => {
     const fetchUserAndRole = async () => {
@@ -67,6 +68,61 @@ function AppWrapper() {
 
     fetchUserAndRole();
   }, [setUsername, setIsAdmin, setIsLoading]);
+
+    // Apply dark mode to document level
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (darkMode) {
+      html.classList.add('dark');
+      body.classList.add('dark');
+      html.style.backgroundColor = '#111827'; // bg-gray-900
+      body.style.backgroundColor = '#111827';
+
+      // Set meta theme-color for mobile browsers
+      let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.name = 'theme-color';
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.content = '#111827';
+
+      // Set color-scheme meta tag
+      let metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+      if (!metaColorScheme) {
+        metaColorScheme = document.createElement('meta');
+        metaColorScheme.name = 'color-scheme';
+        document.head.appendChild(metaColorScheme);
+      }
+      metaColorScheme.content = 'dark';
+
+    } else {
+      html.classList.remove('dark');
+      body.classList.remove('dark');
+      html.style.backgroundColor = '#ffffff'; // bg-white
+      body.style.backgroundColor = '#ffffff';
+
+      // Set meta theme-color for mobile browsers
+      let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.name = 'theme-color';
+        document.head.appendChild(metaThemeColor);
+      }
+      metaThemeColor.content = '#ffffff';
+
+      // Set color-scheme meta tag
+      let metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+      if (!metaColorScheme) {
+        metaColorScheme = document.createElement('meta');
+        metaColorScheme.name = 'color-scheme';
+        document.head.appendChild(metaColorScheme);
+      }
+      metaColorScheme.content = 'light';
+    }
+  }, [darkMode]);
 
   return <RouterProvider router={router} />;
 }

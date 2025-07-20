@@ -195,7 +195,7 @@ export default function AIExerciseBlock({
                             onClick={handleArgue}
                             disabled={arguing}
                         >
-                            {arguing ? "Thinking..." : "Argue with AI"}
+                            {arguing ? "Thinking..." : "Argue AI"}
                         </Button>
                         <Button
                             type="button"
@@ -228,6 +228,21 @@ export default function AIExerciseBlock({
 
         return () => setFooterActions(null);
     }, [submitted, passed, submitting, loading, arguing, answers]);
+
+    useEffect(() => {
+        if (submitted) {
+            setFooterActions(
+                <Button
+                    type="button"
+                    variant="primary"
+                    onClick={handleNext}
+                    className="w-full"
+                >
+                    Continue
+                </Button>
+            );
+        }
+    }, [submitted]);
 
     const fetchNext = async (payload = {}) => {
         setLoadingNext(true);
@@ -924,18 +939,11 @@ export default function AIExerciseBlock({
     }
 
     return (
-        <div
-            data-tour="ai-feedback"
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-        >
+        <>
             {/* Sticky progress bar directly under header, above Card */}
             {exercises.length > 0 && (
-                <div className="sticky top-16 z-30 w-full bg-white dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>
-                                                                                <div
+                <div className="sticky top-[64px] z-30 w-full bg-gray-900 dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>
+                    <div
                         className={`w-full rounded-full transition-all duration-300 ${
                             exercises.length > 1
                                 ? 'cursor-pointer hover:h-4 hover:shadow-md bg-blue-50 dark:bg-blue-900/20 h-3'
@@ -1027,7 +1035,7 @@ export default function AIExerciseBlock({
                     )}
                 </div>
             )}
-            <Card className="space-y-4">
+            <Card className="space-y-4 pb-20">
 
                 {stage === 1 && current.title && !submitted && (
                     <h3 className="text-xl font-semibold">{current.title}</h3>
@@ -1198,6 +1206,6 @@ export default function AIExerciseBlock({
                     onClose={() => setReportExerciseId(null)}
                 />
             )}
-        </div>
+        </>
     );
 }

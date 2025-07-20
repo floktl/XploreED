@@ -23,21 +23,19 @@ export default function AIFeedback() {
         }
     }, [username, isLoading, isAdmin, navigate]);
 
-
     return (
-        <div
-            className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
-                }`}
-        >
-            <Container>
-                <Title>{username}'s AI {isSubmitted ? 'Feedback' : 'Exercises'}</Title>
-                <AIExerciseBlock
-                    blockId="training"
-                    fetchExercisesFn={getTrainingExercises}
-                    setFooterActions={setActions}
-                    onSubmissionChange={setIsSubmitted}
-                />
-            </Container>
+        <div className={`min-h-screen flex flex-col ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
+            <main className="flex-1 pb-20">
+                <Container>
+                    <Title>{username}'s AI {isSubmitted ? 'Feedback' : 'Exercises'}</Title>
+                    <AIExerciseBlock
+                        blockId="training"
+                        fetchExercisesFn={getTrainingExercises}
+                        setFooterActions={setActions}
+                        onSubmissionChange={setIsSubmitted}
+                    />
+                </Container>
+            </main>
             <Footer>
                 <div className="flex gap-2">
                     <Button

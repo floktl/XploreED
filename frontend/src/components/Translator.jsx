@@ -112,7 +112,7 @@ export default function Translator() {
 
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
-            <Container>
+            <Container className="pb-20">
                 <Title>
                     <div className="flex items-center gap-2">
                         <PenSquare className="w-6 h-6" />
