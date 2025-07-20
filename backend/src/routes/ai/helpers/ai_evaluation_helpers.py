@@ -95,6 +95,7 @@ def generate_alternative_answers(correct_sentence: str) -> list:
         if resp.status_code == 200:
             import json as _json
             content = resp.json()["choices"][0]["message"]["content"]
+            # print("[generate_alternative_answers] Raw AI response:", content, flush=True)
             # Try to extract a JSON array from the response robustly
             try:
                 # Find the first [ ... ] block in the response
