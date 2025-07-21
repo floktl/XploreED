@@ -266,6 +266,7 @@ export default function AIExerciseBlock({
     const handleSubmit = async () => {
         setSubmitting(true);
         setSubmitted(true);
+        setCurrentExerciseIndex(0);
         if (onSubmissionChange) {
             onSubmissionChange(true);
         }
