@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Target, Book, Library, Bot, BarChart3 } from "lucide-react";
 
@@ -20,6 +20,11 @@ export default function Menu() {
   const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
   const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
   const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
+  const setFooterVisible = useAppStore((s) => s.setFooterVisible);
+
+  useLayoutEffect(() => {
+    setFooterVisible(false); // No footer on menu
+  }, [setFooterVisible]);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
@@ -64,11 +69,11 @@ export default function Menu() {
       ]
     });
     return () => clearCurrentPageContent();
-  }, [username, setUsername, isAdmin, isLoading, navigate, setCurrentLevel, setCurrentPageContent, clearCurrentPageContent]);
+  }, [username, setUsername, isAdmin, isLoading, navigate, setCurrentLevel, setCurrentPageContent, clearCurrentPageContent, setFooterVisible]);
 
   return (
     <div
-      className={`relative min-h-screen pb-20 overflow-hidden ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}
+      className={`relative min-h-screen pb-20 overflow-hidden flex flex-col ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}
     >
       <Container>
         <Card className="shadow-xl">
@@ -114,7 +119,6 @@ export default function Menu() {
         </Card>
       </Container>
       <AskAiButton />
-      <Footer />
     </div>
   );
 }

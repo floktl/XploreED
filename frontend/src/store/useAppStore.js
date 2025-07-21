@@ -12,6 +12,7 @@ const useAppStore = create((set, get) => ({
     isLoading: true,
     backgroundActivity: [], // [{id, label, status}]
     currentPageContent: null, // { type: 'exercise'|'lesson'|'feedback', data: ... }
+    footerVisible: true,
 
     setUsername: (username) => set({ username }),
     setIsAdmin: (isAdmin) => set({ isAdmin }),
@@ -41,6 +42,7 @@ const useAppStore = create((set, get) => ({
     })),
     setCurrentPageContent: (content) => set({ currentPageContent: content }),
     clearCurrentPageContent: () => set({ currentPageContent: null }),
+    setFooterVisible: (visible) => set({ footerVisible: visible }),
 
     resetStore: () => {
         localStorage.removeItem("username");
