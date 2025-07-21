@@ -681,7 +681,6 @@ export const submitExerciseAnswers = async (
   answers = {},
   exerciseBlock = null,
 ) => {
-  console.log(`[API] submitExerciseAnswers called for block ${blockId}`);
   const startTime = Date.now();
 
   const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/submit`, {
@@ -695,7 +694,6 @@ export const submitExerciseAnswers = async (
   });
 
   const endTime = Date.now();
-  console.log(`[API] submitExerciseAnswers completed in ${endTime - startTime}ms`);
 
   if (!res.ok) throw new Error("Failed to submit answers");
   return res.json();

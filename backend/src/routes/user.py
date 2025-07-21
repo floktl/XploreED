@@ -290,54 +290,40 @@ def lookup_vocab_word():
     from utils.spaced_repetition.vocab_utils import normalize_word
     norm_word, _, _ = normalize_word(word)
 
-    logger.info(f"Lookup requested for word: '{word}' (user: {user})")
-    logger.info(f"Normalized word: '{norm_word}'")
-    is_ascii = all(ord(c) < 128 for c in word)
-    logger.info(f"is_ascii: {is_ascii}")
-    row = None
-    logger.info("Branch: Always vocab first, then translation")
     # Use string formatting for LIKE query (safe here because norm_word is normalized)
     like_query = (
         f"SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise "
         f"FROM vocab_log WHERE username = '{user}' AND LOWER(vocab) LIKE '%{norm_word.lower()}%'"
     )
-    logger.info(f"[FINAL] Executing: {like_query}")
     rows = fetch_custom(like_query)
     row = rows[0] if rows else None
     if not row:
-        logger.info(f"SQL: SELECT ... FROM vocab_log WHERE username = ? AND LOWER(vocab) = ? | params=({user}, {norm_word.lower()})")
         row = fetch_one(
             "vocab_log",
             where_clause="username = ? AND LOWER(vocab) = ?",
             params=(user, norm_word.lower()),
             columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
         )
-        logger.info(f"Result for vocab match (LOWER=): {row}")
     if not row:
-        logger.info(f"SQL: SELECT ... FROM vocab_log WHERE username = ? AND vocab = ? | params=({user}, {norm_word})")
         row = fetch_one(
             "vocab_log",
             where_clause="username = ? AND vocab = ?",
             params=(user, norm_word),
             columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
         )
-        logger.info(f"Result for vocab match (exact): {row}")
     if not row:
-        logger.info(f"SQL: SELECT ... FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ? | params=({user}, %{word.lower()}%)")
         row = fetch_one(
             "vocab_log",
             where_clause="username = ? AND LOWER(translation) LIKE ?",
             params=(user, f"%{word.lower()}%"),
             columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
         )
-        logger.info(f"Result for translation match: {row}")
     if not row:
         # Fallback: use raw SQL LIKE result
         debug_rows_lower = fetch_custom(
             "SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ?",
             (user, f"%{word.lower()}%")
         )
-        logger.info(f"DEBUG RAW SQL LIKE (lowercase) result: {debug_rows_lower}")
         if debug_rows_lower:
             row = debug_rows_lower[0]
     if not row:
@@ -348,20 +334,17 @@ def lookup_vocab_word():
             where="username = ?",
             params=(user,),
         )
-        logger.info(f"All vocab entries for user {user}: {all_entries}")
         for entry in all_entries:
-            logger.info(f"Entry rowid={entry['rowid']}: vocab='{entry['vocab']}', translation='{entry['translation']}', lower(translation)={entry['translation'].lower()}, repr={repr(entry['translation'])}")
+            pass # Removed logger.info(f"Entry rowid={entry['rowid']}: vocab='{entry['vocab']}', translation='{entry['translation']}', lower(translation)={entry['translation'].lower()}, repr={repr(entry['translation'])}")
         # Debug: try raw SQL LIKE queries
         debug_rows = fetch_custom(
             "SELECT rowid, vocab, translation FROM vocab_log WHERE username = ? AND translation LIKE ?",
             (user, f"%{word}%")
         )
-        logger.info(f"DEBUG RAW SQL LIKE (case-sensitive) result: {debug_rows}")
         debug_rows_lower = fetch_custom(
             "SELECT rowid, vocab, translation FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ?",
             (user, f"%{word.lower()}%")
         )
-        logger.info(f"DEBUG RAW SQL LIKE (lowercase) result: {debug_rows_lower}")
         return jsonify({"msg": "Not found"}), 404
 
     # Return all details for the vocab entry
