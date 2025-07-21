@@ -19,6 +19,7 @@ import ReportExerciseModal from "./ReportExerciseModal";
 import useAppStore from "../store/useAppStore";
 import FeedbackBlock from "./FeedbackBlock";
 import VocabDetailModal from "./VocabDetailModal";
+import Modal from "./UI/Modal";
 
 function renderClickableText(text, onWordClick) {
   if (!text) return null;
@@ -94,6 +95,9 @@ export default function AIExerciseBlock({
 
     // Add vocabModal and setVocabModal for vocab lookup
     const [vocabModal, setVocabModal] = useState(null);
+
+    // Add notFoundModal state for vocab lookup
+    const [notFoundModal, setNotFoundModal] = useState(null);
 
     const answersRef = useRef(answers);
 
@@ -418,7 +422,6 @@ export default function AIExerciseBlock({
         };
 
         const startEnhancedResultsPolling = () => {
-            console.log("[AIExerciseBlock] Starting enhanced results polling...");
             setEnhancedResultsLoading(true);
 
             const pollInterval = setInterval(async () => {
@@ -805,12 +808,14 @@ export default function AIExerciseBlock({
 
     // Define the handler before the return
     const handleWordClick = async (word) => {
-        console.log("[Vocab Lookup] Clicked word:", word);
         setVocabLoading(true);
         const vocab = await lookupVocabWord(word);
         setVocabLoading(false);
-        console.log("[Vocab Lookup] API result:", vocab);
-        if (vocab) setVocabModal(vocab);
+        if (vocab) {
+            setVocabModal(vocab);
+        } else {
+            setNotFoundModal(word);
+        }
     };
 
     if (mode !== "student") {
@@ -1068,6 +1073,7 @@ export default function AIExerciseBlock({
                                         <>
                                             <div className="mb-2 font-medium">
                                                 {String(ex.question)
+                                                    .replace(/\s*\([^)]*\)\s*$/, "") // Remove trailing ( ... )
                                                     .split("___")
                                                     .map((part, idx, arr) => (
                                                         <React.Fragment key={idx}>
@@ -1198,6 +1204,21 @@ export default function AIExerciseBlock({
                     vocab={vocabModal}
                     onClose={() => setVocabModal(null)}
                 />
+            )}
+            {/* Not Found Modal */}
+            {notFoundModal && (
+                <Modal onClose={() => setNotFoundModal(null)}>
+                    <h2 className="text-lg font-bold mb-2">Word Not Found</h2>
+                    <p className="mb-2 text-sm break-words">
+                        <strong>{notFoundModal}</strong> was not found in your vocabulary.
+                    </p>
+                    <button
+                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        onClick={() => setNotFoundModal(null)}
+                    >
+                        Close
+                    </button>
+                </Modal>
             )}
         </>
     );
