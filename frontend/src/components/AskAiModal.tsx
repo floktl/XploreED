@@ -35,6 +35,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
     const chatEndRef = useRef<HTMLDivElement>(null);
     const currentPageContent = useAppStore((s) => s.currentPageContent);
     const darkMode = useAppStore((s) => s.darkMode);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // Load history from backend on mount
     useEffect(() => {
@@ -73,6 +74,10 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
         if (!question.trim()) {
             setError("Please enter a question.");
             return;
+        }
+
+        if (textareaRef.current) {
+            textareaRef.current.blur(); // Hide keyboard on mobile
         }
 
         try {
@@ -147,20 +152,19 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
     let modalStyle: React.CSSProperties = {
         position: "fixed",
         zIndex: 100,
-        maxWidth: "min(600px, 98vw)",
-        width: "98vw",
-        left: '50%',
-        transform: 'translateX(-50%)',
+        width: "100vw",
+        height: "calc(100vh - 64px)",
+        left: 0,
+        right: 0,
         top: '64px', // leave space for header
-        bottom: '64px', // leave space for footer
+        bottom: 0,
         border: "none",
         boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-        background: "transparent", // fully transparent
+        background: darkMode ? 'rgba(10,16,32,0.98)' : "transparent",
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
-        borderRadius: 24,
+        borderRadius: 0,
         padding: 0,
-        maxHeight: "calc(100vh - 128px)",
         display: "flex",
         flexDirection: "column",
     };
@@ -187,7 +191,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
             <div style={{
                 ...modalStyle,
                 background: darkMode ? 'rgba(10,16,32,0.98)' : 'transparent',
-            }} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative" onClick={e => e.stopPropagation()}>
+            }} className="z-50 animate-fade-in overflow-visible shadow-xl relative" onClick={e => e.stopPropagation()}>
                 {/* Small red X close button */}
                 <button
                     onClick={onClose}
@@ -227,7 +231,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                 </div>
                 */}
                 {/* Chat area: show all history as a continuous chat */}
-                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-[60vh] min-h-[120px]" style={{background: "transparent"}}>
+                <div className="flex-1 overflow-y-auto px-0 sm:px-0 py-0 space-y-2 sm:space-y-3" style={{background: "transparent"}}>
                     {history.length === 0 && (
                         <div className="text-gray-400 italic text-center pt-6 text-sm sm:text-base">Ask anything about German or your learning progress!</div>
                     )}
@@ -307,36 +311,42 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                                 />
                                                             </div>
                                                         ),
-                                                        th: ({node, ...props}) => (
-                                                            <th
-                                                                className="border px-2 py-0.5"
-                                                                style={{
-                                                                    background: darkMode ? '#22304a' : '#e0e7ef',
-                                                                    color: darkMode ? '#f8fafc' : '#222',
-                                                                    fontWeight: 700,
-                                                                    verticalAlign: 'middle',
-                                                                    textAlign: 'center'
-                                                                }}
-                                                                {...props}
-                                                            />
-                                                        ),
-                                                        td: ({node, ...props}) => (
-                                                            <td
-                                                                className="border px-2 py-0.5"
-                                                                style={{
-                                                                    background: darkMode ? '#1a2332' : '#fff',
-                                                                    color: darkMode ? '#f8fafc' : '#222',
-                                                                    verticalAlign: 'middle',
-                                                                    textAlign: 'center'
-                                                                }}
-                                                                {...props}
-                                                            />
-                                                        ),
-                                                        ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
-                                                        ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
-                                                        li: ({node, ...props}) => {
-                                                            // Remove 'index' and any other non-standard props
-                                                            const { index, ...rest } = props;
+                                                        th: ({node, isHeader, ...props}) => {
+                                                            // Remove isHeader from props before spreading
+                                                            const { isHeader: _h, ...rest } = props;
+                                                            return (
+                                                                <th
+                                                                    className="border px-2 py-0.5"
+                                                                    style={{
+                                                                        background: darkMode ? '#22304a' : '#e0e7ef',
+                                                                        color: darkMode ? '#f8fafc' : '#222',
+                                                                        fontWeight: 700,
+                                                                        verticalAlign: 'middle',
+                                                                        textAlign: 'center'
+                                                                    }}
+                                                                    {...rest}
+                                                                />
+                                                            );
+                                                        },
+                                                        td: ({node, isHeader, ...props}) => {
+                                                            const { isHeader: _h, ...rest } = props;
+                                                            return (
+                                                                <td
+                                                                    className="border px-2 py-0.5"
+                                                                    style={{
+                                                                        background: darkMode ? '#1a2332' : '#fff',
+                                                                        color: darkMode ? '#f8fafc' : '#222',
+                                                                        verticalAlign: 'middle',
+                                                                        textAlign: 'center'
+                                                                    }}
+                                                                    {...rest}
+                                                                />
+                                                            );
+                                                        },
+                                                        ul: ({ordered, index, ...props}) => <ul {...props} />,
+                                                        ol: ({ordered, index, ...props}) => <ol {...props} />,
+                                                        li: ({node, ordered, index, ...props}) => {
+                                                            const { ordered: _o, index: _i, ...rest } = props;
                                                             return <li className="mb-1" {...rest} />;
                                                         },
                                                         p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
@@ -412,40 +422,45 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                             strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                             em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
                                                             table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                            th: ({node, ...props}) => (
-                                                                <th
-                                                                    className="border px-1 py-0"
-                                                                    style={{
-                                                                        background: darkMode ? '#2563EB' : '#e0e7ef', // match send button blue-700
-                                                                        color: darkMode ? '#2563EB' : '#222',
-                                                                        fontWeight: 700,
-                                                                        verticalAlign: 'middle',
-                                                                        textAlign: 'center',
-                                                                        fontSize: 12,
-                                                                        lineHeight: 1.1
-                                                                    }}
-                                                                    {...props}
-                                                                />
-                                                            ),
-                                                            td: ({node, ...props}) => (
-                                                                <td
-                                                                    className="border px-1 py-0"
-                                                                    style={{
-                                                                        background: darkMode ? '#1a2332' : '#fff',
-                                                                        color: darkMode ? '#f8fafc' : '#222',
-                                                                        verticalAlign: 'middle',
-                                                                        textAlign: 'center',
-                                                                        fontSize: 12,
-                                                                        lineHeight: 1.1
-                                                                    }}
-                                                                    {...props}
-                                                                />
-                                                            ),
-                                                            ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
-                                                            ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
-                                                            li: ({node, ...props}) => {
-                                                                // Remove 'index' and any other non-standard props
-                                                                const { index, ...rest } = props;
+                                                            th: ({node, isHeader, ...props}) => {
+                                                                const { isHeader: _h, ...rest } = props;
+                                                                return (
+                                                                    <th
+                                                                        className="border px-1 py-0"
+                                                                        style={{
+                                                                            background: darkMode ? '#2563EB' : '#e0e7ef', // match send button blue-700
+                                                                            color: darkMode ? '#2563EB' : '#222',
+                                                                            fontWeight: 700,
+                                                                            verticalAlign: 'middle',
+                                                                            textAlign: 'center',
+                                                                            fontSize: 12,
+                                                                            lineHeight: 1.1
+                                                                        }}
+                                                                        {...rest}
+                                                                    />
+                                                                );
+                                                            },
+                                                            td: ({node, isHeader, ...props}) => {
+                                                                const { isHeader: _h, ...rest } = props;
+                                                                return (
+                                                                    <td
+                                                                        className="border px-1 py-0"
+                                                                        style={{
+                                                                            background: darkMode ? '#1a2332' : '#fff',
+                                                                            color: darkMode ? '#f8fafc' : '#222',
+                                                                            verticalAlign: 'middle',
+                                                                            textAlign: 'center',
+                                                                            fontSize: 12,
+                                                                            lineHeight: 1.1
+                                                                        }}
+                                                                        {...rest}
+                                                                    />
+                                                                );
+                                                            },
+                                                            ul: ({ordered, index, ...props}) => <ul {...props} />,
+                                                            ol: ({ordered, index, ...props}) => <ol {...props} />,
+                                                            li: ({node, ordered, index, ...props}) => {
+                                                                const { ordered: _o, index: _i, ...rest } = props;
                                                                 return <li className="mb-1" {...rest} />;
                                                             },
                                                             p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
@@ -470,18 +485,18 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                     <div ref={chatEndRef} />
                 </div>
                 {/* Input area */}
-                <form className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-white/30 bg-transparent" style={{background: 'rgba(30,32,40,0.85)', borderRadius: 18}} onSubmit={e => { e.preventDefault(); handleAsk(); }}>
-                    <input
-                        className="flex-1 bg-transparent outline-none text-base px-4 py-2"
+                <form className="flex items-center gap-2 px-0 sm:px-0 py-0 border-t border-white/30 bg-transparent w-full" style={{background: 'rgba(30,32,40,0.85)', borderRadius: 0, margin: 0}} onSubmit={e => { e.preventDefault(); handleAsk(); }}>
+                    <textarea
+                        ref={textareaRef}
+                        className="w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 resize-none bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
                         style={{
-                            color: '#fff',
-                            boxShadow: 'none',
-                            paddingTop: '10px',
-                            paddingBottom: '10px',
-                            lineHeight: '1.5',
                             minHeight: '40px',
-                            overflow: 'hidden',
-                            '::placeholder': {color: '#b0b6c3'}
+                            maxHeight: '120px',
+                            boxShadow: 'none',
+                            margin: 0,
+                            lineHeight: '1.5',
+                            color: '#fff',
+                            background: darkMode ? '#232b3b' : '#fff',
                         }}
                         placeholder="Type your question..."
                         value={question}
