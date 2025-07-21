@@ -36,8 +36,6 @@ Here is the required JSON structure — you must follow it **exactly**:
    - `lessonId`, `title`, `instructions`, `level`
    - `exercises`: list of 3 total exercises (mix of both types)
    - `feedbackPrompt`
-   - `vocabHelp`: list of vocab entries with:
-       - `word`, `meaning`
 
 ⚠️ Do not change field names or format.
 ⚠️ Do not include other types like "sentenceCreation", "prompt", or "hint".

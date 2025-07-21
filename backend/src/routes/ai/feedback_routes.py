@@ -41,7 +41,7 @@ def get_feedback_progress(session_id):
     if not progress_json:
         return jsonify({"error": "Session not found"}), 404
     progress = json.loads(progress_json)
-    print(f"[Feedback Progress] Frontend requested progress for session {session_id}: {progress['percentage']}% - {progress['status']} - Completed: {progress.get('completed', False)}")
+    # print(f"[Feedback Progress] Frontend requested progress for session {session_id}: {progress['percentage']}% - {progress['status']} - Completed: {progress.get('completed', False)}")
     return jsonify(progress)
 
 @ai_bp.route("/ai-feedback/generate-with-progress", methods=["POST"])
@@ -152,7 +152,7 @@ def generate_ai_feedback_with_progress():
                 progress["result"] = result
                 progress["completed"] = True
                 redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-            print(f"[Feedback Backend] Result stored and completed=True set for session {session_id}")
+            # print(f"[Feedback Backend] Result stored and completed=True set for session {session_id}")
         except Exception as e:
             update_progress(99, f"Error: {str(e)}", "error")
             progress_json = redis_client.get(f"feedback_progress:{session_id}")
@@ -167,7 +167,7 @@ def generate_ai_feedback_with_progress():
 def get_feedback_result(session_id):
     """Get the final result of AI feedback generation."""
     username = require_user()
-    print(f"[Feedback Result] Frontend requested result for session {session_id}")
+    # print(f"[Feedback Result] Frontend requested result for session {session_id}")
     result_json = redis_client.get(f"feedback_result:{session_id}")
     if not result_json:
         print(f"[Feedback Result] Session {session_id} not found or not ready")

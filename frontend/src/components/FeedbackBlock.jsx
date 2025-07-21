@@ -91,26 +91,6 @@ function diffWithNeutralCorrect(userAnswer, correctAnswer) {
   return <>{parts}</>;
 }
 
-function renderClickableExplanation(explanation, onWordClick) {
-  if (!explanation) return null;
-  // Split on word boundaries, keep punctuation
-  const parts = explanation.split(/(\b[\wÄÖÜäöüß]+\b)/g);
-  return parts.map((part, i) => {
-    if (/^\w+$/u.test(part)) {
-      return (
-        <span
-          key={i}
-          className="underline decoration-dotted cursor-pointer hover:text-blue-500"
-          onClick={() => onWordClick(part)}
-        >
-          {part}
-        </span>
-      );
-    }
-    return part;
-  });
-}
-
 export default function FeedbackBlock({
   status,
   correct,
@@ -190,7 +170,7 @@ export default function FeedbackBlock({
       </div>
       <div>
         <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>{" "}
-        {renderClickableExplanation(explanation, handleWordClick)}
+        {explanation}
       </div>
       {vocabLoading && <Spinner />}
       {vocabModal && (
