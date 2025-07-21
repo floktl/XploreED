@@ -296,14 +296,14 @@
   font-weight: bold;
   margin: 0.7em 0 0.4em 0;
   line-height: 1.2;
-  color: #1a237e;
+  color: #4757b4;
 }
 .chat-bubble-ai h1 { font-size: 1.25rem; }
 .chat-bubble-ai h2 { font-size: 1.1rem; }
 .chat-bubble-ai h3 { font-size: 1rem; }
 
-.chat-bubble-ai strong { font-weight: bold; color: #0d1a4d; }
-.chat-bubble-ai em { font-style: italic; color: #2a3eb1; }
+.chat-bubble-ai strong { font-weight: bold; color: #4757b4; }
+.chat-bubble-ai em { font-style: italic; color: #4757b4; }
 
 .chat-bubble-ai ul,
 .chat-bubble-ai ol {

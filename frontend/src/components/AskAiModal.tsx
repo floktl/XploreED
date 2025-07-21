@@ -412,8 +412,35 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                             strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                             em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
                                                             table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                            th: ({node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
-                                                            td: ({node, ...props}) => <td className="border px-2 py-1" {...props} />,
+                                                            th: ({node, ...props}) => (
+                                                                <th
+                                                                    className="border px-1 py-0"
+                                                                    style={{
+                                                                        background: darkMode ? '#2563EB' : '#e0e7ef', // match send button blue-700
+                                                                        color: darkMode ? '#2563EB' : '#222',
+                                                                        fontWeight: 700,
+                                                                        verticalAlign: 'middle',
+                                                                        textAlign: 'center',
+                                                                        fontSize: 12,
+                                                                        lineHeight: 1.1
+                                                                    }}
+                                                                    {...props}
+                                                                />
+                                                            ),
+                                                            td: ({node, ...props}) => (
+                                                                <td
+                                                                    className="border px-1 py-0"
+                                                                    style={{
+                                                                        background: darkMode ? '#1a2332' : '#fff',
+                                                                        color: darkMode ? '#f8fafc' : '#222',
+                                                                        verticalAlign: 'middle',
+                                                                        textAlign: 'center',
+                                                                        fontSize: 12,
+                                                                        lineHeight: 1.1
+                                                                    }}
+                                                                    {...props}
+                                                                />
+                                                            ),
                                                             ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
                                                             ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
                                                             li: ({node, ...props}) => {
