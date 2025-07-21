@@ -91,6 +91,10 @@ def fetch_all(
     if limit is not None:
         query += f" LIMIT {limit}"
 
+    # Debug print for SQL and params
+    print(f"[DB DEBUG] Executing SQL: {query}")
+    print(f"[DB DEBUG] With params: {repr(params)}")
+
     return execute_query(query, params, fetch=True)
 
 

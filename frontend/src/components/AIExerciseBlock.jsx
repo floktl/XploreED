@@ -12,11 +12,32 @@ import {
     argueExerciseAnswers,
     sendSupportFeedback,
     getEnhancedResults,
+    lookupVocabWord,
 } from "../api";
 import diffWords from "../utils/diffWords";
 import ReportExerciseModal from "./ReportExerciseModal";
 import useAppStore from "../store/useAppStore";
 import FeedbackBlock from "./FeedbackBlock";
+import VocabDetailModal from "./VocabDetailModal";
+
+function renderClickableText(text, onWordClick) {
+  if (!text) return null;
+  const parts = text.split(/(\b[\wÄÖÜäöüß]+\b)/g);
+  return parts.map((part, i) => {
+    if (/^\w+$/u.test(part)) {
+      return (
+        <span
+          key={i}
+          className="underline decoration-dotted cursor-pointer hover:text-blue-500"
+          onClick={() => onWordClick(part)}
+        >
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+}
 
 export default function AIExerciseBlock({
     data,
@@ -67,6 +88,12 @@ export default function AIExerciseBlock({
     const [touchEnd, setTouchEnd] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragOffset, setDragOffset] = useState(0);
+
+    // Add vocabLoading state for vocab lookup
+    const [vocabLoading, setVocabLoading] = useState(false);
+
+    // Add vocabModal and setVocabModal for vocab lookup
+    const [vocabModal, setVocabModal] = useState(null);
 
     const answersRef = useRef(answers);
 
@@ -776,6 +803,16 @@ export default function AIExerciseBlock({
     const disableNext = !isFeedbackLoaded(currentExerciseIndex);
     const disablePrev = currentExerciseIndex === 0;
 
+    // Define the handler before the return
+    const handleWordClick = async (word) => {
+        console.log("[Vocab Lookup] Clicked word:", word);
+        setVocabLoading(true);
+        const vocab = await lookupVocabWord(word);
+        setVocabLoading(false);
+        console.log("[Vocab Lookup] API result:", vocab);
+        if (vocab) setVocabModal(vocab);
+    };
+
     if (mode !== "student") {
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
@@ -1034,7 +1071,7 @@ export default function AIExerciseBlock({
                                                     .split("___")
                                                     .map((part, idx, arr) => (
                                                         <React.Fragment key={idx}>
-                                                            {part}
+                                                            {renderClickableText(part, handleWordClick)}
                                                             {idx < arr.length - 1 && (
                                                                 submitted ? (
                                                                     <span className="text-gray-400">___</span>
@@ -1066,7 +1103,7 @@ export default function AIExerciseBlock({
                                         </>
                                     ) : (
                                         <>
-                                            <label className="block mb-2 font-medium">{ex.question}</label>
+                                            <label className="block mb-2 font-medium">{renderClickableText(ex.question, handleWordClick)}</label>
                                             <Input
                                                 type="text"
                                                 value={answers[ex.id] || ""}
@@ -1153,6 +1190,13 @@ export default function AIExerciseBlock({
                     correctAnswer={evaluation[reportExerciseId]?.correct || ""}
                     onSend={(msg) => handleSendReport(reportExerciseId, msg)}
                     onClose={() => setReportExerciseId(null)}
+                />
+            )}
+            {/* Vocab Detail Modal */}
+            {vocabModal && (
+                <VocabDetailModal
+                    vocab={vocabModal}
+                    onClose={() => setVocabModal(null)}
                 />
             )}
         </>
