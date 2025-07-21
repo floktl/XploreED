@@ -1172,18 +1172,6 @@ export default function AIExerciseBlock({
                         </Button>
                     </div>
                 )}
-                {showVocab && current.vocabHelp && current.vocabHelp.length > 0 && (
-                    <div className="mt-4">
-                        <strong>Vocabulary Help:</strong>
-                        <ul className="list-disc ml-6">
-                            {current.vocabHelp.map((v, idx) => (
-                                <li key={v.word || idx}>
-                                    <span className="font-medium">{v.word}</span>: {v.meaning}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
 
 
                 {/* Removed enhanced results loading banner - basic feedback should always be visible */}

@@ -26,7 +26,7 @@ interface ChatHistory {
 }
 
 export default function AskAiModal({ onClose, btnRect }: Props) {
-    const [question, setQuestion] = useState("");
+    const [question, setQuestion] = useState(() => localStorage.getItem('aiChatInput') || "");
     const [answerBlocks, setAnswerBlocks] = useState<AnswerBlock[]>([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -52,6 +52,18 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
             chatEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [answerBlocks]);
+
+    // Save input to localStorage on change
+    useEffect(() => {
+        localStorage.setItem('aiChatInput', question);
+    }, [question]);
+
+    // Always scroll chat to bottom when modal is opened or history changes
+    useEffect(() => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({ behavior: "auto" });
+        }
+    }, [history]);
 
 
     const handleAsk = async () => {
@@ -97,18 +109,20 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
     let modalStyle: React.CSSProperties = {
         position: "fixed",
         zIndex: 100,
-        maxWidth: "min(400px, 96vw)",
-        width: "96vw",
+        maxWidth: "min(600px, 98vw)",
+        width: "98vw",
         left: '50%',
         transform: 'translateX(-50%)',
+        top: '64px', // leave space for header
+        bottom: '64px', // leave space for footer
         border: "none",
         boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-        background: "rgba(255,255,255,0.38)",
+        background: "transparent", // fully transparent
         backdropFilter: "blur(18px)",
         WebkitBackdropFilter: "blur(18px)",
         borderRadius: 24,
         padding: 0,
-        maxHeight: "80vh",
+        maxHeight: "calc(100vh - 128px)",
         display: "flex",
         flexDirection: "column",
     };
@@ -131,10 +145,36 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
     return (
         <>
             {/* Darkened, blurred background overlay */}
-            <div className="fixed inset-0 z-40 bg-black bg-opacity-20 backdrop-blur-[2px]" />
-            <div style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative">
+            <div className="fixed inset-0 z-40" style={{background: "rgba(20,20,30,0.55)", backdropFilter: "blur(3px)"}} onClick={onClose} />
+            <div style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative" onClick={e => e.stopPropagation()}>
+                {/* Small red X close button */}
+                <button
+                    onClick={onClose}
+                    aria-label="Close"
+                    style={{
+                        position: 'absolute',
+                        top: 10,
+                        right: 14,
+                        width: 28,
+                        height: 28,
+                        borderRadius: '50%',
+                        background: '#e11d48', // Tailwind rose-600
+                        color: '#fff',
+                        border: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: 18,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        zIndex: 200
+                    }}
+                >
+                    ×
+                </button>
                 <div className="relative text-gray-900 flex flex-col" style={{overflow: 'hidden'}}>
                 {/* Header */}
+                {/* Remove the modal header area:
                 <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-white/30 min-h-[44px]">
                     <div className="flex items-center gap-2">
                         <Lightbulb className="w-5 h-5 text-blue-400" />
@@ -144,8 +184,9 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                         <Button variant="ghost" size="sm" onClick={onClose}>✕</Button>
                     </div>
                 </div>
+                */}
                 {/* Chat area: show all history as a continuous chat */}
-                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-64 min-h-[120px]" style={{background: "rgba(255,255,255,0.13)"}}>
+                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-2 sm:space-y-3 max-h-[60vh] min-h-[120px]" style={{background: "transparent"}}>
                     {history.length === 0 && (
                         <div className="text-gray-400 italic text-center pt-6 text-sm sm:text-base">Ask anything about German or your learning progress!</div>
                     )}
@@ -156,9 +197,15 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                             <div className="flex items-end gap-1 sm:gap-2 justify-end w-full">
                                 <div className="flex items-end gap-1 sm:gap-2 w-full justify-end">
                                     <div className="relative max-w-[75%] sm:max-w-[70%] flex items-end">
-                                        <div className="bg-blue-500 text-white rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-user flex items-center min-h-[36px]" style={{backdropFilter: 'blur(2px)'}}>
+                                        <div className="rounded-2xl px-3 sm:px-4 py-2 text-sm relative chat-bubble-user flex items-center min-h-[36px]"
+                                            style={{
+                                                background: 'rgba(30,60,120,0.92)',
+                                                color: '#e0e7ef',
+                                                borderRadius: 20,
+                                                boxShadow: '0 2px 12px 0 rgba(30,60,120,0.18)',
+                                                backdropFilter: 'blur(2px)'
+                                            }}>
                                             {h.question}
-                                            <span className="absolute right-[-10px] bottom-0 w-0 h-0 border-t-[12px] border-t-blue-500 border-l-[12px] border-l-transparent border-b-0 border-r-0" />
                                         </div>
                                     </div>
                                     <div className="rounded-full bg-blue-500 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><User className="w-4 h-4 sm:w-5 sm:h-5" /></div>
@@ -170,31 +217,28 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                     <div className="rounded-full bg-blue-900 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white font-bold shadow"><Bot className="w-4 h-4 sm:w-5 sm:h-5" /></div>
                                     <div className="relative w-full flex justify-center" style={{maxWidth: 480, margin: '0 auto'}}>
                                         <div
-                                            className="bg-white/40 text-gray-900 rounded-2xl px-3 sm:px-4 py-2 shadow text-sm relative chat-bubble-ai min-h-[36px]"
+                                            className="rounded-2xl px-3 sm:px-4 py-2 text-sm relative chat-bubble-ai min-h-[36px]"
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                alignItems: 'flex-start', // left-align content
+                                                alignItems: 'flex-start',
                                                 justifyContent: 'center',
-                                                textAlign: 'left', // left-align text
+                                                textAlign: 'left',
                                                 backdropFilter: 'blur(6px)',
                                                 WebkitBackdropFilter: 'blur(6px)',
-                                                background: 'rgba(255,255,255,0.75)',
-                                                border: '1.5px solid #e0e7ef',
-                                                boxShadow: '0 2px 12px 0 rgba(80,120,200,0.07)',
+                                                background: 'rgba(40,44,60,0.92)',
+                                                color: '#f3f4f6',
+                                                borderRadius: 20,
+                                                boxShadow: '0 2px 12px 0 rgba(40,44,60,0.18)',
                                                 fontSize: '0.95rem',
                                                 fontFamily: 'Inter, Segoe UI, system-ui, sans-serif',
-                                                color: '#1a237e',
                                                 lineHeight: 1.5,
                                                 wordBreak: 'break-word',
-                                                whiteSpace: undefined,
                                                 margin: '6px 0 10px 0',
                                                 padding: '14px 16px',
-                                                borderRadius: '20px',
                                                 maxWidth: 480,
                                                 width: '100%',
                                                 boxSizing: 'border-box',
-                                                maxHeight: undefined,
                                                 overflow: 'visible',
                                             }}
                                         >
@@ -219,7 +263,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                             return <li className="mb-1" {...rest} />;
                                                         },
                                                         p: ({node, ...props}) => <p style={{whiteSpace: 'pre-line'}} {...props} />,
-                                                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" style={{whiteSpace: 'pre-line'}} {...props} />,
+                                                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-200 pl-3 italic text-blue-800 my-2" {...props} />,
                                                     }}
                                                 />
                                             )}
@@ -322,31 +366,38 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                     <div ref={chatEndRef} />
                 </div>
                 {/* Input area */}
-                <form className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-white/30 bg-transparent" onSubmit={e => { e.preventDefault(); handleAsk(); }}>
-                    <div className="flex-1 flex items-center bg-white/45 rounded-full shadow border border-blue-100 px-3 py-1" style={{backdropFilter: 'blur(8px)'}}>
-                        <textarea
-                            className="flex-1 h-10 sm:h-11 max-h-20 min-h-[40px] sm:min-h-[44px] bg-transparent text-gray-900 resize-none focus:ring-0 focus:outline-none placeholder-gray-500 border-0 p-0 m-0 align-middle text-sm sm:text-base"
-                            placeholder="Type your question..."
-                            value={question}
-                            rows={1}
-                            style={{boxShadow: 'none', paddingTop: '10px', paddingBottom: '10px', lineHeight: '1.5', minHeight: '40px', overflow: 'hidden'}}
-                            onInput={e => {
-                                const target = e.target as HTMLTextAreaElement;
-                                target.style.height = '40px'; // reset to min height
-                                target.style.height = target.scrollHeight + 'px';
-                            }}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAsk(); } }}
-                        />
-                    </div>
+                <form className="flex items-center gap-2 px-3 sm:px-4 py-3 border-t border-white/30 bg-transparent" style={{background: 'rgba(30,32,40,0.85)', borderRadius: 18}} onSubmit={e => { e.preventDefault(); handleAsk(); }}>
+                    <input
+                        className="flex-1 bg-transparent outline-none text-base px-4 py-2"
+                        style={{
+                            color: '#fff',
+                            boxShadow: 'none',
+                            paddingTop: '10px',
+                            paddingBottom: '10px',
+                            lineHeight: '1.5',
+                            minHeight: '40px',
+                            overflow: 'hidden',
+                            '::placeholder': {color: '#b0b6c3'}
+                        }}
+                        placeholder="Type your question..."
+                        value={question}
+                        rows={1}
+                        onInput={e => {
+                            const target = e.target as HTMLTextAreaElement;
+                            target.style.height = '40px'; // reset to min height
+                            target.style.height = target.scrollHeight + 'px';
+                        }}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAsk(); } }}
+                    />
                     <button
                         type="submit"
                         disabled={loading || !question.trim()}
-                        className={`ml-2 flex items-center justify-center rounded-full w-10 h-10 sm:w-12 sm:h-12 shadow-lg transition-all duration-150 ${loading || !question.trim() ? 'bg-blue-200 text-white' : 'bg-blue-500 hover:bg-blue-600 text-white'} focus:outline-none focus:ring-2 focus:ring-blue-400`}
-                        style={{minWidth: 40, minHeight: 40}}
+                        className="ml-2 flex items-center justify-center w-10 h-10"
+                        style={{background: 'linear-gradient(90deg, #2563eb 0%, #1e40af 100%)', color: '#fff', borderRadius: '50%'}}
                         aria-label="Ask"
                     >
-                        <Send className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <Send className="w-5 h-5" />
                     </button>
                 </form>
                 {/* Speech bubble tail (unified with modal) */}
