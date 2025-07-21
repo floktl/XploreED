@@ -841,3 +841,11 @@ export const getEnhancedResults = async (blockId) => {
         throw error;
     }
 };
+
+export const lookupVocabWord = async (word) => {
+  const res = await fetch(`${BASE_URL}/api/vocabulary/lookup?word=${encodeURIComponent(word)}`, {
+    credentials: "include",
+  });
+  if (!res.ok) return null;
+  return await res.json();
+};

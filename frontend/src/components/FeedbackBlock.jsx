@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import diffWords from "../utils/diffWords";
 import Spinner from "./UI/Spinner";
+import { lookupVocabWord } from "../api";
+import VocabDetailModal from "./VocabDetailModal";
 
 function onlyWrongWords(userAnswer, correctAnswer) {
   if (!userAnswer && !correctAnswer) return null;
@@ -89,6 +91,26 @@ function diffWithNeutralCorrect(userAnswer, correctAnswer) {
   return <>{parts}</>;
 }
 
+function renderClickableExplanation(explanation, onWordClick) {
+  if (!explanation) return null;
+  // Split on word boundaries, keep punctuation
+  const parts = explanation.split(/(\b[\wÄÖÜäöüß]+\b)/g);
+  return parts.map((part, i) => {
+    if (/^\w+$/u.test(part)) {
+      return (
+        <span
+          key={i}
+          className="underline decoration-dotted cursor-pointer hover:text-blue-500"
+          onClick={() => onWordClick(part)}
+        >
+          {part}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 export default function FeedbackBlock({
   status,
   correct,
@@ -100,6 +122,16 @@ export default function FeedbackBlock({
   loading,
   exerciseLoading = false,  // New prop for exercise-level loading
 }) {
+  const [vocabModal, setVocabModal] = useState(null);
+  const [vocabLoading, setVocabLoading] = useState(false);
+
+  const handleWordClick = async (word) => {
+    setVocabLoading(true);
+    const vocab = await lookupVocabWord(word);
+    setVocabLoading(false);
+    if (vocab) setVocabModal(vocab);
+  };
+
   return (
     <div className="p-4 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-100 space-y-2">
       <div className="flex items-center gap-2 font-bold">
@@ -157,18 +189,13 @@ export default function FeedbackBlock({
         )}
       </div>
       <div>
-        <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>
-        {loading ? (
-          <div className="flex items-center gap-2 ml-2">
-            <Spinner size="sm" />
-            <span className="text-gray-600 dark:text-gray-400 text-sm">Generating explanation...</span>
-          </div>
-        ) : (
-          <span className="ml-2 text-gray-800 dark:text-gray-100">
-            {explanation || <span>No explanation available.</span>}
-          </span>
-        )}
+        <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>{" "}
+        {renderClickableExplanation(explanation, handleWordClick)}
       </div>
+      {vocabLoading && <Spinner />}
+      {vocabModal && (
+        <VocabDetailModal vocab={vocabModal} onClose={() => setVocabModal(null)} />
+      )}
       {children}
     </div>
   );
