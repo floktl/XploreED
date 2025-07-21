@@ -7,6 +7,7 @@ import { streamAiAnswer } from "../utils/streamAi";
 import { getMistralChatHistory, addMistralChatHistory } from "../api";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import useAppStore from "../store/useAppStore";
 
 interface Props {
     onClose: () => void;
@@ -32,6 +33,8 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<ChatHistory[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const currentPageContent = useAppStore((s) => s.currentPageContent);
+    const darkMode = useAppStore((s) => s.darkMode);
 
     // Load history from backend on mount
     useEffect(() => {
@@ -75,26 +78,61 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
         try {
             setLoading(true);
             setError("");
-            // Send question to backend and get full answer
-            const res = await fetch("/api/ask-ai", {
+            // Scroll to bottom so spinner is visible
+            setTimeout(() => {
+                if (chatEndRef.current) {
+                    chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+                }
+            }, 0);
+            // Send question to backend and get full answer, always include context if available
+            const res = await fetch("/api/ask-ai-context", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ question }),
+                body: JSON.stringify(currentPageContent ? { question, context: currentPageContent } : { question }),
             });
             const data = await res.json();
             if (data.answer && data.answer.trim()) {
-                // Save to backend history
-                await fetch("/api/mistral-chat-history", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: "include",
-                    body: JSON.stringify({ question, answer: data.answer }),
-                });
-                // Reload history
-                const h = await getMistralChatHistory();
-                setHistory(h);
-                setQuestion("");
+                // Check if AI requests context (special string)
+                if (data.answer.includes("__REQUEST_CONTEXT__")) {
+                    // Send current page content as context
+                    if (currentPageContent) {
+                        const contextRes = await fetch("/api/ask-ai-context", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            credentials: "include",
+                            body: JSON.stringify({ question, context: currentPageContent }),
+                        });
+                        const contextData = await contextRes.json();
+                        if (contextData.answer && contextData.answer.trim()) {
+                            await fetch("/api/mistral-chat-history", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                credentials: "include",
+                                body: JSON.stringify({ question, answer: contextData.answer }),
+                            });
+                            const h = await getMistralChatHistory();
+                            setHistory(h);
+                            setQuestion("");
+                        } else {
+                            setError("No answer received from AI after sending context.");
+                        }
+                    } else {
+                        setError("AI requested context, but no page content is available.");
+                    }
+                } else {
+                    // Save to backend history
+                    await fetch("/api/mistral-chat-history", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ question, answer: data.answer }),
+                    });
+                    // Reload history
+                    const h = await getMistralChatHistory();
+                    setHistory(h);
+                    setQuestion("");
+                }
             } else {
                 setError("No answer received from AI.");
             }
@@ -146,7 +184,10 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
         <>
             {/* Darkened, blurred background overlay */}
             <div className="fixed inset-0 z-40" style={{background: "rgba(20,20,30,0.55)", backdropFilter: "blur(3px)"}} onClick={onClose} />
-            <div style={modalStyle} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative" onClick={e => e.stopPropagation()}>
+            <div style={{
+                ...modalStyle,
+                background: darkMode ? 'rgba(10,16,32,0.98)' : 'transparent',
+            }} className="z-50 animate-fade-in rounded-2xl overflow-visible border border-white/30 shadow-xl relative" onClick={e => e.stopPropagation()}>
                 {/* Small red X close button */}
                 <button
                     onClick={onClose}
@@ -199,8 +240,8 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                     <div className="relative max-w-[75%] sm:max-w-[70%] flex items-end">
                                         <div className="rounded-2xl px-3 sm:px-4 py-2 text-sm relative chat-bubble-user flex items-center min-h-[36px]"
                                             style={{
-                                                background: 'rgba(30,60,120,0.92)',
-                                                color: '#e0e7ef',
+                                                background: darkMode ? '#22304a' : 'rgba(30,60,120,0.92)',
+                                                color: darkMode ? '#f8fafc' : '#e0e7ef',
                                                 borderRadius: 20,
                                                 boxShadow: '0 2px 12px 0 rgba(30,60,120,0.18)',
                                                 backdropFilter: 'blur(2px)'
@@ -226,8 +267,8 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                 textAlign: 'left',
                                                 backdropFilter: 'blur(6px)',
                                                 WebkitBackdropFilter: 'blur(6px)',
-                                                background: 'rgba(40,44,60,0.92)',
-                                                color: '#f3f4f6',
+                                                background: darkMode ? '#181f2a' : 'rgba(40,44,60,0.92)',
+                                                color: darkMode ? '#f8fafc' : '#f3f4f6',
                                                 borderRadius: 20,
                                                 boxShadow: '0 2px 12px 0 rgba(40,44,60,0.18)',
                                                 fontSize: '0.95rem',
@@ -252,9 +293,45 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                         h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
                                                         strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                         em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
-                                                        table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
-                                                        th: ({node, ...props}) => <th className="border px-2 py-1 bg-blue-50" {...props} />,
-                                                        td: ({node, ...props}) => <td className="border px-2 py-1" {...props} />,
+                                                        table: ({node, ...props}) => (
+                                                            <div className="markdown-table-wrapper" style={{overflowX: 'auto'}}>
+                                                                <table
+                                                                    className="border my-2"
+                                                                    style={{
+                                                                        background: darkMode ? '#1a2332' : '#fff',
+                                                                        color: darkMode ? '#f8fafc' : '#222',
+                                                                        borderCollapse: 'collapse',
+                                                                        width: '100%'
+                                                                    }}
+                                                                    {...props}
+                                                                />
+                                                            </div>
+                                                        ),
+                                                        th: ({node, ...props}) => (
+                                                            <th
+                                                                className="border px-2 py-0.5"
+                                                                style={{
+                                                                    background: darkMode ? '#22304a' : '#e0e7ef',
+                                                                    color: darkMode ? '#f8fafc' : '#222',
+                                                                    fontWeight: 700,
+                                                                    verticalAlign: 'middle',
+                                                                    textAlign: 'center'
+                                                                }}
+                                                                {...props}
+                                                            />
+                                                        ),
+                                                        td: ({node, ...props}) => (
+                                                            <td
+                                                                className="border px-2 py-0.5"
+                                                                style={{
+                                                                    background: darkMode ? '#1a2332' : '#fff',
+                                                                    color: darkMode ? '#f8fafc' : '#222',
+                                                                    verticalAlign: 'middle',
+                                                                    textAlign: 'center'
+                                                                }}
+                                                                {...props}
+                                                            />
+                                                        ),
                                                         ul: ({node, ...props}) => <ul className="list-disc ml-6 my-2" {...props} />,
                                                         ol: ({node, ...props}) => <ol className="list-decimal ml-6 my-2" {...props} />,
                                                         li: ({node, ...props}) => {

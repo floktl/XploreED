@@ -11,6 +11,7 @@ const useAppStore = create((set, get) => ({
     currentLevel: 0,
     isLoading: true,
     backgroundActivity: [], // [{id, label, status}]
+    currentPageContent: null, // { type: 'exercise'|'lesson'|'feedback', data: ... }
 
     setUsername: (username) => set({ username }),
     setIsAdmin: (isAdmin) => set({ isAdmin }),
@@ -38,6 +39,8 @@ const useAppStore = create((set, get) => ({
     removeBackgroundActivity: (id) => set((state) => ({
         backgroundActivity: state.backgroundActivity.filter((a) => a.id !== id),
     })),
+    setCurrentPageContent: (content) => set({ currentPageContent: content }),
+    clearCurrentPageContent: () => set({ currentPageContent: null }),
 
     resetStore: () => {
         localStorage.removeItem("username");

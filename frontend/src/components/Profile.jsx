@@ -21,6 +21,8 @@ export default function Profile() {
     const navigate = useNavigate();
     const darkMode = useAppStore((state) => state.darkMode);
     const toggleDarkMode = useAppStore((state) => state.toggleDarkMode);
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -46,6 +48,15 @@ export default function Profile() {
 
         checkSession();
     }, [navigate, setUsername, setIsAdmin]);
+
+    useEffect(() => {
+        setCurrentPageContent({
+            type: "profile",
+            username,
+            results
+        });
+        return () => clearCurrentPageContent();
+    }, [username, results, setCurrentPageContent, clearCurrentPageContent]);
 
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>

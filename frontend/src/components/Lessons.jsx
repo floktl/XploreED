@@ -18,6 +18,8 @@ export default function Lessons() {
     const username = useAppStore((state) => state.username);
     const isLoading = useAppStore((state) => state.isLoading);
     const isAdmin = useAppStore((state) => state.isAdmin);
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
     useEffect(() => {
         if (!isLoading && (!username || isAdmin)) {
@@ -39,6 +41,15 @@ export default function Lessons() {
 
         fetchLessons();
     }, [username]);
+
+    useEffect(() => {
+        setCurrentPageContent({
+            type: "lessons",
+            username,
+            lessons
+        });
+        return () => clearCurrentPageContent();
+    }, [username, lessons, setCurrentPageContent, clearCurrentPageContent]);
 
 
     return (
