@@ -1,12 +1,25 @@
 import React, { useState, useRef } from "react";
 import AskAiModal from "./AskAiModal";
 import useAppStore from "../store/useAppStore";
+import Footer from "./UI/Footer";
+import { useLocation } from "react-router-dom";
 
 export default function AskAiButton() {
     const [open, setOpen] = useState(false);
     const darkMode = useAppStore((s) => s.darkMode);
     const btnRef = useRef<HTMLButtonElement>(null);
     const [btnRect, setBtnRect] = useState<DOMRect | null>(null);
+    const [bottomOffset, setBottomOffset] = useState(4);
+    const footerVisible = useAppStore((s) => s.footerVisible);
+    const location = useLocation();
+
+    React.useEffect(() => {
+        if (location.pathname === "/menu") {
+            setBottomOffset(8);
+        } else {
+            setBottomOffset(footerVisible ? 56 : 8);
+        }
+    }, [footerVisible, location.pathname]);
 
     const handleOpen = () => {
         if (btnRef.current) {
@@ -20,17 +33,20 @@ export default function AskAiButton() {
             <button
                 ref={btnRef}
                 onClick={handleOpen}
-                className={`fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg border transition-all duration-200
+                className={`fixed right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg border transition-all duration-200
                     ${darkMode
                         ? 'bg-gradient-to-br from-indigo-800/90 via-blue-900/90 to-blue-800/80 border-blue-700 ring-2 ring-blue-700/40 hover:ring-4 hover:scale-105 drop-shadow-[0_0_16px_rgba(56,189,248,0.25)]'
                         : 'bg-white/80 hover:bg-white text-blue-700 border border-blue-200'}
                 `}
-                style={darkMode ? {
-                    boxShadow: '0 4px 24px 0 rgba(56,189,248,0.18), 0 1.5px 8px 0 rgba(30,32,40,0.18)',
-                    backdropFilter: 'blur(6px)',
-                    WebkitBackdropFilter: 'blur(6px)',
-                } : {
-                    boxShadow: '0 2px 12px 0 rgba(80,120,200,0.10)'
+                style={{
+                    bottom: bottomOffset,
+                    ...(darkMode ? {
+                        boxShadow: '0 4px 24px 0 rgba(56,189,248,0.18), 0 1.5px 8px 0 rgba(30,32,40,0.18)',
+                        backdropFilter: 'blur(6px)',
+                        WebkitBackdropFilter: 'blur(6px)',
+                    } : {
+                        boxShadow: '0 2px 12px 0 rgba(80,120,200,0.10)'
+                    })
                 }}
             >
                 {/* Modern assistant SVG icon */}
