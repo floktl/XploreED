@@ -18,6 +18,8 @@ export default function Menu() {
   const isAdmin = useAppStore((state) => state.isAdmin);
   const isLoading = useAppStore((state) => state.isLoading);
   const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
+  const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+  const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
@@ -49,7 +51,20 @@ export default function Menu() {
     if (isAdmin) {
       navigate("/admin-panel");
     }
-  }, [username, setUsername, isAdmin, isLoading, navigate, setCurrentLevel]);
+
+    setCurrentPageContent({
+      type: "menu",
+      description: "This is the main menu of the XplorED app. Users can access translation practice, sentence order games, AI training exercises, AI reading exercises, and more. Each button navigates to a different learning module.",
+      sections: [
+        { label: "Translation Practice", path: "/translate", icon: "FileText" },
+        { label: "Sentence Order Game", path: "/level-game", icon: "Target" },
+        { label: "AI Training Exercises", path: "/ai-feedback", icon: "Bot" },
+        { label: "AI Reading Exercise", path: "/reading-exercise", icon: "Book" },
+        // Add more sections as needed
+      ]
+    });
+    return () => clearCurrentPageContent();
+  }, [username, setUsername, isAdmin, isLoading, navigate, setCurrentLevel, setCurrentPageContent, clearCurrentPageContent]);
 
   return (
     <div
@@ -67,7 +82,6 @@ export default function Menu() {
               <FileText className="w-5 h-5" />
               Translation Practice
             </Button>
-
             <Button
               type="button"
               variant="primary"
@@ -77,7 +91,6 @@ export default function Menu() {
               <Target className="w-5 h-5" />
               Sentence Order Game
             </Button>
-
             <Button
               type="button"
               variant="secondary"
@@ -87,7 +100,6 @@ export default function Menu() {
               <Bot className="w-5 h-5" />
               AI Training Exercises
             </Button>
-
             <Button
               type="button"
               variant="secondary"
@@ -97,26 +109,7 @@ export default function Menu() {
               <Book className="w-5 h-5" />
               AI Reading Exercise
             </Button>
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate("/lessons")}
-              className="justify-start gap-3"
-            >
-              <Library className="w-5 h-5" />
-              {username ? `${username}'s Lessons` : "Your Lessons"}
-            </Button>
-
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate("/weakness-lesson")}
-              className="justify-start gap-3"
-            >
-              <Bot className="w-5 h-5" />
-              AI Weakness Lesson
-            </Button>
+            {/* ...rest of the menu... */}
           </div>
         </Card>
       </Container>

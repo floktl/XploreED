@@ -27,6 +27,8 @@ export default function Vocabulary() {
     const isLoading = useAppStore((state) => state.isLoading);
     const isMobile = useMediaQuery("(max-width: 640px)");
     const [typeFilter, setTypeFilter] = useState("");
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem("username");
@@ -48,6 +50,15 @@ export default function Vocabulary() {
                 });
         }
     }, [username, isAdmin]);
+
+    useEffect(() => {
+        setCurrentPageContent({
+            type: "vocabulary",
+            username,
+            vocab
+        });
+        return () => clearCurrentPageContent();
+    }, [username, vocab, setCurrentPageContent, clearCurrentPageContent]);
 
     const handleForget = async (vocabEntry = null) => {
         const entry = vocabEntry || selected;

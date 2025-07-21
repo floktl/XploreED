@@ -818,6 +818,26 @@ export default function AIExerciseBlock({
         }
     };
 
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
+
+    useEffect(() => {
+        // Set current page content for chat context
+        setCurrentPageContent({
+            type: "exercise",
+            blockId,
+            exerciseBlock: current,
+            answers,
+            evaluation,
+            submitted,
+            isComplete,
+            stage
+        });
+        return () => {
+            clearCurrentPageContent();
+        };
+    }, [current, answers, evaluation, submitted, isComplete, stage, blockId, setCurrentPageContent, clearCurrentPageContent]);
+
     if (mode !== "student") {
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }

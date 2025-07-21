@@ -30,6 +30,8 @@ export default function LessonView() {
     const isAdmin = useAppStore((state) => state.isAdmin);
     const [numBlocks, setNumBlocks] = useState(0);
     const [actions, setActions] = useState(null);
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
     useEffect(() => {
         if (isAdmin) {
@@ -74,6 +76,18 @@ export default function LessonView() {
         fetchProgress();
         fetchMarkedComplete();
     }, [lessonId, isAdmin, navigate]);
+
+    useEffect(() => {
+        setCurrentPageContent({
+            type: "lesson-view",
+            lessonId,
+            entries,
+            progress,
+            percentComplete,
+            canComplete
+        });
+        return () => clearCurrentPageContent();
+    }, [lessonId, entries, progress, percentComplete, canComplete, setCurrentPageContent, clearCurrentPageContent]);
 
     useEffect(() => {
         const completed = Object.values(progress).filter(Boolean).length;

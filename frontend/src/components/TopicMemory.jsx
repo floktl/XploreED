@@ -32,6 +32,8 @@ export default function TopicMemory() {
     const isAdmin = useAppStore((state) => state.isAdmin);
     const navigate = useNavigate();
     const isLoading = useAppStore((state) => state.isLoading);
+    const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
+    const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem("username");
@@ -62,6 +64,15 @@ export default function TopicMemory() {
                 console.error("Failed to load weaknesses:", err);
             });
     }, [isAdmin]);
+
+    useEffect(() => {
+        setCurrentPageContent({
+            type: "topic-memory",
+            username,
+            topics
+        });
+        return () => clearCurrentPageContent();
+    }, [username, topics, setCurrentPageContent, clearCurrentPageContent]);
 
     const handleClear = async () => {
         try {
