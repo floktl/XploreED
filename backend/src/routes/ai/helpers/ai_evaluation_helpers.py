@@ -117,14 +117,14 @@ def generate_alternative_answers(correct_sentence: str) -> list:
 
 
 def generate_explanation(question: str, user_answer: str, correct_answer: str) -> str:
-    """Use the AI to generate a short explanation for why the correct answer is correct or why the user's answer is wrong."""
+    """Use the AI to generate a short grammar/vocab explanation for the correct answer only."""
     prompt = {
         "role": "user",
         "content": (
-            f"Given the following exercise, user answer, and correct answer, give a short explanation (1-2 sentences) for a German learner. "
-            f"If the user's answer is correct, explain why. If it's wrong, explain the mistake.\n"
-            f"Exercise: {question}\nUser answer: {user_answer}\nCorrect answer: {correct_answer}\n"
-            f"Reply in English."
+            "Given the following exercise and correct answer, give a very short grammar or vocabulary explanation (1-2 sentences) for a German learner. "
+            "Do NOT mention the user's answer, do NOT restate the correct answer, and do NOT say if it is correct or incorrect. "
+            "Only explain the grammar or vocabulary used in the correct answer, as briefly as possible.\n"
+            f"Exercise: {question}\nCorrect answer: {correct_answer}\nReply in English."
         ),
     }
     try:
