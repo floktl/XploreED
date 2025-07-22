@@ -847,3 +847,12 @@ export const lookupVocabWord = async (word) => {
   if (!res.ok) return null;
   return await res.json();
 };
+
+export const debugDeleteUserData = async () => {
+  const res = await fetch(`${BASE_URL}/api/settings/debug-delete-user-data`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+  return res.json();
+};

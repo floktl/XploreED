@@ -15,6 +15,8 @@ import {
 import useAppStore from "../../store/useAppStore";
 import Dropdown from "./Dropdown";
 import Spinner from "./Spinner";
+import { debugDeleteUserData } from "../../api";
+import Modal from "./Modal";
 
 export default function Header({ minimal = false }) {
     const navigate = useNavigate();
@@ -26,6 +28,8 @@ export default function Header({ minimal = false }) {
     const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
     const backgroundActivity = useAppStore((state) => state.backgroundActivity);
     const [showActivity, setShowActivity] = React.useState(false);
+    const [showDebugModal, setShowDebugModal] = React.useState(false);
+    const [debugResult, setDebugResult] = React.useState(null);
 
     const handleLogout = () => {
         localStorage.removeItem("username");
@@ -273,6 +277,13 @@ export default function Header({ minimal = false }) {
                             About
                         </button>
                         <button
+                            onClick={() => setShowDebugModal(true)}
+                            className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/40 dark:text-yellow-400 transition w-full text-left"
+                        >
+                            <span className="w-5 h-5 rounded-full bg-yellow-400 text-white flex items-center justify-center text-xs font-semibold">!</span>
+                            Debug: Delete All User Data
+                        </button>
+                        <button
                             onClick={handleLogout}
                             className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 dark:text-red-400 transition w-full text-left"
                         >
@@ -282,6 +293,56 @@ export default function Header({ minimal = false }) {
                     </Dropdown>
                 </div>
             </div>
+            {showDebugModal && (
+                <Modal onClose={() => { setShowDebugModal(false); setDebugResult(null); }}>
+                    {!debugResult ? (
+                        <div>
+                            <h2 className="text-lg font-bold mb-2 text-yellow-600">Delete All User Data</h2>
+                            <p className="mb-4">Are you sure you want to delete <b>ALL</b> your user data except your name, password, and session? <br/>This cannot be undone!</p>
+                            <div className="flex gap-4 justify-end">
+                                <button
+                                    className="px-4 py-2 rounded text-sm font-medium bg-gray-300 hover:bg-gray-400 text-gray-900"
+                                    onClick={() => setShowDebugModal(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="px-4 py-2 rounded text-sm font-medium bg-yellow-500 hover:bg-yellow-600 text-white"
+                                    onClick={async () => {
+                                        try {
+                                            const res = await debugDeleteUserData();
+                                            if (res.status) {
+                                                setDebugResult({ success: true, message: res.status });
+                                            } else if (res.error) {
+                                                setDebugResult({ success: false, message: res.error });
+                                            } else {
+                                                setDebugResult({ success: false, message: "Unknown error" });
+                                            }
+                                        } catch (e) {
+                                            setDebugResult({ success: false, message: "Failed to delete user data" });
+                                        }
+                                    }}
+                                >
+                                    Yes, Delete All Data
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div>
+                            <h2 className={`text-lg font-bold mb-2 ${debugResult.success ? "text-green-600" : "text-red-600"}`}>{debugResult.success ? "Success" : "Error"}</h2>
+                            <p className="mb-4">{debugResult.message}</p>
+                            <div className="flex justify-end">
+                                <button
+                                    className="px-4 py-2 rounded text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white"
+                                    onClick={() => { setShowDebugModal(false); setDebugResult(null); }}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </Modal>
+            )}
         </header>
     );
 }
