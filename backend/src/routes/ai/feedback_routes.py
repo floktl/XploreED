@@ -72,15 +72,66 @@ def generate_ai_feedback_with_progress():
     def run_feedback_generation():
         try:
             update_progress(10, "Analyzing your answers...", "analyzing")
-            if not exercise_block:
-                update_progress(99, "No exercise block provided", "error")
+            if not exercise_block or not isinstance(exercise_block, dict) or not exercise_block.get("exercises") or not isinstance(exercise_block.get("exercises"), list) or len(exercise_block.get("exercises")) == 0:
+                update_progress(99, "No valid exercise block or exercises provided", "error")
+                import logging
+                logging.getLogger(__name__).error(f"Feedback error: Invalid or missing exercise_block: {exercise_block}", flush=True)
+                # Always write error result to Redis
+                error_result = {
+                    "feedbackPrompt": "Error: No valid exercise block or exercises provided.",
+                    "summary": {},
+                    "results": [],
+                    "ready": True,
+                    "error": "No valid exercise block or exercises provided."
+                }
+                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
+                progress_json = redis_client.get(f"feedback_progress:{session_id}")
+                if progress_json:
+                    progress = json.loads(progress_json)
+                    progress["result"] = error_result
+                    progress["completed"] = True
+                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
                 return
             all_exercises = exercise_block.get("exercises", [])
             update_progress(30, "Evaluating answers with AI...", "evaluating")
-            evaluation = evaluate_answers_with_ai(all_exercises, answers)
-            evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
+            try:
+                evaluation = evaluate_answers_with_ai(all_exercises, answers)
+                evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
+            except Exception as e:
+                update_progress(99, f"AI evaluation error: {str(e)}", "error")
+                print(f"[Feedback Error] AI evaluation failed: {e}", flush=True)
+                error_result = {
+                    "feedbackPrompt": f"Error: AI evaluation failed: {e}",
+                    "summary": {},
+                    "results": [],
+                    "ready": True,
+                    "error": f"AI evaluation failed: {e}"
+                }
+                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
+                progress_json = redis_client.get(f"feedback_progress:{session_id}")
+                if progress_json:
+                    progress = json.loads(progress_json)
+                    progress["result"] = error_result
+                    progress["completed"] = True
+                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
+                return
             if not evaluation:
                 update_progress(99, "AI evaluation failed", "error")
+                print(f"[Feedback Error] AI evaluation returned None", flush=True)
+                error_result = {
+                    "feedbackPrompt": "Error: AI evaluation failed.",
+                    "summary": {},
+                    "results": [],
+                    "ready": True,
+                    "error": "AI evaluation failed."
+                }
+                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
+                progress_json = redis_client.get(f"feedback_progress:{session_id}")
+                if progress_json:
+                    progress = json.loads(progress_json)
+                    progress["result"] = error_result
+                    progress["completed"] = True
+                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
                 return
             update_progress(50, "Processing evaluation results...", "processing")
             id_map = {
@@ -105,39 +156,80 @@ def generate_ai_feedback_with_progress():
                         "correct_answer": correct_ans,
                     })
             update_progress(70, "Fetching your vocabulary and progress data...", "fetching_data")
-            vocab_rows = select_rows(
-                "vocab_log",
-                columns=[
-                    "vocab",
-                    "translation",
-                    "interval_days",
-                    "next_review",
-                    "ef",
-                    "repetitions",
-                    "last_review",
-                ],
-                where="username = ?",
-                params=(username,),
-            )
-            vocab_data = [
-                {
-                    "word": row["vocab"],
-                    "translation": row.get("translation"),
+            try:
+                vocab_rows = select_rows(
+                    "vocab_log",
+                    columns=[
+                        "vocab",
+                        "translation",
+                        "interval_days",
+                        "next_review",
+                        "ef",
+                        "repetitions",
+                        "last_review",
+                    ],
+                    where="username = ?",
+                    params=(username,),
+                )
+                vocab_data = [
+                    {
+                        "word": row["vocab"],
+                        "translation": row.get("translation"),
+                    }
+                    for row in vocab_rows
+                ] if vocab_rows else []
+                topic_rows = fetch_topic_memory(username)
+                topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+            except Exception as e:
+                update_progress(99, f"Data fetch error: {str(e)}", "error")
+                print(f"[Feedback Error] Data fetch failed: {e}", flush=True)
+                error_result = {
+                    "feedbackPrompt": f"Error: Data fetch failed: {e}",
+                    "summary": {},
+                    "results": [],
+                    "ready": True,
+                    "error": f"Data fetch failed: {e}"
                 }
-                for row in vocab_rows
-            ] if vocab_rows else []
-            topic_rows = fetch_topic_memory(username)
-            topic_data = [dict(row) for row in topic_rows] if topic_rows else []
+                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
+                progress_json = redis_client.get(f"feedback_progress:{session_id}")
+                if progress_json:
+                    progress = json.loads(progress_json)
+                    progress["result"] = error_result
+                    progress["completed"] = True
+                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
+                return
             update_progress(85, "Generating personalized feedback...", "generating_feedback")
-            feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+            try:
+                feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
+            except Exception as e:
+                update_progress(99, f"Feedback generation error: {str(e)}", "error")
+                print(f"[Feedback Error] Feedback generation failed: {e}", flush=True)
+                error_result = {
+                    "feedbackPrompt": f"Error: Feedback generation failed: {e}",
+                    "summary": summary,
+                    "results": evaluation.get("results", []),
+                    "ready": True,
+                    "error": f"Feedback generation failed: {e}"
+                }
+                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
+                progress_json = redis_client.get(f"feedback_progress:{session_id}")
+                if progress_json:
+                    progress = json.loads(progress_json)
+                    progress["result"] = error_result
+                    progress["completed"] = True
+                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
+                return
             update_progress(95, "Updating your learning progress...", "updating_progress")
-            run_in_background(
-                process_ai_answers,
-                username,
-                str(exercise_block.get("lessonId", "feedback")),
-                answers,
-                {"exercises": all_exercises},
-            )
+            try:
+                run_in_background(
+                    process_ai_answers,
+                    username,
+                    str(exercise_block.get("lessonId", "feedback")),
+                    answers,
+                    {"exercises": all_exercises},
+                )
+            except Exception as e:
+                print(f"[Feedback Error] process_ai_answers failed: {e}", flush=True)
             update_progress(99, "Feedback generation complete!", "complete")
             result = {
                 "feedbackPrompt": feedback_prompt,
@@ -152,13 +244,22 @@ def generate_ai_feedback_with_progress():
                 progress["result"] = result
                 progress["completed"] = True
                 redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-            # print(f"[Feedback Backend] Result stored and completed=True set for session {session_id}")
         except Exception as e:
             update_progress(99, f"Error: {str(e)}", "error")
+            print(f"[Feedback Error] Uncaught exception: {e}", flush=True)
+            error_result = {
+                "feedbackPrompt": f"Error: {e}",
+                "summary": {},
+                "results": [],
+                "ready": True,
+                "error": str(e)
+            }
+            redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
             progress_json = redis_client.get(f"feedback_progress:{session_id}")
             if progress_json:
                 progress = json.loads(progress_json)
-                progress["error"] = str(e)
+                progress["result"] = error_result
+                progress["completed"] = True
                 redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
     run_in_background(run_feedback_generation)
     return jsonify({"session_id": session_id})

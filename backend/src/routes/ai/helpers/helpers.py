@@ -92,6 +92,34 @@ def generate_feedback_prompt(
     return "Great effort! We'll generate custom exercises to help you improve further."
 
 
+def print_db_exercise_blocks(username, context):
+    from database import fetch_one
+    row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+    if not row:
+        print(f"\033[91m[{context}] No ai_user_data row for user {username}\033[0m", flush=True)
+        return
+    try:
+        exercises = row.get("exercises")
+        next_exercises = row.get("next_exercises")
+        print(f"\033[95m[{context}] DB: Current block:\033[0m", flush=True)
+        if exercises:
+            import json as _json
+            block = _json.loads(exercises) if isinstance(exercises, str) else exercises
+            for i, ex in enumerate((block.get("exercises") if isinstance(block, dict) else [])[:3]):
+                print(f"\033[92m  {i+1}. {ex.get('question')}\033[0m", flush=True)
+        else:
+            print("  (none)", flush=True)
+        print(f"\033[95m[{context}] DB: Next block:\033[0m", flush=True)
+        if next_exercises:
+            block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
+            for i, ex in enumerate((block.get("exercises") if isinstance(block, dict) else [])[:3]):
+                print(f"\033[96m  {i+1}. {ex.get('question')}\033[0m", flush=True)
+        else:
+            print("  (none)", flush=True)
+    except Exception as e:
+        print(f"\033[91m[{context}] Error printing DB blocks: {e}\033[0m", flush=True)
+
+
 def store_user_ai_data(username: str, data: dict):
     """Insert or update cached AI data for a user."""
     exists = select_one(
@@ -102,9 +130,11 @@ def store_user_ai_data(username: str, data: dict):
     )
     if exists:
         update_row("ai_user_data", data, "username = ?", (username,))
+        print_db_exercise_blocks(username, "store_user_ai_data: update_row")
     else:
         data_with_user = {"username": username, **data}
         insert_row("ai_user_data", data_with_user)
+        print_db_exercise_blocks(username, "store_user_ai_data: insert_row")
 
 
 def _create_ai_block(username: str) -> dict | None:

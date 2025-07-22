@@ -81,3 +81,41 @@ def deactivate_account_route():
     except Exception as e:
         current_app.logger.error(f"Error deactivating account for user {user}: {str(e)}")
         return jsonify({'error': 'Failed to deactivate account'}), 500
+
+
+@settings_bp.route('/debug-delete-user-data', methods=['POST'])
+def debug_delete_user_data():
+    """Delete all user data for the current user except name, password, and session, from ANY table with a username or user_id column."""
+    user = get_current_user()
+    if not user:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        user_row = fetch_one('users', 'WHERE username = ?', (user,))
+        if not user_row:
+            return jsonify({'error': 'User not found'}), 404
+
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = [row[0] for row in cursor.fetchall()]
+            affected_tables = []
+            for table in tables:
+                if table in ('users', 'sessions', 'sqlite_sequence'):
+                    continue
+                cursor.execute(f"PRAGMA table_info({table})")
+                columns = [col[1] for col in cursor.fetchall()]
+                if 'username' in columns:
+                    cursor.execute(f"DELETE FROM {table} WHERE username = ?", (user,))
+                    if cursor.rowcount > 0:
+                        affected_tables.append(table)
+                elif 'user_id' in columns:
+                    cursor.execute(f"DELETE FROM {table} WHERE user_id = ?", (user,))
+                    if cursor.rowcount > 0:
+                        affected_tables.append(table)
+            conn.commit()
+        print(f"[DEBUG DELETE] Deleted user data for '{user}' from tables: {', '.join(affected_tables) if affected_tables else 'none'}", flush=True)
+        tables_str = ', '.join(affected_tables) if affected_tables else 'none'
+        return jsonify({'status': f'All user data deleted from tables: {tables_str} (except name, password, and session).'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
