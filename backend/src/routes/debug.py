@@ -1,6 +1,7 @@
 """Debug endpoints exposing raw database information."""
 
 from app.imports.imports import *
+from routes.ai.helpers.helpers import print_ai_user_data_titles
 
 @debug_bp.route("/all-data", methods=["GET"])
 def show_all_data():
@@ -29,3 +30,10 @@ def show_all_data():
             return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@debug_bp.route("/ai-user-titles", methods=["POST"])
+def debug_ai_user_titles():
+    """Trigger backend print of ai_user_data titles for the current user."""
+    username = require_user()
+    print_ai_user_data_titles(username)
+    return jsonify({"status": "ok"})

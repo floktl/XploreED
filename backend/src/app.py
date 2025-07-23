@@ -7,9 +7,13 @@ import os
 import sys
 import logging
 
-# === Configure logging to suppress urllib3 debug logs ===
-logging.getLogger('urllib3').setLevel(logging.WARNING)
-logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
+# # === Configure logging to suppress urllib3 debug logs ===
+# logging.getLogger('urllib3').setLevel(logging.WARNING)
+# logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
+
+# Suppress werkzeug info logs except for errors
+import logging
+logging.getLogger('werkzeug').disabled = True
 
 # === Load environment variables EARLY ===
 try:

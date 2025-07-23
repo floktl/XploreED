@@ -16,6 +16,7 @@ from .. import (
 
 def _fix_exercise(ex: dict, idx: int) -> dict:
     """Normalize a single exercise dict."""
+    # print(f"\033[34m[AI-HELPERS] Entering: [_fix_exercise] ex={repr(ex)}, idx={repr(idx)}\033[0m", flush=True)
     fixed = {
         "id": ex.get("id", f"ex{idx+1}"),
         "type": ex.get("type"),
@@ -29,7 +30,8 @@ def _fix_exercise(ex: dict, idx: int) -> dict:
 
 def _ensure_schema(exercise_block: dict) -> dict:
     """Return exercise block with guaranteed keys."""
-
+    title = exercise_block.get('title') if isinstance(exercise_block, dict) else None
+    # print(f"\033[34m[AI-HELPERS] Entering: [_ensure_schema] title={repr(title)}\033[0m", flush=True)
     if "exercises" in exercise_block:
         exercise_block["exercises"] = [
             _fix_exercise(ex, i) for i, ex in enumerate(exercise_block["exercises"])
@@ -44,7 +46,7 @@ def generate_feedback_prompt(
     topic_memory: list | None = None,
 ) -> str:
     """Return short feedback summary for the user."""
-
+    print(f"\033[34m[AI-HELPERS] Entering: [generate_feedback_prompt] summary={repr(summary)}, vocab={repr(vocab)}, topic_memory={repr(topic_memory)}\033[0m", flush=True)
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
     mistakes = summary.get("mistakes", [])
@@ -92,36 +94,39 @@ def generate_feedback_prompt(
     return "Great effort! We'll generate custom exercises to help you improve further."
 
 
-def print_db_exercise_blocks(username, context):
+def print_db_exercise_blocks(username, context, parent_function=None):
     from database import fetch_one
     row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+    parent_str = f"[{parent_function}] " if parent_function else ""
     if not row:
-        print(f"\033[91m[{context}] No ai_user_data row for user {username}\033[0m", flush=True)
+        print(f"\033[91m{parent_str}[{context}] No ai_user_data row for user {username}\033[0m", flush=True)
         return
     try:
         exercises = row.get("exercises")
         next_exercises = row.get("next_exercises")
-        print(f"\033[95m[{context}] DB: Current block:\033[0m", flush=True)
+        print(f"\033[95m{parent_str}[{context}] DB: Current block:\033[0m", flush=True)
         if exercises:
             import json as _json
             block = _json.loads(exercises) if isinstance(exercises, str) else exercises
-            for i, ex in enumerate((block.get("exercises") if isinstance(block, dict) else [])[:3]):
-                print(f"\033[92m  {i+1}. {ex.get('question')}\033[0m", flush=True)
+            title = block.get("title") if isinstance(block, dict) else None
+            print(f"\033[92m  Title: {title if title else '(no title)'}\033[0m", flush=True)
         else:
             print("  (none)", flush=True)
-        print(f"\033[95m[{context}] DB: Next block:\033[0m", flush=True)
+        print(f"\033[95m{parent_str}[{context}] DB: Next block:\033[0m", flush=True)
         if next_exercises:
             block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
-            for i, ex in enumerate((block.get("exercises") if isinstance(block, dict) else [])[:3]):
-                print(f"\033[96m  {i+1}. {ex.get('question')}\033[0m", flush=True)
+            title = block.get("title") if isinstance(block, dict) else None
+            print(f"\033[96m  Title: {title if title else '(no title)'}\033[0m", flush=True)
         else:
             print("  (none)", flush=True)
     except Exception as e:
-        print(f"\033[91m[{context}] Error printing DB blocks: {e}\033[0m", flush=True)
+        print(f"\033[91m{parent_str}[{context}] Error printing DB blocks: {e}\033[0m", flush=True)
 
 
-def store_user_ai_data(username: str, data: dict):
+def store_user_ai_data(username: str, data: dict, parent_function=None):
     """Insert or update cached AI data for a user."""
+    title = data.get('title') if isinstance(data, dict) else None
+    print(f"\033[34m[AI-HELPERS] Entering: [store_user_ai_data], parent_function={repr(parent_function)}\033[0m", flush=True)
     exists = select_one(
         "ai_user_data",
         columns="username",
@@ -130,11 +135,11 @@ def store_user_ai_data(username: str, data: dict):
     )
     if exists:
         update_row("ai_user_data", data, "username = ?", (username,))
-        print_db_exercise_blocks(username, "store_user_ai_data: update_row")
+        print_db_exercise_blocks(username, "store_user_ai_data: update_row", parent_function)
     else:
         data_with_user = {"username": username, **data}
         insert_row("ai_user_data", data_with_user)
-        print_db_exercise_blocks(username, "store_user_ai_data: insert_row")
+        print_db_exercise_blocks(username, "store_user_ai_data: insert_row", parent_function)
 
 
 def _create_ai_block(username: str) -> dict | None:
@@ -142,6 +147,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     Returns ``None`` if the Mistral API did not return a valid block.
     """
+    print(f"\033[34m[AI-HELPERS] Entering: [_create_ai_block] username={repr(username)}\033[0m", flush=True)
     import logging
     logger = logging.getLogger(__name__)
 
@@ -208,7 +214,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     # Ensure we have at least 3 exercises, retry if needed
     if len(ai_block.get("exercises", [])) < 3:
-        # logger.warning(f"_create_ai_block: Only {len(exercises)} exercises generated for user {username}, retrying...")
+        # logger.wa
         # Try to generate more exercises
         for attempt in range(2):  # Try up to 2 more times
             try:
@@ -241,6 +247,7 @@ def _create_ai_block(username: str) -> dict | None:
 
 def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | None) -> dict | None:
     """Ensure AI evaluation for gap-fill exercises matches provided options."""
+    # print(f"\033[34m[AI-HELPERS] Entering: [_adjust_gapfill_results] exercises={repr(exercises)}, answers={repr(answers)}, evaluation={repr(evaluation)}\033[0m", flush=True)
     if not evaluation or "results" not in evaluation:
         return evaluation
 
@@ -287,6 +294,7 @@ def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | N
 
 
 def _normalize_umlauts(s):
+    # print(f"\033[34m[AI-HELPERS] Entering: [_normalize_umlauts] s={repr(s)}\033[0m", flush=True)
     # Accept ae == ä, oe == ö, ue == ü (and vice versa)
     s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
     s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
@@ -299,9 +307,6 @@ def _strip_final_punct(s):
     return s
 
 def format_feedback_block(user_answer, correct_answer, alternatives=None, explanation=None, diff=None, status=None):
-    """
-    Return a standardized feedback dict for frontend rendering.
-    """
     # Normalize answers for comparison
     ua = _strip_final_punct(str(user_answer)).strip().lower()
     ca = _strip_final_punct(str(correct_answer)).strip().lower()
@@ -316,3 +321,27 @@ def format_feedback_block(user_answer, correct_answer, alternatives=None, explan
         "userAnswer": user_answer,
         "diff": diff,
     }
+
+def print_ai_user_data_titles(username):
+    """Print only the block_id for current and next block for the given user to the backend logs, colorized and on two lines."""
+    from database import fetch_one
+    row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+    if not row:
+        print(f"\033[91m| [DEBUG] No ai_user_data row for user {username}\033[0m", flush=True)
+        return
+    try:
+        import json as _json
+        exercises = row.get("exercises")
+        next_exercises = row.get("next_exercises")
+        current_id = None
+        next_id = None
+        if exercises:
+            block = _json.loads(exercises) if isinstance(exercises, str) else exercises
+            current_id = block.get("block_id") if isinstance(block, dict) else None
+        if next_exercises:
+            block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
+            next_id = block.get("block_id") if isinstance(block, dict) else None
+        print(f"\033[92m| [DEBUG] Current block id: {current_id if current_id else '(none)'}\033[0m", flush=True)
+        print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
+    except Exception as e:
+        print(f"\033[91m| [DEBUG] Error printing ai_user_data block ids for user {username}: {e}\033[0m", flush=True)
