@@ -143,7 +143,7 @@ def save_exercise_submission_async(
     answers: dict,
     exercises: list,
 ) -> None:
-    """Save exercise submission and update spaced repetition in a thread. Also update exercise history and prefetch next block."""
+    """Save exercise submission and update spaced repetition in a thread. Also update exercise history."""
     log_exercise_event("submission_start", username, {
         "block_id": block_id,
         "answers_count": len(answers),
@@ -174,81 +174,9 @@ def save_exercise_submission_async(
                     },
                 )
 
-                # Promote next_exercises to exercises (current block), generate new next_exercises
-                row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
-                previous_next_exercises = row["next_exercises"] if row and row.get("next_exercises") else None
-
-                # Generate new next block
-                example_block = EXERCISE_TEMPLATE.copy()
-                vocab_rows = select_rows(
-                    "vocab_log",
-                    columns="vocab,translation,interval_days,next_review,ef,repetitions,last_review",
-                    where="username = ?",
-                    params=(username,),
-                )
-                vocab_data = [
-                    {
-                        "type": "string",
-                        "word": row["vocab"],
-                        "translation": row.get("translation"),
-                        "sm2_interval": row.get("interval_days"),
-                        "sm2_due_date": row.get("next_review"),
-                        "sm2_ease": row.get("ef"),
-                        "repetitions": row.get("repetitions"),
-                        "sm2_last_review": row.get("last_review"),
-                        "quality": 0,
-                    }
-                    for row in vocab_rows
-                ]
-                topic_rows = fetch_topic_memory(username)
-                topic_memory = [dict(row) for row in topic_rows]
-                row_user = fetch_one("users", "WHERE username = ?", (username,))
-                level = row_user.get("skill_level", 0) if row_user is not None else 0
-                # Use all recent questions to avoid repeats
-                all_recent_questions = []
-                if previous_next_exercises:
-                    try:
-                        prev_block = json.loads(previous_next_exercises)
-                        prev_exercises = prev_block.get("exercises") if isinstance(prev_block, dict) and isinstance(prev_block.get("exercises"), list) else []
-                        all_recent_questions = [ex.get("question") for ex in prev_exercises if ex.get("question")]
-                    except Exception:
-                        all_recent_questions = []
-                new_next_block = generate_new_exercises(
-                    vocabular=vocab_data,
-                    topic_memory=topic_memory,
-                    example_exercise_block=example_block,
-                    level=level,
-                    recent_questions=all_recent_questions
-                )
-                log_generated_sentences(new_next_block, parent_function="save_exercise_submission_async: next_block")
-                # Save: promote next_exercises to exercises, and set new next_exercises
-                valid_next_block = new_next_block if isinstance(new_next_block, dict) and "exercises" in new_next_block else None
-                if previous_next_exercises and valid_next_block:
-                    store_user_ai_data(username, {
-                        "exercises": previous_next_exercises,
-                        "next_exercises": json.dumps(valid_next_block)
-                    }, parent_function="save_exercise_submission_async")
-                elif previous_next_exercises:
-                    store_user_ai_data(username, {
-                        "exercises": previous_next_exercises
-                    }, parent_function="save_exercise_submission_async")
-                elif valid_next_block:
-                    store_user_ai_data(username, {
-                        "next_exercises": json.dumps(valid_next_block)
-                    }, parent_function="save_exercise_submission_async")
-                else:
-                    if new_next_block is None:
-                        print("[save_exercise_submission_async] WARNING: Mistral returned None for new_next_block, skipping DB update for next_exercises.", flush=True)
-                    else:
-                        print("[save_exercise_submission_async] WARNING: new_next_block is not a valid dict with 'exercises', skipping DB update for next_exercises.", flush=True)
-                print("save_exercise_submission_async", flush=True)
-
                 # Update exercise history with new questions
                 new_questions = [ex.get("question") for ex in exercises_list if ex.get("question")]
                 update_exercise_history(username, new_questions)
-
-                # Prefetch next block with updated history
-                prefetch_next_exercises(username)
 
                 log_exercise_event("submission_complete", username, {
                     "block_id": block_id,
@@ -343,8 +271,8 @@ def get_ai_exercises():
         return jsonify({"error": "Mistral error"}), 500
 
     exercises = ai_block.get("exercises") if ai_block and isinstance(ai_block.get("exercises"), list) else []
-    filtered = [ex for ex in exercises if ex.get("question") not in recent_questions]
-
+    safe_recent_questions = recent_questions if recent_questions is not None else []
+    filtered = [ex for ex in exercises if ex.get("question") not in safe_recent_questions]
 
     if ai_block is not None:
         ai_block["exercises"] = filtered[:3]
@@ -371,6 +299,21 @@ def get_next_block_id():
     with _block_id_lock:
         _block_id_counter += 1
         return _block_id_counter
+
+# --- PATCH: Ensure block title is unique and numbered (must be after generate_new_exercises is defined) ---
+
+def ensure_unique_block_title(block):
+    if not block or not isinstance(block, dict):
+        return block
+    block_id = get_next_block_id()
+    base_title = block.get("title", "(no title)")
+    # Remove any existing [Block #...] suffix
+    import re
+    base_title = re.sub(r"\s*\[Block #\d+\]$", "", base_title)
+    block["title"] = f"{base_title} [Block #{block_id}]"
+    block["block_id"] = block_id
+    return block
+
 
 def generate_new_exercises(
     vocabular=None,
@@ -452,159 +395,6 @@ def generate_new_exercises(
         logger.error(f"Mistral API request failed: {response.status_code} - {response.text}")
         return None
 
-# --- PATCH: Ensure block title is unique and numbered (must be after generate_new_exercises is defined) ---
-
-def ensure_unique_block_title(block):
-    if not block or not isinstance(block, dict):
-        return block
-    block_id = get_next_block_id()
-    base_title = block.get("title", "(no title)")
-    # Remove any existing [Block #...] suffix
-    import re
-    base_title = re.sub(r"\s*\[Block #\d+\]$", "", base_title)
-    block["title"] = f"{base_title} [Block #{block_id}]"
-    block["block_id"] = block_id
-    return block
-
-# Patch generate_new_exercises to ensure unique title
-old_generate_new_exercises = generate_new_exercises
-
-def generate_new_exercises(*args, **kwargs):
-    block = old_generate_new_exercises(*args, **kwargs)
-    return ensure_unique_block_title(block)
-
-# Patch _create_ai_block and _create_ai_block_with_variation to ensure unique title
-try:
-    old__create_ai_block = _create_ai_block
-    def _create_ai_block(*args, **kwargs):
-        block = old__create_ai_block(*args, **kwargs)
-        return ensure_unique_block_title(block)
-except Exception:
-    pass
-try:
-    old__create_ai_block_with_variation = _create_ai_block_with_variation
-    def _create_ai_block_with_variation(*args, **kwargs):
-        block = old__create_ai_block_with_variation(*args, **kwargs)
-        return ensure_unique_block_title(block)
-except Exception:
-    pass
-
-
-def generate_training_exercises(username: str) -> dict | None:
-    """Generate current and next exercise blocks and store them. Ensures next block is unique."""
-    # Check if this is a new user (no exercise history)
-    recent_questions = get_recent_exercise_questions(username)
-    is_new_user = len(recent_questions) == 0
-
-    if is_new_user:
-        return _generate_blocks_for_new_user(username)
-    else:
-        return _generate_blocks_for_existing_user(username)
-
-
-def _generate_blocks_for_new_user(username: str) -> dict | None:
-    """Generate two unique blocks for new users by using different generation contexts."""
-
-    # Generate first block with empty history
-    ai_block = _create_ai_block(username)
-    log_generated_sentences(ai_block, parent_function="_generate_blocks_for_new_user: current_block")
-    if not ai_block or not ai_block.get("exercises"):
-        return None
-
-    # Extract questions from first block and update history
-    new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
-
-    # Update exercise history and ensure it's committed
-    update_exercise_history(username, new_questions)
-    log_ai_user_data(username, "after updating exercise history")
-
-    # Force a small delay to ensure DB commit is visible
-    import time
-    time.sleep(0.1)
-
-    # Generate second block with different approach to ensure uniqueness
-    next_block = _create_ai_block_with_variation(username, new_questions)
-    log_generated_sentences(next_block, parent_function="_generate_blocks_for_new_user: next_block")
-
-    if next_block and next_block.get("exercises"):
-        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-        filtered = [ex for ex in exercises if ex.get("question") not in new_questions]
-        next_block["exercises"] = filtered[:3]
-        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-        for ex in exercises:
-            ex.pop("correctAnswer", None)
-
-    # Store both blocks
-    store_user_ai_data(
-        username,
-        {
-            "exercises": json.dumps(ai_block),
-            "next_exercises": json.dumps(next_block or {}),
-            "exercises_updated_at": datetime.datetime.now().isoformat(),
-        },
-        parent_function="_generate_blocks_for_new_user"
-    )
-    print_db_exercise_blocks(username, "_generate_blocks_for_new_user", parent_function="_generate_blocks_for_new_user")
-    # print_exercise_block_sentences(ai_block, "_generate_blocks_for_new_user: current_block", color="\033[92m")  # Green
-    # print_exercise_block_sentences(next_block, "_generate_blocks_for_new_user: next_block", color="\033[96m")    # Cyan
-    log_ai_user_data(username, "after storing both blocks")
-
-    return ai_block
-
-
-def _generate_blocks_for_existing_user(username: str) -> dict | None:
-    """Generate blocks for existing users with proper history management."""
-
-    # Generate first block
-    ai_block = _create_ai_block(username)
-    log_generated_sentences(ai_block, parent_function="_generate_blocks_for_existing_user: current_block")
-    if not ai_block or not ai_block.get("exercises"):
-        return None
-
-    # Extract questions from first block and update history
-    new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
-
-    # Update exercise history and ensure it's committed
-    update_exercise_history(username, new_questions)
-    log_ai_user_data(username, "after updating exercise history")
-
-    # Force a small delay to ensure DB commit is visible
-    import time
-    time.sleep(0.1)
-
-    # Get the updated recent questions to ensure uniqueness
-    recent_questions = get_recent_exercise_questions(username)
-
-    # Generate next block with updated history
-    next_block = _create_ai_block(username)
-    log_generated_sentences(next_block, parent_function="_generate_blocks_for_existing_user: next_block")
-
-    if next_block and next_block.get("exercises"):
-        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-        filtered = [ex for ex in exercises if ex.get("question") not in recent_questions]
-
-        next_block["exercises"] = filtered[:3]
-        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-        for ex in exercises:
-            ex.pop("correctAnswer", None)
-
-    # Store both blocks
-    store_user_ai_data(
-        username,
-        {
-            "exercises": json.dumps(ai_block),
-            "next_exercises": json.dumps(next_block or {}),
-            "exercises_updated_at": datetime.datetime.now().isoformat(),
-        },
-        parent_function="_generate_blocks_for_existing_user"
-    )
-    print_db_exercise_blocks(username, "_generate_blocks_for_existing_user", parent_function="_generate_blocks_for_existing_user")
-    print_exercise_block_sentences(ai_block, "_generate_blocks_for_existing_user: current_block", color="\033[92m")  # Green
-    print_exercise_block_sentences(next_block, "_generate_blocks_for_existing_user: next_block", color="\033[96m")    # Cyan
-    log_ai_user_data(username, "after storing both blocks")
-
-    return ai_block
-
 
 def _create_ai_block_with_variation(username: str, exclude_questions: list) -> dict | None:
     """Create an AI block with variation to ensure uniqueness for new users."""
@@ -673,28 +463,65 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
 
 def prefetch_next_exercises(username: str) -> None:
     """Generate and store a new next exercise block asynchronously, ensuring uniqueness."""
-
+    from routes.ai.helpers.helpers import print_ai_user_data_titles
+    print_ai_user_data_titles(username)
     def run():
         try:
+            print(f"\033[95m[DEBUG] prefetch_next_exercises: username={repr(username)}\033[0m", flush=True)
             # Get recent questions first to ensure we have the latest
             recent_questions = get_recent_exercise_questions(username)
+            print(f"\033[94m[DEBUG] recent_questions={repr(recent_questions)}\033[0m", flush=True)
 
             # Create AI block for user {username}
             next_block = _create_ai_block(username)
+            if next_block is not None:
+                next_block["block_id"] = get_next_block_id()
+            # Log the block_id instead of the title
+            print(f"[prefetch_next_exercises: next_block] Generated block id: {next_block.get('block_id', '(none)')}", flush=True)
             log_generated_sentences(next_block, parent_function="prefetch_next_exercises: next_block")
 
             if next_block and isinstance(next_block, dict) and "exercises" in next_block:
                 exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-                filtered = [ex for ex in exercises if ex.get("question") not in recent_questions]
+                print(f"\033[92m[DEBUG] exercises (before filtering)={repr(exercises)}\033[0m", flush=True)
+                filtered = [ex for ex in exercises if ex.get("question") not in (recent_questions if recent_questions is not None else [])]
+                print(f"\033[93m[DEBUG] filtered exercises={repr(filtered)}\033[0m", flush=True)
 
-                random.shuffle(filtered)
+                # Debug print right before changing the next block
+                print_ai_user_data_titles(username)
+                # Print current block id in DB (not exercises)
+                from database import fetch_one
+                row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+                current_id = None
+                if row and row.get("exercises"):
+                    import json as _json
+                    block = _json.loads(row["exercises"]) if isinstance(row["exercises"], str) else row["exercises"]
+                    current_id = block.get("block_id") if isinstance(block, dict) else None
+                print(f"\033[35m[DEBUG] Current block id in DB: {current_id if current_id else '(none)'}\033[0m", flush=True)
+                print(f"\033[91m[DEBUG] filtered (after shuffle)={repr(filtered)}\033[0m", flush=True)
                 next_block["exercises"] = filtered[:3]
+                print(f"\033[96m[DEBUG] next_block (after filtering)={repr(next_block)}\033[0m", flush=True)
             else:
-                print("[prefetch_next_exercises] WARNING: next_block is None or invalid, skipping DB update.", flush=True)
+                print("\033[91m[prefetch_next_exercises] WARNING: next_block is None or invalid, skipping DB update.\033[0m", flush=True)
                 next_block = None
 
             # Store next exercises for user {username}
             if next_block:
+                # Promote previous next block to current block before updating next block
+                from database import fetch_one
+                row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+                prev_next_block = None
+                if row and row.get("next_exercises"):
+                    import json as _json
+                    prev_next_block = _json.loads(row["next_exercises"]) if isinstance(row["next_exercises"], str) else row["next_exercises"]
+                if prev_next_block:
+                    store_user_ai_data(
+                        username,
+                        {
+                            "exercises": json.dumps(prev_next_block),
+                        },
+                        parent_function="prefetch_next_exercises"
+                    )
+                print(f"\033[95m[DEBUG] Storing next_block for user {username}: {repr(next_block)}\033[0m", flush=True)
                 store_user_ai_data(
                     username,
                     {
@@ -705,10 +532,12 @@ def prefetch_next_exercises(username: str) -> None:
                 print_db_exercise_blocks(username, "prefetch_next_exercises", parent_function="prefetch_next_exercises")
 
         except Exception as e:
+            print(f"\033[91m[DEBUG] Error in prefetch_next_exercises for user {username}: {e}\033[0m", flush=True)
             logger.error(f"Error in prefetch_next_exercises for user {username}: {e}")
             logger.error(f"Traceback: {traceback.format_exc()}")
 
-    Thread(target=run).start()
+    import threading
+    threading.Thread(target=run, daemon=True).start()
 
 
 def get_recent_exercise_questions(username, limit=20):
@@ -758,5 +587,166 @@ def log_generated_sentences(block, parent_function=None):
         return
     title = block.get("title", "(no title)")
     print(f"{parent_str}Generated block title: {title}", flush=True)
+
+
+def _generate_blocks_for_new_user(username: str) -> dict | None:
+    """Generate two unique blocks for new users by using different generation contexts."""
+
+    # Generate first block with empty history
+    ai_block = _create_ai_block(username)
+    log_generated_sentences(ai_block, parent_function="_generate_blocks_for_new_user: current_block")
+    if not ai_block or not ai_block.get("exercises"):
+        return None
+
+    # Assign unique block_id
+    ai_block["block_id"] = get_next_block_id()
+
+    # Extract questions from first block and update history
+    new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
+    safe_new_questions = new_questions if new_questions is not None else []
+
+    # Update exercise history and ensure it's committed
+    update_exercise_history(username, safe_new_questions)
+    log_ai_user_data(username, "after updating exercise history")
+
+    # Force a small delay to ensure DB commit is visible
+    import time
+    time.sleep(0.1)
+
+    # Generate second block with different approach to ensure uniqueness
+    next_block = _create_ai_block_with_variation(username, safe_new_questions)
+    log_generated_sentences(next_block, parent_function="_generate_blocks_for_new_user: next_block")
+
+    if next_block and next_block.get("exercises"):
+        # Assign unique block_id
+        next_block["block_id"] = get_next_block_id()
+        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
+        filtered = [ex for ex in exercises if ex.get("question") not in safe_new_questions]
+        next_block["exercises"] = filtered[:3]
+        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
+        for ex in exercises:
+            ex.pop("correctAnswer", None)
+
+    # Store both blocks
+    store_user_ai_data(
+        username,
+        {
+            "exercises": json.dumps(ai_block),
+            "next_exercises": json.dumps(next_block or {}),
+            "exercises_updated_at": datetime.datetime.now().isoformat(),
+        },
+        parent_function="_generate_blocks_for_new_user"
+    )
+    print_db_exercise_blocks(username, "_generate_blocks_for_new_user", parent_function="_generate_blocks_for_new_user")
+    # print_exercise_block_sentences(ai_block, "_generate_blocks_for_new_user: current_block", color="\033[92m")  # Green
+    # print_exercise_block_sentences(next_block, "_generate_blocks_for_new_user: next_block", color="\033[96m")    # Cyan
+    log_ai_user_data(username, "after storing both blocks")
+
+    return ai_block
+
+def _generate_blocks_for_existing_user(username: str) -> dict | None:
+    """Generate blocks for existing users with proper history management."""
+
+    # Generate first block
+    ai_block = _create_ai_block(username)
+    log_generated_sentences(ai_block, parent_function="_generate_blocks_for_existing_user: current_block")
+    if not ai_block or not ai_block.get("exercises"):
+        return None
+
+    # Assign unique block_id
+    ai_block["block_id"] = get_next_block_id()
+
+    # Extract questions from first block and update history
+    new_questions = [ex.get("question") for ex in ai_block.get("exercises", []) if ex.get("question")]
+    safe_new_questions = new_questions if new_questions is not None else []
+
+    # Update exercise history and ensure it's committed
+    update_exercise_history(username, safe_new_questions)
+    log_ai_user_data(username, "after updating exercise history")
+
+    # Force a small delay to ensure DB commit is visible
+    import time
+    time.sleep(0.1)
+
+    # Get the updated recent questions to ensure uniqueness
+    recent_questions = get_recent_exercise_questions(username)
+    safe_recent_questions = recent_questions if recent_questions is not None else []
+
+    # Generate next block with updated history
+    next_block = _create_ai_block(username)
+    log_generated_sentences(next_block, parent_function="_generate_blocks_for_existing_user: next_block")
+
+    if next_block and next_block.get("exercises"):
+        # Assign unique block_id
+        next_block["block_id"] = get_next_block_id()
+        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
+        filtered = [ex for ex in exercises if ex.get("question") not in safe_recent_questions]
+        next_block["exercises"] = filtered[:3]
+        exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
+        for ex in exercises:
+            ex.pop("correctAnswer", None)
+
+    # Store both blocks
+    store_user_ai_data(
+        username,
+        {
+            "exercises": json.dumps(ai_block),
+            "next_exercises": json.dumps(next_block or {}),
+            "exercises_updated_at": datetime.datetime.now().isoformat(),
+        },
+        parent_function="_generate_blocks_for_existing_user"
+    )
+    print_db_exercise_blocks(username, "_generate_blocks_for_existing_user", parent_function="_generate_blocks_for_existing_user")
+    print_exercise_block_sentences(ai_block, "_generate_blocks_for_existing_user: current_block", color="\033[92m")  # Green
+    print_exercise_block_sentences(next_block, "_generate_blocks_for_existing_user: next_block", color="\033[96m")    # Cyan
+    log_ai_user_data(username, "after storing both blocks")
+
+    return ai_block
+
+
+def generate_training_exercises(username: str) -> dict | None:
+    """Generate current and next exercise blocks and store them. Ensures next block is unique."""
+    # Check if this is a new user (no exercise history)
+    recent_questions = get_recent_exercise_questions(username)
+    if recent_questions is None:
+        recent_questions = []
+    is_new_user = len(recent_questions) == 0
+
+    if is_new_user:
+        return _generate_blocks_for_new_user(username)
+    else:
+        return _generate_blocks_for_existing_user(username)
+
+
+def print_db_exercise_blocks(username, parent_str, parent_function=None):
+    # Print block_id instead of title for current and next blocks
+    row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
+    current_block = None
+    next_block = None
+    if row:
+        if row.get("exercises"):
+            try:
+                current_block = json.loads(row["exercises"])
+            except Exception:
+                pass
+        if row.get("next_exercises"):
+            try:
+                next_block = json.loads(row["next_exercises"])
+            except Exception:
+                pass
+    if parent_function:
+        parent_str = f"[{parent_function}] "
+    else:
+        parent_str = ""
+    print(f"{parent_str}DB: Current block id:", flush=True)
+    if current_block and isinstance(current_block, dict):
+        print(f"  block_id: {current_block.get('block_id', '(none)')}", flush=True)
+    else:
+        print("  (none)", flush=True)
+    print(f"{parent_str}DB: Next block id:", flush=True)
+    if next_block and isinstance(next_block, dict):
+        print(f"  block_id: {next_block.get('block_id', '(none)')}", flush=True)
+    else:
+        print("  (none)", flush=True)
 
 
