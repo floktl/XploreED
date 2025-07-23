@@ -46,6 +46,7 @@ def analyze_word_ai(word: str) -> Optional[dict]:
         return None
 
     user_prompt = analyze_word_prompt(word)
+    print(f"\033[92m[MISTRAL CALL] analyze_word_ai\033[0m", flush=True)
 
     try:
         resp = send_prompt(

@@ -84,6 +84,7 @@ def generate_feedback_prompt(
     )
 
     messages = make_prompt(user_prompt["content"], FEEDBACK_SYSTEM_PROMPT)
+    print(f"\033[92m[MISTRAL CALL] generate_feedback_prompt\033[0m", flush=True)
     try:
         resp = send_request(messages, temperature=0.3)
         if resp.status_code == 200:

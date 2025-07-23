@@ -378,7 +378,8 @@ def generate_new_exercises(
     )
 
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
-    response = send_request(messages)
+    print(f"\033[92m[MISTRAL CALL] generate_new_exercises\033[0m", flush=True)
+    response = send_request(messages, temperature=0.7)
 
     if response.status_code == 200:
         content = response.json()["choices"][0]["message"]["content"]

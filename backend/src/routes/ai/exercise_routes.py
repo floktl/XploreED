@@ -47,27 +47,15 @@ def _strip_final_punct(s):
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
     """Evaluate a submitted exercise block and save results."""
-    import time
-    start_time = time.time()
     username = require_user()
-    # print(f"[Exercise Submit] Starting submission for user {username}, block {block_id}", flush=True)
-
     data = request.get_json() or {}
-    # logger.info(f"Received submission data for user {username}: {json.dumps(data, indent=2)}")
-
     exercises, answers, error = parse_submission_data(data)
     if error:
         logger.error(f"Parse submission data error for user {username}: {error}")
         return jsonify({"msg": error}), 400
-
-    # print(f"[Exercise Submit] Parsed data, evaluating {len(exercises)} exercises", flush=True)
-
     # Evaluate first exercise immediately for fast feedback
     first_exercise = exercises[0] if exercises else None
     first_answer = answers.get(str(first_exercise.get("id")), "") if first_exercise else ""
-
-    # print(f"[Exercise Submit] Evaluating first exercise immediately", flush=True)
-    first_eval_start = time.time()
     first_evaluation = None
     if first_exercise and first_answer:
         # Evaluate just the first exercise
@@ -97,9 +85,6 @@ def submit_ai_exercise(block_id):
     else:
         first_result_with_details = None
 
-    first_eval_end = time.time()
-    # print(f"[Exercise Submit] First exercise evaluation took {first_eval_end - first_eval_start:.2f}s", flush=True)
-
     # Capture the Flask app before starting background thread
     from flask import current_app
     app = current_app._get_current_object()
@@ -127,9 +112,6 @@ def submit_ai_exercise(block_id):
             "is_correct": None,  # Will be updated when background processing completes
             "loading": True  # Flag to show loading state
         })
-
-    total_time = time.time() - start_time
-    # print(f"[Exercise Submit] Immediate response time: {total_time:.2f}s", flush=True)
 
     return jsonify({
         "pass": False,  # Will be updated in background
@@ -194,18 +176,12 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
 
     try:
         # Evaluate all exercises (including the first one again for consistency)
-        eval_start = time.time()
         evaluation, id_map = evaluate_exercises(exercises, answers)
-        eval_end = time.time()
-        # print(f"[Background] Full evaluation took {eval_end - eval_start:.2f}s", flush=True)
-
         if not evaluation:
             print(f"[Background] Evaluation failed for user {username}", flush=True)
             return
 
         # Process basic results first (fast)
-        basic_start = time.time()
-        # print(f"[Background] Processing basic results for {len(evaluation.get('results', []))} results", flush=True)
         basic_results = []
         for i, res in enumerate(evaluation.get("results", [])):
             try:
@@ -244,12 +220,7 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
             "ready_index": 1,  # Only the first result is ready initially
             "exercise_order": exercise_ids
         }))
-        basic_end = time.time()
-        # print(f"[Background] Basic results stored in {basic_end - basic_start:.2f}s for user {username}", flush=True)
 
-        # Generate summary (fast)
-        feedback_start = time.time()
-        # print(f"[Background] Generating summary", flush=True)
         try:
             summary = compile_score_summary(exercises, answers, id_map)
             passed = bool(evaluation.get("pass"))
@@ -267,18 +238,8 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
                 "summary": summary
             })
             redis_client.set(result_key, json.dumps(partial))
-
-            feedback_end = time.time()
-            # print(f"[Background] Summary generated in {feedback_end - feedback_start:.2f}s for user {username}", flush=True)
-
         except Exception as e:
             print(f"[Background] Error generating summary: {e}", flush=True)
-
-        # Now add alternatives and explanations in parallel (optional, don't block)
-        # print(f"[Background] Starting parallel alternatives/explanations generation", flush=True)
-        # print(f"[Background] About to call _add_alternatives_and_explanations_parallel for {len(basic_results)} results", flush=True)
-        # print(f"[Background] Basic results: {basic_results}", flush=True)
-
         # Start the alternatives/explanations task in a new thread with app context
         from threading import Thread
         from flask import current_app
@@ -289,15 +250,9 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
                 _add_alternatives_and_explanations_parallel(username, block_id, basic_results, exercises, answers)
 
         Thread(target=alternatives_task, daemon=True).start()
-        # print(f"[Background] Background task for alternatives/explanations started", flush=True)
-
         # Test if background task is working by adding a simple marker
         test_key = f"{username}_{block_id}_test"
         redis_client.set(test_key, json.dumps({"test": "background_task_started", "timestamp": time.time()}))
-        # print(f"[Background] Added test marker: {test_key}", flush=True)
-
-        bg_end = time.time()
-        print(f"[Background] Main processing completed in {bg_end - bg_start:.2f}s for user {username}", flush=True)
 
     except Exception as e:
         print(f"[Background] Error in _evaluate_remaining_exercises_async: {e}", flush=True)
@@ -307,39 +262,28 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
     """Background task to add alternatives and explanations in sequential order."""
     import time
     parallel_start = time.time()
-    # print(f"[Background] 🚀 SEQUENTIAL FUNCTION CALLED for user {username}", flush=True)
-    # print(f"[Background] Processing exercises in order to maintain sequence!", flush=True)
-    # print(f"[Background] Received {len(basic_results)} basic results to process", flush=True)
-
     try:
         # Process exercises sequentially to maintain order
         for i, res in enumerate(basic_results):
             try:
-                # print(f"[Background] 🎯 Processing exercise {i+1}/{len(basic_results)} in order", flush=True)
-
                 correct_answer = res.get("correct_answer")
                 ex = next((e for e in exercises if str(e.get("id")) == str(res.get("id"))), None)
                 user_answer = answers.get(str(res.get("id")), "")
-
                 enhanced_result = dict(res)
 
                 # Generate alternatives (simple, no parallel processing for now)
                 try:
-                    # print(f"[Background] Generating alternatives for result {i} (exercise {i+1})", flush=True)
                     alternatives = generate_alternative_answers(correct_answer)[:3] if correct_answer else []
                     enhanced_result["alternatives"] = alternatives if isinstance(alternatives, list) else []
-                    #   print(f"[Background] Generated {len(enhanced_result['alternatives'])} alternatives for result {i}", flush=True)
                 except Exception as e:
                     print(f"[Background] Error generating alternatives for result {i}: {e}", flush=True)
                     enhanced_result["alternatives"] = []
 
                 # Generate explanation (simple, no parallel processing for now)
                 try:
-                    # print(f"[Background] Generating explanation for result {i} (exercise {i+1})", flush=True)
                     question = ex.get("question") if ex else ""
                     explanation = generate_explanation(question, user_answer, correct_answer) if correct_answer else ""
                     enhanced_result["explanation"] = explanation if isinstance(explanation, str) else ""
-                    # print(f"[Background] Generated explanation for result {i} (length: {len(enhanced_result['explanation'])}): {enhanced_result['explanation'][:100]}...", flush=True)
                 except Exception as e:
                     print(f"[Background] Error generating explanation for result {i}: {e}", flush=True)
                     enhanced_result["explanation"] = ""
@@ -366,8 +310,6 @@ def _add_alternatives_and_explanations_parallel(username, block_id, basic_result
         result_key = f"exercise_result:{username}:{block_id}"
         partial = json.loads(redis_client.get(result_key))
         redis_client.set(result_key, json.dumps(partial))
-        # print(f"[Background] All alternatives/explanations processed and ready flag set for user {username}", flush=True)
-
     except Exception as e:
         print(f"[Background] ❌ CRITICAL ERROR in _add_alternatives_and_explanations_parallel: {e}", flush=True)
         import traceback
