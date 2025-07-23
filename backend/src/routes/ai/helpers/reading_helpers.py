@@ -59,7 +59,7 @@ def generate_reading_exercise(
             )
 
     user_prompt = reading_exercise_prompt(style, cefr_level, extra)
-
+    print(f"\033[92m[MISTRAL CALL] generate_reading_exercise\033[0m", flush=True)
     try:
         resp = send_prompt(
             "You are a helpful German teacher.",

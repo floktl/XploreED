@@ -71,6 +71,7 @@ def evaluate_translation_ai(english: str, reference: str, student: str):
     # print(f"[evaluate_translation_ai] Inputs: english='{english}', reference='{reference}', student='{student}'", flush=True)
 
     user_prompt = evaluate_translation_prompt(english, student)
+    print(f"\033[92m[MISTRAL CALL] evaluate_translation_ai\033[0m", flush=True)
 
     try:
         resp = send_prompt(
@@ -100,6 +101,7 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
         return {}
 
     user_prompt = quality_evaluation_prompt(english, reference, student, topics)
+    print(f"\033[92m[MISTRAL CALL] evaluate_topic_qualities_ai\033[0m", flush=True)
 
 
     try:
