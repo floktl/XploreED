@@ -95,6 +95,7 @@ def generate_feedback_prompt(
 
 
 def print_db_exercise_blocks(username, context, parent_function=None):
+    # Debug print removed to avoid DB lock issues
     from database import fetch_one
     row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
     parent_str = f"[{parent_function}] " if parent_function else ""
@@ -104,19 +105,19 @@ def print_db_exercise_blocks(username, context, parent_function=None):
     try:
         exercises = row.get("exercises")
         next_exercises = row.get("next_exercises")
-        print(f"\033[95m{parent_str}[{context}] DB: Current block:\033[0m", flush=True)
+        print(f"\033[95m{parent_str}[{context}] DB: Current block id:\033[0m", flush=True)
         if exercises:
             import json as _json
             block = _json.loads(exercises) if isinstance(exercises, str) else exercises
-            title = block.get("title") if isinstance(block, dict) else None
-            print(f"\033[92m  Title: {title if title else '(no title)'}\033[0m", flush=True)
+            block_id = block.get("block_id") if isinstance(block, dict) else None
+            print(f"\033[92m  block_id: {block_id if block_id else '(none)'}\033[0m", flush=True)
         else:
             print("  (none)", flush=True)
-        print(f"\033[95m{parent_str}[{context}] DB: Next block:\033[0m", flush=True)
+        print(f"\033[95m{parent_str}[{context}] DB: Next block id:\033[0m", flush=True)
         if next_exercises:
             block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
-            title = block.get("title") if isinstance(block, dict) else None
-            print(f"\033[96m  Title: {title if title else '(no title)'}\033[0m", flush=True)
+            block_id = block.get("block_id") if isinstance(block, dict) else None
+            print(f"\033[96m  block_id: {block_id if block_id else '(none)'}\033[0m", flush=True)
         else:
             print("  (none)", flush=True)
     except Exception as e:
@@ -125,6 +126,7 @@ def print_db_exercise_blocks(username, context, parent_function=None):
 
 def store_user_ai_data(username: str, data: dict, parent_function=None):
     """Insert or update cached AI data for a user."""
+    # Debug print removed to avoid DB lock issues
     title = data.get('title') if isinstance(data, dict) else None
     print(f"\033[34m[AI-HELPERS] Entering: [store_user_ai_data], parent_function={repr(parent_function)}\033[0m", flush=True)
     exists = select_one(
@@ -147,7 +149,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     Returns ``None`` if the Mistral API did not return a valid block.
     """
-    print(f"\033[34m[AI-HELPERS] Entering: [_create_ai_block] username={repr(username)}\033[0m", flush=True)
+    # Debug print removed to avoid DB lock issues
     import logging
     logger = logging.getLogger(__name__)
 
