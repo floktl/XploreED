@@ -50,7 +50,7 @@ def evaluate_answers_with_ai(
 
     try:
         # logger.info(f"Sending evaluation request to Mistral API")
-        print(f"\033[92m[MISTRAL CALL] evaluate_answers_with_ai\033[0m", flush=True)
+        # print(f"\033[92m[MISTRAL CALL] evaluate_answers_with_ai\033[0m", flush=True)
         resp = send_prompt(
             "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher.",
             user_prompt,
@@ -88,7 +88,7 @@ def generate_alternative_answers(correct_sentence: str) -> list:
         ),
     }
     try:
-        print(f"\033[92m[MISTRAL CALL] generate_alternative_answers\033[0m", flush=True)
+        # print(f"\033[92m[MISTRAL CALL] generate_alternative_answers\033[0m", flush=True)
         resp = send_prompt(
             "You are a helpful German teacher.",
             prompt,
@@ -130,7 +130,7 @@ def generate_explanation(question: str, user_answer: str, correct_answer: str) -
         ),
     }
     try:
-        print(f"\033[92m[MISTRAL CALL] generate_explanation\033[0m", flush=True)
+        # print(f"\033[92m[MISTRAL CALL] generate_explanation\033[0m", flush=True)
         resp = send_prompt(
             "You are a helpful German teacher.",
             prompt,

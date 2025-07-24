@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 @ai_bp.route("/training-exercises", methods=["POST"])
 def get_training_exercises():
-    print("\033[92m[ENTER] get_training_exercises\033[0m", flush=True)
+    # print("\033[92m[ENTER] get_training_exercises\033[0m", flush=True)
     """Get training exercises for the user."""
     username = require_user()
     # logger.info(f"Training exercises request from user: {username}")
@@ -46,7 +46,7 @@ def get_training_exercises():
                     # logger.info(f"Found cached next exercises for user {username}")
                     # logger.info(f"Successfully loaded cached next exercises for user {username}")
                     block_id = cached_next.get('block_id') if cached_next and isinstance(cached_next, dict) else None
-                    print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
+                    # print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
                     return jsonify(cached_next)
             except Exception as e:
                 logger.error(f"Failed to parse cached next exercises for user {username}: {e}")
@@ -67,11 +67,11 @@ def get_training_exercises():
                 run_in_background(prefetch_next_exercises, username)
                 # logger.info(f"Returning preloaded training exercises for user {username}")
                 block_id = ai_block.get('block_id') if ai_block and isinstance(ai_block, dict) else None
-                print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
+                # print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
                 return jsonify(ai_block)
         except Exception as e:
             logger.error(f"Failed to generate training exercises for user {username}")
-            print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+            # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
             return jsonify({"error": "Failed to generate exercises"}), 500
     else:
         # logger.info(f"User {username} has no answers, checking cached exercises")
@@ -88,7 +88,7 @@ def get_training_exercises():
                 if cached_current and cached_current.get("exercises"):
                     # logger.info(f"Found cached exercises for user {username}")
                     block_id = cached_current.get('block_id') if cached_current and isinstance(cached_current, dict) else None
-                    print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
+                    # print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
                     return jsonify(cached_current)
             except Exception as e:
                 logger.error(f"Failed to parse cached exercises for user {username}: {e}")
@@ -98,11 +98,11 @@ def get_training_exercises():
             ai_block = generate_training_exercises(username)
             if ai_block and ai_block.get("exercises"):
                 # logger.info(f"Returning cached exercises for user {username}")
-                print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+                # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
                 return jsonify(ai_block)
         except Exception as e:
             logger.error(f"Failed to generate training exercises for user {username}")
-            print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+            # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
             return jsonify({"error": "Failed to generate exercises"}), 500
 
     # logger.info(f"Generating new training exercises for user {username}")
@@ -110,14 +110,14 @@ def get_training_exercises():
         ai_block = generate_training_exercises(username)
         if ai_block and ai_block.get("exercises"):
             # logger.info(f"Returning new training exercises for user {username}")
-            print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+            # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
             return jsonify(ai_block)
         else:
-            print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+            # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
             return jsonify({"error": "No exercises generated"}), 500
     except Exception as e:
         logger.error(f"Failed to generate training exercises for user {username}")
-        print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
+        # print("\033[91m[EXIT] get_training_exercises\033[0m", flush=True)
         return jsonify({"error": "Failed to generate exercises"}), 500
 
 

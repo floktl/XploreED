@@ -9,7 +9,7 @@ def stream_ai_answer(context: str) -> Response:
     """Stream a long answer from Mistral as Server-Sent Events, using context-aware prompt."""
     def generate():
         try:
-            print(f"\033[92m[MISTRAL CALL] stream_ai_answer\033[0m", flush=True)
+            # print(f"\033[92m[MISTRAL CALL] stream_ai_answer\033[0m", flush=True)
             with send_prompt(
                 "You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.",
                 {"role": "user", "content": context},

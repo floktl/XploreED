@@ -46,7 +46,7 @@ def generate_feedback_prompt(
     topic_memory: list | None = None,
 ) -> str:
     """Return short feedback summary for the user."""
-    print(f"\033[34m[AI-HELPERS] Entering: [generate_feedback_prompt] summary={repr(summary)}, vocab={repr(vocab)}, topic_memory={repr(topic_memory)}\033[0m", flush=True)
+    # print(f"\033[34m[AI-HELPERS] Entering: [generate_feedback_prompt] summary={repr(summary)}, vocab={repr(vocab)}, topic_memory={repr(topic_memory)}\033[0m", flush=True)
     correct = summary.get("correct", 0)
     total = summary.get("total", 0)
     mistakes = summary.get("mistakes", [])
@@ -84,7 +84,7 @@ def generate_feedback_prompt(
     )
 
     messages = make_prompt(user_prompt["content"], FEEDBACK_SYSTEM_PROMPT)
-    print(f"\033[92m[MISTRAL CALL] generate_feedback_prompt\033[0m", flush=True)
+    # print(f"\033[92m[MISTRAL CALL] generate_feedback_prompt\033[0m", flush=True)
     try:
         resp = send_request(messages, temperature=0.3)
         if resp.status_code == 200:
@@ -129,7 +129,7 @@ def store_user_ai_data(username: str, data: dict, parent_function=None):
     """Insert or update cached AI data for a user."""
     # Debug print removed to avoid DB lock issues
     title = data.get('title') if isinstance(data, dict) else None
-    print(f"\033[34m[AI-HELPERS] Entering: [store_user_ai_data], parent_function={repr(parent_function)}\033[0m", flush=True)
+    # print(f"\033[34m[AI-HELPERS] Entering: [store_user_ai_data], parent_function={repr(parent_function)}\033[0m", flush=True)
     exists = select_one(
         "ai_user_data",
         columns="username",
@@ -138,11 +138,11 @@ def store_user_ai_data(username: str, data: dict, parent_function=None):
     )
     if exists:
         update_row("ai_user_data", data, "username = ?", (username,))
-        print_db_exercise_blocks(username, "store_user_ai_data: update_row", parent_function)
+        # print_db_exercise_blocks(username, "store_user_ai_data: update_row", parent_function)
     else:
         data_with_user = {"username": username, **data}
         insert_row("ai_user_data", data_with_user)
-        print_db_exercise_blocks(username, "store_user_ai_data: insert_row", parent_function)
+        # print_db_exercise_blocks(username, "store_user_ai_data: insert_row", parent_function)
 
 
 def _create_ai_block(username: str) -> dict | None:
@@ -343,7 +343,7 @@ def print_ai_user_data_titles(username):
         if next_exercises:
             block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
             next_id = block.get("block_id") if isinstance(block, dict) else None
-        print(f"\033[92m| [DEBUG] Current block id: {current_id if current_id else '(none)'}\033[0m", flush=True)
-        print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
+        # print(f"\033[92m| [DEBUG] Current block id: {current_id if current_id else '(none)'}\033[0m", flush=True)
+        # print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
     except Exception as e:
         print(f"\033[91m| [DEBUG] Error printing ai_user_data block ids for user {username}: {e}\033[0m", flush=True)

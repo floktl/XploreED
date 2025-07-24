@@ -928,13 +928,6 @@ export default function AIExerciseBlock({
 
     return (
         <div style={{ position: 'relative' }}>
-            <button
-                onClick={handleDebug}
-                style={{ position: 'absolute', top: 8, right: 8, zIndex: 50 }}
-                className="px-3 py-1 bg-gray-800 text-white rounded hover:bg-gray-700 text-xs shadow"
-            >
-                Debug
-            </button>
             {/* Sticky progress bar directly under header, above Card */}
             {exercises.length > 0 && (
                 <div className="sticky top-[64px] z-30 w-full bg-gray-900 dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>
