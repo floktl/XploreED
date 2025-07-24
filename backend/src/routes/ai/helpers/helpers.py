@@ -343,7 +343,7 @@ def print_ai_user_data_titles(username):
         if next_exercises:
             block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
             next_id = block.get("block_id") if isinstance(block, dict) else None
-        # print(f"\033[92m| [DEBUG] Current block id: {current_id if current_id else '(none)'}\033[0m", flush=True)
-        # print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
+        print(f"\033[92m| [DEBUG] Current block id: {current_id if current_id else '(none)'}\033[0m", flush=True)
+        print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
     except Exception as e:
         print(f"\033[91m| [DEBUG] Error printing ai_user_data block ids for user {username}: {e}\033[0m", flush=True)
