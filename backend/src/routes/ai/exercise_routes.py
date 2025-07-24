@@ -46,6 +46,7 @@ def _strip_final_punct(s):
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
+    print("\033[94m[ENTER] submit_ai_exercise\033[0m", flush=True)
     """Evaluate a submitted exercise block and save results."""
     username = require_user()
     data = request.get_json() or {}
@@ -113,6 +114,7 @@ def submit_ai_exercise(block_id):
             "loading": True  # Flag to show loading state
         })
 
+    print("\033[91m[EXIT] submit_ai_exercise\033[0m", flush=True)
     return jsonify({
         "pass": False,  # Will be updated in background
         "summary": {"correct": 0, "total": len(exercises), "mistakes": []},  # Will be updated in background
@@ -123,11 +125,13 @@ def submit_ai_exercise(block_id):
 
 @ai_bp.route("/ai-exercise/<block_id>/results", methods=["GET"])
 def get_ai_exercise_results(block_id):
+    print("\033[96m[ENTER] get_ai_exercise_results\033[0m", flush=True)
     """Get the latest results for an exercise block, including alternatives and explanations."""
     username = require_user()
     result_key = f"exercise_result:{username}:{block_id}"
     result_json = redis_client.get(result_key)
     if not result_json:
+        print("\033[91m[EXIT] get_ai_exercise_results\033[0m", flush=True)
         return jsonify({
             "status": "processing",
             "message": "Alternatives and explanations are being generated in the background"
@@ -160,6 +164,7 @@ def get_ai_exercise_results(block_id):
                 "explanation": "",
                 "loading": True
             })
+    print("\033[91m[EXIT] get_ai_exercise_results\033[0m", flush=True)
     return jsonify({
         "status": "processing" if ready_index < len(visible_results) else "complete",
         "results": visible_results,

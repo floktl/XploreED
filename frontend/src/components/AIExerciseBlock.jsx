@@ -207,73 +207,23 @@ export default function AIExerciseBlock({
             return () => setFooterActions(null);
         }
 
-        if (!passed) {
-            if (submitting) {
-                setFooterActions(
-                    <div className="flex items-center gap-2">
-                        <Spinner />
-                        <span className="italic">Processing...</span>
-                    </div>
-                );
-            } else {
-                setFooterActions(
-                    <div className="flex gap-2">
-                        <Button
-                            type="button"
-                            variant="danger"
-                            size="sm"
-                            className="rounded-full"
-                            onClick={handleArgue}
-                            disabled={arguing}
-                        >
-                            {arguing ? "Thinking..." : "Argue AI"}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            className="rounded-full"
-                            onClick={handleNext}
-                            disabled={loading || arguing}
-                        >
-                            {loading ? "Loading..." : "Continue"}
-                        </Button>
-                    </div>
-                );
-            }
-            return () => setFooterActions(null);
-        }
-
+        // Only show Continue button after submission and when all feedback is loaded
         setFooterActions(
-            <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                className="rounded-full"
-                onClick={() => handleNext(true)}
-                disabled={loading}
-            >
-                {loading ? "Loading..." : "More Exercises"}
-            </Button>
-        );
-
-        return () => setFooterActions(null);
-    }, [submitted, passed, submitting, loading, arguing, answers]);
-
-    useEffect(() => {
-        if (submitted) {
-            setFooterActions(
+            allFeedbackLoaded ? (
                 <Button
                     type="button"
                     variant="primary"
                     onClick={handleNext}
                     className="w-full"
+                    disabled={loading}
                 >
-                    Continue
+                    {loading ? "Loading..." : "Continue"}
                 </Button>
-            );
-        }
-    }, [submitted]);
+            ) : null
+        );
+
+        return () => setFooterActions(null);
+    }, [submitted, passed, submitting, loading, arguing, answers, evaluation, exercises.length]);
 
     const fetchNext = async (payload = {}) => {
         setLoadingNext(true);
@@ -802,6 +752,9 @@ export default function AIExerciseBlock({
         return true;
     };
 
+    // Helper: Check if all feedback is loaded
+    const allFeedbackLoaded = exercises.length > 0 && exercises.every(ex => evaluation[ex.id] && !evaluation[ex.id].loading);
+
     // Update navigation functions
     const disableNext = !isFeedbackLoaded(currentExerciseIndex);
     const disablePrev = currentExerciseIndex === 0;
@@ -1072,10 +1025,20 @@ export default function AIExerciseBlock({
             <Card className="space-y-4 pb-20">
 
                 {stage === 1 && current.title && !submitted && (
-                    <h3 className="text-xl font-semibold">{current.title}</h3>
+                    <>
+                        <h3 className="text-xl font-semibold">{current.title}</h3>
+                        <div className="text-xs text-gray-400 font-mono mt-1">
+                            Block ID: {current.block_id || blockId}
+                        </div>
+                    </>
                 )}
                 {instructions && !submitted && <p>{instructions}</p>}
-
+                {/* Always show block ID under instructions, even if no title */}
+                {((current && current.block_id) || blockId) && (
+                    <div className="text-xs text-gray-400 font-mono mt-1">
+                        Block ID: {current?.block_id || blockId}
+                    </div>
+                )}
 
 
                                                                         {/* Current Exercise Display */}

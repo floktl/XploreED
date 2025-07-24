@@ -111,16 +111,16 @@ def print_db_exercise_blocks(username, context, parent_function=None):
             import json as _json
             block = _json.loads(exercises) if isinstance(exercises, str) else exercises
             block_id = block.get("block_id") if isinstance(block, dict) else None
-            print(f"\033[92m  block_id: {block_id if block_id else '(none)'}\033[0m", flush=True)
+            print(f"{block_id if block_id else '(none)'}", flush=True)
         else:
-            print("  (none)", flush=True)
+            print("(none)", flush=True)
         print(f"\033[95m{parent_str}[{context}] DB: Next block id:\033[0m", flush=True)
         if next_exercises:
             block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
             block_id = block.get("block_id") if isinstance(block, dict) else None
-            print(f"\033[96m  block_id: {block_id if block_id else '(none)'}\033[0m", flush=True)
+            print(f"{block_id if block_id else '(none)'}", flush=True)
         else:
-            print("  (none)", flush=True)
+            print("(none)", flush=True)
     except Exception as e:
         print(f"\033[91m{parent_str}[{context}] Error printing DB blocks: {e}\033[0m", flush=True)
 
@@ -238,7 +238,6 @@ def _create_ai_block(username: str) -> dict | None:
             except Exception as e:
                 logger.error(f"_create_ai_block: Failed to generate additional exercises for user {username}: {e}")
 
-    random.shuffle(ai_block["exercises"])
     ai_block["exercises"] = ai_block["exercises"][:3]  # Take exactly 3 exercises
 
     for ex in ai_block.get("exercises", []):

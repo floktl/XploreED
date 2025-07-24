@@ -453,7 +453,6 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
 
     exercises = ai_block.get("exercises", [])
 
-    random.shuffle(exercises)
     ai_block["exercises"] = exercises[:3]
 
     for ex in ai_block.get("exercises", []):
