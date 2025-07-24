@@ -378,7 +378,7 @@ def generate_new_exercises(
     )
 
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
-    print(f"\033[92m[MISTRAL CALL] generate_new_exercises\033[0m", flush=True)
+    # print(f"\033[92m[MISTRAL CALL] generate_new_exercises\033[0m", flush=True)
     response = send_request(messages, temperature=0.7)
 
     if response.status_code == 200:
@@ -464,30 +464,30 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
 def prefetch_next_exercises(username: str) -> None:
     """Generate and store a new next exercise block asynchronously, ensuring uniqueness."""
     from routes.ai.helpers.helpers import print_ai_user_data_titles
-    print_ai_user_data_titles(username)
+    # print_ai_user_data_titles(username)
     def run():
         try:
-            print(f"\033[95m[DEBUG] prefetch_next_exercises: username={repr(username)}\033[0m", flush=True)
+            # print(f"\033[95m[DEBUG] prefetch_next_exercises: username={repr(username)}\033[0m", flush=True)
             # Get recent questions first to ensure we have the latest
             recent_questions = get_recent_exercise_questions(username)
-            print(f"\033[94m[DEBUG] recent_questions={repr(recent_questions)}\033[0m", flush=True)
+            # print(f"\033[94m[DEBUG] recent_questions={repr(recent_questions)}\033[0m", flush=True)
 
             # Create AI block for user {username}
             next_block = _create_ai_block(username)
             if next_block is not None:
                 next_block["block_id"] = get_next_block_id()
             # Log the block_id instead of the title
-            print(f"[prefetch_next_exercises: next_block] Generated block id: {next_block.get('block_id', '(none)')}", flush=True)
-            log_generated_sentences(next_block, parent_function="prefetch_next_exercises: next_block")
+            # print(f"[prefetch_next_exercises: next_block] Generated block id: {next_block.get('block_id', '(none)')}", flush=True)
+            # log_generated_sentences(next_block, parent_function="prefetch_next_exercises: next_block")
 
             if next_block and isinstance(next_block, dict) and "exercises" in next_block:
                 exercises = next_block["exercises"] if next_block and isinstance(next_block.get("exercises"), list) else []
-                print(f"\033[92m[DEBUG] exercises (before filtering)={repr(exercises)}\033[0m", flush=True)
+                # print(f"\033[92m[DEBUG] exercises (before filtering)={repr(exercises)}\033[0m", flush=True)
                 filtered = [ex for ex in exercises if ex.get("question") not in (recent_questions if recent_questions is not None else [])]
-                print(f"\033[93m[DEBUG] filtered exercises={repr(filtered)}\033[0m", flush=True)
+                # print(f"\033[93m[DEBUG] filtered exercises={repr(filtered)}\033[0m", flush=True)
 
                 # Debug print right before changing the next block
-                print_ai_user_data_titles(username)
+                # print_ai_user_data_titles(username)
                 # Print current block id in DB (not exercises)
                 from database import fetch_one
                 row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
@@ -496,10 +496,10 @@ def prefetch_next_exercises(username: str) -> None:
                     import json as _json
                     block = _json.loads(row["exercises"]) if isinstance(row["exercises"], str) else row["exercises"]
                     current_id = block.get("block_id") if isinstance(block, dict) else None
-                print(f"\033[35m[DEBUG] Current block id in DB: {current_id if current_id else '(none)'}\033[0m", flush=True)
-                print(f"\033[91m[DEBUG] filtered (after shuffle)={repr(filtered)}\033[0m", flush=True)
+                # print(f"\033[35m[DEBUG] Current block id in DB: {current_id if current_id else '(none)'}\033[0m", flush=True)
+                # print(f"\033[91m[DEBUG] filtered (after shuffle)={repr(filtered)}\033[0m", flush=True)
                 next_block["exercises"] = filtered[:3]
-                print(f"\033[96m[DEBUG] next_block (after filtering)={repr(next_block)}\033[0m", flush=True)
+                # print(f"\033[96m[DEBUG] next_block (after filtering)={repr(next_block)}\033[0m", flush=True)
             else:
                 print("\033[91m[prefetch_next_exercises] WARNING: next_block is None or invalid, skipping DB update.\033[0m", flush=True)
                 next_block = None
@@ -521,7 +521,7 @@ def prefetch_next_exercises(username: str) -> None:
                         },
                         parent_function="prefetch_next_exercises"
                     )
-                print(f"\033[95m[DEBUG] Storing next_block for user {username}: {repr(next_block)}\033[0m", flush=True)
+                # print(f"\033[95m[DEBUG] Storing next_block for user {username}: {repr(next_block)}\033[0m", flush=True)
                 store_user_ai_data(
                     username,
                     {
@@ -529,7 +529,7 @@ def prefetch_next_exercises(username: str) -> None:
                     },
                     parent_function="prefetch_next_exercises"
                 )
-                print_db_exercise_blocks(username, "prefetch_next_exercises", parent_function="prefetch_next_exercises")
+                # print_db_exercise_blocks(username, "prefetch_next_exercises", parent_function="prefetch_next_exercises")
 
         except Exception as e:
             print(f"\033[91m[DEBUG] Error in prefetch_next_exercises for user {username}: {e}\033[0m", flush=True)
@@ -637,10 +637,10 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
         },
         parent_function="_generate_blocks_for_new_user"
     )
-    print_db_exercise_blocks(username, "_generate_blocks_for_new_user", parent_function="_generate_blocks_for_new_user")
+    # print_db_exercise_blocks(username, "_generate_blocks_for_new_user", parent_function="_generate_blocks_for_new_user")
     # print_exercise_block_sentences(ai_block, "_generate_blocks_for_new_user: current_block", color="\033[92m")  # Green
     # print_exercise_block_sentences(next_block, "_generate_blocks_for_new_user: next_block", color="\033[96m")    # Cyan
-    log_ai_user_data(username, "after storing both blocks")
+    # log_ai_user_data(username, "after storing both blocks")
 
     return ai_block
 
@@ -696,10 +696,10 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
         },
         parent_function="_generate_blocks_for_existing_user"
     )
-    print_db_exercise_blocks(username, "_generate_blocks_for_existing_user", parent_function="_generate_blocks_for_existing_user")
-    print_exercise_block_sentences(ai_block, "_generate_blocks_for_existing_user: current_block", color="\033[92m")  # Green
-    print_exercise_block_sentences(next_block, "_generate_blocks_for_existing_user: next_block", color="\033[96m")    # Cyan
-    log_ai_user_data(username, "after storing both blocks")
+    # print_db_exercise_blocks(username, "_generate_blocks_for_existing_user", parent_function="_generate_blocks_for_existing_user")
+    # print_exercise_block_sentences(ai_block, "_generate_blocks_for_existing_user: current_block", color="\033[92m")  # Green
+    # print_exercise_block_sentences(next_block, "_generate_blocks_for_existing_user: next_block", color="\033[96m")    # Cyan
+    # log_ai_user_data(username, "after storing both blocks")
 
     return ai_block
 

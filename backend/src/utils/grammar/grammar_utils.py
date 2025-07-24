@@ -23,7 +23,7 @@ def detect_language_topics(text: str) -> list[str]:
     """Use Mistral to detect grammar topics present in ``text``."""
 
     user_prompt = detect_topics_prompt(text)
-    print(f"\033[92m[MISTRAL CALL] detect_language_topics\033[0m", flush=True)
+    # # print(f"\033[92m[MISTRAL CALL] detect_language_topics\033[0m", flush=True)
 
     try:
         resp = send_prompt(

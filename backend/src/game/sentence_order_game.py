@@ -132,7 +132,7 @@ def generate_ai_sentence(username=None):
         topics = [row["topic"] for row in topic_rows] if topic_rows else []
 
         user_prompt = game_sentence_prompt(vocab_list, topics)
-        print(f"\033[92m[MISTRAL CALL] generate_ai_sentence\033[0m", flush=True)
+        # print(f"\033[92m[MISTRAL CALL] generate_ai_sentence\033[0m", flush=True)
         resp = send_prompt(
             "You are a helpful German teacher.",
             user_prompt,

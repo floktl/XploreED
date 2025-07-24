@@ -35,7 +35,7 @@ def _strip_final_punct(s):
 
 @ai_bp.route("/ai-feedback/progress/<session_id>", methods=["GET"])
 def get_feedback_progress(session_id):
-    print("\033[92m[ENTER] get_feedback_progress\033[0m", flush=True)
+    # print("\033[92m[ENTER] get_feedback_progress\033[0m", flush=True)
     """Get the current progress of AI feedback generation."""
     username = require_user()
     progress_json = redis_client.get(f"feedback_progress:{session_id}")
@@ -43,12 +43,12 @@ def get_feedback_progress(session_id):
         return jsonify({"error": "Session not found"}), 404
     progress = json.loads(progress_json)
     # print(f"[Feedback Progress] Frontend requested progress for session {session_id}: {progress['percentage']}% - {progress['status']} - Completed: {progress.get('completed', False)}")
-    print("\033[91m[EXIT] get_feedback_progress\033[0m", flush=True)
+    # print("\033[91m[EXIT] get_feedback_progress\033[0m", flush=True)
     return jsonify(progress)
 
 @ai_bp.route("/ai-feedback/generate-with-progress", methods=["POST"])
 def generate_ai_feedback_with_progress():
-    print("\033[93m[ENTER] generate_ai_feedback_with_progress\033[0m", flush=True)
+    # print("\033[93m[ENTER] generate_ai_feedback_with_progress\033[0m", flush=True)
     """Generate AI feedback with progress tracking."""
     username = require_user()
     session_id = str(uuid.uuid4())
@@ -279,12 +279,12 @@ def generate_ai_feedback_with_progress():
                 progress = {"completed": True, "result": json.loads(result_json)}
                 redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
     run_in_background(run_feedback_generation)
-    print("\033[91m[EXIT] generate_ai_feedback_with_progress\033[0m", flush=True)
+    # print("\033[91m[EXIT] generate_ai_feedback_with_progress\033[0m", flush=True)
     return jsonify({"session_id": session_id})
 
 @ai_bp.route("/ai-feedback/result/<session_id>", methods=["GET"])
 def get_feedback_result(session_id):
-    print("\033[95m[ENTER] get_feedback_result\033[0m", flush=True)
+    # print("\033[95m[ENTER] get_feedback_result\033[0m", flush=True)
     """Get the final result of AI feedback generation."""
     username = require_user()
     # print(f"[Feedback Result] Frontend requested result for session {session_id}")
@@ -296,12 +296,12 @@ def get_feedback_result(session_id):
     if not result.get("ready"):
         print(f"[Feedback Result] Session {session_id} not completed yet")
         return jsonify({"error": "Generation not complete"}), 400
-    print("\033[91m[EXIT] get_feedback_result\033[0m", flush=True)
+    # print("\033[91m[EXIT] get_feedback_result\033[0m", flush=True)
     return jsonify(result)
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
 def get_ai_feedback():
-    print("\033[91m[ENTER] get_ai_feedback\033[0m", flush=True)
+    # print("\033[91m[ENTER] get_ai_feedback\033[0m", flush=True)
     """Return the list of cached AI feedback entries."""
     username = require_user()
     # print("Fetching AI feedback for:", username, flush=True)
@@ -312,13 +312,13 @@ def get_ai_feedback():
     except (FileNotFoundError, json.JSONDecodeError):
         feedback_data = []
 
-    print("\033[91m[EXIT] get_ai_feedback\033[0m", flush=True)
+    # print("\033[91m[EXIT] get_ai_feedback\033[0m", flush=True)
     return jsonify(feedback_data)
 
 
 @ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
 def get_ai_feedback_item(feedback_id):
-    print("\033[96m[ENTER] get_ai_feedback_item\033[0m", flush=True)
+    # print("\033[96m[ENTER] get_ai_feedback_item\033[0m", flush=True)
     """Return a single cached feedback item by ID."""
     username = require_user()
     # print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
@@ -332,13 +332,13 @@ def get_ai_feedback_item(feedback_id):
     item = next((fb for fb in feedback_data if str(fb.get("id")) == str(feedback_id)), None)
     if not item:
         return jsonify({"msg": "Feedback not found"}), 404
-    print("\033[91m[EXIT] get_ai_feedback_item\033[0m", flush=True)
+    # print("\033[91m[EXIT] get_ai_feedback_item\033[0m", flush=True)
     return jsonify(item)
 
 
 @ai_bp.route("/ai-feedback", methods=["POST"])
 def generate_ai_feedback():
-    print("\033[94m[ENTER] generate_ai_feedback\033[0m", flush=True)
+    # print("\033[94m[ENTER] generate_ai_feedback\033[0m", flush=True)
     """Generate AI feedback from submitted exercise results."""
     username = require_user()
     # print("Generating feedback for user:", username, flush=True)
@@ -415,7 +415,7 @@ def generate_ai_feedback():
             {"exercises": all_exercises},
         )
 
-        print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
+        # print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
         return jsonify({
             "feedbackPrompt": feedback_prompt,
             "summary": summary,
@@ -429,5 +429,5 @@ def generate_ai_feedback():
         feedback_data = []
 
     feedback = random.choice(feedback_data) if feedback_data else {}
-    print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
+    # print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
     return jsonify(feedback)
