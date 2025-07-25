@@ -19,6 +19,8 @@ export default function Settings() {
     const [success, setSuccess] = useState("");
     const [language, setLanguage] = useState("en");
     const [showDelete, setShowDelete] = useState(false);
+    const debugEnabled = useAppStore((state) => state.debugEnabled);
+    const toggleDebugEnabled = useAppStore((state) => state.toggleDebugEnabled);
 
     const navigate = useNavigate();
     const darkMode = useAppStore((state) => state.darkMode);
@@ -115,6 +117,13 @@ export default function Settings() {
                         <label className="block font-semibold">Theme</label>
                         <Button variant="secondary" onClick={toggleDarkMode}>
                             {darkMode ? "Switch to Light" : "Switch to Dark"}
+                        </Button>
+                    </div>
+                    {/* Debug Toggle */}
+                    <div className="space-y-2">
+                        <label className="block font-semibold">Debug Features</label>
+                        <Button variant="secondary" onClick={toggleDebugEnabled}>
+                            {debugEnabled ? "Disable Debug" : "Enable Debug"}
                         </Button>
                     </div>
 

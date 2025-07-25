@@ -2,12 +2,14 @@
 import { create } from "zustand";
 
 const initialDark = JSON.parse(localStorage.getItem("darkMode") || "false");
+const initialDebug = JSON.parse(localStorage.getItem("debugEnabled") || "false");
 
 const useAppStore = create((set, get) => ({
     username: null,
     isAdmin: false,
     adminPassword: null,
     darkMode: initialDark,
+    debugEnabled: initialDebug,
     currentLevel: 0,
     isLoading: true,
     backgroundActivity: [], // [{id, label, status}]
@@ -24,9 +26,19 @@ const useAppStore = create((set, get) => ({
             localStorage.setItem("darkMode", JSON.stringify(val));
             return { darkMode: val };
         }),
+    toggleDebugEnabled: () =>
+        set((state) => {
+            const val = !state.debugEnabled;
+            localStorage.setItem("debugEnabled", JSON.stringify(val));
+            return { debugEnabled: val };
+        }),
     setDarkMode: (val) => {
         localStorage.setItem("darkMode", JSON.stringify(val));
         set({ darkMode: val });
+    },
+    setDebugEnabled: (val) => {
+        localStorage.setItem("debugEnabled", JSON.stringify(val));
+        set({ debugEnabled: val });
     },
     setIsLoading: (val) => set({ isLoading: val }),
     addBackgroundActivity: (activity) => set((state) => ({
@@ -46,12 +58,14 @@ const useAppStore = create((set, get) => ({
 
     resetStore: () => {
         localStorage.removeItem("username");
+        localStorage.removeItem("debugEnabled");
         set({
             username: null,
             isAdmin: false,
             isLoading: false,
             adminPassword: null,
             currentLevel: 0,
+            debugEnabled: false,
         });
     },
 
