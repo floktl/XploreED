@@ -177,7 +177,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
             <div style={{
                 ...modalStyle,
                 background: darkMode ? 'rgba(10,16,32,0.98)' : 'transparent',
-            }} className="z-50 animate-fade-in overflow-visible shadow-xl relative" onClick={e => e.stopPropagation()}>
+            }} className="z-[1001] animate-fade-in overflow-visible shadow-xl relative" onClick={e => e.stopPropagation()}>
                 {/* Small red X close button */}
                 <button
                     onClick={onClose}

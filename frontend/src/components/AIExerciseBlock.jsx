@@ -819,6 +819,8 @@ export default function AIExerciseBlock({
         setShowDebugModal(true);
     };
 
+    const debugEnabled = useAppStore((s) => s.debugEnabled);
+
     if (mode !== "student") {
         return <Card className="text-center py-4">🤖 AI Exercise</Card>;
     }
@@ -1052,14 +1054,16 @@ export default function AIExerciseBlock({
                 {stage === 1 && current.title && !submitted && (
                     <>
                         <h3 className="text-xl font-semibold">{current.title}</h3>
-                        <div className="text-xs text-gray-400 font-mono mt-1">
-                            Block ID: {current.block_id || blockId}
-                        </div>
+                        {debugEnabled && (
+                            <div className="text-xs text-gray-400 font-mono mb-2">
+                                Block ID: {current?.block_id || blockId}
+                            </div>
+                        )}
                     </>
                 )}
                 {instructions && !submitted && <p>{instructions}</p>}
                 {/* Always show block ID under instructions, even if no title */}
-                {((current && current.block_id) || blockId) && (
+                {debugEnabled && (
                     <div className="text-xs text-gray-400 font-mono mt-1">
                         Block ID: {current?.block_id || blockId}
                     </div>
