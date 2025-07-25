@@ -30,10 +30,12 @@ export default function NameInput() {
   const [showTest, setShowTest] = useState(false);
   const [showChoice, setShowChoice] = useState(false);
   const [showLevelSelect, setShowLevelSelect] = useState(false);
+  const [enableDebug, setEnableDebug] = useState(false);
   const [autoSignupPrompt, setAutoSignupPrompt] = useState(false);
   const navigate = useNavigate();
 
   const setUsername = useAppStore((state) => state.setUsername);
+  const setDebugEnabled = useAppStore((state) => state.setDebugEnabled);
   const setIsAdmin = useAppStore((state) => state.setIsAdmin);
   const darkMode = useAppStore((state) => state.darkMode);
 
@@ -68,6 +70,7 @@ export default function NameInput() {
         setUsername(me.username);
         setIsAdmin(role.is_admin);
         localStorage.setItem("username", me.username);
+        setDebugEnabled(enableDebug);
         setShowChoice(true);
         return;
       } else {
@@ -242,6 +245,19 @@ export default function NameInput() {
                   <Lock className="w-5 h-5" />
                 </span>
               </div>
+            )}
+            {isSignup && (
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        checked={enableDebug}
+                        onChange={(e) => setEnableDebug(e.target.checked)}
+                        id="debug-checkbox"
+                    />
+                    <label htmlFor="debug-checkbox" className="text-sm">
+                        Enable debug features
+                    </label>
+                </div>
             )}
 
             {error && <Alert type="warning">{error}</Alert>}

@@ -27,6 +27,7 @@ export default function Header({ minimal = false }) {
     const currentLevel = useAppStore((state) => state.currentLevel ?? 0);
     const avatarLetter = username ? username.charAt(0).toUpperCase() : "?";
     const backgroundActivity = useAppStore((state) => state.backgroundActivity);
+    const debugEnabled = useAppStore((state) => state.debugEnabled);
     const [showActivity, setShowActivity] = React.useState(false);
     const [showDebugModal, setShowDebugModal] = React.useState(false);
     const [debugResult, setDebugResult] = React.useState(null);
@@ -276,6 +277,7 @@ export default function Header({ minimal = false }) {
                             <Menu className="w-4 h-4" />
                             About
                         </button>
+                        {debugEnabled && (
                         <button
                             onClick={() => setShowDebugModal(true)}
                             className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/40 dark:text-yellow-400 transition w-full text-left"
@@ -283,6 +285,7 @@ export default function Header({ minimal = false }) {
                             <span className="w-5 h-5 rounded-full bg-yellow-400 text-white flex items-center justify-center text-xs font-semibold">!</span>
                             Debug: Delete All User Data
                         </button>
+                        )}
                         <button
                             onClick={handleLogout}
                             className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 dark:text-red-400 transition w-full text-left"
@@ -293,7 +296,7 @@ export default function Header({ minimal = false }) {
                     </Dropdown>
                 </div>
             </div>
-            {showDebugModal && (
+            {debugEnabled && showDebugModal && (
                 <Modal onClose={() => { setShowDebugModal(false); setDebugResult(null); }}>
                     {!debugResult ? (
                         <div>
