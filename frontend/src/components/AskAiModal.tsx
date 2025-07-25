@@ -169,20 +169,6 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
         flexDirection: "column",
     };
     let arrowStyle: React.CSSProperties = {};
-    if (btnRect) {
-        // Center modal horizontally above the button, and place tail at the bottom center
-        modalStyle.bottom = window.innerHeight - btnRect.top + 56;
-        arrowStyle = {
-            position: "absolute",
-            left: "50%",
-            transform: "translateX(-50%)",
-            top: "100%",
-            width: 48,
-            height: 24,
-            zIndex: 101,
-            pointerEvents: 'none',
-        };
-    }
 
     return (
         <>
@@ -266,9 +252,9 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                             style={{
                                                 display: 'flex',
                                                 flexDirection: 'column',
-                                                alignItems: 'flex-start',
+                                                alignItems: 'center',
                                                 justifyContent: 'center',
-                                                textAlign: 'left',
+                                                textAlign: 'center',
                                                 backdropFilter: 'blur(6px)',
                                                 WebkitBackdropFilter: 'blur(6px)',
                                                 background: darkMode ? '#181f2a' : 'rgba(40,44,60,0.92)',
@@ -297,20 +283,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                         h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
                                                         strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                         em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
-                                                        table: ({node, ...props}) => (
-                                                            <div className="markdown-table-wrapper" style={{overflowX: 'auto'}}>
-                                                                <table
-                                                                    className="border my-2"
-                                                                    style={{
-                                                                        background: darkMode ? '#1a2332' : '#fff',
-                                                                        color: darkMode ? '#f8fafc' : '#222',
-                                                                        borderCollapse: 'collapse',
-                                                                        width: '100%'
-                                                                    }}
-                                                                    {...props}
-                                                                />
-                                                            </div>
-                                                        ),
+                                                        table: ({node, ...props}) => <div className="markdown-table-wrapper" style={{overflowX: 'auto'}}><table className="border border-blue-200 my-2" style={{width: '100%'}} {...props} /></div>,
                                                         th: ({node, isHeader, ...props}) => {
                                                             // Remove isHeader from props before spreading
                                                             const { isHeader: _h, ...rest } = props;
@@ -387,9 +360,9 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                 style={{
                                                     display: 'flex',
                                                     flexDirection: 'column',
-                                                    alignItems: 'flex-start', // left-align content
+                                                    alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    textAlign: 'left', // left-align text
+                                                    textAlign: 'center',
                                                     backdropFilter: 'blur(6px)',
                                                     WebkitBackdropFilter: 'blur(6px)',
                                                     background: 'rgba(255,255,255,0.75)',
@@ -421,7 +394,7 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                                                             h3: ({node, ...props}) => <h3 className="font-semibold text-base mt-2 mb-1" {...props} />,
                                                             strong: ({node, ...props}) => <strong className="font-bold text-blue-900" {...props} />,
                                                             em: ({node, ...props}) => <em className="italic text-blue-700" {...props} />,
-                                                            table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" {...props} /></div>,
+                                                            table: ({node, ...props}) => <div className="markdown-table-wrapper"><table className="border border-blue-200 my-2" style={{width: '100%'}} {...props} /></div>,
                                                             th: ({node, isHeader, ...props}) => {
                                                                 const { isHeader: _h, ...rest } = props;
                                                                 return (
@@ -519,15 +492,6 @@ export default function AskAiModal({ onClose, btnRect }: Props) {
                         <Send className="w-5 h-5" />
                     </button>
                 </form>
-                {/* Speech bubble tail (unified with modal) */}
-                {btnRect && (
-                    <svg style={arrowStyle} viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 0 Q24 32 48 0" fill="rgba(255,255,255,0.38)" filter="url(#shadow)" />
-                        <filter id="shadow" x="-10" y="0" width="68" height="34">
-                            <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.10" />
-                        </filter>
-                    </svg>
-                )}
                 </div>
             </div>
         </>
