@@ -16,11 +16,11 @@ export default function Modal({ onClose, children }) {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
             <div
                 ref={modalRef}
                 className={clsx(
-                    "w-full max-w-3xl p-6 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]",
+                    "w-full max-w-3xl p-6 rounded-lg shadow-lg overflow-y-auto max-h-[90vh] mx-4",
                     darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"
                 )}
             >

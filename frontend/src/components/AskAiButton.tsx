@@ -48,7 +48,7 @@ export default function AskAiButton() {
                     right: 16,
                     bottom: bottomOffset,
                     zIndex: 1000,
-                    display: "flex",
+                    display: open ? "none" : "flex",
                     flexDirection: "row",
                     gap: 8,
                 }}
