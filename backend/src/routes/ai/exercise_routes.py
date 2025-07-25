@@ -218,13 +218,15 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
         # Store basic results in Redis with ready=False
         result_key = f"exercise_result:{username}:{block_id}"
         exercise_ids = [str(ex.get("id")) for ex in exercises]
-        redis_client.set(result_key, json.dumps({
+        result = {
             "results": basic_results,
             "pass": bool(evaluation.get("pass")),
             "summary": {"correct": 0, "total": len(exercises), "mistakes": []},
             "ready_index": 1,  # Only the first result is ready initially
             "exercise_order": exercise_ids
-        }))
+        }
+        redis_client.set(result_key, json.dumps(result))
+        print(f"[DEBUG] Wrote evaluation result for user={username} block_id={block_id}: {str(result)[:300]}", flush=True)
 
         try:
             summary = compile_score_summary(exercises, answers, id_map)

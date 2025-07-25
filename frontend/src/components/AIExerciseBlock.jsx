@@ -13,6 +13,7 @@ import {
     sendSupportFeedback,
     getEnhancedResults,
     lookupVocabWord,
+    getEvaluationStatus,
 } from "../api";
 import diffWords from "../utils/diffWords";
 import ReportExerciseModal from "./ReportExerciseModal";
@@ -20,6 +21,7 @@ import useAppStore from "../store/useAppStore";
 import FeedbackBlock from "./FeedbackBlock";
 import VocabDetailModal from "./VocabDetailModal";
 import Modal from "./UI/Modal";
+import Alert from "./UI/Alert";
 
 function renderClickableText(text, onWordClick) {
   if (!text) return null;
@@ -98,6 +100,9 @@ export default function AIExerciseBlock({
 
     // Add notFoundModal state for vocab lookup
     const [notFoundModal, setNotFoundModal] = useState(null);
+
+    const [feedbackTimeout, setFeedbackTimeout] = useState(false);
+    const [showTimeoutError, setShowTimeoutError] = useState(false);
 
     const answersRef = useRef(answers);
 
@@ -207,9 +212,9 @@ export default function AIExerciseBlock({
             return () => setFooterActions(null);
         }
 
-        // Only show Continue button after submission and when all feedback is loaded
+        // Only show Continue button after submission and when all feedback is loaded or after timeout
         setFooterActions(
-            allFeedbackLoaded ? (
+            (allFeedbackLoaded || feedbackTimeout) ? (
                 <Button
                     type="button"
                     variant="primary"
@@ -223,7 +228,7 @@ export default function AIExerciseBlock({
         );
 
         return () => setFooterActions(null);
-    }, [submitted, passed, submitting, loading, arguing, answers, evaluation, exercises.length]);
+    }, [submitted, passed, submitting, loading, arguing, answers, evaluation, exercises.length, feedbackTimeout]);
 
     const fetchNext = async (payload = {}) => {
         setLoadingNext(true);
@@ -373,6 +378,8 @@ export default function AIExerciseBlock({
 
         const startEnhancedResultsPolling = () => {
             setEnhancedResultsLoading(true);
+            setFeedbackTimeout(false);
+            setShowTimeoutError(false);
 
             const pollInterval = setInterval(async () => {
                 try {
@@ -382,6 +389,8 @@ export default function AIExerciseBlock({
                         setEnhancedResults(enhancedData.results);
                         setEnhancedResultsLoading(false);
                         clearInterval(pollInterval);
+                        clearTimeout(timeoutId);
+                        setFeedbackTimeout(false);
 
                         // Update the evaluation map with enhanced data
                         const enhancedMap = {};
@@ -455,11 +464,15 @@ export default function AIExerciseBlock({
                 }
             }, 1000); // Poll every 1 second to match backend timing
 
-            // Stop polling after 15 seconds to avoid infinite polling
-            setTimeout(() => {
+            let timeoutId = setTimeout(() => {
                 clearInterval(pollInterval);
                 setEnhancedResultsLoading(false);
-            }, 15000); // Reduced from 30000 to 15000
+                const allDone = Object.values(evaluation).every(res => !res?.loading ?? true);
+                if (!allDone) {
+                    setFeedbackTimeout(true);
+                    setShowTimeoutError(true);
+                }
+            }, 15000);
         };
     };
 
@@ -791,20 +804,19 @@ export default function AIExerciseBlock({
         };
     }, [current, answers, evaluation, submitted, isComplete, stage, blockId, setCurrentPageContent, clearCurrentPageContent]);
 
-    // Add debug function
+    // Remove debugStatus and showDebugStatus state
+
+    const [showDebugModal, setShowDebugModal] = useState(false);
+
     const handleDebug = async () => {
-        try {
-            // Replace with your actual API endpoint for fetching ai_user_data
-            const response = await fetch('/api/ai_user_data');
-            if (!response.ok) throw new Error('Failed to fetch ai_user_data');
-            const data = await response.json();
-            const currentTitle = data?.exercises && typeof data.exercises === 'object' ? data.exercises.title : null;
-            const nextTitle = data?.next_exercises && typeof data.next_exercises === 'object' ? data.next_exercises.title : null;
-            console.log(`Current block title: ${currentTitle || '(none)'}`);
-            console.log(`Next block title: ${nextTitle || '(none)'}`);
-        } catch (err) {
-            console.error('Debug fetch error:', err);
-        }
+        // Print all feedback-related variables to the console
+        console.log("[DEBUG] evaluation:", evaluation);
+        console.log("[DEBUG] enhancedResults:", enhancedResults);
+        console.log("[DEBUG] submissionStatus:", submissionStatus);
+        console.log("[DEBUG] feedbackTimeout:", feedbackTimeout);
+        console.log("[DEBUG] submitted:", submitted);
+        console.log("[DEBUG] loading:", loading);
+        setShowDebugModal(true);
     };
 
     if (mode !== "student") {
@@ -928,6 +940,26 @@ export default function AIExerciseBlock({
 
     return (
         <div style={{ position: 'relative' }}>
+            {showDebugModal && (
+                <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 1000, minWidth: 260, maxWidth: 340 }} className="bg-gray-900 text-white rounded shadow-lg p-4 border border-blue-600">
+                    <div className="flex justify-between items-center mb-2">
+                        <h2 className="text-base font-bold">Frontend Feedback Debug</h2>
+                        <button
+                            className="ml-2 px-2 py-1 bg-blue-700 text-white rounded hover:bg-blue-800 text-xs"
+                            onClick={() => setShowDebugModal(false)}
+                        >
+                            Close
+                        </button>
+                    </div>
+                    <p className="text-xs">See console for all feedback variables.</p>
+                </div>
+            )}
+            {showTimeoutError && (
+                <Alert type="error">
+                    Feedback is taking too long to load. You can continue, but some feedback may be missing.
+                    <button className="ml-4 underline" onClick={() => setShowTimeoutError(false)}>Dismiss</button>
+                </Alert>
+            )}
             {/* Sticky progress bar directly under header, above Card */}
             {exercises.length > 0 && (
                 <div className="sticky top-[64px] z-30 w-full bg-gray-900 dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>

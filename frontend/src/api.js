@@ -840,6 +840,16 @@ export const getEnhancedResults = async (blockId) => {
     }
 };
 
+export const getEvaluationStatus = async (blockId) => {
+  const res = await fetch(`${BASE_URL}/api/ai-exercise/${blockId}/results`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to fetch evaluation status");
+  return res.json();
+};
+
 export const lookupVocabWord = async (word) => {
   const res = await fetch(`${BASE_URL}/api/vocabulary/lookup?word=${encodeURIComponent(word)}`, {
     credentials: "include",
