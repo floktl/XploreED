@@ -25,14 +25,6 @@ export default function Modal({ onClose, children }) {
                 )}
             >
                 {children}
-                <div className="flex justify-end mt-6">
-                    <button
-                        className="px-4 py-2 rounded text-sm font-medium bg-red-500 hover:bg-red-600 text-white"
-                        onClick={onClose}
-                    >
-                        Close
-                    </button>
-                </div>
             </div>
         </div>
     );

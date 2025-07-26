@@ -4,7 +4,7 @@ import re
 import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
-from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt
+from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
 from database import update_row, select_one, fetch_one, insert_row
 from .algorithm import sm2
 from utils.ai.ai_api import send_prompt
@@ -60,7 +60,28 @@ def analyze_word_ai(word: str) -> Optional[dict]:
             if isinstance(data, dict):
                 return data
     except Exception as e:
-        print("[analyze_word_ai] Mistral error:", e)
+        print("Error in analyze_word_ai:", e)
+
+    # Fallback: try simple translation
+    try:
+        trans_prompt = translate_word_prompt(word)
+        resp = send_prompt(
+            "You are a helpful German translator.",
+            trans_prompt,
+            temperature=0.1,
+        )
+        if resp.status_code == 200:
+            translation = resp.json()["choices"][0]["message"]["content"].strip()
+            return {
+                "base_form": word,
+                "type": "unknown",
+                "article": None,
+                "translation": translation,
+                "info": "Fallback translation",
+            }
+    except Exception as e:
+        print("Error in fallback translation:", e)
+
     return None
 
 
@@ -198,22 +219,25 @@ def save_vocab(
         return normalized
 
     now = datetime.now().isoformat()
-    insert_row(
-        "vocab_log",
-        {
-            "username": username,
-            "vocab": normalized,
-            "translation": english_word,
-            "word_type": word_type,
-            "article": article,
-            "details": details,
-            "context": context,
-            "exercise": exercise,
-            "next_review": now,
-            "created_at": now,
-            "last_review": now,
-        },
-    )
+    try:
+        insert_row(
+            "vocab_log",
+            {
+                "username": username,
+                "vocab": normalized,
+                "translation": english_word,
+                "word_type": word_type,
+                "article": article,
+                "details": details,
+                "context": context,
+                "exercise": exercise,
+                "next_review": now,
+                "created_at": now,
+                "last_review": now,
+            },
+        )
+    except Exception as e:
+        return None
 
     return normalized
 

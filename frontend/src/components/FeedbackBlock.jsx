@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import diffWords from "../utils/diffWords";
 import Spinner from "./UI/Spinner";
-import { lookupVocabWord } from "../api";
+import { lookupVocabWord, searchVocabWithAI } from "../api";
 import VocabDetailModal from "./VocabDetailModal";
 
 function onlyWrongWords(userAnswer, correctAnswer) {
@@ -107,9 +107,24 @@ export default function FeedbackBlock({
 
   const handleWordClick = async (word) => {
     setVocabLoading(true);
-    const vocab = await lookupVocabWord(word);
-    setVocabLoading(false);
-    if (vocab) setVocabModal(vocab);
+    try {
+      // First try to lookup the word in existing vocabulary
+      let vocab = await lookupVocabWord(word);
+
+      if (vocab) {
+        setVocabModal(vocab);
+      } else {
+        // If not found, search with AI and save it
+        vocab = await searchVocabWithAI(word);
+        if (vocab) {
+          setVocabModal(vocab);
+        }
+      }
+    } catch (error) {
+      console.error("Error looking up vocabulary:", error);
+    } finally {
+      setVocabLoading(false);
+    }
   };
 
   return (

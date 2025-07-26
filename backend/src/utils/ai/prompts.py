@@ -99,9 +99,9 @@ def analyze_word_prompt(word: str) -> dict:
     return {
         "role": "user",
         "content": (
-            "Give dictionary info for the German word '" + word + "'.\n"
-            "Return JSON with keys base_form, type, article, translation, info."
-            " Use null for article if not a noun."
+            "Respond ONLY with a valid JSON object containing the following keys for the German word '" + word + "': "
+            "base_form (string), type (string like 'noun', 'verb', etc.), article (string or null), "
+            "translation (English translation string), info (short description string). Do not include any other text."
         ),
     }
 
@@ -206,4 +206,12 @@ def weakness_lesson_prompt(grammar: str, skill: str) -> dict:
             f"Explain the topic '{grammar}' ({skill})"
             "Return only valid HTML."
         ),
+    }
+
+
+def translate_word_prompt(word: str) -> dict:
+    """Return prompt for translating a single German word to English."""
+    return {
+        "role": "user",
+        "content": f"Translate the German word '{word}' to English. Respond ONLY with the translation string.",
     }
