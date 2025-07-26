@@ -858,11 +858,33 @@ export const lookupVocabWord = async (word) => {
   return await res.json();
 };
 
+export const searchVocabWithAI = async (word) => {
+  const res = await fetch(`${BASE_URL}/api/vocabulary/search-ai`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ word }),
+  });
+  if (!res.ok) return null;
+  return await res.json();
+};
+
 export const debugDeleteUserData = async () => {
   const res = await fetch(`${BASE_URL}/api/settings/debug-delete-user-data`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
+  return res.json();
+};
+
+export const reportExercise = async (blockId, exerciseId, message) => {
+  const res = await fetch(`${BASE_URL}/api/ai-exercise/report`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ blockId, exerciseId, message }),
+  });
+  if (!res.ok) throw new Error("Failed to report exercise");
   return res.json();
 };

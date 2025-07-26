@@ -14,6 +14,8 @@ import {
     getEnhancedResults,
     lookupVocabWord,
     getEvaluationStatus,
+    searchVocabWithAI,
+    reportExercise,
 } from "../api";
 import diffWords from "../utils/diffWords";
 import ReportExerciseModal from "./ReportExerciseModal";
@@ -97,8 +99,8 @@ export default function AIExerciseBlock({
 
     // Add vocabModal and setVocabModal for vocab lookup
     const [vocabModal, setVocabModal] = useState(null);
+    const [isNewVocab, setIsNewVocab] = useState(false);
 
-    // Add notFoundModal state for vocab lookup
     const [notFoundModal, setNotFoundModal] = useState(null);
 
     const [feedbackTimeout, setFeedbackTimeout] = useState(false);
@@ -775,12 +777,17 @@ export default function AIExerciseBlock({
     // Define the handler before the return
     const handleWordClick = async (word) => {
         setVocabLoading(true);
-        const vocab = await lookupVocabWord(word);
-        setVocabLoading(false);
-        if (vocab) {
-            setVocabModal(vocab);
-        } else {
-            setNotFoundModal(word);
+        setIsNewVocab(false);
+        try {
+            const vocab = await lookupVocabWord(word);
+            if (vocab) {
+                setIsNewVocab(!!vocab.is_new); // Only show 'New Vocab Learned' if backend says so
+                setVocabModal(vocab);
+            }
+        } catch (error) {
+            console.error("Error looking up vocabulary:", error);
+        } finally {
+            setVocabLoading(false);
         }
     };
 
@@ -1221,27 +1228,20 @@ export default function AIExerciseBlock({
                     onClose={() => setReportExerciseId(null)}
                 />
             )}
-            {/* Vocab Detail Modal */}
+            {vocabLoading && (
+                <Modal onClose={() => setVocabLoading(false)}>
+                    <div className="flex justify-center items-center py-8">
+                        <Spinner />
+                        <span className="ml-4 text-lg">Loading vocabulary...</span>
+                    </div>
+                </Modal>
+            )}
             {vocabModal && (
                 <VocabDetailModal
                     vocab={vocabModal}
                     onClose={() => setVocabModal(null)}
+                    title={isNewVocab ? "New Vocab Learned" : "Vocabulary Details"}
                 />
-            )}
-            {/* Not Found Modal */}
-            {notFoundModal && (
-                <Modal onClose={() => setNotFoundModal(null)}>
-                    <h2 className="text-lg font-bold mb-2">Word Not Found</h2>
-                    <p className="mb-2 text-sm break-words">
-                        <strong>{notFoundModal}</strong> was not found in your vocabulary.
-                    </p>
-                    <button
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                        onClick={() => setNotFoundModal(null)}
-                    >
-                        Close
-                    </button>
-                </Modal>
             )}
         </div>
     );

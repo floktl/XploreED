@@ -53,17 +53,15 @@ def profile():
         order_by="timestamp DESC",
     )
 
-    results = (
-        [
-            {
-                "level": row["level"],
-                "correct": bool(row["correct"]),
-                "answer": row["answer"],
-                "timestamp": row["timestamp"],
-            }
-            for row in rows or []
-        ]
-    )
+    results = [
+        {
+            "level": row["level"],
+            "correct": bool(row["correct"]),
+            "answer": row["answer"],
+            "timestamp": row["timestamp"],
+        }
+        for row in rows or []
+    ]
 
     return jsonify(results)
 
@@ -196,21 +194,7 @@ def get_topic_memory():
 
     rows = select_rows(
         "topic_memory",
-        columns=[
-            "id",
-            "grammar",
-            "topic",
-            "skill_type",
-            "context",
-            "lesson_content_id",
-            "ease_factor",
-            "intervall",
-            "next_repeat",
-            "repetitions",
-            "last_review",
-            "correct",
-            "quality",
-        ],
+        columns="id, grammar, topic, skill_type, context, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review, correct, quality",
         where="username = ?",
         params=(user,),
         order_by="datetime(next_repeat) ASC",
@@ -277,7 +261,7 @@ def user_level():
 
 @user_bp.route("/vocabulary/lookup", methods=["GET"])
 def lookup_vocab_word():
-    """Lookup a vocab word for the current user and return details if found."""
+    """Lookup a vocab word for the current user and return details if found, or create a new entry using AI."""
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
@@ -286,11 +270,9 @@ def lookup_vocab_word():
     if not word:
         return jsonify({"msg": "Missing word parameter"}), 400
 
-    # Normalize the word for lookup
-    from utils.spaced_repetition.vocab_utils import normalize_word
+    from utils.spaced_repetition.vocab_utils import normalize_word, vocab_exists, save_vocab
     norm_word, _, _ = normalize_word(word)
 
-    # Use string formatting for LIKE query (safe here because norm_word is normalized)
     like_query = (
         f"SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise "
         f"FROM vocab_log WHERE username = '{user}' AND LOWER(vocab) LIKE '%{norm_word.lower()}%'"
@@ -319,33 +301,88 @@ def lookup_vocab_word():
             columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
         )
     if not row:
-        # Fallback: use raw SQL LIKE result
         debug_rows_lower = fetch_custom(
             "SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ?",
             (user, f"%{word.lower()}%")
         )
         if debug_rows_lower:
             row = debug_rows_lower[0]
-    if not row:
-        # Debug: print all vocab entries for this user
-        all_entries = select_rows(
-            "vocab_log",
-            columns="rowid, vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
-            where="username = ?",
-            params=(user,),
-        )
-        for entry in all_entries:
-            pass # Removed logger.info(f"Entry rowid={entry['rowid']}: vocab='{entry['vocab']}', translation='{entry['translation']}', lower(translation)={entry['translation'].lower()}, repr={repr(entry['translation'])}")
-        # Debug: try raw SQL LIKE queries
-        debug_rows = fetch_custom(
-            "SELECT rowid, vocab, translation FROM vocab_log WHERE username = ? AND translation LIKE ?",
-            (user, f"%{word}%")
-        )
-        debug_rows_lower = fetch_custom(
-            "SELECT rowid, vocab, translation FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ?",
-            (user, f"%{word.lower()}%")
-        )
-        return jsonify({"msg": "Not found"}), 404
 
-    # Return all details for the vocab entry
-    return jsonify(dict(row))
+    if not row:
+        try:
+            original_exists = vocab_exists(user, word)
+            
+            saved_word = save_vocab(user, word, context="AI lookup", exercise="ai")
+            if saved_word:
+                row = fetch_one(
+                    "vocab_log",
+                    where_clause="WHERE username = ? AND LOWER(vocab) = ?",
+                    params=(user, saved_word.lower()),
+                    columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
+                )
+                if row:
+                    result = dict(row)
+                    is_new = not original_exists and saved_word != word
+                    result["is_new"] = is_new
+                    return jsonify(result)
+                else:
+                    return jsonify({"msg": "Failed to create vocab entry"}), 500
+            return jsonify({"msg": "Failed to create vocab entry"}), 500
+        except Exception as e:
+            return jsonify({"msg": "AI creation failed"}), 500
+
+    result = dict(row)
+    result["is_new"] = False
+    return jsonify(result)
+
+
+@user_bp.route("/vocabulary/search-ai", methods=["POST"])
+def search_vocab_ai():
+    """Search for a vocabulary word using AI and save it to the user's vocabulary."""
+    user = get_current_user()
+    if not user:
+        return jsonify({"msg": "Unauthorized"}), 401
+
+    data = request.get_json() or {}
+    word = data.get("word", "").strip()
+    if not word:
+        return jsonify({"msg": "Missing word parameter"}), 400
+
+    print(f"[DEBUG] Searching AI for word: {word} for user: {user}", flush=True)
+
+    # Check if word already exists in user's vocabulary
+    from utils.spaced_repetition.vocab_utils import vocab_exists, save_vocab
+    if vocab_exists(user, word):
+        print(f"[DEBUG] Word {word} already exists, fetching existing", flush=True)
+        # If it exists, return the existing entry
+        row = fetch_one(
+            "vocab_log",
+            where_clause="username = ? AND vocab = ?",
+            params=(user, word),
+            columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
+        )
+        if row:
+            print(f"[DEBUG] Returning existing row: {row}", flush=True)
+            return jsonify(dict(row))
+
+    # Use AI to analyze the word and save it
+    try:
+        saved_word = save_vocab(user, word, context="AI search", exercise="ai")
+        print(f"[DEBUG] save_vocab returned: {saved_word}", flush=True)
+        if saved_word:
+            # Fetch the newly saved entry
+            row = fetch_one(
+                "vocab_log",
+                where_clause="username = ? AND vocab = ?",
+                params=(user, saved_word),
+                columns="vocab, translation, article, word_type, details, created_at, next_review, context, exercise",
+            )
+            if row:
+                print(f"[DEBUG] Returning new row: {row}", flush=True)
+                return jsonify(dict(row))
+
+        print("[DEBUG] Failed to save word", flush=True)
+        return jsonify({"msg": "Failed to save word"}), 500
+    except Exception as e:
+        print(f"[DEBUG] Error searching vocab with AI: {e}", flush=True)
+        return jsonify({"msg": "AI search failed"}), 500
