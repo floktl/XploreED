@@ -144,6 +144,9 @@ def save_exercise_submission_async(
     exercises: list,
 ) -> None:
     """Save exercise submission and update spaced repetition in a thread. Also update exercise history."""
+    print("\033[95m🔄 [TOPIC MEMORY FLOW] 🔄 Starting save_exercise_submission_async for user: {} block: {}\033[0m".format(username, block_id), flush=True)
+    print("\033[94m📊 [TOPIC MEMORY FLOW] Processing {} exercises with {} answers\033[0m".format(len(exercises), len(answers)), flush=True)
+
     log_exercise_event("submission_start", username, {
         "block_id": block_id,
         "answers_count": len(answers),
@@ -154,36 +157,51 @@ def save_exercise_submission_async(
     from flask import current_app
     app = current_app._get_current_object()
     def run():
+        print("\033[93m⚡ [TOPIC MEMORY FLOW] ⚡ Background thread started for topic memory processing\033[0m", flush=True)
         with app.app_context():
             exercises_list = exercises if isinstance(exercises, list) else []
             try:
+                print("\033[96m🧠 [TOPIC MEMORY FLOW] 🧠 Calling process_ai_answers to update topic memory and vocabulary\033[0m", flush=True)
                 process_ai_answers(
                     username,
                     str(block_id),
                     answers,
                     {"exercises": exercises_list},
                 )
+                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ process_ai_answers completed successfully\033[0m", flush=True)
+
+                print("\033[96m📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement\033[0m", flush=True)
                 check_auto_level_up(username)
+                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed\033[0m", flush=True)
 
-                insert_row(
-                    "exercise_submissions",
-                    {
-                        "username": username,
-                        "block_id": str(block_id),
-                        "answers": json.dumps(answers),
-                    },
-                )
-
-                # Update exercise history with new questions
-                new_questions = [ex.get("question") for ex in exercises_list if ex.get("question")]
+                print("\033[96m📚 [TOPIC MEMORY FLOW] 📚 Updating exercise history\033[0m", flush=True)
+                new_questions = []
+                for ex in exercises_list:
+                    if isinstance(ex, dict) and ex.get("question"):
+                        new_questions.append(ex["question"])
                 update_exercise_history(username, new_questions)
+                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Exercise history updated\033[0m", flush=True)
 
-                log_exercise_event("submission_complete", username, {
-                    "block_id": block_id,
-                    "new_questions_count": len(new_questions)
-                })
+                print("\033[96m🔄 [TOPIC MEMORY FLOW] 🔄 Prefetching next exercises\033[0m", flush=True)
+                prefetch_next_exercises(username)
+                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Next exercises prefetched\033[0m", flush=True)
+
+                print("\033[95m🎉 [TOPIC MEMORY FLOW] 🎉 All topic memory and exercise processing completed successfully!\033[0m", flush=True)
+
+                # Set completion flag for frontend polling (simple in-memory approach)
+                try:
+                    # Use a simple in-memory completion tracking
+                    if not hasattr(current_app, 'topic_memory_completion'):
+                        current_app.topic_memory_completion = {}
+
+                    completion_key = f"{username}:{block_id}"
+                    current_app.topic_memory_completion[completion_key] = True
+                    print(f"\033[92m✅ [TOPIC MEMORY FLOW] ✅ Completion flag set for user {username} block {block_id}\033[0m", flush=True)
+                except Exception as e:
+                    print(f"\033[91m⚠️ [TOPIC MEMORY FLOW] ⚠️ Failed to set completion flag: {e}\033[0m", flush=True)
 
             except Exception as e:
+                print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Error during topic memory processing: {}\033[0m".format(str(e)), flush=True)
                 error_details = {
                     "error": str(e),
                     "traceback": traceback.format_exc(),
@@ -376,6 +394,9 @@ def generate_new_exercises(
         filtered_topic_memory,
         "\n".join(recent_questions),
     )
+
+    print(f"[DEBUG] Exercise generation prompt for user level {level_val} ({cefr_level}):", flush=True)
+    print(f"[DEBUG] Prompt content: {user_prompt['content']}", flush=True)
 
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
     # print(f"\033[92m[MISTRAL CALL] generate_new_exercises\033[0m", flush=True)

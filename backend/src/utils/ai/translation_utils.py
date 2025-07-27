@@ -126,8 +126,12 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
 
 def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int) -> None:
     """Insert or update one topic memory row based on ``quality``."""
-    correct = quality == 5
+    print("\033[95m💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: {} grammar: {} skill: {} quality: {}\033[0m".format(username, grammar, skill, quality), flush=True)
 
+    correct = quality == 5
+    print("\033[94m📊 [TOPIC MEMORY FLOW] 📊 Quality {} translates to correct: {}\033[0m".format(quality, correct), flush=True)
+
+    print("\033[96m🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry\033[0m", flush=True)
     existing = select_one(
         "topic_memory",
         columns=["id", "topic", "ease_factor", "intervall", "repetitions"],
@@ -136,12 +140,18 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
     )
 
     if existing:
+        print("\033[93m📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...\033[0m", flush=True)
+        print("\033[94m📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: {} Reps: {} Interval: {}\033[0m".format(
+            existing.get("ease_factor"), existing.get("repetitions"), existing.get("intervall")), flush=True)
+
         ef, reps, interval = sm2(
             quality,
             existing.get("ease_factor") or 2.5,
             existing.get("repetitions") or 0,
             existing.get("intervall") or 1,
         )
+        print("\033[92m📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: {} Reps: {} Interval: {}\033[0m".format(ef, reps, interval), flush=True)
+
         update_data = {
             "ease_factor": ef,
             "repetitions": reps,
@@ -153,30 +163,43 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
         }
         if not existing.get("topic"):
             update_data["topic"] = random.choice(DEFAULT_TOPICS)
+            print("\033[93m🎲 [TOPIC MEMORY FLOW] 🎲 Assigned random topic: {}\033[0m".format(update_data["topic"]), flush=True)
+
+        print("\033[96m💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: {}\033[0m".format(existing["id"]), flush=True)
         update_row("topic_memory", update_data, "id = ?", (existing["id"],))
+        print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry\033[0m", flush=True)
     else:
+        print("\033[93m🆕 [TOPIC MEMORY FLOW] 🆕 No existing entry found, creating new topic memory entry\033[0m", flush=True)
         ef, reps, interval = sm2(quality)
-        insert_row(
-            "topic_memory",
-            {
-                "username": username,
-                "grammar": grammar,
-                "topic": random.choice(DEFAULT_TOPICS),
-                "skill_type": skill,
-                "context": context,
-                "lesson_content_id": "translation_practice",
-                "ease_factor": ef,
-                "intervall": 0,
-                "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=0)).isoformat(),
-                "repetitions": reps,
-                "last_review": datetime.datetime.now().isoformat(),
-                "correct": int(correct),
-                "quality": quality,
-            },
-        )
+        print("\033[92m📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated initial values - EF: {} Reps: {} Interval: {}\033[0m".format(ef, reps, interval), flush=True)
+
+        topic = random.choice(DEFAULT_TOPICS)
+        print("\033[93m🎲 [TOPIC MEMORY FLOW] 🎲 Assigned random topic: {}\033[0m".format(topic), flush=True)
+
+        new_entry = {
+            "username": username,
+            "grammar": grammar,
+            "topic": topic,
+            "skill_type": skill,
+            "context": context,
+            "lesson_content_id": "translation_practice",
+            "ease_factor": ef,
+            "intervall": 0,
+            "next_repeat": (datetime.datetime.now() + datetime.timedelta(days=0)).isoformat(),
+            "repetitions": reps,
+            "last_review": datetime.datetime.now().isoformat(),
+            "correct": int(correct),
+            "quality": quality,
+        }
+
+        print("\033[96m💾 [TOPIC MEMORY FLOW] 💾 Inserting new topic memory entry\033[0m", flush=True)
+        insert_row("topic_memory", new_entry)
+        print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully created new topic memory entry\033[0m", flush=True)
 
     # check for automatic level advancement
+    print("\033[96m📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement\033[0m", flush=True)
     check_auto_level_up(username)
+    print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed\033[0m", flush=True)
 
 def update_topic_memory_translation(username: str, german: str, qualities: dict[str, int] | None = None) -> None:
     """Update translation topic memory using ``qualities`` if provided."""

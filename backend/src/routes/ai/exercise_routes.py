@@ -46,19 +46,26 @@ def _strip_final_punct(s):
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
-    # print("\033[94m[ENTER] submit_ai_exercise\033[0m", flush=True)
+    print("\033[95m🎯 [TOPIC MEMORY FLOW] 🎯 Starting AI exercise submission for block_id: {}\033[0m".format(block_id), flush=True)
     """Evaluate a submitted exercise block and save results."""
     username = require_user()
+    print("\033[94m📝 [TOPIC MEMORY FLOW] User: {} submitting exercise block: {}\033[0m".format(username, block_id), flush=True)
+
     data = request.get_json() or {}
     exercises, answers, error = parse_submission_data(data)
     if error:
+        print("\033[91m❌ [TOPIC MEMORY FLOW] Parse error for user {}: {}\033[0m".format(username, error), flush=True)
         logger.error(f"Parse submission data error for user {username}: {error}")
         return jsonify({"msg": error}), 400
+
+    print("\033[92m✅ [TOPIC MEMORY FLOW] Successfully parsed {} exercises with {} answers for user: {}\033[0m".format(len(exercises), len(answers), username), flush=True)
+
     # Evaluate first exercise immediately for fast feedback
     first_exercise = exercises[0] if exercises else None
     first_answer = answers.get(str(first_exercise.get("id")), "") if first_exercise else ""
     first_evaluation = None
     if first_exercise and first_answer:
+        print("\033[93m⚡ [TOPIC MEMORY FLOW] Evaluating first exercise immediately for fast feedback\033[0m", flush=True)
         # Evaluate just the first exercise
         first_evaluation = evaluate_answers_with_ai([first_exercise], {str(first_exercise.get("id")): first_answer})
         if first_evaluation and first_evaluation.get("results"):
@@ -81,6 +88,7 @@ def submit_ai_exercise(block_id):
                 "explanation": "",
                 "is_correct": is_correct
             }
+            print("\033[96m🎯 [TOPIC MEMORY FLOW] First exercise evaluation complete - Correct: {}\033[0m".format(is_correct), flush=True)
         else:
             first_result_with_details = None
     else:
@@ -93,6 +101,7 @@ def submit_ai_exercise(block_id):
     # Start background task to evaluate remaining exercises
     from threading import Thread
     def background_task():
+        print("\033[95m🔄 [TOPIC MEMORY FLOW] Starting background task for full evaluation and topic memory updates\033[0m", flush=True)
         with app.app_context():
             _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result_with_details)
 
@@ -114,7 +123,7 @@ def submit_ai_exercise(block_id):
             "loading": True  # Flag to show loading state
         })
 
-    # print("\033[91m[EXIT] submit_ai_exercise\033[0m", flush=True)
+    print("\033[92m🚀 [TOPIC MEMORY FLOW] Returning immediate response, background processing started\033[0m", flush=True)
     return jsonify({
         "pass": False,  # Will be updated in background
         "summary": {"correct": 0, "total": len(exercises), "mistakes": []},  # Will be updated in background
@@ -352,3 +361,32 @@ def argue_ai_exercise(block_id):
     )
 
     return jsonify(evaluation)
+
+
+@ai_bp.route("/ai-exercise/<block_id>/topic-memory-status", methods=["GET"])
+def get_topic_memory_status(block_id):
+    """Check if topic memory processing is complete for a given block."""
+    username = require_user()
+
+    try:
+        # Check in-memory completion tracking
+        from flask import current_app
+        completion_key = f"{username}:{block_id}"
+
+        if hasattr(current_app, 'topic_memory_completion'):
+            completed = current_app.topic_memory_completion.get(completion_key, False)
+            if completed:
+                # Remove the flag after checking
+                del current_app.topic_memory_completion[completion_key]
+                print(f"\033[92m✅ [TOPIC MEMORY STATUS] ✅ Completion confirmed for user {username} block {block_id}\033[0m", flush=True)
+        else:
+            completed = False
+
+        return jsonify({
+            "completed": completed,
+            "block_id": block_id,
+            "username": username
+        })
+    except Exception as e:
+        logger.error(f"Error checking topic memory status: {e}")
+        return jsonify({"completed": False, "error": str(e)}), 500
