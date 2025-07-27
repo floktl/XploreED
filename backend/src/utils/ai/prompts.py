@@ -13,6 +13,25 @@ def exercise_generation_prompt(
     recent_questions: str = "",
 ) -> dict:
     """Return the user prompt for generating a new exercise block, including recent questions to avoid repeats."""
+
+    # Create a unique title based on weaknesses/topics
+    weakness_topics = []
+    if filtered_topic_memory:
+        topics = set()
+        for entry in filtered_topic_memory:
+            if entry.get("grammar"):
+                topics.add(entry["grammar"])
+            if entry.get("topic"):
+                topics.add(entry["topic"])
+        weakness_topics = list(topics)[:3]  # Take up to 3 topics
+
+    title_suggestion = ""
+    if weakness_topics:
+        topics_str = ", ".join(weakness_topics)
+        title_suggestion = f"Create a unique, engaging title that reflects training these specific weaknesses: {topics_str}. The title should be educational and motivating, like 'Mastering {weakness_topics[0]} Practice' or 'Building Confidence in {weakness_topics[0]}'. Make the exercises topic's fitting to the title"
+    else:
+        title_suggestion = "Create a unique, engaging title that reflects the user's current level and learning goals. The title should be educational and motivating."
+
     return {
         "role": "user",
         "content": f"""
@@ -33,7 +52,7 @@ Here is the required JSON structure — you must follow it **exactly**:
      - `correctAnswer`: the correct German translation
 
  2. The overall JSON must contain:
-   - `lessonId`, `title`, `instructions`, `level`
+   - `lessonId`, `title`, `level`
    - `exercises`: list of 3 total exercises (mix of both types)
    - `feedbackPrompt`
 
@@ -44,16 +63,20 @@ Here is the required JSON structure — you must follow it **exactly**:
 ⚠️ **NEVER repeat any of these questions the user has seen recently:**\n{recent_questions}\n
 ⚠️ Always generate new, unique sentences that were not seen in earlier exercises.
 
+{title_suggestion}
+
 Here is an example structure for reference (do not reuse content!):
 {json.dumps(example_exercise_block, indent=2)}
 
-Here is the learner’s vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
+Here is the learner's vocabulary list (prioritize vocab with next_repeat due soon, include one or two per sentence, try to teach the learner new words based):
 {json.dumps(vocabular, indent=2)}
 
 Here is the topic memory (form the exercises to train the weaknesses seen in the entries:):
 {json.dumps(filtered_topic_memory, indent=2)}
-Create new sentences with new words and topics.
-Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner’s weaknesses and level.
+
+**IMPORTANT**: Create exercises that directly target the specific weaknesses and topics mentioned in the title. Each exercise should focus on the grammar concepts or vocabulary areas that the user needs to practice. Make sure the exercise content aligns with the educational focus indicated by the title.
+
+Create a new exercise block using the **same structure** and **same field names**, but adapt the **content** to the learner's weaknesses and level.
 """,
     }
 

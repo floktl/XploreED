@@ -38,11 +38,8 @@ FEEDBACK_FILE = [
 EXERCISE_TEMPLATE = {
     "lessonId": "dynamic-ai-lesson",
     "title": "Flo's AI Feedback",
-    "instructions": "Fill in the blanks or translate the sentences.",
     "level": "A1",
     "exercises": [],
-    "feedbackPrompt": "",
-    "vocabHelp": [],
 }
 
 READING_TEMPLATE = {

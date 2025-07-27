@@ -160,22 +160,30 @@ def _normalize_umlauts(s):
 
 def process_ai_answers(username: str, block_id: str, answers: dict, exercise_block: dict | None = None) -> list:
     """Evaluate answers and print spaced repetition info using SM2."""
+    print("\033[95m🧠 [TOPIC MEMORY FLOW] 🧠 Starting process_ai_answers for user: {} block: {}\033[0m".format(username, block_id), flush=True)
+    print("\033[94m📊 [TOPIC MEMORY FLOW] Processing {} answers\033[0m".format(len(answers)), flush=True)
+
     # logger.info(f"Processing AI answers for user {username}, block {block_id}, answers_count={len(answers)})")
 
     if not exercise_block:
+        print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Missing exercise block for processing user {}\033[0m".format(username), flush=True)
         logger.error(f"Missing exercise block for processing user {username}")
         return []
 
     all_exercises = exercise_block.get("exercises", [])
     exercise_map = {str(e.get("id")): e for e in all_exercises}
+    print("\033[93m📝 [TOPIC MEMORY FLOW] 📝 Created exercise map with {} exercises\033[0m".format(len(all_exercises)), flush=True)
     # logger.info(f"Processing {len(all_exercises)} exercises for user {username}")
 
     results = []
     reviewed = set()
 
     for ex_id, user_answer in answers.items():
+        print("\033[96m🎯 [TOPIC MEMORY FLOW] 🎯 Processing exercise ID: {} with answer: '{}'\033[0m".format(ex_id, user_answer), flush=True)
+
         ex = exercise_map.get(str(ex_id))
         if not ex:
+            print("\033[91m⚠️ [TOPIC MEMORY FLOW] ⚠️ Exercise {} not found in exercise map for user {}\033[0m".format(ex_id, username), flush=True)
             # logger.warning(f"Exercise {ex_id} not found in exercise map for user {username}")
             continue
 
@@ -183,15 +191,20 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
         is_correct = user_answer.strip().lower() == correct_ans.strip().lower()
         quality = 5 if is_correct else 2
 
+        print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Exercise {} - Correct: {} (Quality: {})\033[0m".format(ex_id, is_correct, quality), flush=True)
+
         # logger.info(f"Exercise {ex_id} for user {username}: correct={is_correct}, quality={quality}")
 
+        print("\033[96m🔍 [TOPIC MEMORY FLOW] 🔍 Detecting language topics for exercise: {}\033[0m".format(ex_id), flush=True)
         features = detect_language_topics(
             f"{ex.get('question', '')} {correct_ans}"
         ) or ["unknown"]
         skill = ex.get("type", "")
+        print("\033[93m📚 [TOPIC MEMORY FLOW] 📚 Detected features: {} for skill: {}\033[0m".format(features, skill), flush=True)
         # logger.info(f"Detected features for exercise {ex_id}: {features}")
 
         for feature in features:
+            print("\033[95m💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: {}, feature: {}, skill: {}\033[0m".format(username, feature, skill), flush=True)
             # logger.info(f"Updating topic memory for user {username}, feature={feature}, skill={skill}")
             _update_single_topic(
                 username,
@@ -200,16 +213,22 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
                 ex.get("question", ""),
                 quality,
             )
+            print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: {}\033[0m".format(feature), flush=True)
 
         # Extract and review vocabulary
+        print("\033[96m📖 [TOPIC MEMORY FLOW] 📖 Extracting vocabulary from exercise: {}\033[0m".format(ex_id), flush=True)
         words = (
             [w for w, _ in extract_words(ex.get("question", ""))]
             + [w for w, _ in extract_words(correct_ans)]
         )
+        print("\033[93m📝 [TOPIC MEMORY FLOW] 📝 Extracted {} words from exercise {}\033[0m".format(len(words), ex_id), flush=True)
         # logger.info(f"Extracted {len(words)} words from exercise {ex_id} for user {username}")
 
         for vocab in words:
+            print("\033[96m🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: '{}'\033[0m".format(vocab), flush=True)
             review_vocab_word(username, vocab, quality, seen=reviewed)
+            print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word '{}' reviewed\033[0m".format(vocab), flush=True)
 
+    print("\033[95m🎉 [TOPIC MEMORY FLOW] 🎉 Completed processing AI answers for user {}: {} results\033[0m".format(username, len(results)), flush=True)
     # logger.info(f"Completed processing AI answers for user {username}: {len(results)} results")
     return results

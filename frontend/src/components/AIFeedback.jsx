@@ -16,6 +16,7 @@ export default function AIFeedback() {
     const isAdmin = useAppStore((state) => state.isAdmin);
     const [actions, setActions] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [exerciseTitle, setExerciseTitle] = useState(`${username}'s AI Exercises`);
 
     useEffect(() => {
         if (!isLoading && (!username || isAdmin)) {
@@ -23,16 +24,23 @@ export default function AIFeedback() {
         }
     }, [username, isLoading, isAdmin, navigate]);
 
+    const handleExerciseDataChange = (exerciseData) => {
+        if (exerciseData && exerciseData.title) {
+            setExerciseTitle(exerciseData.title);
+        }
+    };
+
     return (
         <div className={`min-h-screen flex flex-col ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <main className="flex-1 pb-20">
                 <Container>
-                    <Title>{username}'s AI Exercises</Title>
+                    <Title>{exerciseTitle}</Title>
                     <AIExerciseBlock
                         blockId="training"
                         fetchExercisesFn={getTrainingExercises}
                         setFooterActions={setActions}
                         onSubmissionChange={setIsSubmitted}
+                        onExerciseDataChange={handleExerciseDataChange}
                     />
                 </Container>
             </main>

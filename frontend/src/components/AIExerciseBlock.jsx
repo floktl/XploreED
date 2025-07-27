@@ -53,6 +53,7 @@ export default function AIExerciseBlock({
     fetchExercisesFn = getAiExercises,
     setFooterActions,
     onSubmissionChange,
+    onExerciseDataChange,
 }) {
     const [current, setCurrent] = useState(data || null);
     const currentBlockRef = useRef(null);
@@ -196,6 +197,12 @@ export default function AIExerciseBlock({
     }, [submitted, passed, isComplete, onComplete, mode]);
 
     useEffect(() => {
+        if (current && onExerciseDataChange) {
+            onExerciseDataChange(current);
+        }
+    }, [current, onExerciseDataChange]);
+
+    useEffect(() => {
         if (!setFooterActions) return;
 
         if (!submitted) {
@@ -258,6 +265,14 @@ export default function AIExerciseBlock({
         if (onSubmissionChange) {
             onSubmissionChange(true);
         }
+
+        // Add background activity for topic memory processing
+        const topicMemoryActivityId = `topic-memory-${Date.now()}`;
+        addBackgroundActivity({
+            id: topicMemoryActivityId,
+            label: "Processing topic memory...",
+            status: "active"
+        });
 
         // Start submission progress simulation with adaptive timing
         const submissionSteps = [
@@ -342,7 +357,7 @@ export default function AIExerciseBlock({
                 setEvaluation(map);
 
                 // Start polling for enhanced results in the background
-                startEnhancedResultsPolling();
+                startEnhancedResultsPolling(topicMemoryActivityId);
             }
 
             if (apiResult?.pass) {
@@ -378,7 +393,7 @@ export default function AIExerciseBlock({
             fetchNext({ answers: currentAnswers });
         };
 
-        const startEnhancedResultsPolling = () => {
+        const startEnhancedResultsPolling = (activityId) => {
             setEnhancedResultsLoading(true);
             setFeedbackTimeout(false);
             setShowTimeoutError(false);
@@ -393,6 +408,9 @@ export default function AIExerciseBlock({
                         clearInterval(pollInterval);
                         clearTimeout(timeoutId);
                         setFeedbackTimeout(false);
+
+                        // Don't remove topic memory background activity here - keep it active for background processing
+                        // removeBackgroundActivity(activityId);
 
                         // Update the evaluation map with enhanced data
                         const enhancedMap = {};
@@ -411,6 +429,9 @@ export default function AIExerciseBlock({
                         if (enhancedData.pass !== undefined) {
                             setPassed(enhancedData.pass);
                         }
+
+                        // Start polling for topic memory completion
+                        pollForTopicMemoryCompletion(activityId);
                     } else if (enhancedData.status === "processing" && enhancedData.results) {
                         // Progressive update: update each exercise individually as it becomes available
                         const currentEvaluation = { ...evaluation };
@@ -462,7 +483,11 @@ export default function AIExerciseBlock({
                     }
                 } catch (error) {
                     console.error("[AIExerciseBlock] Failed to fetch enhanced results:", error);
-                    // Continue polling on error
+                    // Continue polling on error, but remove background activity after multiple failures
+                    if (error.message && error.message.includes("Failed to fetch")) {
+                        // If it's a network error, remove background activity after a few attempts
+                        setTimeout(() => removeBackgroundActivity(activityId), 5000);
+                    }
                 }
             }, 1000); // Poll every 1 second to match backend timing
 
@@ -474,7 +499,35 @@ export default function AIExerciseBlock({
                     setFeedbackTimeout(true);
                     setShowTimeoutError(true);
                 }
+                // Remove topic memory background activity on timeout
+                removeBackgroundActivity(activityId);
             }, 15000);
+        };
+
+        const pollForTopicMemoryCompletion = (activityId) => {
+            // Poll for topic memory completion status
+            const topicMemoryPollInterval = setInterval(async () => {
+                try {
+                    // Check if topic memory processing is complete by looking for the completion message
+                    // We'll check the backend logs or a completion endpoint
+                    const response = await fetch(`/api/ai-exercise/${blockId}/topic-memory-status`, {
+                        credentials: "include",
+                    });
+
+                    if (response.ok) {
+                        const statusData = await response.json();
+                        if (statusData.completed) {
+                            clearInterval(topicMemoryPollInterval);
+                            removeBackgroundActivity(activityId);
+                            console.log("🎉 Topic memory processing completed - spinner stopped");
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error("[AIExerciseBlock] Failed to check topic memory status:", error);
+                    // Continue polling on error - don't stop the spinner
+                }
+            }, 1000); // Check every 1 second for completion
         };
     };
 
