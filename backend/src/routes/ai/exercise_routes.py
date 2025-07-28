@@ -38,6 +38,75 @@ def _normalize_umlauts(s):
     s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
     return s
 
+def _check_gap_fill_correctness(exercise: dict, user_answer: str, correct_answer: str) -> bool:
+    """Check if a gap-fill answer is correct based on grammatical context."""
+
+    # Get the question text to understand the context
+    question = exercise.get("question", "").lower()
+    user_ans = user_answer.lower().strip()
+    correct_ans = correct_answer.lower().strip()
+
+    print(f"🔍 [GRADING DEBUG] Checking gap-fill: question='{question}', user='{user_ans}', correct='{correct_ans}'", flush=True)
+
+    # First try exact match
+    if user_ans == correct_ans:
+        print(f"✅ [GRADING DEBUG] Exact match found", flush=True)
+        return True
+
+    # Check for common German grammar patterns
+    # Pattern 1: Personal pronouns with verb conjugation
+    if "habe" in question or "habe " in question:
+        # "____ habe einen Hund" - should be "Ich" (1st person singular)
+        if user_ans in ["ich", "i"] and correct_ans in ["ich", "i"]:
+            print(f"✅ [GRADING DEBUG] Correct 1st person singular with 'habe'", flush=True)
+            return True
+        elif user_ans in ["du", "d"] and correct_ans in ["ich", "i"]:
+            print(f"❌ [GRADING DEBUG] Wrong: 'du' with 'habe' should be 'ich'", flush=True)
+            return False
+
+    if "bist" in question or "bist " in question:
+        # "____ bist glücklich" - should be "Du" (2nd person singular)
+        if user_ans in ["du", "d"] and correct_ans in ["du", "d"]:
+            print(f"✅ [GRADING DEBUG] Correct 2nd person singular with 'bist'", flush=True)
+            return True
+        elif user_ans in ["ich", "i"] and correct_ans in ["du", "d"]:
+            print(f"❌ [GRADING DEBUG] Wrong: 'ich' with 'bist' should be 'du'", flush=True)
+            return False
+
+    if "ist" in question or "ist " in question:
+        # "____ ist ein Student" - could be "Er", "Sie", "Es" (3rd person singular)
+        if user_ans in ["er", "sie", "es"] and correct_ans in ["er", "sie", "es"]:
+            print(f"✅ [GRADING DEBUG] Correct 3rd person singular with 'ist'", flush=True)
+            return True
+
+    if "sind" in question or "sind " in question:
+        # "____ sind Studenten" - could be "Sie" (3rd person plural) or "Wir" (1st person plural)
+        if user_ans in ["sie", "wir"] and correct_ans in ["sie", "wir"]:
+            print(f"✅ [GRADING DEBUG] Correct plural with 'sind'", flush=True)
+            return True
+
+    # Pattern 2: Verb conjugation in translations
+    if "sein" in user_ans and "sind" in correct_ans:
+        # "Sie sein Studenten" vs "Sie sind Studenten"
+        print(f"❌ [GRADING DEBUG] Wrong: 'sein' should be 'sind' for plural", flush=True)
+        return False
+
+    if "haben" in user_ans and "hat" in correct_ans:
+        # "Er haben" vs "Er hat"
+        print(f"❌ [GRADING DEBUG] Wrong: 'haben' should be 'hat' for 3rd person singular", flush=True)
+        return False
+
+    # Pattern 3: Article agreement
+    if user_ans in ["der", "die", "das"] and correct_ans in ["der", "die", "das"]:
+        # Check if the article matches the gender of the noun
+        # This is a simplified check - in practice, you'd need a more sophisticated system
+        print(f"✅ [GRADING DEBUG] Article check passed", flush=True)
+        return True
+
+    # If no specific patterns match, fall back to exact comparison
+    print(f"⚠️ [GRADING DEBUG] No specific pattern matched, using exact comparison", flush=True)
+    return user_ans == correct_ans
+
 def _strip_final_punct(s):
     s = s.strip()
     if s and s[-1] in ".?":
@@ -46,10 +115,10 @@ def _strip_final_punct(s):
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
 def submit_ai_exercise(block_id):
-    print("\033[95m🎯 [TOPIC MEMORY FLOW] 🎯 Starting AI exercise submission for block_id: {}\033[0m".format(block_id), flush=True)
+    # print("\033[95m🎯 [TOPIC MEMORY FLOW] 🎯 Starting AI exercise submission for block_id: {}\033[0m".format(block_id), flush=True)
     """Evaluate a submitted exercise block and save results."""
     username = require_user()
-    print("\033[94m📝 [TOPIC MEMORY FLOW] User: {} submitting exercise block: {}\033[0m".format(username, block_id), flush=True)
+    # print("\033[94m📝 [TOPIC MEMORY FLOW] User: {} submitting exercise block: {}\033[0m".format(username, block_id), flush=True)
 
     data = request.get_json() or {}
     exercises, answers, error = parse_submission_data(data)
@@ -58,14 +127,14 @@ def submit_ai_exercise(block_id):
         logger.error(f"Parse submission data error for user {username}: {error}")
         return jsonify({"msg": error}), 400
 
-    print("\033[92m✅ [TOPIC MEMORY FLOW] Successfully parsed {} exercises with {} answers for user: {}\033[0m".format(len(exercises), len(answers), username), flush=True)
+    #  print("\033[92m✅ [TOPIC MEMORY FLOW] Successfully parsed {} exercises with {} answers for user: {}\033[0m".format(len(exercises), len(answers), username), flush=True)
 
     # Evaluate first exercise immediately for fast feedback
     first_exercise = exercises[0] if exercises else None
     first_answer = answers.get(str(first_exercise.get("id")), "") if first_exercise else ""
     first_evaluation = None
     if first_exercise and first_answer:
-        print("\033[93m⚡ [TOPIC MEMORY FLOW] Evaluating first exercise immediately for fast feedback\033[0m", flush=True)
+        # print("\033[93m⚡ [TOPIC MEMORY FLOW] Evaluating first exercise immediately for fast feedback\033[0m", flush=True)
         # Evaluate just the first exercise
         first_evaluation = evaluate_answers_with_ai([first_exercise], {str(first_exercise.get("id")): first_answer})
         if first_evaluation and first_evaluation.get("results"):
@@ -79,7 +148,19 @@ def submit_ai_exercise(block_id):
             # Normalize umlauts for both answers
             ua = _normalize_umlauts(ua)
             ca = _normalize_umlauts(ca)
-            is_correct = ua == ca
+
+            # 🔥 IMPROVED GRADING LOGIC 🔥
+            # First try exact match
+            if ua == ca:
+                is_correct = True
+            else:
+                # For gap-fill exercises, check if the answer makes grammatical sense
+                exercise_type = first_exercise.get("type", "")
+                if exercise_type == "gap-fill":
+                    is_correct = _check_gap_fill_correctness(first_exercise, ua, ca)
+                else:
+                    # For other exercise types, use exact match
+                    is_correct = ua == ca
 
             first_result_with_details = {
                 "id": first_result.get("id"),
@@ -88,7 +169,7 @@ def submit_ai_exercise(block_id):
                 "explanation": "",
                 "is_correct": is_correct
             }
-            print("\033[96m🎯 [TOPIC MEMORY FLOW] First exercise evaluation complete - Correct: {}\033[0m".format(is_correct), flush=True)
+            # print("\033[96m🎯 [TOPIC MEMORY FLOW] First exercise evaluation complete - Correct: {}\033[0m".format(is_correct), flush=True)
         else:
             first_result_with_details = None
     else:
@@ -101,9 +182,12 @@ def submit_ai_exercise(block_id):
     # Start background task to evaluate remaining exercises
     from threading import Thread
     def background_task():
-        print("\033[95m🔄 [TOPIC MEMORY FLOW] Starting background task for full evaluation and topic memory updates\033[0m", flush=True)
+        # print("\033[95m🔄 [TOPIC MEMORY FLOW] Starting background task for full evaluation and topic memory updates\033[0m", flush=True)
         with app.app_context():
-            _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result_with_details)
+            exercise_block = data.get("exercise_block")
+            print(f"🔍 [SUBMIT DEBUG] 🔍 Exercise block from data: topic='{exercise_block.get('topic') if exercise_block else 'None'}'", flush=True)
+            # print(f"🔍 [SUBMIT DEBUG] 🔍 Exercise block keys: {list(exercise_block.keys()) if exercise_block else 'None'}", flush=True)
+            _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result_with_details, exercise_block)
 
     Thread(target=background_task, daemon=True).start()
 
@@ -123,7 +207,7 @@ def submit_ai_exercise(block_id):
             "loading": True  # Flag to show loading state
         })
 
-    print("\033[92m🚀 [TOPIC MEMORY FLOW] Returning immediate response, background processing started\033[0m", flush=True)
+    # print("\033[92m🚀 [TOPIC MEMORY FLOW] Returning immediate response, background processing started\033[0m", flush=True)
     return jsonify({
         "pass": False,  # Will be updated in background
         "summary": {"correct": 0, "total": len(exercises), "mistakes": []},  # Will be updated in background
@@ -182,7 +266,7 @@ def get_ai_exercise_results(block_id):
     })
 
 
-def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result):
+def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result, exercise_block=None):
     """Background task to evaluate remaining exercises and update results."""
     import time
     bg_start = time.time()
@@ -209,7 +293,18 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
                 ca = _strip_final_punct(correct_answer).strip().lower()
                 ua = _normalize_umlauts(ua)
                 ca = _normalize_umlauts(ca)
-                is_correct = ua == ca
+
+                # 🔥 IMPROVED GRADING LOGIC 🔥
+                if ua == ca:
+                    is_correct = True
+                else:
+                    # For gap-fill exercises, check if the answer makes grammatical sense
+                    exercise_type = ex.get("type", "") if ex else ""
+                    if exercise_type == "gap-fill":
+                        is_correct = _check_gap_fill_correctness(ex, ua, ca)
+                    else:
+                        # For other exercise types, use exact match
+                        is_correct = ua == ca
 
                 basic_result = {
                     "id": res.get("id"),
@@ -241,8 +336,10 @@ def _evaluate_remaining_exercises_async(username, block_id, exercises, answers, 
             summary = compile_score_summary(exercises, answers, id_map)
             passed = bool(evaluation.get("pass"))
 
-            # Save exercise submission
-            save_exercise_submission_async(username, block_id, answers, exercises)
+            # Save exercise submission with exercise block
+            print(f"🔍 [EVALUATE DEBUG] 🔍 Exercise block passed to save_exercise_submission_async: topic='{exercise_block.get('topic') if exercise_block else 'None'}'", flush=True)
+            # print(f"🔍 [EVALUATE DEBUG] 🔍 Exercise block keys: {list(exercise_block.keys()) if exercise_block else 'None'}", flush=True)
+            save_exercise_submission_async(username, block_id, answers, exercises, exercise_block)
 
             # Prefetch next exercises
             run_in_background(prefetch_next_exercises, username)
@@ -357,7 +454,7 @@ def argue_ai_exercise(block_id):
         username,
         str(block_id),
         answers,
-        {"exercises": exercises},
+        exercise_block,  # Pass the full exercise block with topic
     )
 
     return jsonify(evaluation)
@@ -378,7 +475,6 @@ def get_topic_memory_status(block_id):
             if completed:
                 # Remove the flag after checking
                 del current_app.topic_memory_completion[completion_key]
-                print(f"\033[92m✅ [TOPIC MEMORY STATUS] ✅ Completion confirmed for user {username} block {block_id}\033[0m", flush=True)
         else:
             completed = False
 

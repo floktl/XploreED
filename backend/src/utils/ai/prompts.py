@@ -11,6 +11,7 @@ def exercise_generation_prompt(
     vocabular: list,
     filtered_topic_memory: list,
     recent_questions: str = "",
+    recent_topics: list | None = None,
 ) -> dict:
     """Return the user prompt for generating a new exercise block, including recent questions to avoid repeats."""
 
@@ -25,12 +26,19 @@ def exercise_generation_prompt(
                 topics.add(entry["topic"])
         weakness_topics = list(topics)[:3]  # Take up to 3 topics
 
+    # Get recently used topics to avoid repetition
+    recent_topics_str = ""
+    if recent_topics:
+        recent_topics_str = f"\n⚠️ **AVOID these recently used content topics:** {', '.join(recent_topics)}"
+
+    available_topics = ["weather", "dogs", "family", "shopping", "travel", "food", "hobbies", "work", "sports", "living"]
+
     title_suggestion = ""
     if weakness_topics:
         topics_str = ", ".join(weakness_topics)
-        title_suggestion = f"Create a unique, engaging title that reflects training these specific weaknesses: {topics_str}. The title should be educational and motivating, like 'Mastering {weakness_topics[0]} Practice' or 'Building Confidence in {weakness_topics[0]}'. Make the exercises topic's fitting to the title"
+        title_suggestion = f"Create a unique, engaging title that combines grammar practice with content context. Format: 'Building confidence in [grammar topics] in the context of [content topic]'. For example: 'Building confidence in present tense and accusative case in the context of Work'. Use the specific weaknesses: {topics_str} and choose an appropriate content topic from: {', '.join(available_topics)}. Make the exercises focus on the grammar concepts mentioned in the title.{recent_topics_str}"
     else:
-        title_suggestion = "Create a unique, engaging title that reflects the user's current level and learning goals. The title should be educational and motivating."
+        title_suggestion = f"Create a unique, engaging title that combines grammar practice with content context. Format: 'Building confidence in [grammar topics] in the context of [content topic]'. For example: 'Building confidence in present tense and accusative case in the context of Work'. Choose appropriate grammar topics for the user's level and an appropriate content topic from: {', '.join(available_topics)}.{recent_topics_str}"
 
     return {
         "role": "user",
@@ -44,7 +52,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 1. Each exercise must include:
    - `id`: a unique ID like `\"ex1\"`
    - `type`: either `\"gap-fill\"` or `\"translation\"`
-   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence)
+   - `question`: a string (either a full sentence with a blank depending on the students level, or a translation task with the same conditions, remember to always put a full sentence, be sure that this sentence is grammarly correct and make sense)
    - For "gap-fill":
      - `options`: list of 4 strings, one of them has to be the correct answer, be sure to include the right answer.
      - `correctAnswer`: the correct string
@@ -53,6 +61,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 
  2. The overall JSON must contain:
    - `lessonId`, `title`, `level`
+   - `topic`: a string describing the main content topic for the entire exercise block (e.g., "weather", "dogs", "family", "shopping", "travel", "food", "hobbies", "work", "sports", "living")
    - `exercises`: list of 3 total exercises (mix of both types)
    - `feedbackPrompt`
 
@@ -62,6 +71,7 @@ Here is the required JSON structure — you must follow it **exactly**:
 ⚠️ Do not repeat or reuse any example sentences from previous exercises or memory.
 ⚠️ **NEVER repeat any of these questions the user has seen recently:**\n{recent_questions}\n
 ⚠️ Always generate new, unique sentences that were not seen in earlier exercises.
+⚠️ **IMPORTANT**: For gap-fill exercises, use ONLY the exact sentence with ____ for gaps. Do NOT add any hints, parentheses, or additional guidance text like "(D...)" or "(to...)". Keep questions clean and simple.
 
 {title_suggestion}
 
@@ -163,20 +173,46 @@ def quality_evaluation_prompt(
 ) -> dict:
     """Return prompt for detailed topic quality evaluation."""
     topics_str = ", ".join(topics)
+
+    # Handle both translation and gap-fill scenarios
+    if english:
+        # Translation exercise
+        context_line = f"English sentence: '{english}'\n"
+        exercise_type = "translation"
+    else:
+        # Gap-fill exercise (no English translation)
+        context_line = ""
+        exercise_type = "gap-fill"
+
     return {
         "role": "user",
         "content": (
-            "You are a helpful German teacher grading a student's translation.\n\n"
-            f"English sentence: '{english}'\n"
-            f"Reference translation: '{reference}'\n"
-            f"Student translation: '{student}'\n\n"
+            f"You are a helpful German teacher grading a student's {exercise_type}.\n\n"
+            f"{context_line}"
+            f"Reference answer: '{reference}'\n"
+            f"Student answer: '{student}'\n\n"
+            "IMPORTANT: Evaluate each grammar topic INDIVIDUALLY, not based on the overall sentence correctness.\n"
+            "A grammar element can be used correctly even if the sentence has other errors.\n\n"
             "Return a JSON object where each grammar topic is a key (all lowercase, spaces only), "
-            "and its value is an integer from 0 to 5 representing the quality of usage.\n\n"
+            "and its value is an integer from 0 to 5 representing the SM2 quality scale:\n\n"
+            "EVALUATION RULES:\n"
+            "- Use the FULL 0-5 scale for nuanced evaluation:\n"
+            "  * 5 = Perfect usage of the grammar element\n"
+            "  * 4 = Correct but with slight hesitation or minor error\n"
+            "  * 3 = Correct but with difficulty or noticeable error\n"
+            "  * 2 = Incorrect but the student seemed to know the concept\n"
+            "  * 1 = Incorrect but some knowledge was shown\n"
+            "  * 0 = Complete blackout or completely wrong usage\n"
+            "- Evaluate each grammar element independently\n"
+            "- Consider the student's apparent understanding level\n\n"
             "For example:\n"
             "{\n"
             "  \"adjective\": 5,\n"
             "  \"nominative case\": 4,\n"
-            "  \"modal verb\": 3\n"
+            "  \"modal verb\": 3,\n"
+            "  \"verb conjugation\": 2,\n"
+            "  \"article\": 1,\n"
+            "  \"preposition\": 0\n"
             "}\n\n"
             f"Topics: {topics_str}"
         ),

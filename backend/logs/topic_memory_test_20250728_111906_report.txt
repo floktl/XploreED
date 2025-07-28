@@ -1,0 +1,56 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250728_111906
+Started: 2025-07-28 11:19:06.831732
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+definite article     gap-fill        0        2.5    0      0        family     Das ist ___ Vater.            
+masculine gender     gap-fill        5        2.6    1      0        family     Das ist ___ Vater.            
+nominative case      gap-fill        5        2.6    1      0        family     Das ist ___ Vater.            
+copula               translation     2        2.5    0      0        family     This is my mother.            
+definite article     translation     2        2.5    0      0        family     This is my mother.            
+nominative case      translation     2        2.5    0      0        family     This is my mother.            
+personal pronoun     translation     2        2.5    0      0        family     This is my mother.            
+possessive determiner translation     2        2.5    0      0        family     This is my mother.            
+indefinite article   gap-fill        5        2.6    1      0        family     Ich ___ eine Schwester.       
+indefinite articles  gap-fill        5        2.6    1      0        family     Ich ___ eine Schwester.       
+personal pronouns    gap-fill        5        2.6    1      0        family     Ich ___ eine Schwester.       
+present tense        gap-fill        0        2.5    0      0        family     Ich ___ eine Schwester.       
+subject-verb agreement gap-fill        0        2.5    0      0        family     Ich ___ eine Schwester.       
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+nominative case      gap-fill        5        2.6      2.7      1          2          0            6            1434     Ich ___ eine Schwester.       
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+ist             3        NEW      2.5      NEW        0          NEW          1           
+Vater           3        NEW      2.5      NEW        0          NEW          1           
+ein             3        NEW      2.5      NEW        0          NEW          1           
+This            2        NEW      2.5      NEW        0          NEW          1           
+is              2        NEW      2.4      NEW        1          NEW          1           
+my              2        NEW      2.5      NEW        0          NEW          1           
+mother          2        NEW      2.5      NEW        0          NEW          1           
+meine           2        NEW      2.5      NEW        0          NEW          1           
+Mutter          2        2.5      2.5      0          0          1            1           
+Ich             3        NEW      2.5      NEW        0          NEW          1           
+Schwester       3        NEW      2.5      NEW        0          NEW          1           
+habe            3        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 13
+Updated Topic Entries: 1
+Vocabulary Updates: 12
+Total Updates: 26
+
+================================================================================

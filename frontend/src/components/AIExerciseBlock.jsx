@@ -113,10 +113,28 @@ export default function AIExerciseBlock({
     const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
     const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
 
+    // Topic memory polling tracking
+    const topicMemoryPollIntervalRef = useRef(null);
+
     // keep answersRef synchronized with state in case other updates setAnswers
     useEffect(() => {
         answersRef.current = answers;
     }, [answers]);
+
+    // Cleanup function to stop topic memory polling
+    const stopTopicMemoryPolling = () => {
+        if (topicMemoryPollIntervalRef.current) {
+            clearInterval(topicMemoryPollIntervalRef.current);
+            topicMemoryPollIntervalRef.current = null;
+        }
+    };
+
+    // Cleanup on component unmount
+    useEffect(() => {
+        return () => {
+            stopTopicMemoryPolling();
+        };
+    }, []);
 
     const exercises = current?.exercises || [];
     const instructions = current?.instructions;
@@ -266,6 +284,9 @@ export default function AIExerciseBlock({
             onSubmissionChange(true);
         }
 
+        // Stop any existing topic memory polling before starting new submission
+        stopTopicMemoryPolling();
+
         // Add background activity for topic memory processing
         const topicMemoryActivityId = `topic-memory-${Date.now()}`;
         addBackgroundActivity({
@@ -296,6 +317,7 @@ export default function AIExerciseBlock({
                     instructions: blockToSubmit?.instructions || "",
                     exercises: blockToSubmit?.exercises || [],
                     vocabHelp: blockToSubmit?.vocabHelp || [],
+                    topic: blockToSubmit?.topic || "general",
                 });
                 const endTime = Date.now();
                 apiResult = result;
@@ -505,8 +527,23 @@ export default function AIExerciseBlock({
         };
 
         const pollForTopicMemoryCompletion = (activityId) => {
+            // Clear any existing polling interval
+            if (topicMemoryPollIntervalRef.current) {
+                clearInterval(topicMemoryPollIntervalRef.current);
+            }
+
+            let pollCount = 0;
+            let isCompleted = false; // Flag to prevent further polling after completion
+
             // Poll for topic memory completion status
-            const topicMemoryPollInterval = setInterval(async () => {
+            topicMemoryPollIntervalRef.current = setInterval(async () => {
+                // Check if already completed to prevent race conditions
+                if (isCompleted) {
+                    return;
+                }
+
+                pollCount++;
+
                 try {
                     // Check if topic memory processing is complete by looking for the completion message
                     // We'll check the backend logs or a completion endpoint
@@ -516,10 +553,12 @@ export default function AIExerciseBlock({
 
                     if (response.ok) {
                         const statusData = await response.json();
+
                         if (statusData.completed) {
-                            clearInterval(topicMemoryPollInterval);
+                            isCompleted = true; // Set flag to prevent further polling
+                            clearInterval(topicMemoryPollIntervalRef.current);
+                            topicMemoryPollIntervalRef.current = null;
                             removeBackgroundActivity(activityId);
-                            console.log("🎉 Topic memory processing completed - spinner stopped");
                             return;
                         }
                     }
@@ -528,6 +567,16 @@ export default function AIExerciseBlock({
                     // Continue polling on error - don't stop the spinner
                 }
             }, 1000); // Check every 1 second for completion
+
+            // Add a fallback timeout to prevent infinite polling
+            setTimeout(() => {
+                if (topicMemoryPollIntervalRef.current && !isCompleted) {
+                    isCompleted = true; // Set flag to prevent further polling
+                    clearInterval(topicMemoryPollIntervalRef.current);
+                    topicMemoryPollIntervalRef.current = null;
+                    removeBackgroundActivity(activityId);
+                }
+            }, 30000); // 30 second fallback timeout
         };
     };
 
@@ -1114,11 +1163,6 @@ export default function AIExerciseBlock({
                 {stage === 1 && current.title && !submitted && (
                     <>
                         <h3 className="text-xl font-semibold">{current.title}</h3>
-                        {debugEnabled && (
-                            <div className="text-xs text-gray-400 font-mono mb-2">
-                                Block ID: {current?.block_id || blockId}
-                            </div>
-                        )}
                     </>
                 )}
                 {instructions && !submitted && <p>{instructions}</p>}
