@@ -184,10 +184,10 @@ def save_exercise_submission_async(
                     "exercises": exercises_list,
                     "topic": exercise_block.get("topic", "general")
                 }
-                print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Using topic from exercise block: '{exercise_block.get('topic')}'", flush=True)
+                # print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Using topic from exercise block: '{exercise_block.get('topic')}'", flush=True)
             else:
                 block_for_processing = {"exercises": exercises_list}
-                print(f"🔍 [TOPIC MEMORY FLOW] 🔍 No exercise block provided, using default topic", flush=True)
+                # print(f"🔍 [TOPIC MEMORY FLOW] 🔍 No exercise block provided, using default topic", flush=True)
 
             try:
                 # print("\033[96m🧠 [TOPIC MEMORY FLOW] 🧠 Calling process_ai_answers to update topic memory and vocabulary\033[0m", flush=True)
