@@ -31,7 +31,26 @@ def _fix_exercise(ex: dict, idx: int) -> dict:
 def _ensure_schema(exercise_block: dict) -> dict:
     """Return exercise block with guaranteed keys."""
     title = exercise_block.get('title') if isinstance(exercise_block, dict) else None
+    print(f"🔍 [TITLE DEBUG] 🔍 Title: '{title}'", flush=True)
+    print(f"🔍 [TOPIC DEBUG] 🔍 Has topic field: {'topic' in exercise_block}", flush=True)
+    if 'topic' in exercise_block:
+        print(f"🔍 [TOPIC DEBUG] 🔍 Current topic: '{exercise_block.get('topic')}'", flush=True)
     # print(f"\033[34m[AI-HELPERS] Entering: [_ensure_schema] title={repr(title)}\033[0m", flush=True)
+
+    # Extract topic from title if not already present
+    if title and "topic" not in exercise_block:
+        import re
+        match = re.search(r'in the context of (\w+)', title, re.IGNORECASE)
+        if match:
+            extracted_topic = match.group(1).lower()
+            exercise_block["topic"] = extracted_topic
+            print(f"🔍 [TOPIC EXTRACTION] 🔍 Extracted topic '{extracted_topic}' from title: '{title}'", flush=True)
+        else:
+            exercise_block["topic"] = "general"
+            print(f"🔍 [TOPIC EXTRACTION] 🔍 No topic found in title: '{title}', using 'general'", flush=True)
+    elif title and "topic" in exercise_block:
+        print(f"🔍 [TOPIC DEBUG] 🔍 Topic already exists, skipping extraction", flush=True)
+
     if "exercises" in exercise_block:
         exercise_block["exercises"] = [
             _fix_exercise(ex, i) for i, ex in enumerate(exercise_block["exercises"])
@@ -204,7 +223,7 @@ def _create_ai_block(username: str) -> dict | None:
         from .exercise_helpers import generate_new_exercises
 
         ai_block = generate_new_exercises(
-            vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions
+            vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions, username=username
         )
     except ValueError as e:
         logger.error(f"_create_ai_block: Failed to generate exercises for user {username}: {e}")
@@ -222,7 +241,7 @@ def _create_ai_block(username: str) -> dict | None:
         for attempt in range(2):  # Try up to 2 more times
             try:
                 additional_block = generate_new_exercises(
-                    vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions
+                    vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions, username=username
                 )
                 if additional_block and additional_block.get("exercises"):
                     additional_exercises = additional_block.get("exercises", [])
@@ -347,3 +366,36 @@ def print_ai_user_data_titles(username):
         print(f"\033[96m| [DEBUG] Next block id: {next_id if next_id else '(none)'}\033[0m", flush=True)
     except Exception as e:
         print(f"\033[91m| [DEBUG] Error printing ai_user_data block ids for user {username}: {e}\033[0m", flush=True)
+
+
+def get_recent_exercise_topics(username: str, limit: int = 3) -> list[str]:
+    """Get recent content topics used in exercise blocks to avoid repetition."""
+    try:
+        from utils.data.db_utils import select_rows
+
+        # Get recent exercise blocks from ai_user_data
+        rows = select_rows(
+            "ai_user_data",
+            columns="exercises, next_exercises",
+            where="username = ?",
+            params=(username,),
+        )
+
+        recent_topics = []
+        for row in rows:
+            for field in ["exercises", "next_exercises"]:
+                if row.get(field):
+                    try:
+                        import json
+                        exercise_data = json.loads(row[field])
+                        if isinstance(exercise_data, dict) and exercise_data.get("topic"):
+                            topic = exercise_data["topic"]
+                            if topic and topic not in recent_topics:
+                                recent_topics.append(topic)
+                    except (json.JSONDecodeError, KeyError):
+                        continue
+
+        return recent_topics[:limit]
+    except Exception as e:
+        print(f"Error getting recent exercise topics: {e}", flush=True)
+        return []

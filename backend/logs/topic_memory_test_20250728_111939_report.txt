@@ -1,0 +1,54 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250728_111939
+Started: 2025-07-28 11:19:39.831640
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+gender of nouns      gap-fill        0        2.5    0      0        family     Das ist ___ Mutter.           
+demonstrative pronoun translation     2        2.5    0      0        family     This is my father.            
+present perfect tense gap-fill        5        2.6    1      0        family     Ich habe ___ Bruder.          
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+definite article     gap-fill        0        2.5      2.5      0          0          0            1            1432     Das ist ___ Mutter.           
+nominative case      gap-fill        5        2.7      2.8      2          3          6            16           1434     Das ist ___ Mutter.           
+definite article     translation     2        2.5      2.5      0          0          0            1            1436     This is my father.            
+nominative case      translation     2        2.5      2.5      0          0          0            1            1437     This is my father.            
+personal pronoun     translation     2        2.5      2.5      0          0          0            1            1438     This is my father.            
+possessive determiner translation     2        2.5      2.5      0          0          0            1            1439     This is my father.            
+indefinite article   gap-fill        0        2.6      2.6      1          0          0            1            1440     Ich habe ___ Bruder.          
+nominative case      gap-fill        5        2.8      2.9      3          4          16           45           1434     Ich habe ___ Bruder.          
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+ist             1        NEW      2.4      NEW        0          NEW          1           
+Mutter          1        2.5      2.5      0          0          1            1           
+das             1        NEW      2.5      NEW        0          NEW          1           
+This            2        NEW      2.5      NEW        0          NEW          1           
+is              2        NEW      2.4      NEW        0          NEW          1           
+my              2        NEW      2.5      NEW        0          NEW          1           
+father          2        NEW      2.4      NEW        1          NEW          1           
+mein            2        2.5      2.5      0          0          1            1           
+Vater           2        2.4      2.4      0          0          1            1           
+Ich             3        NEW      2.4      NEW        1          NEW          1           
+habe            3        NEW      2.4      NEW        1          NEW          1           
+Bruder          3        NEW      2.5      NEW        0          NEW          1           
+ein             3        2.4      2.2      1          2          1            6           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 3
+Updated Topic Entries: 8
+Vocabulary Updates: 13
+Total Updates: 24
+
+================================================================================

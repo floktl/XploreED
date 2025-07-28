@@ -1,0 +1,64 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250728_111243
+Started: 2025-07-28 11:12:43.529025
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+adverb               gap-fill        5        2.6    1      0        family     Meine Mutter ____ sehr gut.   
+noun                 gap-fill        5        2.6    1      0        family     Meine Mutter ____ sehr gut.   
+possessive article   gap-fill        5        2.6    1      0        family     Meine Mutter ____ sehr gut.   
+subject pronoun      gap-fill        5        2.6    1      0        family     Meine Mutter ____ sehr gut.   
+verb                 gap-fill        4        2.5    1      0        family     Meine Mutter ____ sehr gut.   
+verb conjugation     gap-fill        2        2.5    0      0        family     Meine Mutter ____ sehr gut.   
+indefinite article   gap-fill        5        2.6    1      0        family     Ich ____ einen Bruder.        
+nominative case      gap-fill        5        2.6    1      0        family     Ich ____ einen Bruder.        
+personal pronoun     gap-fill        5        2.6    1      0        family     Ich ____ einen Bruder.        
+present perfect tense gap-fill        0        2.5    0      0        family     Ich ____ einen Bruder.        
+indefinite article   translation     2        2.5    0      0        family     My father reads a book.       
+nominative case      translation     2        2.5    0      0        family     My father reads a book.       
+present tense        translation     2        2.5    0      0        family     My father reads a book.       
+singular noun        translation     2        2.5    0      0        family     My father reads a book.       
+subject              translation     2        2.5    0      0        family     My father reads a book.       
+verb                 translation     2        2.5    0      0        family     My father reads a book.       
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+verb conjugation     gap-fill        1        2.5      2.5      0          0          0            1            1392     Ich ____ einen Bruder.        
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+Meine           4        NEW      2.5      NEW        0          NEW          1           
+Mutter          4        NEW      2.5      NEW        0          NEW          1           
+sehr            4        NEW      2.5      NEW        0          NEW          1           
+gut             4        NEW      2.5      NEW        0          NEW          1           
+kocht           4        NEW      2.5      NEW        0          NEW          1           
+Ich             3        NEW      2.5      NEW        0          NEW          1           
+Bruder          3        NEW      2.5      NEW        0          NEW          1           
+habe            3        NEW      2.5      NEW        0          NEW          1           
+My              2        NEW      2.5      NEW        1          NEW          1           
+father          2        NEW      2.5      NEW        0          NEW          1           
+reads           2        NEW      2.5      NEW        0          NEW          1           
+a               2        NEW      2.5      NEW        0          NEW          1           
+book            2        NEW      2.5      NEW        0          NEW          1           
+Mein            2        NEW      2.5      NEW        0          NEW          1           
+Vater           2        2.5      2.5      0          0          1            1           
+liest           2        NEW      2.5      NEW        0          NEW          1           
+Buch            2        2.5      2.5      0          0          1            1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 16
+Updated Topic Entries: 1
+Vocabulary Updates: 17
+Total Updates: 34
+
+================================================================================

@@ -45,6 +45,8 @@ def get_training_exercises():
                 if cached_next and cached_next.get("exercises"):
                     # logger.info(f"Found cached next exercises for user {username}")
                     # logger.info(f"Successfully loaded cached next exercises for user {username}")
+                    # print(f"🔍 [TRAINING DEBUG] 🔍 Retrieved exercise block with topic: '{cached_next.get('topic')}'", flush=True)
+                    # print(f"🔍 [TRAINING DEBUG] 🔍 Retrieved exercise block keys: {list(cached_next.keys())}", flush=True)
                     block_id = cached_next.get('block_id') if cached_next and isinstance(cached_next, dict) else None
                     # print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
                     return jsonify(cached_next)
@@ -56,6 +58,8 @@ def get_training_exercises():
             ai_block = generate_training_exercises(username)
             if ai_block and ai_block.get("exercises"):
                 # logger.info(f"Storing exercises for user {username}")
+                # print(f"🔍 [TRAINING DEBUG] 🔍 Storing exercise block with topic: '{ai_block.get('topic')}'", flush=True)
+                # print(f"🔍 [TRAINING DEBUG] 🔍 Exercise block keys: {list(ai_block.keys())}", flush=True)
                 store_user_ai_data(
                     username,
                     {
@@ -87,6 +91,8 @@ def get_training_exercises():
                 cached_current = json.loads(row["exercises"])
                 if cached_current and cached_current.get("exercises"):
                     # logger.info(f"Found cached exercises for user {username}")
+                    # print(f"🔍 [TRAINING DEBUG] 🔍 Retrieved current exercise block with topic: '{cached_current.get('topic')}'", flush=True)
+                    # print(f"🔍 [TRAINING DEBUG] 🔍 Retrieved current exercise block keys: {list(cached_current.keys())}", flush=True)
                     block_id = cached_current.get('block_id') if cached_current and isinstance(cached_current, dict) else None
                     # print(f"\033[91m[EXIT] get_training_exercises block_id={block_id if block_id else '(no block_id)'}\033[0m", flush=True)
                     return jsonify(cached_current)

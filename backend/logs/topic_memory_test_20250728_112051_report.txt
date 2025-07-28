@@ -1,0 +1,56 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250728_112051
+Started: 2025-07-28 11:20:51.743598
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+subject pronoun      gap-fill        3        2.4    1      0        hobbies    ___ spiele Fußball.           
+verb conjugation     gap-fill        5        2.6    1      0        hobbies    ___ spiele Fußball.           
+word order           gap-fill        5        2.6    1      0        hobbies    ___ spiele Fußball.           
+indefinite article   translation     2        2.5    0      0        hobbies    I read a book.                
+simple present tense translation     2        2.5    0      0        hobbies    I read a book.                
+subject-verb agreement translation     2        2.5    0      0        hobbies    I read a book.                
+adverb               gap-fill        5        2.6    1      0        hobbies    Ich ___ gern Musik.           
+noun                 gap-fill        5        2.6    1      0        hobbies    Ich ___ gern Musik.           
+personal pronoun     gap-fill        5        2.6    1      0        hobbies    Ich ___ gern Musik.           
+verb                 gap-fill        0        2.5    0      0        hobbies    Ich ___ gern Musik.           
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+definite article     translation     2        2.5      2.5      0          0          1            1            1436     I read a book.                
+personal pronoun     translation     2        2.5      2.5      0          0          1            1            1438     I read a book.                
+present tense        gap-fill        0        2.5      2.5      0          0          0            1            1443     Ich ___ gern Musik.           
+subject pronoun      gap-fill        5        2.4      2.5      1          2          0            6            1448     Ich ___ gern Musik.           
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+spiele          4        NEW      2.5      NEW        0          NEW          1           
+Fußball         4        NEW      2.5      NEW        0          NEW          1           
+Ich             4        NEW      2.2      NEW        2          NEW          6           
+I               2        NEW      2.2      NEW        3          NEW          13          
+read            2        NEW      2.5      NEW        0          NEW          1           
+a               2        NEW      2.2      NEW        2          NEW          6           
+book            2        NEW      2.5      NEW        0          NEW          1           
+lese            2        NEW      2.5      NEW        0          NEW          1           
+Buch            2        2.5      2.5      0          0          1            1           
+gern            3        NEW      2.5      NEW        0          NEW          1           
+Musik           3        NEW      2.5      NEW        0          NEW          1           
+höre            3        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 10
+Updated Topic Entries: 4
+Vocabulary Updates: 12
+Total Updates: 26
+
+================================================================================

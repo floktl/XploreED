@@ -1,0 +1,1251 @@
+kend-1   | 2025-07-27 13:08:02,393 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:02,399 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:02,554 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 📄 [TOPIC MEMORY FLOW] 📄 Received AI response: '```json
+backend-1   | [
+backend-1   |   "pronoun",
+backend-1   |   "verb",
+backend-1   |   "dative case",
+backend-1   |   "infinitive with zu",
+backend-1   |   "word order",
+backend-1   |   "separab...'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully detected topics: ['dative case', 'infinitive with zu', 'pronoun', 'separable verb', 'verb', 'word order']
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Detected features: ['dative case', 'infinitive with zu', 'pronoun', 'separable verb', 'verb', 'word order'] for skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: dative case, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: dative case skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.8000000000000003 Reps: 0 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.9000000000000004 Reps: 1 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1042
+backend-1   | 2025-07-27 13:08:02,576 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:02] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: dative case
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: infinitive with zu, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: infinitive with zu skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.6 Reps: 1 Interval: 0
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1052
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: infinitive with zu
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: pronoun, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: pronoun skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.9000000000000004 Reps: 3 Interval: 17
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.0000000000000004 Reps: 4 Interval: 49
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1031
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: pronoun
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: separable verb, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: separable verb skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.7 Reps: 0 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 1 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1039
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: separable verb
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: verb, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: verb skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 3 Interval: 16
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1063
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: verb
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: word order, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: word order skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.9000000000000004 Reps: 2 Interval: 6
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.0000000000000004 Reps: 3 Interval: 17
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1027
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: word order
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Extracting vocabulary from exercise: ex1
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'Meine Familie und ich planen, ___ am Wochenende ei...'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 11 tokens: ['Meine', 'Familie', 'und', 'ich', 'planen', 'am', 'Wochenende', 'einen', 'Ausflug', 'zu', 'machen']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'Meine' (lower: 'meine')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Meine' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 1: 'Familie' (lower: 'familie')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Familie' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 2: 'und' (lower: 'und')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'und' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 3: 'ich' (lower: 'ich')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'ich' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 4: 'planen' (lower: 'planen')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'planen' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 5: 'am' (lower: 'am')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'am' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 6: 'Wochenende' (lower: 'wochenende')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Wochenende' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 7: 'einen' (lower: 'einen')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found article 'einen' attached to 'Ausflug'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 9: 'zu' (lower: 'zu')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'zu' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 10: 'machen' (lower: 'machen')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'machen' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 10 word-article pairs: [('Meine', None), ('Familie', None), ('und', None), ('ich', None), ('planen', None), ('am', None), ('Wochenende', None), ('Ausflug', 'einen'), ('zu', None), ('machen', None)]
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'um'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 1 tokens: ['um']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'um' (lower: 'um')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'um' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 1 word-article pairs: [('um', None)]
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Extracted 11 words from exercise ex1
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Meine'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Meine' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Meine'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Meine' -> 'Mein'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Mein' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Meine' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'meine'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Meine'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Mein'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Meine'
+backend-1   | 2025-07-27 13:08:02,640 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:03,150 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:03] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:03,443 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'my'
+backend-1   | 2025-07-27 13:08:03,444 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'mein' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'mein'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.7 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:03.454052
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'mein' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Meine' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Familie'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Familie' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Familie'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Familie' -> 'Famili'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Famili' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Familie' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'familie'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Familie'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Famili'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Familie'
+backend-1   | 2025-07-27 13:08:03,460 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:03,726 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:03] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:04,169 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'family'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Famili'
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Skipping invalid form ending in 'i': 'Famili'
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Failed to save vocab word: 'Familie'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Familie' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'und'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'und' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'und'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'und' -> 'und'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'und' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 2025-07-27 13:08:04,172 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-08-02T13:08:04.174288
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'und' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'und' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'ich'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'ich' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'ich'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'ich' -> 'ich'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'ich' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 3.600000000000001 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.700000000000001 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:04.179977
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'ich' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'ich' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'planen'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'planen' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'planen'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'planen' -> 'planen'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'planen' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:04.183683
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'planen' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'planen' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'am'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'am' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'am'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'am' -> 'am'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'am' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'am' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'am'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'am'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'am'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'am'
+backend-1   | 2025-07-27 13:08:04,189 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:04,298 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:04] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:04,764 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:04,862 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:04,868 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:04,873 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:04] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:05,174 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: preposition Translation: 'at, on, in'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'an' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'an'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:05.181868
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'an' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'am' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Wochenende'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Wochenende' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Wochenende'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Wochenende' -> 'Wochenend'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Wochenend' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Wochenende' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'wochenende'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Wochenende'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Wochenend'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Wochenende'
+backend-1   | 2025-07-27 13:08:05,186 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:05,449 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:05] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:05,651 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:06,027 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:06] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:06,088 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'weekend'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Wochenend'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'Wochenend' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Wochenend'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:06.101481
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Wochenend' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Wochenende' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Ausflug'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Ausflug' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Ausflug'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Ausflug' -> 'Ausflug'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Ausflug' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Ausflug' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'ausflug'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Ausflug'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Ausflug'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Ausflug'
+backend-1   | 2025-07-27 13:08:06,109 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:06,357 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:06,602 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:06] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:06,689 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:06,701 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:06,900 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'trip'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Ausflug'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'Ausflug' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Ausflug'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:06.905368
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Ausflug' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Ausflug' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'zu'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'zu' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'zu'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'zu' -> 'zu'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'zu' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 3.0000000000000004 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.1000000000000005 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:06.908379
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'zu' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'zu' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'machen'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'machen' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'machen'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'machen' -> 'machen'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'machen' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:06.910751
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'machen' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'machen' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'um'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'um' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'um'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'um' -> 'um'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'um' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-08-02T13:08:06.913066
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'um' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'um' reviewed
+backend-1   | 🎯 [TOPIC MEMORY FLOW] 🎯 Processing exercise ID: ex2 with answer: 'jh'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Exercise ex2 - Correct: False (Quality: 2)
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Detecting language topics for exercise: ex2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Starting detect_language_topics for text: 'I play football with my family every weekend. Ich ...'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Calling Mistral AI for topic detection
+backend-1   | 2025-07-27 13:08:06,915 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:07,183 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:07] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:07,636 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 2025-07-27 13:08:07,637 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 📄 [TOPIC MEMORY FLOW] 📄 Received AI response: '```json
+backend-1   | [
+backend-1   |   "present tense",
+backend-1   |   "personal pronoun",
+backend-1   |   "definite article",
+backend-1   |   "possessive pronoun",
+backend-1   |   "...'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully detected topics: ['adverb of time', 'definite article', 'personal pronoun', 'possessive pronoun', 'present tense']
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Detected features: ['adverb of time', 'definite article', 'personal pronoun', 'possessive pronoun', 'present tense'] for skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: adverb of time, skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: adverb of time skill: translation quality: 2
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 2 translates to correct: False
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing entry found, creating new topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated initial values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🎲 [TOPIC MEMORY FLOW] 🎲 Assigned random topic: dogs
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new topic memory entry
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully created new topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: adverb of time
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: definite article, skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: definite article skill: translation quality: 2
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 2 translates to correct: False
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1032
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: definite article
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: personal pronoun, skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: personal pronoun skill: translation quality: 2
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 2 translates to correct: False
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.5 Reps: 0 Interval: 0
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1022
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: personal pronoun
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: possessive pronoun, skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: possessive pronoun skill: translation quality: 2
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 2 translates to correct: False
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing entry found, creating new topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated initial values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🎲 [TOPIC MEMORY FLOW] 🎲 Assigned random topic: family
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new topic memory entry
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully created new topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: possessive pronoun
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: present tense, skill: translation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: present tense skill: translation quality: 2
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 2 translates to correct: False
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1024
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: present tense
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Extracting vocabulary from exercise: ex2
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'I play football with my family every weekend.'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 8 tokens: ['I', 'play', 'football', 'with', 'my', 'family', 'every', 'weekend']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'I' (lower: 'i')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'I' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 1: 'play' (lower: 'play')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'play' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 2: 'football' (lower: 'football')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'football' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 3: 'with' (lower: 'with')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'with' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 4: 'my' (lower: 'my')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'my' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 5: 'family' (lower: 'family')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'family' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 6: 'every' (lower: 'every')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'every' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 7: 'weekend' (lower: 'weekend')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'weekend' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 8 word-article pairs: [('I', None), ('play', None), ('football', None), ('with', None), ('my', None), ('family', None), ('every', None), ('weekend', None)]
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'Ich spiele mit meiner Familie jedes Wochenende Fuß...'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 8 tokens: ['Ich', 'spiele', 'mit', 'meiner', 'Familie', 'jedes', 'Wochenende', 'Fußball']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'Ich' (lower: 'ich')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Ich' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 1: 'spiele' (lower: 'spiele')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'spiele' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 2: 'mit' (lower: 'mit')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'mit' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 3: 'meiner' (lower: 'meiner')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'meiner' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 4: 'Familie' (lower: 'familie')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Familie' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 5: 'jedes' (lower: 'jedes')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'jedes' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 6: 'Wochenende' (lower: 'wochenende')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Wochenende' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 7: 'Fußball' (lower: 'fußball')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Fußball' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 8 word-article pairs: [('Ich', None), ('spiele', None), ('mit', None), ('meiner', None), ('Familie', None), ('jedes', None), ('Wochenende', None), ('Fußball', None)]
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Extracted 16 words from exercise ex2
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'I'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'I' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'I'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'I' -> 'I'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'I' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'I' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'i'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'I'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'I'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'I'
+backend-1   | 2025-07-27 13:08:07,692 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:07,744 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:07] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:08,324 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:08] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:08,528 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'I'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'ich' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'ich'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 3.700000000000001 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.700000000000001 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:08.536680
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'ich' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'I' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'play'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'play' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'play'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'play' -> 'play'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'play' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'play' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'play'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'play'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'play'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'play'
+backend-1   | 2025-07-27 13:08:08,543 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:08,895 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:08] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:09,365 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: verb Translation: 'to play'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'spielen' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'spielen'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:09.372700
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'spielen' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'play' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'football'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'football' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'football'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'football' -> 'football'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'football' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'football' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'football'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'football'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'football'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'football'
+backend-1   | 2025-07-27 13:08:09,379 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:09,474 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:09] "GET /api/ai-exercise/training/results HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:10,258 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'soccer'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Fußball'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'Fußball' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Fußball'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:10.265559
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Fußball' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'football' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'with'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'with' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'with'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'with' -> 'with'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'with' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'with' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'with'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'with'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'with'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'with'
+backend-1   | 2025-07-27 13:08:10,272 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:11,028 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: preposition Translation: 'with'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'mit' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'mit'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:11.040116
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'mit' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'with' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'my'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'my' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'my'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'my' -> 'my'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'my' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'my' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'my'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'my'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'my'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'my'
+backend-1   | 2025-07-27 13:08:11,044 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:11,057 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:11] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:11,704 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'my'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'mein' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'mein'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.8000000000000003 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:11.712748
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'mein' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'my' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'family'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'family' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'family'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'family' -> 'family'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'family' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'family' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'family'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'family'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'family'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'family'
+backend-1   | 2025-07-27 13:08:11,722 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:12,063 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:12] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:12,561 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'family'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Famili'
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Skipping invalid form ending in 'i': 'Famili'
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Failed to save vocab word: 'family'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'family' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'every'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'every' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'every'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'every' -> 'every'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'every' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'every' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'every'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'every'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'every'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'every'
+backend-1   | 2025-07-27 13:08:12,573 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:13,063 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:13] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:13,144 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'every'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'jeder' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'jeder'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:13.159386
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'jeder' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'every' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'weekend'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'weekend' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'weekend'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'weekend' -> 'weekend'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'weekend' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'weekend' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'weekend'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'weekend'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'weekend'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'weekend'
+backend-1   | 2025-07-27 13:08:13,166 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:14,064 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:14] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:14,075 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'weekend'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Wochenend'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'Wochenend' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Wochenend'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:14.080175
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Wochenend' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'weekend' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Ich'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Ich' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Ich'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Ich' -> 'Ich'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Ich' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Ich' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'ich'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Ich'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Ich'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Ich'
+backend-1   | 2025-07-27 13:08:14,087 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:14,692 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'I'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'ich' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'ich'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 3.700000000000001 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.700000000000001 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:14.708921
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'ich' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Ich' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'spiele'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'spiele' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'spiele'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'spiele' -> 'spiele'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'spiele' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'spiele' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'spiele'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'spiele'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'spiele'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'spiele'
+backend-1   | 2025-07-27 13:08:14,717 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:15,062 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:15] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:15,504 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: verb Translation: 'play'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'spiel' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'spiel'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:15.514260
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'spiel' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'spiele' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'mit'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'mit' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'mit'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'mit' -> 'mit'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'mit' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:15.518268
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'mit' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'mit' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'meiner'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'meiner' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'meiner'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'meiner' -> 'meiner'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'meiner' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'meiner' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'meiner'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'meiner'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'meiner'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'meiner'
+backend-1   | 2025-07-27 13:08:15,526 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:16,061 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:16] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:16,254 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'my'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'mein' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'mein'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.8000000000000003 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:16.269867
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'mein' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'meiner' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Familie'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Familie' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Familie'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Familie' -> 'Famili'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Word 'Famili' already reviewed in this session, skipping
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Familie' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'jedes'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'jedes' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'jedes'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'jedes' -> 'jedes'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'jedes' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'jedes' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'jedes'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'jedes'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'jedes'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'jedes'
+backend-1   | 2025-07-27 13:08:16,277 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:17,059 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:17] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:17,260 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: pronoun Translation: 'each'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'jeder' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'jeder'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:17.269498
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'jeder' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'jedes' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Wochenende'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Wochenende' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Wochenende'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Wochenende' -> 'Wochenend'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Word 'Wochenend' already reviewed in this session, skipping
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Wochenende' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Fußball'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Fußball' quality: 2
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Fußball'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Fußball' -> 'Fußball'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Fußball' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 2
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:17.274959
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Fußball' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Fußball' reviewed
+backend-1   | 🎯 [TOPIC MEMORY FLOW] 🎯 Processing exercise ID: ex3 with answer: 'der'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Exercise ex3 - Correct: True (Quality: 5)
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Detecting language topics for exercise: ex3
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Starting detect_language_topics for text: 'Der Hund, ___ im Garten spielt, gehört meiner Schw...'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Calling Mistral AI for topic detection
+backend-1   | 2025-07-27 13:08:17,279 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:17,966 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | 📄 [TOPIC MEMORY FLOW] 📄 Received AI response: '```json
+backend-1   | [
+backend-1   |   "relative clause",
+backend-1   |   "relative pronoun",
+backend-1   |   "dative case",
+backend-1   |   "definite article",
+backend-1   |   "indef...'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully detected topics: ['dative case', 'definite article', 'indefinite article', 'relative clause', 'relative pronoun', 'verb conjugation', 'word order']
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Detected features: ['dative case', 'definite article', 'indefinite article', 'relative clause', 'relative pronoun', 'verb conjugation', 'word order'] for skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: dative case, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: dative case skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.9000000000000004 Reps: 1 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.0000000000000004 Reps: 2 Interval: 6
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1042
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: dative case
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: definite article, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: definite article skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.9000000000000004 Reps: 4 Interval: 45
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.0000000000000004 Reps: 5 Interval: 131
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1058
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: definite article
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: indefinite article, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: indefinite article skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.5 Reps: 0 Interval: 0
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1067
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: indefinite article
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: relative clause, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: relative clause skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 3 Interval: 16
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1068
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: relative clause
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: relative pronoun, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: relative pronoun skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.6 Reps: 1 Interval: 0
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1074
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: relative pronoun
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: verb conjugation, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: verb conjugation skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1021
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: verb conjugation
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating topic memory for user: test99, feature: word order, skill: gap-fill
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: test99 grammar: word order skill: gap-fill quality: 5
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Quality 5 translates to correct: True
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing topic memory entry
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found existing topic memory entry, updating...
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current values - EF: 3.0000000000000004 Reps: 3 Interval: 17
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 3.1000000000000005 Reps: 4 Interval: 51
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: 1027
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Topic memory updated for feature: word order
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Extracting vocabulary from exercise: ex3
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'Der Hund, ___ im Garten spielt, gehört meiner Schw...'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 8 tokens: ['Der', 'Hund', 'im', 'Garten', 'spielt', 'gehört', 'meiner', 'Schwester']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'Der' (lower: 'der')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Found article 'der' attached to 'Hund'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 2: 'im' (lower: 'im')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'im' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 3: 'Garten' (lower: 'garten')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Garten' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 4: 'spielt' (lower: 'spielt')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'spielt' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 5: 'gehört' (lower: 'gehört')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'gehört' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 6: 'meiner' (lower: 'meiner')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'meiner' without article
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 7: 'Schwester' (lower: 'schwester')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'Schwester' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 7 word-article pairs: [('Hund', 'der'), ('im', None), ('Garten', None), ('spielt', None), ('gehört', None), ('meiner', None), ('Schwester', None)]
+backend-1   | 📖 [TOPIC MEMORY FLOW] 📖 Starting extract_words for text: 'der'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Found 1 tokens: ['der']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing token 0: 'der' (lower: 'der')
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Adding word 'der' without article
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Extracted 1 word-article pairs: [('der', None)]
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Extracted 8 words from exercise ex3
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Hund'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Hund' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Hund'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Hund' -> 'Hund'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Hund' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-08-02T13:08:18.043818
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Hund' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Hund' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'im'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'im' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'im'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'im' -> 'im'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'im' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'im' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'im'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'im'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'im'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'im'
+backend-1   | 2025-07-27 13:08:18,048 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:18,058 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:18] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:19,066 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:19] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:19,196 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: contraction Translation: 'in the'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'in dem' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'in dem'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-08-02T13:08:19.204222
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'in dem' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'im' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Garten'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Garten' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Garten'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Garten' -> 'Gart'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Gart' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Garten' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'garten'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Garten'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Gart'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Garten'
+backend-1   | 2025-07-27 13:08:19,210 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:20,060 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:20] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:20,321 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'garden'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Gart'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'Gart' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Gart'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:20.332240
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Gart' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Garten' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'spielt'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'spielt' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'spielt'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'spielt' -> 'spielt'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'spielt' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'spielt' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'spielt'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'spielt'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'spielt'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'spielt'
+backend-1   | 2025-07-27 13:08:20,338 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:21,060 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:21] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:21,141 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: verb Translation: 'play'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'spielen' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'spielen'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:21.146561
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'spielen' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'spielt' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'gehört'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'gehört' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'gehört'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'gehört' -> 'gehört'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'gehört' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'gehört' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'gehört'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'gehört'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'gehört'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'gehört'
+backend-1   | 2025-07-27 13:08:21,161 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:22,064 - werkzeug - INFO - 172.18.0.3 - - [27/Jul/2025 13:08:22] "GET /api/ai-exercise/training/topic-memory-status HTTP/1.1" 200 -
+backend-1   | 2025-07-27 13:08:22,169 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: verb Translation: 'hear'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Normalized word 'hören' already exists for user test99
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'hören'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.7 Reps: 2 Interval: 6
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-08-02T13:08:22.176852
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'hören' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'gehört' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'meiner'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'meiner' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'meiner'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'meiner' -> 'meiner'
+backend-1   | ⚠️ [TOPIC MEMORY FLOW] ⚠️ Word 'meiner' already reviewed in this session, skipping
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'meiner' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'Schwester'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'Schwester' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'Schwester'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'Schwester' -> 'Schwester'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'Schwester' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 🆕 [TOPIC MEMORY FLOW] 🆕 No existing vocab entry found, creating new entry
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Starting save_vocab for user: test99 word: 'Schwester' article: 'None'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Lowercase word: 'schwester'
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Processing German word: 'Schwester'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized for existence check: 'Schwester'
+backend-1   | 🤖 [TOPIC MEMORY FLOW] 🤖 Analyzing word with AI: 'Schwester'
+backend-1   | 2025-07-27 13:08:22,185 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+backend-1   | 2025-07-27 13:08:22,973 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ AI analysis successful - Type: noun Translation: 'sister'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Singularized noun: 'Schwester'
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Inserting new vocab entry into database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word 'Schwester' to database
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully saved new vocab word: 'Schwester'
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved new entry values - EF: 2.5 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.6 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:22.985708
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'Schwester' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'Schwester' reviewed
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Reviewing vocabulary word: 'der'
+backend-1   | 🔤 [TOPIC MEMORY FLOW] 🔤 Starting review_vocab_word for user: test99 word: 'der' quality: 5
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Normalizing word: 'der'
+backend-1   | 📝 [TOPIC MEMORY FLOW] 📝 Normalized word: 'der' -> 'der'
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Added 'der' to reviewed set
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Checking for existing vocab entry in database
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Retrieved existing values - EF: 2.7 Reps: 0 Interval: 1
+backend-1   | 🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: 5
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated new values - EF: 2.8000000000000003 Reps: 1 Interval: 1
+backend-1   | 📅 [TOPIC MEMORY FLOW] 📅 Next review date: 2025-07-28T13:08:22.989832
+backend-1   | 💾 [TOPIC MEMORY FLOW] 💾 Updating vocab_log with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Successfully updated vocab word 'der' with new spaced repetition data
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Vocabulary word 'der' reviewed
+backend-1   | 🎉 [TOPIC MEMORY FLOW] 🎉 Completed processing AI answers for user test99: 0 results
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ process_ai_answers completed successfully
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: test99
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Current user level: 4
+backend-1   | 📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: test99 level: 4
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Level 4 topics: ['subordinating conjunctions', 'weil', 'dass clauses']
+backend-1   | 🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Found 0 proficient topics out of 3 total topics
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level progress: 0.0%
+backend-1   | 📈 [TOPIC MEMORY FLOW] 📈 Level progress: 0.0% (need 90% for advancement)
+backend-1   | ❌ [TOPIC MEMORY FLOW] ❌ Progress 0.0% below 90% threshold - no advancement
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed
+backend-1   | 📚 [TOPIC MEMORY FLOW] 📚 Updating exercise history
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Exercise history updated
+backend-1   | 🔄 [TOPIC MEMORY FLOW] 🔄 Prefetching next exercises
+backend-1   | ✅ [TOPIC MEMORY FLOW] ✅ Next exercises prefetched
+backend-1   | 🎉 [TOPIC MEMORY FLOW] 🎉 All topic memory and exercise processing completed successfully!
+
+make a big anlayisis, what topic mmeoeries enries, are new, what are updated, give me a bif table with all thwe necessary information and give a summary at the end

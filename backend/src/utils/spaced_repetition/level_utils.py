@@ -58,17 +58,17 @@ def initialize_topic_memory_for_level(username: str, level: int) -> None:
 
 def calculate_level_progress(username: str, level: int) -> float:
     """Return fraction of level topics answered correctly by the user."""
-    print("\033[95m📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: {} level: {}\033[0m".format(username, level), flush=True)
+    # print("\033[95m📊 [TOPIC MEMORY FLOW] 📊 Starting calculate_level_progress for user: {} level: {}\033[0m".format(username, level), flush=True)
 
     topics = LEVEL_TOPICS.get(level, [])
     if not topics:
         print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ No topics defined for level {}\033[0m".format(level), flush=True)
         return 0.0
 
-    print("\033[94m📚 [TOPIC MEMORY FLOW] 📚 Level {} topics: {}\033[0m".format(level, topics), flush=True)
+    # print("\033[94m📚 [TOPIC MEMORY FLOW] 📚 Level {} topics: {}\033[0m".format(level, topics), flush=True)
 
     placeholders = ",".join(["?"] * len(topics))
-    print("\033[96m🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)\033[0m", flush=True)
+    # print("\033[96m🔍 [TOPIC MEMORY FLOW] 🔍 Querying topic_memory for proficient topics (quality >= 4)\033[0m", flush=True)
 
     rows = select_rows(
         "topic_memory",
@@ -79,15 +79,15 @@ def calculate_level_progress(username: str, level: int) -> float:
     count = len(rows) if rows else 0
     progress = count / len(topics)
 
-    print("\033[93m📈 [TOPIC MEMORY FLOW] 📈 Found {} proficient topics out of {} total topics\033[0m".format(count, len(topics)), flush=True)
-    print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level progress: {:.1%}\033[0m".format(progress), flush=True)
+    # print("\033[93m📈 [TOPIC MEMORY FLOW] 📈 Found {} proficient topics out of {} total topics\033[0m".format(count, len(topics)), flush=True)
+    # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level progress: {:.1%}\033[0m".format(progress), flush=True)
 
     return progress
 
 
 def check_auto_level_up(username: str) -> bool:
     """Increase user's level if 90% of targets are correct."""
-    print("\033[95m📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: {}\033[0m".format(username), flush=True)
+    # print("\033[95m📈 [TOPIC MEMORY FLOW] 📈 Starting check_auto_level_up for user: {}\033[0m".format(username), flush=True)
 
     row = fetch_one("users", "WHERE username = ?", (username,))
     if not row:
@@ -95,24 +95,24 @@ def check_auto_level_up(username: str) -> bool:
         return False
 
     level = row.get("skill_level", 0) or 0
-    print("\033[94m📊 [TOPIC MEMORY FLOW] 📊 Current user level: {}\033[0m".format(level), flush=True)
+    # print("\033[94m📊 [TOPIC MEMORY FLOW] 📊 Current user level: {}\033[0m".format(level), flush=True)
 
     progress = calculate_level_progress(username, level)
-    print("\033[93m📈 [TOPIC MEMORY FLOW] 📈 Level progress: {:.1%} (need 90% for advancement)\033[0m".format(progress), flush=True)
+    # print("\033[93m📈 [TOPIC MEMORY FLOW] 📈 Level progress: {:.1%} (need 90% for advancement)\033[0m".format(progress), flush=True)
 
     if progress >= 0.9 and level < 10:
-        print("\033[92m🎉 [TOPIC MEMORY FLOW] 🎉 Level advancement criteria met! Advancing from level {} to {}\033[0m".format(level, level + 1), flush=True)
+        # print("\033[92m🎉 [TOPIC MEMORY FLOW] 🎉 Level advancement criteria met! Advancing from level {} to {}\033[0m".format(level, level + 1), flush=True)
         update_row(
             "users",
             {"skill_level": level + 1},
             "username = ?",
             (username,),
         )
-        print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully updated user level in database\033[0m", flush=True)
+        # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully updated user level in database\033[0m", flush=True)
         return True
-    else:
-        if progress < 0.9:
-            print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Progress {:.1%} below 90% threshold - no advancement\033[0m".format(progress), flush=True)
-        elif level >= 10:
-            print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ User already at maximum level 10 - no advancement\033[0m", flush=True)
-        return False
+    # else:
+    #     if progress < 0.9:
+    #         # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Progress {:.1%} below 90% threshold - no advancement\033[0m".format(progress), flush=True)
+    #     elif level >= 10:
+    #         # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ User already at maximum level 10 - no advancement\033[0m", flush=True)
+        # return False

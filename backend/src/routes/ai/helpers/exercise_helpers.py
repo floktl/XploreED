@@ -126,7 +126,23 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         # Normalize umlauts for both answers
         user_ans = _normalize_umlauts(user_ans)
         correct_ans = _normalize_umlauts(correct_ans)
+
+        # 🔥 IMPROVED GRADING LOGIC 🔥
+        is_correct = False
         if user_ans == correct_ans:
+            is_correct = True
+        else:
+            # For gap-fill exercises, check if the answer makes grammatical sense
+            exercise_type = ex.get("type", "")
+            if exercise_type == "gap-fill":
+                # Import the function from exercise_routes
+                from ..exercise_routes import _check_gap_fill_correctness
+                is_correct = _check_gap_fill_correctness(ex, user_ans, correct_ans)
+            else:
+                # For other exercise types, use exact match
+                is_correct = user_ans == correct_ans
+
+        if is_correct:
             correct += 1
         else:
             mistakes.append({
@@ -142,10 +158,11 @@ def save_exercise_submission_async(
     block_id: str,
     answers: dict,
     exercises: list,
+    exercise_block: dict = None,
 ) -> None:
     """Save exercise submission and update spaced repetition in a thread. Also update exercise history."""
-    print("\033[95m🔄 [TOPIC MEMORY FLOW] 🔄 Starting save_exercise_submission_async for user: {} block: {}\033[0m".format(username, block_id), flush=True)
-    print("\033[94m📊 [TOPIC MEMORY FLOW] Processing {} exercises with {} answers\033[0m".format(len(exercises), len(answers)), flush=True)
+    # print("\033[95m🔄 [TOPIC MEMORY FLOW] 🔄 Starting save_exercise_submission_async for user: {} block: {}\033[0m".format(username, block_id), flush=True)
+    # print("\033[94m📊 [TOPIC MEMORY FLOW] Processing {} exercises with {} answers\033[0m".format(len(exercises), len(answers)), flush=True)
 
     log_exercise_event("submission_start", username, {
         "block_id": block_id,
@@ -157,36 +174,48 @@ def save_exercise_submission_async(
     from flask import current_app
     app = current_app._get_current_object()
     def run():
-        print("\033[93m⚡ [TOPIC MEMORY FLOW] ⚡ Background thread started for topic memory processing\033[0m", flush=True)
+        # print("\033[93m⚡ [TOPIC MEMORY FLOW] ⚡ Background thread started for topic memory processing\033[0m", flush=True)
         with app.app_context():
             exercises_list = exercises if isinstance(exercises, list) else []
+
+            # Create exercise block with topic if available
+            if exercise_block and isinstance(exercise_block, dict):
+                block_for_processing = {
+                    "exercises": exercises_list,
+                    "topic": exercise_block.get("topic", "general")
+                }
+                print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Using topic from exercise block: '{exercise_block.get('topic')}'", flush=True)
+            else:
+                block_for_processing = {"exercises": exercises_list}
+                print(f"🔍 [TOPIC MEMORY FLOW] 🔍 No exercise block provided, using default topic", flush=True)
+
             try:
-                print("\033[96m🧠 [TOPIC MEMORY FLOW] 🧠 Calling process_ai_answers to update topic memory and vocabulary\033[0m", flush=True)
+                # print("\033[96m🧠 [TOPIC MEMORY FLOW] 🧠 Calling process_ai_answers to update topic memory and vocabulary\033[0m", flush=True)
                 process_ai_answers(
                     username,
                     str(block_id),
                     answers,
-                    {"exercises": exercises_list},
+                    block_for_processing,
                 )
-                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ process_ai_answers completed successfully\033[0m", flush=True)
+                # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ process_ai_answers completed successfully\033[0m", flush=True)
 
-                print("\033[96m📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement\033[0m", flush=True)
+                # print("\033[96m📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement\033[0m", flush=True)
                 check_auto_level_up(username)
-                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed\033[0m", flush=True)
+                # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Level advancement check completed\033[0m", flush=True)
 
-                print("\033[96m📚 [TOPIC MEMORY FLOW] 📚 Updating exercise history\033[0m", flush=True)
+                # print("\033[96m📚 [TOPIC MEMORY FLOW] 📚 Updating exercise history\033[0m", flush=True)
                 new_questions = []
                 for ex in exercises_list:
                     if isinstance(ex, dict) and ex.get("question"):
                         new_questions.append(ex["question"])
                 update_exercise_history(username, new_questions)
-                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Exercise history updated\033[0m", flush=True)
+                # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Exercise history updated\033[0m", flush=True)
 
-                print("\033[96m🔄 [TOPIC MEMORY FLOW] 🔄 Prefetching next exercises\033[0m", flush=True)
+                # print("\033[96m🔄 [TOPIC MEMORY FLOW] 🔄 Prefetching next exercises\033[0m", flush=True)
                 prefetch_next_exercises(username)
-                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Next exercises prefetched\033[0m", flush=True)
+                # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Next exercises prefetched\033[0m", flush=True)
 
-                print("\033[95m🎉 [TOPIC MEMORY FLOW] 🎉 All topic memory and exercise processing completed successfully!\033[0m", flush=True)
+                # print("\033[95m🎉 [TOPIC MEMORY FLOW] 🎉 All topic memory and exercise processing completed successfully!\033[0m", flush=True)
 
                 # Set completion flag for frontend polling (simple in-memory approach)
                 try:
@@ -196,7 +225,6 @@ def save_exercise_submission_async(
 
                     completion_key = f"{username}:{block_id}"
                     current_app.topic_memory_completion[completion_key] = True
-                    print(f"\033[92m✅ [TOPIC MEMORY FLOW] ✅ Completion flag set for user {username} block {block_id}\033[0m", flush=True)
                 except Exception as e:
                     print(f"\033[91m⚠️ [TOPIC MEMORY FLOW] ⚠️ Failed to set completion flag: {e}\033[0m", flush=True)
 
@@ -280,6 +308,7 @@ def get_ai_exercises():
         example_exercise_block=example_block,
         level=level,
         recent_questions=recent_questions,
+        username=username,
     )
 
     if not ai_block or not ai_block.get("exercises"):
@@ -339,11 +368,21 @@ def generate_new_exercises(
     example_exercise_block=None,
     level=None,
     recent_questions=None,
+    username=None,
 ) -> dict | None:
     """Request a new exercise block from Mistral, passing recent questions to avoid repeats."""
 
     if recent_questions is None:
         recent_questions = []
+
+    # Get recent topics to avoid repetition
+    recent_topics = []
+    if username:
+        try:
+            from .helpers import get_recent_exercise_topics
+            recent_topics = get_recent_exercise_topics(username, limit=3)
+        except Exception as e:
+            logger.error(f"Failed to get recent topics: {e}")
 
     try:
         upcoming = sorted(
@@ -393,10 +432,11 @@ def generate_new_exercises(
         vocabular,
         filtered_topic_memory,
         "\n".join(recent_questions),
+        recent_topics,
     )
 
-    print(f"[DEBUG] Exercise generation prompt for user level {level_val} ({cefr_level}):", flush=True)
-    print(f"[DEBUG] Prompt content: {user_prompt['content']}", flush=True)
+    # print(f"[DEBUG] Exercise generation prompt for user level {level_val} ({cefr_level}):", flush=True)
+    # §print(f"[DEBUG] Prompt content: {user_prompt['content']}", flush=True)
 
     messages = make_prompt(user_prompt["content"], SYSTEM_PROMPT)
     # print(f"\033[92m[MISTRAL CALL] generate_new_exercises\033[0m", flush=True)
@@ -463,7 +503,7 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
 
     try:
         ai_block = generate_new_exercises(
-            vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions
+            vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions, username=username
         )
     except ValueError as e:
         logger.error(f"Failed to generate AI block with variation for new user {username}: {e}")
