@@ -5,7 +5,7 @@ import os
 from utils.helpers.helper import require_user
 from app.blueprint import game_bp
 from utils.spaced_repetition.vocab_utils import save_vocab, extract_words
-from .game_helpers import ansi_to_html
+from utils.html.html_utils import ansi_to_html
 from game.sentence_order_game import (
     LEVELS,
     get_scrambled_sentence,

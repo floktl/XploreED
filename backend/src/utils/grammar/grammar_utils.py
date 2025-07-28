@@ -21,12 +21,12 @@ def _extract_json(text: str):
 
 def detect_language_topics(text: str) -> list[str]:
     """Use Mistral to detect grammar topics present in ``text``."""
-    print("\033[95m🔍 [TOPIC MEMORY FLOW] 🔍 Starting detect_language_topics for text: '{}'\033[0m".format(text[:50] + "..." if len(text) > 50 else text), flush=True)
+    # print("\033[95m🔍 [TOPIC MEMORY FLOW] 🔍 Starting detect_language_topics for text: '{}'\033[0m".format(text[:50] + "..." if len(text) > 50 else text), flush=True)
 
     user_prompt = detect_topics_prompt(text)
-    print("\033[96m🤖 [TOPIC MEMORY FLOW] 🤖 Calling Mistral AI for topic detection\033[0m", flush=True)
-    # # print(f"\033[92m[MISTRAL CALL] detect_language_topics\033[0m", flush=True)
-
+    # print("\033[96m🤖 [TOPIC MEMORY FLOW] 🤖 Calling Mistral AI for topic detection\033[0m", flush=True)
+    print(f"\033[92m[MISTRAL CALL] detect_language_topics\033[0m", flush=True)
+    print(user_prompt)
     try:
         resp = send_prompt(
             "You are a helpful German teacher.",
@@ -41,7 +41,7 @@ def detect_language_topics(text: str) -> list[str]:
             if isinstance(topics, list):
                 cleaned = [t.strip().lower() for t in topics if isinstance(t, str)]
                 result = sorted(set(cleaned))
-                print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully detected topics: {}\033[0m".format(result), flush=True)
+                # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully detected topics: {}\033[0m".format(result), flush=True)
                 return result
             else:
                 print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Failed to parse topics from AI response\033[0m", flush=True)

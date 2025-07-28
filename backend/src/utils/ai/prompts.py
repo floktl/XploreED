@@ -117,12 +117,16 @@ def detect_topics_prompt(text: str) -> dict:
     return {
         "role": "user",
         "content": f"""
-You are a helpful German teacher. Identify grammar topics used in the following sentence:
+You are a helpful German teacher. Identify grammar topics used in the following sentence.
 
+For gap-fill exercises (sentences with "___"), focus ONLY on what the gap is testing. Do NOT include grammar topics that are already correctly used elsewhere in the sentence.
+For translation exercises, return all grammar topics used in the sentence.
 "{text}"
 
+IMPORTANT: If this is a gap-fill exercise, analyze what the blank "___" is testing, not the entire sentence structure.
+
 Return only a JSON list of strings such as:
-["modal verb", "pronoun", "subordinating conjunction"]
+["indefinite article", "definite article", "verb conjugation", "personal pronoun"]
 """,
     }
 
@@ -191,8 +195,8 @@ def quality_evaluation_prompt(
             f"{context_line}"
             f"Reference answer: '{reference}'\n"
             f"Student answer: '{student}'\n\n"
-            "IMPORTANT: Evaluate each grammar topic INDIVIDUALLY, not based on the overall sentence correctness.\n"
-            "A grammar element can be used correctly even if the sentence has other errors.\n\n"
+            "IMPORTANT: For gap-fill exercises, if the gap tests related grammar concepts (like personal pronoun + verb conjugation), evaluate them together in the context since they must agree, but still evaluate them individually.\n"
+            "For translation exercises, evaluate each grammar topic individually.\n\n"
             "Return a JSON object where each grammar topic is a key (all lowercase, spaces only), "
             "and its value is an integer from 0 to 5 representing the SM2 quality scale:\n\n"
             "EVALUATION RULES:\n"
@@ -203,7 +207,7 @@ def quality_evaluation_prompt(
             "  * 2 = Incorrect but the student seemed to know the concept\n"
             "  * 1 = Incorrect but some knowledge was shown\n"
             "  * 0 = Complete blackout or completely wrong usage\n"
-            "- Evaluate each grammar element independently\n"
+            "- For translation: Evaluate each grammar element independently\n"
             "- Consider the student's apparent understanding level\n\n"
             "For example:\n"
             "{\n"

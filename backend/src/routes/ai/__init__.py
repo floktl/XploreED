@@ -3,19 +3,6 @@
 from app.imports.imports import *
 from app.blueprint import ai_bp
 
-DEFAULT_TOPICS = [
-    "dogs",
-    "living",
-    "family",
-    "work",
-    "shopping",
-    "travel",
-    "sports",
-    "food",
-    "hobbies",
-    "weather",
-]
-
 FEEDBACK_FILE = [
     {
         "id": "fb1",

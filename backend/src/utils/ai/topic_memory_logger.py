@@ -13,9 +13,9 @@ class TopicMemoryLogger:
 
     def __init__(self, log_dir: str = "logs"):
         self.log_dir = Path(log_dir)
-        print(f"🔧 [LOGGER DEBUG] 🔧 Initializing logger with log_dir: {self.log_dir}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Initializing logger with log_dir: {self.log_dir}", flush=True)
         self.log_dir.mkdir(exist_ok=True)
-        print(f"🔧 [LOGGER DEBUG] 🔧 Created/verified log directory: {self.log_dir}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Created/verified log directory: {self.log_dir}", flush=True)
         self.current_session = None
         self.session_data = {
             "new_entries": [],
@@ -24,11 +24,11 @@ class TopicMemoryLogger:
             "session_start": None,
             "user": None
         }
-        print(f"🔧 [LOGGER DEBUG] Logger initialized successfully", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] Logger initialized successfully", flush=True)
 
     def start_session(self, username: str) -> None:
         """Start a new logging session for a user"""
-        print(f"🔧 [LOGGER DEBUG] 🔧 Starting session for user: {username}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Starting session for user: {username}", flush=True)
         self.session_data = {
             "new_entries": [],
             "updated_entries": [],
@@ -37,7 +37,7 @@ class TopicMemoryLogger:
             "user": username
         }
         self.current_session = f"topic_memory_{username}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        print(f"🔧 [LOGGER DEBUG] Session ID created: {self.current_session}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] Session ID created: {self.current_session}", flush=True)
         print(f"📋 [TOPIC MEMORY LOGGER] Started session: {self.current_session}", flush=True)
 
     def log_topic_update(self,
@@ -51,10 +51,10 @@ class TopicMemoryLogger:
                         row_id: Optional[int] = None) -> None:
         """Log a topic memory update"""
 
-        print(f"🔧 [LOGGER DEBUG] 🔧 log_topic_update called with: username={username}, grammar={grammar}, skill={skill}, quality={quality}, is_new={is_new}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 log_topic_update called with: username={username}, grammar={grammar}, skill={skill}, quality={quality}, is_new={is_new}", flush=True)
 
         if self.current_session is None:
-            print(f"🔧 [LOGGER DEBUG] No current session, starting new one", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] No current session, starting new one", flush=True)
             self.start_session(username)
 
         entry = {
@@ -75,7 +75,7 @@ class TopicMemoryLogger:
                 "context": new_values.get("context") if new_values else ""
             })
             self.session_data["new_entries"].append(entry)
-            print(f"🔧 [LOGGER DEBUG] Added new entry: {entry}", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] Added new entry: {entry}", flush=True)
         else:
             entry.update({
                 "old_ef": old_values.get("ease_factor") if old_values else 2.5,
@@ -88,7 +88,7 @@ class TopicMemoryLogger:
                 "context": new_values.get("context") if new_values else ""
             })
             self.session_data["updated_entries"].append(entry)
-            print(f"🔧 [LOGGER DEBUG] 🔧 Added updated entry: {entry}", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] 🔧 Added updated entry: {entry}", flush=True)
 
     def log_vocabulary_update(self,
                              username: str,
@@ -101,7 +101,7 @@ class TopicMemoryLogger:
         # print(f"🔧 [LOGGER DEBUG] 🔧 log_vocabulary_update called with: username={username}, word={word}, quality={quality}, is_new={is_new}", flush=True)
 
         if self.current_session is None:
-            print(f"🔧 [LOGGER DEBUG] No current session, starting new one", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] No current session, starting new one", flush=True)
             self.start_session(username)
 
         entry = {
@@ -133,15 +133,15 @@ class TopicMemoryLogger:
     def generate_table_report(self) -> str:
         """Generate a formatted table report"""
 
-        print(f"🔧 [LOGGER DEBUG] 🔧 generate_table_report called", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 generate_table_report called", flush=True)
 
         if not self.session_data["user"]:
-            print(f"🔧 [LOGGER DEBUG] 🔧 No user data available", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] 🔧 No user data available", flush=True)
             return "No session data available"
 
-        print(f"🔧 [LOGGER DEBUG] 🔧 Generating report for user: {self.session_data['user']}", flush=True)
-        print(f"🔧 [LOGGER DEBUG] 🔧 New entries: {len(self.session_data['new_entries'])}", flush=True)
-        print(f"🔧 [LOGGER DEBUG] Updated entries: {len(self.session_data['updated_entries'])}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Generating report for user: {self.session_data['user']}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 New entries: {len(self.session_data['new_entries'])}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] Updated entries: {len(self.session_data['updated_entries'])}", flush=True)
         # print(f"🔧 [LOGGER DEBUG] Vocabulary updates: {len(self.session_data['vocabulary_updates'])}", flush=True)
 
         report = []
@@ -206,54 +206,54 @@ class TopicMemoryLogger:
         report.append("=" * 80)
 
         report_content = "\n".join(report)
-        print(f"🔧 [LOGGER DEBUG] 🔧 Generated report content length: {len(report_content)}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Generated report content length: {len(report_content)}", flush=True)
         return report_content
 
     def save_report(self) -> str:
         """Save the report to a file and return the file path"""
 
-        print(f"🔧 [LOGGER DEBUG] save_report called", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] save_report called", flush=True)
 
         if not self.current_session:
-            print(f"🔧 [LOGGER DEBUG] No current session to save", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] No current session to save", flush=True)
             return ""
 
         report_content = self.generate_table_report()
         filename = f"{self.current_session}_report.txt"
         filepath = self.log_dir / filename
 
-        print(f"🔧 [LOGGER DEBUG] Attempting to save to: {filepath}", flush=True)
-        print(f"🔧 [LOGGER DEBUG] 🔧 Log directory exists: {self.log_dir.exists()}", flush=True)
-        print(f"🔧 [LOGGER DEBUG] 🔧 Log directory is writable: {os.access(self.log_dir, os.W_OK)}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] Attempting to save to: {filepath}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Log directory exists: {self.log_dir.exists()}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Log directory is writable: {os.access(self.log_dir, os.W_OK)}", flush=True)
 
         try:
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(report_content)
 
-            print(f"🔧 [LOGGER DEBUG] 🔧 File saved successfully: {filepath}", flush=True)
-            print(f"🔧 [LOGGER DEBUG] 🔧 File exists after save: {filepath.exists()}", flush=True)
-            print(f"🔧 [LOGGER DEBUG] 🔧 File size: {filepath.stat().st_size} bytes", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] 🔧 File saved successfully: {filepath}", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] 🔧 File exists after save: {filepath.exists()}", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] 🔧 File size: {filepath.stat().st_size} bytes", flush=True)
 
             print(f"📄 [TOPIC MEMORY LOGGER] Report saved to: {filepath}", flush=True)
             return str(filepath)
         except Exception as e:
-            print(f"🔧 [LOGGER DEBUG] Error saving file: {e}", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] Error saving file: {e}", flush=True)
             return ""
 
     def end_session(self) -> str:
         """End the current session and save the report"""
 
-        print(f"🔧 [LOGGER DEBUG] end_session called", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] end_session called", flush=True)
 
         if not self.current_session:
-            print(f"🔧 [LOGGER DEBUG] No current session to end", flush=True)
+            # print(f"🔧 [LOGGER DEBUG] No current session to end", flush=True)
             return ""
 
         filepath = self.save_report()
-        print(f"🔧 [LOGGER DEBUG] 🔧 Session ended, filepath: {filepath}", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Session ended, filepath: {filepath}", flush=True)
         self.current_session = None
         return filepath
 
 # Global logger instance
 topic_memory_logger = TopicMemoryLogger()
-print(f"🔧 [LOGGER DEBUG] 🔧 Global logger instance created", flush=True)
+    # print(f"🔧 [LOGGER DEBUG] 🔧 Global logger instance created", flush=True)

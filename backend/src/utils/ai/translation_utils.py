@@ -11,35 +11,8 @@ from utils.ai.prompts import (
     evaluate_translation_prompt,
     quality_evaluation_prompt,
 )
+from utils.spaced_repetition.vocab_utils import _extract_json
 from utils.ai.topic_memory_logger import topic_memory_logger
-import random
-
-# Default conversation topics used when creating new topic memory rows
-DEFAULT_TOPICS = [
-    "dogs",
-    "living",
-    "family",
-    "work",
-    "shopping",
-    "travel",
-    "sports",
-    "food",
-    "hobbies",
-    "weather",
-]
-
-def _extract_json(text: str):
-    """Return a JSON object if ``text`` contains one."""
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(0))
-            except json.JSONDecodeError:
-                pass
-    return None
 
 def _normalize_umlauts(s: str) -> str:
     # Accept ae == ä, oe == ö, ue == ü (and vice versa)
@@ -149,7 +122,7 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
 
 def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int, topic: str = None) -> None:
     """Insert or update one topic memory row based on ``quality``."""
-    print("\033[95m💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: {} grammar: {} skill: {} quality: {}\033[0m".format(username, grammar, skill, quality), flush=True)
+    # print("\033[95m💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: {} grammar: {} skill: {} quality: {}\033[0m".format(username, grammar, skill, quality), flush=True)
 
     # 🔥 IMPROVED SM2 LOGIC 🔥
     # SM2 uses quality 0-5, where 3+ is considered "correct" for spaced repetition
@@ -189,12 +162,6 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             "quality": quality,
             "context": context,
         }
-        if not existing.get("topic"):
-            # Use provided topic or fall back to random choice
-            assigned_topic = topic if topic else random.choice(DEFAULT_TOPICS)
-            update_data["topic"] = assigned_topic
-            print("\033[93m🎯 [TOPIC MEMORY FLOW] 🎯 Assigned topic: {} (from exercise)\033[0m".format(assigned_topic), flush=True)
-
         # print("\033[96m💾 [TOPIC MEMORY FLOW] 💾 Updating existing topic memory row with ID: {}\033[0m".format(existing["id"]), flush=True)
         update_row("topic_memory", update_data, "id = ?", (existing["id"],))
         # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully updated existing topic memory entry\033[0m", flush=True)
@@ -216,20 +183,16 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             new_values=update_data,
             row_id=existing["id"]
         )
-        print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_topic_update successfully", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_topic_update successfully", flush=True)
     else:
         # print("\033[93m🆕 [TOPIC MEMORY FLOW] 🆕 No existing entry found, creating new topic memory entry\033[0m", flush=True)
         ef, reps, interval = sm2(quality)
         # print("\033[92m📈 [TOPIC MEMORY FLOW] 📈 SM2 calculated initial values - EF: {} Reps: {} Interval: {}\033[0m".format(ef, reps, interval), flush=True)
 
-        # Use provided topic or fall back to random choice
-        assigned_topic = topic if topic else random.choice(DEFAULT_TOPICS)
-        print("\033[93m🎯 [TOPIC MEMORY FLOW] 🎯 Assigned topic: {} (from exercise)\033[0m".format(assigned_topic), flush=True)
-
         new_entry = {
             "username": username,
             "grammar": grammar,
-            "topic": assigned_topic,
+            "topic": topic,
             "skill_type": skill,
             "context": context,
             "lesson_content_id": "translation_practice",
@@ -247,7 +210,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
         # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully created new topic memory entry\033[0m", flush=True)
 
         # 🔥 ADD THIS: Log the new entry with debug info
-        print(f"🔧 [LOGGER DEBUG] 🔧 About to call topic_memory_logger.log_topic_update for new entry", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 About to call topic_memory_logger.log_topic_update for new entry", flush=True)
         topic_memory_logger.log_topic_update(
             username=username,
             grammar=grammar,
@@ -256,7 +219,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             is_new=True,
             new_values=new_entry
         )
-        print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_topic_update for new entry successfully", flush=True)
+        # print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_topic_update for new entry successfully", flush=True)
 
     # check for automatic level advancement
     # print("\033[96m📈 [TOPIC MEMORY FLOW] 📈 Checking for automatic level advancement\033[0m", flush=True)
@@ -292,8 +255,21 @@ def compare_topic_qualities(reference: str, student: str) -> dict[str, int]:
     ref_features = set(detect_language_topics(reference) or ["unknown"])
     student_features = set(detect_language_topics(student) or ["unknown"])
     qualities: dict[str, int] = {}
+
     for feat in ref_features | student_features:
-        qualities[feat] = 5 if feat in ref_features and feat in student_features else 2
+        if feat in ref_features and feat in student_features:
+            # Topic detected in both - likely correct usage
+            qualities[feat] = 4  # Good but not perfect
+        elif feat in ref_features and feat not in student_features:
+            # Topic in reference but missing in student - likely incorrect
+            qualities[feat] = 1  # Some knowledge but incorrect
+        elif feat not in ref_features and feat in student_features:
+            # Topic in student but not in reference - likely incorrect
+            qualities[feat] = 1  # Some knowledge but incorrect
+        else:
+            # Fallback case
+            qualities[feat] = 3  # Neutral/unknown
+
     return qualities
 
 __all__ = [

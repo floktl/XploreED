@@ -166,7 +166,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
 
     # Extract block topic for all exercises
     block_topic = exercise_block.get("topic", "general") if exercise_block else "general"
-    print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Using block topic: '{block_topic}' for all exercises", flush=True)
+            # print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Using block topic: '{block_topic}' for all exercises", flush=True)
     # print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Exercise block keys: {list(exercise_block.keys()) if exercise_block else 'None'}", flush=True)
     # print(f"🔍 [TOPIC MEMORY FLOW] 🔍 Exercise block topic: '{exercise_block.get('topic') if exercise_block else 'None'}'", flush=True)
 
