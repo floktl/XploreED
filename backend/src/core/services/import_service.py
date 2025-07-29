@@ -1,16 +1,16 @@
 """Centralised import lists to keep route modules short."""
 
 # ✅ Common imports used in most route files
-from flask import Blueprint, request, jsonify, make_response, current_app
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask import Blueprint, request, jsonify, make_response, current_app, Response  # type: ignore
+from flask_limiter import Limiter  # type: ignore
+from flask_limiter.util import get_remote_address  # type: ignore
 from api.middleware.session import session_manager
 import sqlite3
 import datetime
 import os
 from collections import OrderedDict
-from bs4 import BeautifulSoup
-from werkzeug.security import generate_password_hash, check_password_hash
+from bs4 import BeautifulSoup  # type: ignore
+from werkzeug.security import generate_password_hash, check_password_hash  # type: ignore
 
 from core.utils.html_helpers import (
     update_lesson_blocks_from_html,
@@ -35,6 +35,7 @@ from core.utils.helpers import (
     get_current_user,
     user_exists,
     require_user,
+    run_in_background,
 )
 from config.blueprint import (
     admin_bp,
@@ -201,7 +202,7 @@ class Imports:
 # ✅ Export list
 __all__ = [
     # Flask & system
-    "Blueprint", "request", "jsonify", "make_response", "current_app",
+    "Blueprint", "request", "jsonify", "make_response", "current_app", "Response",
     "Limiter", "get_remote_address", "session_manager", "limiter",
     "sqlite3", "datetime", "os", "OrderedDict", "BeautifulSoup",
     "generate_password_hash", "check_password_hash",
@@ -215,7 +216,7 @@ __all__ = [
     "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
 
     # Global utils
-    "is_admin", "get_current_user", "user_exists", "require_user",
+    "is_admin", "get_current_user", "user_exists", "require_user", "run_in_background",
 
     # Blueprints
     "admin_bp", "auth_bp", "debug_bp", "game_bp", "lesson_progress_bp",

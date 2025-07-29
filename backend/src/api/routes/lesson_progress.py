@@ -1,169 +1,284 @@
-"""Track per-block progress for lesson content."""
+"""
+Lesson Progress Routes
+
+This module contains API routes for tracking and managing lesson progress.
+All business logic has been moved to appropriate helper modules to maintain
+separation of concerns.
+
+Author: German Class Tool Team
+Date: 2025
+"""
+
+import logging
+from typing import Dict, Any
 
 from core.services.import_service import *
+from features.lessons.lesson_progress_helpers import (
+    get_user_lesson_progress,
+    update_block_progress,
+    check_lesson_completion_status,
+    get_lesson_progress_summary,
+    reset_lesson_progress
+)
+from features.lessons.lesson_progress_helpers import mark_lesson_complete, mark_lesson_as_completed  # type: ignore
+
+
+logger = logging.getLogger(__name__)
+
 
 @lesson_progress_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
-    """Return completion status for each block in the lesson."""
-    user_id = require_user()
+    """
+    Get completion status for each block in a lesson.
 
-    rows = select_rows(
-        "lesson_progress",
-        columns=["block_id", "completed"],
-        where="user_id = ? AND lesson_id = ?",
-        params=(user_id, lesson_id),
-    )
+    This endpoint retrieves the progress status for all blocks
+    within a specific lesson for the current user.
 
-    progress = {row["block_id"]: bool(row["completed"]) for row in rows}
-    return jsonify(progress), 200
+    Args:
+        lesson_id: The lesson ID to get progress for
+
+    Returns:
+        JSON response with block completion status or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        progress = get_user_lesson_progress(str(username), lesson_id)
+        return jsonify(progress), 200
+
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson progress for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lesson_progress_bp.route("/lesson-progress", methods=["POST"])
 def update_lesson_progress():
-    """Mark a single lesson block as completed or not."""
-    user_id = require_user()
+    """
+    Mark a single lesson block as completed or not.
 
-    data = request.get_json()
+    This endpoint allows users to update the completion status
+    of individual blocks within a lesson.
 
+    Returns:
+        JSON response with update status or error details
+    """
     try:
-        lesson_id = int(data.get("lesson_id"))
-        block_id = str(data.get("block_id"))
-    except (TypeError, ValueError):
-        return jsonify({"error": "Invalid lesson_id or block_id format"}), 400
+        username = require_user()
+        data = request.get_json() or {}
 
-    if not lesson_id or not block_id:
-        return jsonify({"error": "Missing lesson_id or block_id"}), 400
+        lesson_id = data.get("lesson_id")
+        block_id = data.get("block_id")
+        completed = data.get("completed", False)
 
-    completed = data.get("completed", False)
+        if not lesson_id or not block_id:
+            return jsonify({"error": "Missing lesson_id or block_id"}), 400
 
-    execute_query("""
-        INSERT INTO lesson_progress (user_id, lesson_id, block_id, completed, updated_at)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(user_id, lesson_id, block_id)
-        DO UPDATE SET completed = excluded.completed, updated_at = excluded.updated_at
-    """, (user_id, lesson_id, block_id, int(completed), datetime.datetime.utcnow()))
+        try:
+            lesson_id = int(lesson_id)
+            block_id = str(block_id)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Invalid lesson_id or block_id format"}), 400
 
-    return jsonify({"status": "success"}), 200
+        if lesson_id <= 0:
+            return jsonify({"error": "Lesson ID must be greater than 0"}), 400
 
+        success = update_block_progress(str(username), lesson_id, block_id, bool(completed))
+
+        if not success:
+            return jsonify({"error": "Failed to update progress"}), 500
+
+        return jsonify({"status": "success"}), 200
+
+    except ValueError as e:
+        logger.error(f"Validation error updating lesson progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error updating lesson progress: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lesson_progress_bp.route("/lesson-progress-complete", methods=["POST"])
 def mark_lesson_complete():
-    """Confirm that a lesson is fully completed."""
-    user_id = require_user()
+    """
+    Confirm that a lesson is fully completed.
 
+    This endpoint verifies that all blocks in a lesson are completed
+    and marks the lesson as fully complete.
+
+    Returns:
+        JSON response with completion status or error details
+    """
     try:
-        data = request.get_json()
+        username = require_user()
+        data = request.get_json() or {}
 
         if not data or "lesson_id" not in data:
             return jsonify({"error": "Missing lesson_id in request"}), 400
 
-        lesson_id = int(data.get("lesson_id"))
+        try:
+            lesson_id = int(data.get("lesson_id") or 0)
+        except (TypeError, ValueError) as e:
+            logger.error(f"Error parsing lesson_id: {e}")
+            return jsonify({"error": "Invalid lesson ID"}), 400
 
         if lesson_id <= 0:
-            print("❌ lesson_id must be greater than 0", flush=True)
-            return jsonify({"error": "Lesson ID must be > 0"}), 400
+            logger.warning(f"Invalid lesson_id: {lesson_id}")
+            return jsonify({"error": "Lesson ID must be greater than 0"}), 400
 
-    except (TypeError, ValueError) as e:
-        print(f"❌ Error parsing lesson_id: {e}", flush=True)
-        return jsonify({"error": "Invalid lesson ID"}), 400
+        success, error_message = mark_lesson_complete(str(username), lesson_id)  # type: ignore
 
-    num_blocks_row = select_one(
-        "lesson_content",
-        columns="num_blocks",
-        where="lesson_id = ?",
-        params=(lesson_id,),
-    )
-    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
+        if not success:
+            return jsonify({"error": error_message}), 400
 
-    completed_blocks_row = select_one(
-        "lesson_progress",
-        columns="COUNT(*) as count",
-        where="user_id = ? AND lesson_id = ? AND completed = 1",
-        params=(user_id, lesson_id),
-    )
-    completed_blocks = completed_blocks_row.get("count") if completed_blocks_row else 0
+        return jsonify({"status": "lesson confirmed complete"}), 200
 
-    if completed_blocks < total_blocks and total_blocks > 0:
-        print("❌ Lesson not fully completed", flush=True)
-        return jsonify({"error": "Lesson not fully completed"}), 400
-
-    update_row(
-        "lesson_progress",
-        {"completed": 1},
-        "user_id = ? AND lesson_id = ?",
-        (user_id, lesson_id),
-    )
-    return jsonify({"status": "lesson confirmed mplete"}), 200
-
+    except Exception as e:
+        logger.error(f"Error marking lesson complete: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lesson_progress_bp.route("/lesson-completed", methods=["POST"])
 def check_lesson_marked_complete():
-    """Check if the lesson is marked as completed for the user."""
-    user_id = require_user()
+    """
+    Check if a lesson is marked as completed for the current user.
 
+    This endpoint verifies the completion status of a lesson
+    and returns detailed progress information.
+
+    Returns:
+        JSON response with completion status and details or error details
+    """
     try:
-        lesson_id = int(request.get_json().get("lesson_id"))
+        username = require_user()
+        data = request.get_json() or {}
+
+        try:
+            lesson_id = int(data.get("lesson_id") or 0)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Invalid lesson ID"}), 400
+
         if lesson_id <= 0:
-            return jsonify({"error": "Lesson ID must be > 0"}), 400
-    except (TypeError, ValueError):
-        return jsonify({"error": "Invalid lesson ID"}), 400
+            return jsonify({"error": "Lesson ID must be greater than 0"}), 400
 
-    total_blocks_row = select_one(
-        "lesson_blocks",
-        columns="COUNT(*) as count",
-        where="lesson_id = ?",
-        params=(lesson_id,),
-    )
-    total_blocks = total_blocks_row.get("count") if total_blocks_row else 0
+        status = check_lesson_completion_status(str(username), lesson_id)
+        return jsonify(status)
 
-    completed_blocks_row = select_one(
-        "lesson_progress",
-        columns="COUNT(*) as count",
-        where="user_id = ? AND lesson_id = ? AND completed = 1",
-        params=(user_id, lesson_id),
-    )
-    completed_blocks = completed_blocks_row.get("count") if completed_blocks_row else 0
-
-    completed = total_blocks > 0 and completed_blocks == total_blocks
-    return jsonify({"completed": completed})
+    except ValueError as e:
+        logger.error(f"Validation error checking lesson completion: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error checking lesson completion: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lesson_progress_bp.route("/mark-as-completed", methods=["POST"])
 def mark_lesson_as_completed():
-    """Mark an entire lesson as completed and record results."""
-    user_id = require_user()
+    """
+    Mark an entire lesson as completed and record results.
 
-    data = request.get_json()
-    lesson_id = data.get("lesson_id")
+    This endpoint marks a lesson as completed and records the result
+    in the results table for tracking purposes.
 
-    if not lesson_id:
-        return jsonify({"error": "Missing lesson_id"}), 400
+    Returns:
+        JSON response with completion status or error details
+    """
+    try:
+        username = require_user()
+        data = request.get_json() or {}
 
-    num_blocks_row = select_one(
-        "lesson_content",
-        columns="num_blocks",
-        where="lesson_id = ?",
-        params=(lesson_id,),
-    )
-    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
+        lesson_id = data.get("lesson_id")
 
-    if total_blocks == 0:
-        insert_row("results", {"username": user_id, "level": lesson_id, "correct": 1})
-        return jsonify({"status": "completed (no blocks)"}), 200
+        if not lesson_id:
+            return jsonify({"error": "Missing lesson_id"}), 400
 
-    completed_row = select_one(
-        "lesson_progress",
-        columns="COUNT(*) as count",
-        where="lesson_id = ? AND user_id = ? AND completed = 1",
-        params=(lesson_id, user_id),
-    )
-    completed = completed_row.get("count") if completed_row else 0
+        try:
+            lesson_id = int(lesson_id)
+        except (TypeError, ValueError):
+            return jsonify({"error": "Invalid lesson ID format"}), 400
 
-    if completed < total_blocks:
-        return jsonify({"error": "Lesson is not fully completed"}), 400
+        if lesson_id <= 0:
+            return jsonify({"error": "Lesson ID must be greater than 0"}), 400
 
-    insert_row("results", {"username": user_id, "level": lesson_id, "correct": 1})
-    return jsonify({"status": "completed"}), 200
+        success, error_message = mark_lesson_as_completed(str(username), lesson_id)  # type: ignore
+
+        if not success:
+            return jsonify({"error": error_message}), 400
+
+        return jsonify({"status": "completed"}), 200
+
+    except Exception as e:
+        logger.error(f"Error marking lesson as completed: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+
+@lesson_progress_bp.route("/progress-summary/<int:lesson_id>", methods=["GET"])
+def get_progress_summary(lesson_id):
+    """
+    Get comprehensive progress summary for a lesson.
+
+    This endpoint provides detailed progress information including
+    completion rates, activity timestamps, and overall status.
+
+    Args:
+        lesson_id: The lesson ID to get summary for
+
+    Returns:
+        JSON response with progress summary or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        summary = get_lesson_progress_summary(str(username), lesson_id)
+        return jsonify(summary)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting progress summary: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting progress summary for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+
+@lesson_progress_bp.route("/reset-progress/<int:lesson_id>", methods=["POST"])
+def reset_progress(lesson_id):
+    """
+    Reset all progress for a specific lesson.
+
+    This endpoint allows users to reset their progress for a lesson,
+    clearing all completion records and starting fresh.
+
+    Args:
+        lesson_id: The lesson ID to reset progress for
+
+    Returns:
+        JSON response with reset status or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        success = reset_lesson_progress(str(username), lesson_id)
+
+        if not success:
+            return jsonify({"error": "Failed to reset progress"}), 500
+
+        return jsonify({"status": "progress reset"}), 200
+
+    except ValueError as e:
+        logger.error(f"Validation error resetting progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error resetting progress for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 

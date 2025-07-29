@@ -15,12 +15,13 @@ services:
     volumes:
       - ./backend:/app
       - ./backend/secrets/.env:/app/secrets/.env
+      - ./backend/database:/app/database
     env_file:
       - ./backend/secrets/.env
     command: >-
       sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
       pip install -r requirements.txt &&
-      python src/app/migration_script.py &&
+      python scripts/migration_script.py &&
       FLASK_ENV=development PYTHONPATH=src python src/main.py"
 
 
@@ -28,6 +29,7 @@ services:
       - "5050:5050"
     environment:
       - REDIS_HOST=redis
+      - DB_FILE=/app/database/user_data.db
     depends_on:
       - redis
 

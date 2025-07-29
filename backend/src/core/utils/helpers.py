@@ -1,13 +1,13 @@
 """Helper utilities for user session management."""
 
 from flask import request, jsonify, abort, make_response  # type: ignore
-from api.middleware.session import session_manager
 from core.database.connection import select_one
 import threading
 
 
 def is_admin():
     """Returns True if the current session user is 'admin'."""
+    from api.middleware.session import session_manager
     session_id = request.cookies.get("session_id")
     user = session_manager.get_user(session_id)
     return user == "admin"
@@ -26,12 +26,14 @@ def user_exists(username):
 
 def get_current_user():
     """Returns the current logged-in user based on session cookie."""
+    from api.middleware.session import session_manager
     session_id = request.cookies.get("session_id")
     return session_manager.get_user(session_id)
 
 
 def require_user():
     """Return the current user or abort with a 401 JSON response."""
+    from api.middleware.session import session_manager
     session_id = request.cookies.get("session_id")
     username = session_manager.get_user(session_id)
     if not username:

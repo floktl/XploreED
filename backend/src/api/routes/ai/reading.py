@@ -1,114 +1,186 @@
+"""
+AI Reading Routes
+
+This module contains API routes for AI-powered reading exercise generation and evaluation.
+All business logic has been moved to appropriate helper modules to maintain
+separation of concerns.
+
+Author: German Class Tool Team
+Date: 2025
+"""
+
+import logging
+
 from core.services.import_service import *
+from features.ai.generation.reading_helpers import (
+    ai_reading_exercise
+)
+from features.ai.generation.helpers import (
+    format_feedback_block
+)
+from features.ai.evaluation.translation_evaluator import (
+    _strip_final_punct,
+    _normalize_umlauts
+)
+from features.ai.prompts.exercise_prompts import (
+    feedback_generation_prompt
+)
+from features.ai.memory.vocabulary_memory import (
+    extract_words,
+    save_vocab
+)
+
+
+logger = logging.getLogger(__name__)
+
 
 @ai_bp.route("/reading-exercise", methods=["POST"])
 def reading_exercise():
-    """Proxy to the lesson reading exercise generator."""
-    from features.ai.generation.reading_helpers import ai_reading_exercise
+    """
+    Generate a reading exercise for the user.
 
-    return ai_reading_exercise()
+    This endpoint creates AI-powered reading exercises with comprehension
+    questions based on the user's skill level and learning progress.
+
+    Returns:
+        JSON response with reading exercise or error details
+    """
+    try:
+        username = require_user()
+        logger.info(f"User {username} requesting reading exercise")
+
+        return ai_reading_exercise()
+
+    except ValueError as e:
+        logger.error(f"Validation error generating reading exercise: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error generating reading exercise: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @ai_bp.route("/reading-exercise/submit", methods=["POST"])
 def submit_reading_exercise():
-    """Evaluate reading answers and update memory."""
-    username = require_user()
+    """
+    Evaluate reading exercise answers and update memory.
 
-    data = request.get_json() or {}
-    answers = data.get("answers", {})
-    exercise_id = data.get("exercise_id")
-    cache = current_app.config.get("READING_EXERCISE_CACHE", {})
-    exercise = cache.get(exercise_id)
-    if not exercise:
-        return jsonify({"error": "Exercise not found or expired"}), 400
-    text = exercise.get("text", "")
-    questions = exercise.get("questions", [])
+    This endpoint processes user answers to reading comprehension questions,
+    provides feedback, and updates the user's learning progress.
 
-    # Debug: log questions and their fields
-    import logging
-    logger = logging.getLogger("reading_debug")
-    # for q in questions:
-    #     logger.info(f"Q: {q}")
-    #     logger.info(f"id: {q.get('id')}, question: {q.get('question')}, correctAnswer: {q.get('correctAnswer')}")
-
-    correct = 0
-    results = []
-    feedback_blocks = []
-    mistakes = []
-    from external.mistral.client import send_prompt
-
-    for q in questions:
-        qid = str(q.get("id"))
-        sol = str(q.get("correctAnswer", "")).strip().lower()
-        ans = str(answers.get(qid, "")).strip().lower()
-        # Ignore final . or ? for all exercise types
-        sol = _strip_final_punct(sol)
-        ans = _strip_final_punct(ans)
-        # Normalize umlauts for both answers
-        sol = _normalize_umlauts(sol)
-        ans = _normalize_umlauts(ans)
-        status = "correct" if ans == sol else "incorrect"
-        explanation = ""
-        if status == "incorrect":
-            # Generate a very short explanation using AI
-            prompt = f"Explain in one short sentence (no more than 12 words) why the answer '{answers.get(qid, '')}' is incorrect for the question: {q.get('question')} (correct answer: {q.get('correctAnswer')})"
-            try:
-                resp = send_prompt(
-                    "You are a helpful German teacher.",
-                    {"role": "user", "content": prompt},
-                    temperature=0.3
-                )
-                # current_app.logger.info(f"AI explanation response: {resp.status_code} {resp.text}")
-                if resp.status_code == 200:
-                    explanation = resp.json()["choices"][0]["message"]["content"].strip()
-            except Exception as e:
-                current_app.logger.error(f"Failed to generate per-question explanation: {e}")
-                explanation = ""
-        block = format_feedback_block(
-            user_answer=answers.get(qid, ""),
-            correct_answer=q.get("correctAnswer"),
-            alternatives=[],
-            explanation=explanation,
-            diff=None,
-            status=status
-        )
-        feedback_blocks.append(block)
-        if ans == sol:
-            correct += 1
-        else:
-            mistakes.append({
-                "question": q.get("question"),
-                "your_answer": answers.get(qid, ""),
-                "correct_answer": q.get("correctAnswer"),
-            })
-        results.append({"id": qid, "correct_answer": q.get("correctAnswer")})
-
-    summary = {"correct": correct, "total": len(questions), "mistakes": mistakes}
-
-    # Generate feedbackPrompt using Mistral
-    feedbackPrompt = None
+    Returns:
+        JSON response with evaluation results or error details
+    """
     try:
-        from external.mistral.client import send_prompt
-        mistakes_text = "\n".join([
-            f"Q: {m['question']}\nYour answer: {m['your_answer']}\nCorrect: {m['correct_answer']}" for m in mistakes
-        ])
-        prompt = feedback_generation_prompt(correct, len(questions), mistakes_text, "", "")
-        resp = send_prompt(
-            "You are a helpful German teacher.",
-            prompt,
-            temperature=0.5,
-        )
-        if resp.status_code == 200:
-            feedbackPrompt = resp.json()["choices"][0]["message"]["content"]
-    except Exception as e:
-        current_app.logger.error("Failed to generate feedbackPrompt: %s", e)
+        username = require_user()
+        logger.info(f"User {username} submitting reading exercise")
+
+        data = request.get_json() or {}
+        answers = data.get("answers", {})
+        exercise_id = data.get("exercise_id")
+        cache = current_app.config.get("READING_EXERCISE_CACHE", {})
+        exercise = cache.get(exercise_id)
+        if not exercise:
+            return jsonify({"error": "Exercise not found or expired"}), 400
+        text = exercise.get("text", "")
+        questions = exercise.get("questions", [])
+
+        logger.debug(f"Processing {len(questions)} questions for user {username}")
+
+        correct = 0
+        results = []
+        feedback_blocks = []
+        mistakes = []
+
+        for q in questions:
+            qid = str(q.get("id"))
+            sol = str(q.get("correctAnswer", "")).strip().lower()
+            ans = str(answers.get(qid, "")).strip().lower()
+            # Ignore final . or ? for all exercise types
+            sol = _strip_final_punct(sol)
+            ans = _strip_final_punct(ans)
+            # Normalize umlauts for both answers
+            sol = _normalize_umlauts(sol)
+            ans = _normalize_umlauts(ans)
+            status = "correct" if ans == sol else "incorrect"
+            explanation = ""
+            if status == "incorrect":
+                # Generate a very short explanation using AI
+                prompt = f"Explain in one short sentence (no more than 12 words) why the answer '{answers.get(qid, '')}' is incorrect for the question: {q.get('question')} (correct answer: {q.get('correctAnswer')})"
+                try:
+                    resp = send_prompt(
+                        "You are a helpful German teacher.",
+                        {"role": "user", "content": prompt},
+                        temperature=0.3
+                    )
+                    logger.debug(f"AI explanation response: {resp.status_code}")
+                    if resp.status_code == 200:
+                        explanation = resp.json()["choices"][0]["message"]["content"].strip()
+                except Exception as e:
+                    logger.error(f"Failed to generate per-question explanation: {e}")
+                    explanation = ""
+            block = format_feedback_block(
+                user_answer=answers.get(qid, ""),
+                correct_answer=q.get("correctAnswer"),
+                alternatives=[],
+                explanation=explanation,
+                diff=None,
+                status=status
+            )
+            feedback_blocks.append(block)
+            if ans == sol:
+                correct += 1
+            else:
+                mistakes.append({
+                    "question": q.get("question"),
+                    "your_answer": answers.get(qid, ""),
+                    "correct_answer": q.get("correctAnswer"),
+                })
+            results.append({"id": qid, "correct_answer": q.get("correctAnswer")})
+
+        summary = {"correct": correct, "total": len(questions), "mistakes": mistakes}
+
+        # Generate feedbackPrompt using Mistral
         feedbackPrompt = None
+        try:
+            mistakes_text = "\n".join([
+                f"Q: {m['question']}\nYour answer: {m['your_answer']}\nCorrect: {m['correct_answer']}" for m in mistakes
+            ])
+            prompt = feedback_generation_prompt(correct, len(questions), mistakes_text, "", "")
+            resp = send_prompt(
+                "You are a helpful German teacher.",
+                {"role": "user", "content": prompt},
+                temperature=0.5,
+            )
+            if resp.status_code == 200:
+                feedbackPrompt = resp.json()["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            logger.error(f"Failed to generate feedback prompt: {e}")
 
-    # Save vocab and update topic memory in background threads
-    import threading
-    def save_vocab_bg():
-        for word, art in extract_words(text):
-            save_vocab(username, word, context=text, exercise="reading", article=art)
-    threading.Thread(target=save_vocab_bg, daemon=True).start()
-    threading.Thread(target=update_reading_memory_async, args=(username, text), daemon=True).start()
+        # Save vocabulary words in background
+        def save_vocab_bg():
+            try:
+                # Extract German words from the text
+                words = extract_words(text)
+                for word in words:
+                    save_vocab(str(username), str(word), "reading_exercise")
+                logger.info(f"Saved {len(words)} vocabulary words for user {username}")
+            except Exception as e:
+                logger.error(f"Failed to save vocabulary words: {e}")
 
-    return jsonify({"summary": summary, "results": results, "feedbackPrompt": feedbackPrompt, "feedbackBlocks": feedback_blocks})
+        run_in_background(save_vocab_bg)
+
+        logger.info(f"Reading exercise completed for user {username}: {correct}/{len(questions)} correct")
+        return jsonify({
+            "pass": correct >= len(questions) * 0.7,  # 70% threshold
+            "summary": summary,
+            "feedback_blocks": feedback_blocks,
+            "feedbackPrompt": feedbackPrompt,
+            "results": results
+        })
+
+    except ValueError as e:
+        logger.error(f"Validation error submitting reading exercise: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error submitting reading exercise: {e}")
+        return jsonify({"error": "Server error"}), 500

@@ -1,412 +1,229 @@
-"""Routes serving AI feedback data."""
+"""
+AI Feedback Routes
+
+This module contains API routes for AI-powered feedback generation and management.
+All business logic has been moved to appropriate helper modules to maintain
+separation of concerns.
+
+Author: German Class Tool Team
+Date: 2025
+"""
+
+import logging
+from typing import Dict, Any
 
 from core.services.import_service import *
-import os
-import json
-import random
-import uuid
-import redis
+from features.ai.feedback_helpers import (
+    get_feedback_progress,
+    generate_feedback_with_progress,
+    get_feedback_result,
+    get_cached_feedback_list,
+    get_cached_feedback_item,
+    generate_ai_feedback_simple
+)
 
-# Connect to Redis (host from env, default 'localhost')
-redis_host = os.getenv('REDIS_HOST', 'localhost')
-redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
+
+logger = logging.getLogger(__name__)
 
 
 @ai_bp.route("/ai-feedback/progress/<session_id>", methods=["GET"])
-def get_feedback_progress(session_id):
-    # print("\033[92m[ENTER] get_feedback_progress\033[0m", flush=True)
-    """Get the current progress of AI feedback generation."""
-    username = require_user()
-    progress_json = redis_client.get(f"feedback_progress:{session_id}")
-    if not progress_json:
-        return jsonify({"error": "Session not found"}), 404
-    progress = json.loads(progress_json)
-    # print(f"[Feedback Progress] Frontend requested progress for session {session_id}: {progress['percentage']}% - {progress['status']} - Completed: {progress.get('completed', False)}")
-    # print("\033[91m[EXIT] get_feedback_progress\033[0m", flush=True)
-    return jsonify(progress)
+def get_feedback_progress_route(session_id):
+    """
+    Get the current progress of AI feedback generation.
+
+    This endpoint allows the frontend to poll for progress updates
+    during AI feedback generation.
+
+    Args:
+        session_id: The feedback session ID
+
+    Returns:
+        JSON response with progress information or error details
+    """
+    try:
+        username = require_user()
+        logger.debug(f"Getting feedback progress for user {username}, session {session_id}")
+
+        progress = get_feedback_progress(session_id)
+
+        if "error" in progress:
+            return jsonify(progress), 404
+
+        return jsonify(progress)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting feedback progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting feedback progress: {e}")
+        return jsonify({"error": "Server error"}), 500
+
 
 @ai_bp.route("/ai-feedback/generate-with-progress", methods=["POST"])
-def generate_ai_feedback_with_progress():
-    # print("\033[93m[ENTER] generate_ai_feedback_with_progress\033[0m", flush=True)
-    """Generate AI feedback with progress tracking."""
-    username = require_user()
-    session_id = str(uuid.uuid4())
-    progress = {
-        "percentage": 0,
-        "status": "Starting feedback generation...",
-        "step": "init",
-        "completed": False
-    }
-    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-    data = request.get_json() or {}
-    answers = data.get("answers", {})
-    exercise_block = data.get("exercise_block")
-    def update_progress(percentage, status, step):
-        progress_json = redis_client.get(f"feedback_progress:{session_id}")
-        if progress_json:
-            progress = json.loads(progress_json)
-            progress.update({
-                "percentage": percentage,
-                "status": status,
-                "step": step
-            })
-            redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-    def run_feedback_generation():
-        try:
-            update_progress(10, "Analyzing your answers...", "analyzing")
-            if not exercise_block or not isinstance(exercise_block, dict) or not exercise_block.get("exercises") or not isinstance(exercise_block.get("exercises"), list) or len(exercise_block.get("exercises")) == 0:
-                update_progress(99, "No valid exercise block or exercises provided", "error")
-                import logging
-                logging.getLogger(__name__).error(f"Feedback error: Invalid or missing exercise_block: {exercise_block}", flush=True)
-                # Always write error result to Redis
-                error_result = {
-                    "feedbackPrompt": "Error: No valid exercise block or exercises provided.",
-                    "summary": {},
-                    "results": [],
-                    "ready": True,
-                    "error": "No valid exercise block or exercises provided."
-                }
-                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-                progress_json = redis_client.get(f"feedback_progress:{session_id}")
-                if progress_json:
-                    progress = json.loads(progress_json)
-                    progress["result"] = error_result
-                    progress["completed"] = True
-                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-                return
-            all_exercises = exercise_block.get("exercises", [])
-            update_progress(30, "Evaluating answers with AI...", "evaluating")
-            try:
-                evaluation = evaluate_answers_with_ai(all_exercises, answers)
-                evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
-            except Exception as e:
-                update_progress(99, f"AI evaluation error: {str(e)}", "error")
-                print(f"[Feedback Error] AI evaluation failed: {e}", flush=True)
-                error_result = {
-                    "feedbackPrompt": f"Error: AI evaluation failed: {e}",
-                    "summary": {},
-                    "results": [],
-                    "ready": True,
-                    "error": f"AI evaluation failed: {e}"
-                }
-                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-                progress_json = redis_client.get(f"feedback_progress:{session_id}")
-                if progress_json:
-                    progress = json.loads(progress_json)
-                    progress["result"] = error_result
-                    progress["completed"] = True
-                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-                return
-            if not evaluation:
-                update_progress(99, "AI evaluation failed", "error")
-                print(f"[Feedback Error] AI evaluation returned None", flush=True)
-                error_result = {
-                    "feedbackPrompt": "Error: AI evaluation failed.",
-                    "summary": {},
-                    "results": [],
-                    "ready": True,
-                    "error": "AI evaluation failed."
-                }
-                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-                progress_json = redis_client.get(f"feedback_progress:{session_id}")
-                if progress_json:
-                    progress = json.loads(progress_json)
-                    progress["result"] = error_result
-                    progress["completed"] = True
-                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-                return
-            update_progress(50, "Processing evaluation results...", "processing")
-            id_map = {
-                str(r.get("id")): r.get("correct_answer")
-                for r in evaluation.get("results", [])
-            }
-            summary = {"correct": 0, "total": len(all_exercises), "mistakes": []}
-            for ex in all_exercises:
-                cid = str(ex.get("id"))
-                user_ans = answers.get(cid, "")
-                correct_ans = id_map.get(cid, "")
-                user_ans = _strip_final_punct(user_ans)
-                correct_ans = _strip_final_punct(correct_ans)
-                user_ans = _normalize_umlauts(user_ans)
-                correct_ans = _normalize_umlauts(correct_ans)
-                if user_ans == correct_ans:
-                    summary["correct"] += 1
-                else:
-                    summary["mistakes"].append({
-                        "question": ex.get("question"),
-                        "your_answer": user_ans,
-                        "correct_answer": correct_ans,
-                    })
-            update_progress(70, "Fetching your vocabulary and progress data...", "fetching_data")
-            try:
-                vocab_rows = select_rows(
-                    "vocab_log",
-                    columns=[
-                        "vocab",
-                        "translation",
-                        "interval_days",
-                        "next_review",
-                        "ef",
-                        "repetitions",
-                        "last_review",
-                    ],
-                    where="username = ?",
-                    params=(username,),
-                )
-                vocab_data = [
-                    {
-                        "word": row["vocab"],
-                        "translation": row.get("translation"),
-                    }
-                    for row in vocab_rows
-                ] if vocab_rows else []
-                topic_rows = fetch_topic_memory(username)
-                topic_data = [dict(row) for row in topic_rows] if topic_rows else []
-            except Exception as e:
-                update_progress(99, f"Data fetch error: {str(e)}", "error")
-                print(f"[Feedback Error] Data fetch failed: {e}", flush=True)
-                error_result = {
-                    "feedbackPrompt": f"Error: Data fetch failed: {e}",
-                    "summary": {},
-                    "results": [],
-                    "ready": True,
-                    "error": f"Data fetch failed: {e}"
-                }
-                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-                progress_json = redis_client.get(f"feedback_progress:{session_id}")
-                if progress_json:
-                    progress = json.loads(progress_json)
-                    progress["result"] = error_result
-                    progress["completed"] = True
-                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-                return
-            update_progress(85, "Generating personalized feedback...", "generating_feedback")
-            try:
-                feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
-            except Exception as e:
-                update_progress(99, f"Feedback generation error: {str(e)}", "error")
-                print(f"[Feedback Error] Feedback generation failed: {e}", flush=True)
-                error_result = {
-                    "feedbackPrompt": f"Error: Feedback generation failed: {e}",
-                    "summary": summary,
-                    "results": evaluation.get("results", []),
-                    "ready": True,
-                    "error": f"Feedback generation failed: {e}"
-                }
-                redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-                progress_json = redis_client.get(f"feedback_progress:{session_id}")
-                if progress_json:
-                    progress = json.loads(progress_json)
-                    progress["result"] = error_result
-                    progress["completed"] = True
-                    redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-                return
-            update_progress(95, "Updating your learning progress...", "updating_progress")
-            try:
-                run_in_background(
-                    process_ai_answers,
-                    username,
-                    str(exercise_block.get("lessonId", "feedback")),
-                    answers,
-                    {"exercises": all_exercises},
-                )
-            except Exception as e:
-                print(f"[Feedback Error] process_ai_answers failed: {e}", flush=True)
-            update_progress(99, "Feedback generation complete!", "complete")
-            result = {
-                "feedbackPrompt": feedback_prompt,
-                "summary": summary,
-                "results": evaluation.get("results", []),
-                "ready": True
-            }
-            redis_client.set(f"feedback_result:{session_id}", json.dumps(result))
-            progress_json = redis_client.get(f"feedback_progress:{session_id}")
-            if progress_json:
-                progress = json.loads(progress_json)
-                progress["result"] = result
-                progress["completed"] = True
-                redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-        except Exception as e:
-            update_progress(99, f"Error: {str(e)}", "error")
-            print(f"[Feedback Error] Uncaught exception: {e}", flush=True)
-            error_result = {
-                "feedbackPrompt": f"Error: {e}",
-                "summary": {},
-                "results": [],
-                "ready": True,
-                "error": str(e)
-            }
-            redis_client.set(f"feedback_result:{session_id}", json.dumps(error_result))
-            progress_json = redis_client.get(f"feedback_progress:{session_id}")
-            if progress_json:
-                progress = json.loads(progress_json)
-                progress["result"] = error_result
-                progress["completed"] = True
-                redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-        finally:
-            # Guarantee that progress is marked completed and feedback_result is set, even if something above failed silently
-            progress_json = redis_client.get(f"feedback_progress:{session_id}")
-            result_json = redis_client.get(f"feedback_result:{session_id}")
-            if progress_json:
-                progress = json.loads(progress_json)
-                progress["completed"] = True
-                if not progress.get("result") and result_json:
-                    progress["result"] = json.loads(result_json)
-                redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-            elif result_json:
-                # If progress is missing but result exists, create a minimal progress
-                progress = {"completed": True, "result": json.loads(result_json)}
-                redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
-    run_in_background(run_feedback_generation)
-    # print("\033[91m[EXIT] generate_ai_feedback_with_progress\033[0m", flush=True)
-    return jsonify({"session_id": session_id})
+def generate_ai_feedback_with_progress_route():
+    """
+    Generate AI feedback with progress tracking.
+
+    This endpoint initiates AI feedback generation with real-time progress
+    tracking and returns a session ID for progress monitoring.
+
+    Returns:
+        JSON response with session ID for progress tracking
+    """
+    try:
+        username = require_user()
+        logger.info(f"User {username} requesting AI feedback generation with progress")
+
+        data = request.get_json() or {}
+        answers = data.get("answers", {})
+        exercise_block = data.get("exercise_block")
+
+        if not answers:
+            return jsonify({"error": "No answers provided"}), 400
+
+        session_id = generate_feedback_with_progress(str(username), answers, exercise_block)
+
+        logger.info(f"Started feedback generation for user {username}, session {session_id}")
+        return jsonify({"session_id": session_id})
+
+    except ValueError as e:
+        logger.error(f"Validation error generating feedback with progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error generating feedback with progress: {e}")
+        return jsonify({"error": "Server error"}), 500
+
 
 @ai_bp.route("/ai-feedback/result/<session_id>", methods=["GET"])
-def get_feedback_result(session_id):
-    # print("\033[95m[ENTER] get_feedback_result\033[0m", flush=True)
-    """Get the final result of AI feedback generation."""
-    username = require_user()
-    # print(f"[Feedback Result] Frontend requested result for session {session_id}")
-    result_json = redis_client.get(f"feedback_result:{session_id}")
-    if not result_json:
-        print(f"[Feedback Result] Session {session_id} not found or not ready")
-        return jsonify({"error": "Session not found or not ready"}), 404
-    result = json.loads(result_json)
-    if not result.get("ready"):
-        print(f"[Feedback Result] Session {session_id} not completed yet")
-        return jsonify({"error": "Generation not complete"}), 400
-    # print("\033[91m[EXIT] get_feedback_result\033[0m", flush=True)
-    return jsonify(result)
+def get_feedback_result_route(session_id):
+    """
+    Get the final result of AI feedback generation.
+
+    This endpoint retrieves the completed feedback result for a given session.
+
+    Args:
+        session_id: The feedback session ID
+
+    Returns:
+        JSON response with feedback result or error details
+    """
+    try:
+        username = require_user()
+        logger.debug(f"Getting feedback result for user {username}, session {session_id}")
+
+        result = get_feedback_result(session_id)
+
+        if "error" in result:
+            if result["error"] == "Session not found or not ready":
+                return jsonify(result), 404
+            elif result["error"] == "Generation not complete":
+                return jsonify(result), 400
+            else:
+                return jsonify(result), 500
+
+        return jsonify(result)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting feedback result: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting feedback result: {e}")
+        return jsonify({"error": "Server error"}), 500
+
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
-def get_ai_feedback():
-    # print("\033[91m[ENTER] get_ai_feedback\033[0m", flush=True)
-    """Return the list of cached AI feedback entries."""
-    username = require_user()
-    # print("Fetching AI feedback for:", username, flush=True)
+def get_ai_feedback_route():
+    """
+    Get the list of cached AI feedback entries.
 
+    This endpoint retrieves all cached feedback entries for the user.
+
+    Returns:
+        JSON response with list of cached feedback entries
+    """
     try:
-        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-            feedback_data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        feedback_data = []
+        username = require_user()
+        logger.debug(f"Getting cached feedback list for user {username}")
 
-    # print("\033[91m[EXIT] get_ai_feedback\033[0m", flush=True)
-    return jsonify(feedback_data)
+        feedback_data = get_cached_feedback_list()
+        return jsonify(feedback_data)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting cached feedback: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting cached feedback: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
-def get_ai_feedback_item(feedback_id):
-    # print("\033[96m[ENTER] get_ai_feedback_item\033[0m", flush=True)
-    """Return a single cached feedback item by ID."""
-    username = require_user()
-    # print(f"User '{username}' requested feedback ID {feedback_id}", flush=True)
+def get_ai_feedback_item_route(feedback_id):
+    """
+    Get a single cached feedback item by ID.
 
+    This endpoint retrieves a specific cached feedback entry by its ID.
+
+    Args:
+        feedback_id: The feedback item ID
+
+    Returns:
+        JSON response with feedback item or error details
+    """
     try:
-        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-            feedback_data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        feedback_data = []
+        username = require_user()
+        logger.debug(f"Getting cached feedback item {feedback_id} for user {username}")
 
-    item = next((fb for fb in feedback_data if str(fb.get("id")) == str(feedback_id)), None)
-    if not item:
-        return jsonify({"msg": "Feedback not found"}), 404
-    # print("\033[91m[EXIT] get_ai_feedback_item\033[0m", flush=True)
-    return jsonify(item)
+        if not feedback_id:
+            return jsonify({"error": "Feedback ID is required"}), 400
+
+        item = get_cached_feedback_item(feedback_id)
+
+        if not item:
+            return jsonify({"error": "Feedback not found"}), 404
+
+        return jsonify(item)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting cached feedback item: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting cached feedback item: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @ai_bp.route("/ai-feedback", methods=["POST"])
-def generate_ai_feedback():
-    # print("\033[94m[ENTER] generate_ai_feedback\033[0m", flush=True)
-    """Generate AI feedback from submitted exercise results."""
-    username = require_user()
-    # print("Generating feedback for user:", username, flush=True)
+def generate_ai_feedback_route():
+    """
+    Generate AI feedback from submitted exercise results.
 
-    data = request.get_json() or {}
-    answers = data.get("answers", {})
-    exercise_block = data.get("exercise_block")
-    # print("Feedback generation data:", data, flush=True)
+    This endpoint generates AI feedback without progress tracking,
+    suitable for immediate feedback generation.
 
-    if exercise_block:
-        all_exercises = exercise_block.get("exercises", [])
-        evaluation = evaluate_answers_with_ai(all_exercises, answers)
-        evaluation = _adjust_gapfill_results(all_exercises, answers, evaluation)
-        id_map = {
-            str(r.get("id")): r.get("correct_answer")
-            for r in evaluation.get("results", [])
-        } if evaluation else {}
-
-        summary = {"correct": 0, "total": len(all_exercises), "mistakes": []}
-        for ex in all_exercises:
-            cid = str(ex.get("id"))
-            user_ans = answers.get(cid, "")
-            correct_ans = id_map.get(cid, "")
-            # Ignore final . or ? for all exercise types
-            user_ans = _strip_final_punct(user_ans)
-            correct_ans = _strip_final_punct(correct_ans)
-            # Normalize umlauts for both answers
-            user_ans = _normalize_umlauts(user_ans)
-            correct_ans = _normalize_umlauts(correct_ans)
-            if user_ans == correct_ans:
-                summary["correct"] += 1
-            else:
-                summary["mistakes"].append(
-                    {
-                        "question": ex.get("question"),
-                        "your_answer": user_ans,
-                        "correct_answer": correct_ans,
-                    }
-                )
-
-        vocab_rows = select_rows(
-            "vocab_log",
-            columns=[
-                "vocab",
-                "translation",
-                "interval_days",
-                "next_review",
-                "ef",
-                "repetitions",
-                "last_review",
-            ],
-            where="username = ?",
-            params=(username,),
-        )
-        vocab_data = [
-            {
-                "word": row["vocab"],
-                "translation": row.get("translation"),
-            }
-            for row in vocab_rows
-        ] if vocab_rows else []
-
-        topic_rows = fetch_topic_memory(username)
-        topic_data = [dict(row) for row in topic_rows] if topic_rows else []
-
-        feedback_prompt = generate_feedback_prompt(summary, vocab_data, topic_data)
-
-        # Update topic memory asynchronously with the final evaluation results
-        run_in_background(
-            process_ai_answers,
-            username,
-            str(exercise_block.get("lessonId", "feedback")),
-            answers,
-            {"exercises": all_exercises},
-        )
-
-        # print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
-        return jsonify({
-            "feedbackPrompt": feedback_prompt,
-            "summary": summary,
-            "results": evaluation.get("results", []),
-        })
-
+    Returns:
+        JSON response with generated feedback or error details
+    """
     try:
-        with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
-            feedback_data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        feedback_data = []
+        username = require_user()
+        logger.info(f"User {username} requesting AI feedback generation")
 
-    feedback = random.choice(feedback_data) if feedback_data else {}
-    # print("\033[91m[EXIT] generate_ai_feedback\033[0m", flush=True)
-    return jsonify(feedback)
+        data = request.get_json() or {}
+        answers = data.get("answers", {})
+        exercise_block = data.get("exercise_block")
+
+        if not answers:
+            return jsonify({"error": "No answers provided"}), 400
+
+        feedback = generate_ai_feedback_simple(str(username), answers, exercise_block)
+
+        if "error" in feedback:
+            return jsonify(feedback), 500
+
+        logger.info(f"Generated feedback for user {username}")
+        return jsonify(feedback)
+
+    except ValueError as e:
+        logger.error(f"Validation error generating AI feedback: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error generating AI feedback: {e}")
+        return jsonify({"error": "Server error"}), 500

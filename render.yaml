@@ -12,12 +12,6 @@ services:
         value: production
       - key: VITE_API_BASE_URL
         value: ""  # Empty means use relative URLs (required!)
-  - type: web
-    name: backend
-    env: python
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: python backend/src/app/migration_script.py && python -c "import sys; sys.path.append('backend/src'); from main import app; print('App loaded successfully')" && gunicorn --chdir backend/src --bind 0.0.0.0:5050 main:app
-    envVars:
       - key: REDIS_HOST
         value: redis
       - key: DB_FILE

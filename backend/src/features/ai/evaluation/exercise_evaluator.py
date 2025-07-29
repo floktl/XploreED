@@ -21,7 +21,7 @@ def evaluate_answers_with_ai(
     exercises: list, answers: dict, mode: str = "strict"
 ) -> dict | None:
     """Ask Mistral to evaluate student answers and return JSON results."""
-    # logger.info(f"Starting AI evaluation with mode={mode}, exercises_count={len(exercises)}, answers_count={len(answers)}")
+    logger.info(f"Starting AI evaluation with mode={mode}, exercises_count={len(exercises)}, answers_count={len(answers)}")
 
     formatted = [
         {
@@ -32,7 +32,7 @@ def evaluate_answers_with_ai(
         }
         for ex in exercises
     ]
-    # logger.info(f"Formatted {len(formatted)} exercises for evaluation")
+    logger.info(f"Formatted {len(formatted)} exercises for evaluation")
 
     instructions = (
         "Evaluate these answers for a German exercise. "
@@ -47,25 +47,27 @@ def evaluate_answers_with_ai(
             + instructions
         )
 
-    # logger.info(f"Generated evaluation instructions for mode={mode}")
+    logger.info(f"Generated evaluation instructions for mode={mode}")
     user_prompt = answers_evaluation_prompt(instructions, formatted)
+    logger.info(f"User prompt type: {type(user_prompt)}, content: {user_prompt}")
 
     try:
-        # logger.info(f"Sending evaluation request to Mistral API")
-        # print(f"\033[92m[MISTRAL CALL] evaluate_answers_with_ai\033[0m", flush=True)
+        logger.info(f"Sending evaluation request to Mistral API")
         resp = send_prompt(
             "You are a strict German teacher." if mode == "strict" else "You are a thoughtful German teacher.",
             user_prompt,
             temperature=0.3,
         )
+        logger.info(f"Mistral response status: {resp.status_code}")
+
         if resp.status_code == 200:
-            # logger.info(f"Mistral evaluation response successful")
+            logger.info(f"Mistral evaluation response successful")
             content = resp.json()["choices"][0]["message"]["content"]
-            # logger.info(f"Raw evaluation response length: {len(content)} characters")
+            logger.info(f"Raw evaluation response length: {len(content)} characters")
 
             parsed = extract_json(content)
             if parsed:
-                # logger.info(f"Successfully parsed evaluation JSON")
+                logger.info(f"Successfully parsed evaluation JSON")
                 return parsed
             else:
                 logger.error(f"Failed to parse evaluation JSON from response")
@@ -73,9 +75,11 @@ def evaluate_answers_with_ai(
             logger.error(f"Mistral evaluation request failed: {resp.status_code} - {resp.text}")
     except Exception as e:
         logger.error(f"AI evaluation failed: {e}")
-        current_app.logger.error("AI evaluation failed: %s", e)
+        logger.error(f"Exception type: {type(e)}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
 
-    # logger.error(f"AI evaluation failed - returning None")
+    logger.error(f"AI evaluation failed - returning None")
     return None
 
 
@@ -197,9 +201,9 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             # For gap-fill exercises, check if the answer makes grammatical sense
             exercise_type = ex.get("type", "")
             if exercise_type == "gap-fill":
-                # Import the function from exercise_routes
-                from ..exercise_routes import _check_gap_fill_correctness
-                is_correct = _check_gap_fill_correctness(ex, user_ans, correct_ans_norm)
+                # Use the check_gap_fill_correctness function from exercise_helpers
+                from features.ai.exercise_helpers import check_gap_fill_correctness
+                is_correct = check_gap_fill_correctness(ex, user_ans, correct_ans_norm)
             else:
                 # For other exercise types, use exact match
                 is_correct = user_ans == correct_ans_norm

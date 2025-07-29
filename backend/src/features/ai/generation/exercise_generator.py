@@ -122,9 +122,9 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
             # For gap-fill exercises, check if the answer makes grammatical sense
             exercise_type = ex.get("type", "")
             if exercise_type == "gap-fill":
-                # Import the function from exercise_routes
-                from ..exercise_routes import _check_gap_fill_correctness
-                is_correct = _check_gap_fill_correctness(ex, user_ans, correct_ans)
+                # Use the local check_gap_fill_correctness function
+                from features.ai.exercise_helpers import check_gap_fill_correctness
+                is_correct = check_gap_fill_correctness(ex, user_ans, correct_ans)
             else:
                 # For other exercise types, use exact match
                 is_correct = user_ans == correct_ans

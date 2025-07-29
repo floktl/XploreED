@@ -1,115 +1,239 @@
-"""Endpoints serving lessons and lesson metadata."""
+"""
+Lesson Routes
+
+This module contains API routes for lesson management and content delivery.
+All business logic has been moved to appropriate helper modules to maintain
+separation of concerns.
+
+Author: German Class Tool Team
+Date: 2025
+"""
+
+import logging
+from typing import Dict, Any
 
 from core.services.import_service import *
-from core.database.connection import select_rows, select_one
+from features.lessons.lesson_helpers import (
+    get_user_lessons_summary,
+    validate_lesson_access
+)
+from features.lessons.lesson_helpers import get_lesson_content, get_lesson_progress, update_lesson_progress, get_lesson_statistics  # type: ignore
+
+
+logger = logging.getLogger(__name__)
+
 
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons():
-    """Return summary information for all published lessons for the user."""
-    user = require_user()
+    """
+    Get summary information for all published lessons for the current user.
 
-    lessons = select_rows(
-        "lesson_content",
-        columns=[
-            "lesson_id",
-            "title",
-            "created_at",
-            "target_user",
-            "num_blocks",
-            "ai_enabled",
-        ],
-        where="(target_user IS NULL OR target_user = ?) AND published = 1",
-        params=(user,),
-        order_by="created_at DESC",
-    )
+    This endpoint retrieves a comprehensive list of all published lessons
+    available to the user, including progress information and completion status.
 
-    results = []
+    Returns:
+        JSON response with lesson summaries or error details
+    """
+    try:
+        username = require_user()
 
-    for lesson in lessons:
-        lid = lesson["lesson_id"]
+        lessons = get_user_lessons_summary(str(username))
+        return jsonify(lessons)
 
-        total_blocks = lesson.get("num_blocks") or 0
-
-        completed_row = select_one(
-            "lesson_progress",
-            columns="COUNT(*) as count",
-            where="lesson_id = ? AND user_id = ? AND completed = 1",
-            params=(lid, user),
-        )
-        completed_blocks = completed_row.get("count") if completed_row else 0
-
-        completed = bool(
-            select_one(
-                "results",
-                columns="1",
-                where="username = ? AND level = ? AND correct = 1",
-                params=(user, lid),
-            )
-        )
-
-        percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks else 100
-        if completed:
-            percent_complete = 100
-
-        latest_row = select_one(
-            "results",
-            columns="MAX(timestamp) as ts",
-            where="username = ? AND level = ?",
-            params=(user, lid),
-        )
-        latest = latest_row.get("ts") if latest_row else None
-
-        results.append(
-            {
-                "id": lid,
-                "title": lesson["title"] or f"Lesson {lid + 1}",
-                "completed": completed,
-                "last_attempt": latest,
-                "percent_complete": percent_complete,
-                "ai_enabled": bool(lesson.get("ai_enabled", 0)),
-            }
-        )
-
-    return jsonify(results)
+    except ValueError as e:
+        logger.error(f"Validation error getting lessons: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lessons: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lessons_bp.route("/lesson/<int:lesson_id>", methods=["GET"])
 def get_lesson_content(lesson_id):
-    """Return HTML content and metadata for a single lesson."""
-    user = require_user()
+    """
+    Get HTML content and metadata for a specific lesson.
 
-    row = select_rows(
-        "lesson_content",
-        columns=["title", "content", "created_at", "num_blocks", "ai_enabled"],
-        where="lesson_id = ? AND (target_user IS NULL OR target_user = ?) AND published = 1",
-        params=(lesson_id, user),
-    )
+    This endpoint retrieves the full content of a lesson including
+    HTML content, metadata, and access control validation.
 
-    if not row:
-        return jsonify({"msg": "Lesson not found"}), 404
+    Args:
+        lesson_id: The lesson ID to retrieve
 
-    data = {
-        "title": row[0]["title"],
-        "content": row[0]["content"],
-        "created_at": row[0]["created_at"],
-        "num_blocks": row[0]["num_blocks"],
-        "ai_enabled": bool(row[0].get("ai_enabled", 0)),
-    }
+    Returns:
+        JSON response with lesson content or error details
+    """
+    try:
+        username = require_user()
 
-    return jsonify(data)
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        # Validate lesson access
+        if not validate_lesson_access(str(username), lesson_id):
+            return jsonify({"error": "Lesson not found or access denied"}), 404
+
+        lesson_data = get_lesson_content(str(username), lesson_id)  # type: ignore
+
+        if not lesson_data:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        return jsonify(lesson_data)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson content: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson content for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_lesson_progress(lesson_id):
-    """Return completion status of each block in the lesson."""
-    user = require_user()
+    """
+    Get completion status of each block in a lesson.
 
-    rows = select_rows(
-        "lesson_progress",
-        columns=["block_id", "completed"],
-        where="user_id = ? AND lesson_id = ?",
-        params=(user, lesson_id),
-    )
+    This endpoint retrieves the progress status for all blocks
+    within a specific lesson for the current user.
 
-    progress = {row[0]: bool(row[1]) for row in rows}
-    return jsonify(progress)
+    Args:
+        lesson_id: The lesson ID to get progress for
+
+    Returns:
+        JSON response with block completion status or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        # Validate lesson access
+        if not validate_lesson_access(str(username), lesson_id):
+            return jsonify({"error": "Lesson not found or access denied"}), 404
+
+        progress = get_lesson_progress(str(username), lesson_id)  # type: ignore
+        return jsonify(progress)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson progress for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+
+@lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["POST"])
+def update_lesson_progress(lesson_id):
+    """
+    Update the completion status of a specific block in a lesson.
+
+    This endpoint allows users to mark blocks as completed or incomplete
+    within a lesson, tracking their progress through the content.
+
+    Args:
+        lesson_id: The lesson ID to update progress for
+
+    Returns:
+        JSON response with update status or error details
+    """
+    try:
+        username = require_user()
+        data = request.get_json() or {}
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        block_id = data.get("block_id")
+        completed = data.get("completed")
+
+        if not block_id:
+            return jsonify({"error": "Block ID is required"}), 400
+
+        if completed is None:
+            return jsonify({"error": "Completion status is required"}), 400
+
+        # Validate lesson access
+        if not validate_lesson_access(str(username), lesson_id):
+            return jsonify({"error": "Lesson not found or access denied"}), 404
+
+        success = update_lesson_progress(str(username), lesson_id, block_id, bool(completed))  # type: ignore
+
+        if not success:
+            return jsonify({"error": "Failed to update progress"}), 500
+
+        return jsonify({"status": "updated"})
+
+    except ValueError as e:
+        logger.error(f"Validation error updating lesson progress: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error updating lesson progress for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+
+@lessons_bp.route("/lesson-statistics/<int:lesson_id>", methods=["GET"])
+def get_lesson_statistics(lesson_id):
+    """
+    Get comprehensive statistics for a specific lesson.
+
+    This endpoint provides detailed statistics about a user's progress
+    through a specific lesson including completion rates and activity data.
+
+    Args:
+        lesson_id: The lesson ID to get statistics for
+
+    Returns:
+        JSON response with lesson statistics or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        # Validate lesson access
+        if not validate_lesson_access(str(username), lesson_id):
+            return jsonify({"error": "Lesson not found or access denied"}), 404
+
+        stats = get_lesson_statistics(str(username), lesson_id)  # type: ignore
+        return jsonify(stats)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson statistics: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson statistics for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+
+@lessons_bp.route("/lesson-access/<int:lesson_id>", methods=["GET"])
+def check_lesson_access(lesson_id):
+    """
+    Check if the current user has access to a specific lesson.
+
+    This endpoint validates whether the current user can access
+    a specific lesson based on permissions and lesson availability.
+
+    Args:
+        lesson_id: The lesson ID to check access for
+
+    Returns:
+        JSON response with access status or error details
+    """
+    try:
+        username = require_user()
+
+        if not lesson_id or lesson_id <= 0:
+            return jsonify({"error": "Valid lesson ID is required"}), 400
+
+        has_access = validate_lesson_access(str(username), lesson_id)
+
+        return jsonify({
+            "lesson_id": lesson_id,
+            "has_access": has_access,
+            "username": username
+        })
+
+    except Exception as e:
+        logger.error(f"Error checking lesson access for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500

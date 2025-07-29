@@ -1,0 +1,50 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250729_151444
+Started: 2025-07-29 15:14:44.331486
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+personal pronoun     gap-fill        5        2.6    1      0        family     Das ist ____ Vater.           
+definite article     translation     2        2.5    0      0        family     This is my mother.            
+personal pronoun     translation     2        2.5    0      0        family     This is my mother.            
+possessive adjective translation     2        2.5    0      0        family     This is my mother.            
+verb conjugation     translation     2        2.5    0      0        family     This is my mother.            
+indefinite article   gap-fill        5        2.6    1      0        family     ____ du eine Schwester?       
+verb conjugation     gap-fill        2        2.5    0      0        family     ____ du eine Schwester?       
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+personal pronoun     gap-fill        2        2.6      2.6      1          0          0            1            13       ____ du eine Schwester?       
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+ist             5        NEW      2.5      NEW        0          NEW          1           
+Vater           5        NEW      2.5      NEW        0          NEW          1           
+dein            5        NEW      2.5      NEW        0          NEW          1           
+This            2        NEW      2.5      NEW        0          NEW          1           
+is              2        NEW      2.6      NEW        1          NEW          1           
+my              2        NEW      2.5      NEW        0          NEW          1           
+mother          2        NEW      2.5      NEW        0          NEW          1           
+meine           2        NEW      2.5      NEW        0          NEW          1           
+Mutter          2        2.5      2.5      0          0          1            1           
+du              3        NEW      2.5      NEW        0          NEW          1           
+Schwester       3        NEW      2.5      NEW        0          NEW          1           
+Hast            3        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 7
+Updated Topic Entries: 1
+Vocabulary Updates: 12
+Total Updates: 20
+
+================================================================================

@@ -1,0 +1,14 @@
+flask
+flask_cors
+flask-limiter
+flask-jwt-extended==4.6.0
+flask-admin==1.6.1
+gunicorn
+python-dotenv
+requests
+colorama
+numpy<2
+beautifulsoup4
+sqlalchemy
+elevenlabs>=0.2.26
+redis

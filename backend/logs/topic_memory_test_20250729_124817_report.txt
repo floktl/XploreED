@@ -1,0 +1,50 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250729_124817
+Started: 2025-07-29 12:48:17.613583
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+personal pronoun     gap-fill        3        2.4    1      0        family     ___ habe eine Schwester.      
+verb conjugation     gap-fill        3        2.4    1      0        family     ___ habe eine Schwester.      
+personal pronoun     translation     2        2.5    0      0        family     You are my mother.            
+possessive adjective translation     2        2.5    0      0        family     You are my mother.            
+verb conjugation in present tense translation     2        2.5    0      0        family     You are my mother.            
+subject              gap-fill        5        2.6    1      0        family     ___ hat einen Hund.           
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+personal pronoun     gap-fill        3        2.4      2.2      1          2          0            6            7        ___ hat einen Hund.           
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+habe            3        NEW      2.5      NEW        0          NEW          1           
+Schwester       3        NEW      2.5      NEW        0          NEW          1           
+Ich             3        NEW      2.5      NEW        0          NEW          1           
+You             2        NEW      2.5      NEW        0          NEW          1           
+are             2        NEW      2.5      NEW        0          NEW          1           
+my              2        NEW      2.5      NEW        0          NEW          1           
+mother          2        NEW      2.5      NEW        0          NEW          1           
+Du              2        NEW      2.5      NEW        0          NEW          1           
+bist            2        NEW      2.5      NEW        0          NEW          1           
+meine           2        NEW      2.5      NEW        0          NEW          1           
+Mutter          2        2.5      2.5      0          0          1            1           
+hat             4        NEW      2.4      NEW        1          NEW          1           
+Hund            4        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 6
+Updated Topic Entries: 1
+Vocabulary Updates: 13
+Total Updates: 20
+
+================================================================================

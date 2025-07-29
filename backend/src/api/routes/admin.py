@@ -1,352 +1,412 @@
-"""Admin endpoints for viewing results and managing the app."""
+"""
+Admin Routes
+
+This module contains API routes for administrative operations including
+user management, lesson management, and system monitoring. All business
+logic has been moved to appropriate helper modules to maintain
+separation of concerns.
+
+Author: German Class Tool Team
+Date: 2025
+"""
+
+import logging
 
 from core.services.import_service import *
-from app.extensions import limiter
-from config.blueprint import admin_bp
+from features.admin.admin_helpers import (
+    get_all_game_results,
+    get_user_game_results,
+    create_lesson_content,
+    get_all_lessons,
+    get_lesson_by_id,
+    update_lesson_content,
+    delete_lesson_content,
+    get_lesson_progress_summary,
+    get_individual_lesson_progress,
+    get_all_users,
+    update_user_data,
+    delete_user_data
+)
+
+
+logger = logging.getLogger(__name__)
+
 
 @admin_bp.route("/check-admin", methods=["GET"])
 def check_admin():
-    """Return whether the current session belongs to the admin user."""
-    return jsonify({"is_admin": is_admin()})
+    """
+    Check if the current session belongs to the admin user.
+
+    This endpoint verifies admin privileges for the current session.
+
+    Returns:
+        JSON response indicating admin status
+    """
+    try:
+        is_admin_user = is_admin()
+        return jsonify({"is_admin": is_admin_user})
+
+    except Exception as e:
+        logger.error(f"Error checking admin status: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/results", methods=["GET"])
 def admin_results():
-    """Return all game results for admin review."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get all game results for admin review.
 
-    results = select_rows(
-        "results",
-        columns=["username", "level", "correct", "answer", "timestamp"],
-        order_by="username ASC, timestamp DESC",
-    )
-    return jsonify(results)
+    This endpoint retrieves comprehensive game results data
+    for administrative monitoring and analysis.
+
+    Returns:
+        JSON response with all game results or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        results = get_all_game_results()
+        return jsonify(results)
+
+    except Exception as e:
+        logger.error(f"Error retrieving admin results: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-content", methods=["POST"])
 def insert_lesson_content():
-    """Insert a new lesson row and associated block IDs."""
-    if not is_admin():
-        print("❌ Unauthorized access attempt", flush=True)
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Create a new lesson with content and block management.
 
-    data = request.get_json()
+    This endpoint creates a new lesson entry with proper content
+    processing, block ID extraction, and database management.
 
-    lesson_id = data.get("lesson_id")
-    title = data.get("title", "")
-    content = strip_ai_data(data.get("content", ""))
-    target_user = data.get("target_user")
-    published = bool(data.get("published", 0))
-    ai_enabled = bool(data.get("ai_enabled", 0))
+    Returns:
+        JSON response with creation status or error details
+    """
+    try:
+        if not is_admin():
+            logger.warning("Unauthorized access attempt to insert lesson content")
+            return jsonify({"error": "unauthorized"}), 401
 
-    # 🧽 Extract block_ids from HTML
-    soup = BeautifulSoup(content, "html.parser")
-    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
-    num_blocks = len(block_ids)
+        data = request.get_json() or {}
 
-    # 🧾 Insert lesson row with num_blocks
-    insert_success = insert_row("lesson_content", {
-        "lesson_id": lesson_id,
-        "title": title,
-        "content": content,
-        "target_user": target_user,
-        "published": published,
-        "num_blocks": num_blocks,
-        "ai_enabled": ai_enabled
-    })
+        success, error_message = create_lesson_content(data)
 
-    if not insert_success:
-        print("❌ Failed to insert lesson_content", flush=True)
-        return jsonify({"error": "Failed to insert lesson"}), 500
+        if not success:
+            return jsonify({"error": error_message}), 400
 
-    # ➕ Insert individual blocks
-    for block_id in block_ids:
-        block_inserted = insert_row("lesson_blocks", {
-            "lesson_id": lesson_id,
-            "block_id": block_id
-        })
+        return jsonify({"status": "ok"})
 
-    return jsonify({"status": "ok"})
-
+    except Exception as e:
+        logger.error(f"Error inserting lesson content: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/profile-stats", methods=["POST"])
 def profile_stats():
-    """Return a user's game results ordered by timestamp."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get game results for a specific user.
 
-    username = request.get_json().get("username", "").strip()
-    if not username:
-        return jsonify({"error": "Missing username"}), 400
+    This endpoint retrieves detailed game performance data
+    for a specific user for administrative review.
 
-    rows = select_rows(
-        "results",
-        columns=["level", "correct", "answer", "timestamp"],
-        where="username = ?",
-        params=(username,),
-        order_by="timestamp DESC",
-    )
+    Returns:
+        JSON response with user game results or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
 
-    return jsonify([
-        {
-            "level": l,
-            "correct": bool(c),
-            "answer": a,
-            "timestamp": t
-        } for l, c, a, t in [tuple(row.values()) for row in rows]
-    ])
+        data = request.get_json() or {}
+        username = data.get("username", "").strip()
+
+        if not username:
+            return jsonify({"error": "Missing username"}), 400
+
+        results = get_user_game_results(username)
+        return jsonify(results)
+
+    except ValueError as e:
+        logger.error(f"Validation error in profile stats: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting profile stats: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-content", methods=["GET"])
 def get_all_lessons():
-    """Return all lesson content rows for editing."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get all lesson content for admin editing.
 
-    lessons = select_rows(
-        "lesson_content",
-        columns=[
-            "lesson_id",
-            "title",
-            "content",
-            "target_user",
-            "published",
-            "ai_enabled",
-            "num_blocks",
-        ],
-        order_by="lesson_id ASC",
-    )
-    return jsonify(lessons)
+    This endpoint retrieves all lesson content with metadata
+    for administrative management and editing.
+
+    Returns:
+        JSON response with all lessons or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        lessons = get_all_lessons()
+        return jsonify(lessons)
+
+    except Exception as e:
+        logger.error(f"Error retrieving all lessons: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/debug-lessons", methods=["GET"])
 def debug_lessons():
-    """Return raw lesson rows without authorization checks."""
-    return jsonify(select_rows("lesson_content"))
+    """
+    Get raw lesson data without authorization checks.
+
+    This endpoint provides direct access to lesson data
+    for debugging purposes without admin verification.
+
+    Returns:
+        JSON response with raw lesson data
+    """
+    try:
+        lessons = select_rows("lesson_content")
+        return jsonify(lessons)
+
+    except Exception as e:
+        logger.error(f"Error in debug lessons: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["DELETE"])
 def delete_lesson(lesson_id):
-    """Remove a lesson and all related progress records."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Delete a lesson and all related data.
 
+    This endpoint removes a lesson and all associated
+    progress records and block data.
+
+    Args:
+        lesson_id: The lesson ID to delete
+
+    Returns:
+        JSON response with deletion status or error details
+    """
     try:
-        delete_rows("lesson_progress", "WHERE lesson_id = ?", (lesson_id,))
-        delete_rows("lesson_blocks", "WHERE lesson_id = ?", (lesson_id,))
-        delete_rows("lesson_content", "WHERE lesson_id = ?", (lesson_id,))
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        success, error_message = delete_lesson_content(lesson_id)
+
+        if not success:
+            return jsonify({"error": error_message}), 400
+
         return jsonify({"status": "deleted"}), 200
+
     except Exception as e:
-        return jsonify({"error": "Deletion failed", "details": str(e)}), 500
+        logger.error(f"Error deleting lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["GET"])
 def get_lesson_by_id(lesson_id):
-    """Return a single lesson row by ID."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get a specific lesson by ID.
 
-    lesson = select_one(
-        "lesson_content",
-        where="lesson_id = ?",
-        params=(lesson_id,),
-    )
-    if not lesson:
-        return jsonify({"error": "not found"}), 404
-    return jsonify(lesson)
+    This endpoint retrieves detailed information about
+    a specific lesson for administrative review.
+
+    Args:
+        lesson_id: The lesson ID to retrieve
+
+    Returns:
+        JSON response with lesson data or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        lesson = get_lesson_by_id(lesson_id)
+
+        if not lesson:
+            return jsonify({"error": "not found"}), 404
+
+        return jsonify(lesson)
+
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson {lesson_id}: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT"])
 def update_lesson_by_id(lesson_id):
-    """Update the content and metadata of an existing lesson."""
-    if not is_admin():
-        print("❌ Not authorized")
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Update an existing lesson with new content and metadata.
 
-    data = request.get_json()
+    This endpoint updates lesson content with proper block
+    management and content processing.
 
-    # 🧠 Inject or reassign block IDs into the HTML and strip AI data
-    content = inject_block_ids(data.get("content"))
-    content = strip_ai_data(content)
+    Args:
+        lesson_id: The lesson ID to update
 
-    # 🧽 Count block_ids
-    soup = BeautifulSoup(content, "html.parser")
-    block_ids = {el["data-block-id"] for el in soup.select('[data-block-id]') if el.has_attr("data-block-id")}
-    num_blocks = len(block_ids)
-    # ✏️ Update the lesson row including num_blocks
-    update_row(
-        "lesson_content",
-        {
-            "title": data.get("title"),
-            "content": content,
-            "target_user": data.get("target_user"),
-            "published": bool(data.get("published", 0)),
-            "num_blocks": num_blocks,
-            "ai_enabled": bool(data.get("ai_enabled", 0)),
-        },
-        "WHERE lesson_id = ?",
-        (lesson_id,),
-    )
+    Returns:
+        JSON response with update status or error details
+    """
+    try:
+        if not is_admin():
+            logger.warning("Unauthorized access attempt to update lesson")
+            return jsonify({"error": "unauthorized"}), 401
 
-    # 🔁 Sync lesson_blocks table
-    update_lesson_blocks_from_html(lesson_id, content)
+        data = request.get_json() or {}
 
-    return jsonify({"status": "updated"})
+        success, error_message = update_lesson_content(lesson_id, data)
+
+        if not success:
+            return jsonify({"error": error_message}), 400
+
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        logger.error(f"Error updating lesson {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
+
 
 @admin_bp.route("/lesson-progress-summary", methods=["GET"])
 def lesson_progress_summary():
-    """Return percentage completion for every lesson."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get percentage completion summary for all lessons.
 
-    lesson_ids = [row["lesson_id"] for row in select_rows(
-        "lesson_content",
-        columns="DISTINCT lesson_id",
-    )]
+    This endpoint provides comprehensive progress statistics
+    across all lessons for administrative monitoring.
 
-    summary = {}
-    for lid in lesson_ids:
-        row = select_one(
-            "lesson_content",
-            columns="num_blocks",
-            where="lesson_id = ?",
-            params=(lid,),
-        )
-        total_blocks = row.get("num_blocks") if row else 0
+    Returns:
+        JSON response with progress summary or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
 
-        if total_blocks == 0:
-            summary[lid] = {"percent": 0, "num_blocks": 0}
-            continue
+        summary = get_lesson_progress_summary()
+        return jsonify(summary)
 
-        user_rows = select_rows(
-            "lesson_progress",
-            columns="DISTINCT user_id",
-            where="lesson_id = ?",
-            params=(lid,),
-        )
-        users = [row["user_id"] for row in user_rows]
-        if not users:
-            summary[lid] = {"percent": 0, "num_blocks": total_blocks}
-            continue
-
-        total_percent = 0
-        for uid in users:
-            completed_row = select_one(
-                "lesson_progress",
-                columns="COUNT(*) as count",
-                where="lesson_id = ? AND user_id = ? AND completed = 1",
-                params=(lid, uid),
-            )
-            completed = completed_row.get("count") if completed_row else 0
-            total_percent += (completed / total_blocks) * 100
-
-        summary[lid] = {
-            "percent": round(total_percent / len(users)),
-            "num_blocks": total_blocks,
-        }
-
-    return jsonify(summary)
+    except Exception as e:
+        logger.error(f"Error getting lesson progress summary: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
 def get_individual_lesson_progress(lesson_id):
-    """Return per-user completion stats for a specific lesson."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Get per-user completion stats for a specific lesson.
 
-    num_blocks_row = select_one(
-        "lesson_content",
-        columns="num_blocks",
-        where="lesson_id = ?",
-        params=(lesson_id,),
-    )
-    total_blocks = num_blocks_row.get("num_blocks") if num_blocks_row else 0
+    This endpoint provides detailed user progress data
+    for a specific lesson for administrative review.
 
-    if total_blocks == 0:
-        return jsonify([])
+    Args:
+        lesson_id: The lesson ID to get progress for
 
-    rows = select_rows(
-        "lesson_progress",
-        columns=["user_id", "COUNT(*) AS completed_blocks"],
-        where="lesson_id = ? AND completed = 1",
-        params=(lesson_id,),
-        group_by="user_id",)
+    Returns:
+        JSON response with user progress data or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
 
-    result = [
-        {
-            "user": row["user_id"],
-            "completed": row["completed_blocks"],
-            "total": total_blocks,
-            "percent": round((row["completed_blocks"] / total_blocks) * 100),
-        }
-        for row in rows
-    ]
+        progress_data = get_individual_lesson_progress(lesson_id)
+        return jsonify(progress_data)
 
-    return jsonify(result)
+    except ValueError as e:
+        logger.error(f"Validation error getting lesson progress {lesson_id}: {e}")
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"Error getting lesson progress {lesson_id}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/users", methods=["GET"])
 def list_users():
-    """Return a list of all registered users."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
-    rows = select_rows(
-        "users",
-        columns=["username", "created_at", "skill_level"],
-        order_by="username",
-    )
-    return jsonify(rows)
+    """
+    Get a list of all registered users.
+
+    This endpoint retrieves basic information about all
+    registered users for administrative management.
+
+    Returns:
+        JSON response with user list or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        users = get_all_users()
+        return jsonify(users)
+
+    except Exception as e:
+        logger.error(f"Error listing users: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/users/<string:username>", methods=["PUT"])
 def update_user(username):
-    """Update username, password or level for a user."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Update user information including username, password, and skill level.
 
-    data = request.get_json() or {}
-    new_username = data.get("username", username).strip()
-    new_password = data.get("password")
-    skill = data.get("skill_level")
+    This endpoint allows administrators to modify user account
+    information with proper validation and data consistency.
 
-    if new_username != username and user_exists(new_username):
-        return jsonify({"error": "username taken"}), 400
+    Args:
+        username: The current username to update
 
-    if new_username != username:
-        update_row("users", {"username": new_username}, "username = ?", (username,))
-        update_row("results", {"username": new_username}, "username = ?", (username,))
-        update_row("vocab_log", {"username": new_username}, "username = ?", (username,))
-        update_row("lesson_progress", {"user_id": new_username}, "user_id = ?", (username,))
-        update_row("topic_memory", {"username": new_username}, "username = ?", (username,))
-        update_row("ai_user_data", {"username": new_username}, "username = ?", (username,))
-        update_row("exercise_submissions", {"username": new_username}, "username = ?", (username,))
-        session_manager.destroy_user_sessions(username)
-        username = new_username
+    Returns:
+        JSON response with update status or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
 
-    if new_password:
-        hashed = generate_password_hash(new_password)
-        update_row("users", {"password": hashed}, "username = ?", (username,))
+        data = request.get_json() or {}
 
-    if skill is not None:
-        update_row("users", {"skill_level": int(skill)}, "username = ?", (username,))
+        success, error_message = update_user_data(username, data)
 
-    return jsonify({"status": "updated"})
+        if not success:
+            return jsonify({"error": error_message}), 400
+
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        logger.error(f"Error updating user {username}: {e}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @admin_bp.route("/users/<string:username>", methods=["DELETE"])
 def delete_user(username):
-    """Remove a user account and all of their data."""
-    if not is_admin():
-        return jsonify({"error": "unauthorized"}), 401
+    """
+    Delete a user account and all associated data.
 
-    delete_rows("results", "WHERE username = ?", (username,))
-    delete_rows("vocab_log", "WHERE username = ?", (username,))
-    delete_rows("topic_memory", "WHERE username = ?", (username,))
-    delete_rows("ai_user_data", "WHERE username = ?", (username,))
-    delete_rows("exercise_submissions", "WHERE username = ?", (username,))
-    delete_rows("lesson_progress", "WHERE user_id = ?", (username,))
-    delete_rows("users", "WHERE username = ?", (username,))
-    session_manager.destroy_user_sessions(username)
-    return jsonify({"status": "deleted"})
+    This endpoint removes a user account and all related
+    data from the system for administrative purposes.
+
+    Args:
+        username: The username to delete
+
+    Returns:
+        JSON response with deletion status or error details
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "unauthorized"}), 401
+
+        success, error_message = delete_user_data(username)
+
+        if not success:
+            return jsonify({"error": error_message}), 400
+
+        return jsonify({"status": "deleted"})
+
+    except Exception as e:
+        logger.error(f"Error deleting user {username}: {e}")
+        return jsonify({"error": "Server error"}), 500
