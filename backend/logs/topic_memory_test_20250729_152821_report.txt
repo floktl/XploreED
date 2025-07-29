@@ -1,0 +1,48 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250729_152821
+Started: 2025-07-29 15:28:21.531888
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+definite article     gap-fill        5        2.6    1      0        food       Das ist ____ Apfel.           
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+indefinite article   gap-fill        5        2.6      2.7      1          2          0            6            18       Ich ____ eine Banane.         
+verb conjugation     gap-fill        0        2.5      2.5      0          0          0            1            19       Ich ____ eine Banane.         
+personal pronoun     translation     2        2.5      2.5      0          0          0            1            15       I drink water.                
+verb conjugation     translation     2        2.5      2.5      0          0          0            1            17       I drink water.                
+indefinite article   gap-fill        1        2.7      2.7      2          0          6            1            18       Das ist ____ Apfel.           
+verb conjugation     gap-fill        5        2.5      2.6      0          1          1            1            19       Das ist ____ Apfel.           
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+Ich             2        NEW      2.5      NEW        0          NEW          1           
+Banane          2        NEW      2.5      NEW        0          NEW          1           
+esse            2        NEW      2.5      NEW        0          NEW          1           
+I               2        NEW      2.5      NEW        0          NEW          1           
+drink           2        NEW      2.5      NEW        0          NEW          1           
+water           2        NEW      2.5      NEW        0          NEW          1           
+trinke          2        NEW      2.5      NEW        0          NEW          1           
+Wasser          2        2.5      2.5      0          0          1            1           
+ist             3        NEW      2.6      NEW        0          NEW          1           
+Apfel           3        NEW      2.5      NEW        0          NEW          1           
+ein             3        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 1
+Updated Topic Entries: 6
+Vocabulary Updates: 11
+Total Updates: 18
+
+================================================================================

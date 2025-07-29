@@ -313,7 +313,9 @@ export default function AIExerciseBlock({
             try {
                 const startTime = Date.now();
                 const blockToSubmit = currentBlockRef.current || current;
-                const result = await submitExerciseAnswers(blockId, currentAnswers, {
+                // Use the actual block_id from the exercise data, fallback to the prop
+                const actualBlockId = blockToSubmit?.block_id || blockId;
+                const result = await submitExerciseAnswers(actualBlockId, currentAnswers, {
                     instructions: blockToSubmit?.instructions || "",
                     exercises: blockToSubmit?.exercises || [],
                     vocabHelp: blockToSubmit?.vocabHelp || [],
@@ -420,9 +422,12 @@ export default function AIExerciseBlock({
             setFeedbackTimeout(false);
             setShowTimeoutError(false);
 
+            // Use the actual block_id from the exercise data, fallback to the prop
+            const actualBlockId = current?.block_id || blockId;
+
             const pollInterval = setInterval(async () => {
                 try {
-                    const enhancedData = await getEnhancedResults(blockId);
+                    const enhancedData = await getEnhancedResults(actualBlockId);
                     if (enhancedData.status === "complete" && enhancedData.results) {
 
                         setEnhancedResults(enhancedData.results);
@@ -547,7 +552,9 @@ export default function AIExerciseBlock({
                 try {
                     // Check if topic memory processing is complete by looking for the completion message
                     // We'll check the backend logs or a completion endpoint
-                    const response = await fetch(`/api/ai-exercise/${blockId}/topic-memory-status`, {
+                    // Use the actual block_id from the exercise data, fallback to the prop
+                    const actualBlockId = current?.block_id || blockId;
+                    const response = await fetch(`/api/ai-exercise/${actualBlockId}/topic-memory-status`, {
                         credentials: "include",
                     });
 
@@ -606,7 +613,9 @@ export default function AIExerciseBlock({
 
         try {
             const currentAnswers = answersRef.current;
-            const result = await argueExerciseAnswers(blockId, currentAnswers, current);
+            // Use the actual block_id from the exercise data, fallback to the prop
+            const actualBlockId = current?.block_id || blockId;
+            const result = await argueExerciseAnswers(actualBlockId, currentAnswers, current);
             if (result?.results) {
                 const map = {};
                 result.results.forEach((r) => {

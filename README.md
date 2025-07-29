@@ -3,7 +3,7 @@ This project provides a small learning platform for German classes. It is compos
 
 Database
 --------
-The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` file. The database schema is created on startup by `backend/src/app/migration_script.py`. The migration script creates and updates these tables:
+The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` file. The database schema is created on startup by `backend/scripts/migration_script.py`. The migration script creates and updates these tables:
 - **users** – stores registered usernames and hashed passwords
 - **results** – records user answers for the sentence ordering game and lesson completions
 - **vocab_log** – vocabulary items tracked for spaced repetition
@@ -28,7 +28,7 @@ docker compose -f docker-compose.dev.yml up
 Once the stack is running, open <http://localhost:5173> in your browser to see
 the frontend. The Flask API is served on <http://localhost:5050>.
 
-The backend service runs a small migration script on start to ensure the
+The backend runs a small migration script during Docker build to ensure the
 database schema has all required columns.
 
 

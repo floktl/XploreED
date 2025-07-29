@@ -1,7 +1,7 @@
 """AI blueprint and route aggregation."""
 
 from core.services.import_service import *
-from app.blueprint import ai_bp
+from config.blueprint import ai_bp
 
 FEEDBACK_FILE = [
     {

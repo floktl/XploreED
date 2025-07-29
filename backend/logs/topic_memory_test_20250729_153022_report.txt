@@ -1,0 +1,49 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250729_153022
+Started: 2025-07-29 15:30:22.090086
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+indefinite article   translation     2        2.5    0      0        family     I have a sister.              
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+indefinite article   gap-fill        5        2.7      2.8      0          1          1            1            18       ____ habe einen Bruder.       
+personal pronoun     gap-fill        1        2.6      2.6      0          0          1            1            13       ____ habe einen Bruder.       
+verb conjugation     gap-fill        0        2.6      2.6      1          0          1            1            19       ____ habe einen Bruder.       
+personal pronoun     translation     2        2.5      2.5      0          0          1            1            15       I have a sister.              
+verb conjugation     translation     2        2.5      2.5      0          0          1            1            17       I have a sister.              
+definite article     gap-fill        5        2.6      2.7      1          2          0            6            20       Das ist ____ Mutter.          
+personal pronoun     gap-fill        5        2.6      2.7      0          1          1            1            13       Das ist ____ Mutter.          
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+habe            2        NEW      2.4      NEW        1          NEW          1           
+Bruder          2        NEW      2.5      NEW        0          NEW          1           
+Ich             2        NEW      2.5      NEW        0          NEW          1           
+I               2        NEW      2.5      NEW        0          NEW          1           
+have            2        NEW      2.4      NEW        0          NEW          1           
+a               2        NEW      2.4      NEW        1          NEW          1           
+sister          2        NEW      2.4      NEW        1          NEW          1           
+Schwester       2        2.4      2.4      0          0          1            1           
+ist             5        NEW      2.5      NEW        1          NEW          1           
+Mutter          5        2.5      2.6      0          1          1            1           
+meine           5        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 1
+Updated Topic Entries: 7
+Vocabulary Updates: 11
+Total Updates: 19
+
+================================================================================

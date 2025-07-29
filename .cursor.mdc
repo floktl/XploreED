@@ -1,0 +1,150 @@
+# Cursor Project Structure Rules (cursor.mdc)
+
+## User Coding Style & Preferences
+
+### Response Format
+- **Always return responses as pretty HTML** with bold words, titles, tables, etc., similar to the chat interface
+- **Use live markdown rendering** in chat responses
+- **Prefer direct code implementation** rather than providing diffs or instructions
+- **Fix errors directly** without asking clarifying questions when the solution is clear
+
+### Problem-Solving Approach
+- **Systematic and iterative**: When encountering errors, identify the specific file/line, examine the code, locate the correct module, apply changes, and re-test
+- **Prefer live monitoring**: Use `docker compose up backend` to monitor container logs for errors in real-time
+- **Fix errors immediately**: Don't loop more than 3 times to fix linter errors on the same file
+- **Search comprehensively**: Use semantic search and grep to find all related imports and update them systematically
+
+### Code Implementation Style
+- **Direct file editing**: Use `edit_file` and `search_replace` tools to implement changes directly
+- **Comprehensive updates**: When fixing import issues, update ALL related files at once
+- **Standardization**: Prefer centralized import services (`core.services.import_service`) over scattered imports
+- **Consistent patterns**: Apply the same import pattern across all similar files
+
+## 42 Coding Standards
+
+### Naming Conventions
+- **Variables and functions**: Use snake_case (e.g., `my_variable`, `calculate_total()`)
+- **Classes**: Use PascalCase (e.g., `UserManager`, `DatabaseConnection`)
+- **Constants**: Use UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`)
+- **Files and directories**: Use snake_case (e.g., `user_manager.py`, `database_connection.py`)
+- **Modules**: Use snake_case (e.g., `import user_management`, `from database import connection`)
+
+### Code Formatting
+- **Indentation**: Use 4 spaces (no tabs)
+- **Line length**: Maximum 80 characters per line
+- **Blank lines**: Use 2 blank lines before top-level classes and functions, 1 blank line between methods
+- **Imports**: Group imports in this order: standard library, third-party, local imports
+- **Spacing**: No spaces around operators in function calls, one space around operators in expressions
+
+### Documentation
+- **Docstrings**: Use triple quotes for all functions, classes, and modules
+- **Comments**: Write clear, concise comments explaining "why" not "what"
+- **README**: Maintain comprehensive README files for all projects
+- **Inline comments**: Use sparingly, only when code is not self-explanatory
+
+### Function and Class Design
+- **Single Responsibility**: Each function/class should have one clear purpose
+- **Function length**: Keep functions under 20 lines when possible
+- **Parameters**: Limit function parameters to 4-5 maximum
+- **Return values**: Functions should return one type consistently
+- **Side effects**: Minimize side effects, prefer pure functions
+
+### Error Handling
+- **Exceptions**: Use specific exceptions, not generic ones
+- **Try-catch**: Keep try blocks as small as possible
+- **Error messages**: Provide clear, actionable error messages
+- **Logging**: Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+- **Graceful degradation**: Handle errors gracefully without crashing
+
+### Performance and Optimization
+- **Premature optimization**: Don't optimize until you have performance issues
+- **Algorithm complexity**: Choose appropriate algorithms for the problem size
+- **Memory usage**: Be mindful of memory consumption, especially with large datasets
+- **Caching**: Use caching for expensive operations
+- **Lazy loading**: Load data only when needed
+
+### Security
+- **Input validation**: Always validate and sanitize user input
+- **SQL injection**: Use parameterized queries, never string concatenation
+- **Authentication**: Implement proper authentication and authorization
+- **Secrets**: Never hardcode secrets, use environment variables
+- **HTTPS**: Use HTTPS in production, never HTTP for sensitive data
+
+### Testing
+- **Unit tests**: Write tests for all functions and classes
+- **Test coverage**: Aim for at least 80% code coverage
+- **Test naming**: Use descriptive test names that explain the scenario
+- **Test isolation**: Each test should be independent and not rely on other tests
+- **Mocking**: Use mocks for external dependencies
+
+### Version Control
+- **Commit messages**: Write clear, descriptive commit messages
+- **Branch naming**: Use descriptive branch names (e.g., `feature/user-authentication`)
+- **Small commits**: Make small, focused commits rather than large ones
+- **Pull requests**: Use pull requests for code review
+- **Git ignore**: Keep `.gitignore` updated to exclude unnecessary files
+
+### Code Review
+- **Code quality**: Check for code smells and anti-patterns
+- **Performance**: Review for potential performance issues
+- **Security**: Review for security vulnerabilities
+- **Documentation**: Ensure code is well-documented
+
+### Debugging and Logging
+- **Debugging**: Use debuggers and logging instead of print statements
+- **Log levels**: Use appropriate log levels for different types of messages
+- **Structured logging**: Use structured logging with consistent fields
+- **Error tracking**: Use error tracking tools in production
+- **Monitoring**: Set up monitoring and alerting for production systems
+
+## Directory Structure
+- All backend source code must reside in `backend/src/`.
+- Core utilities and helpers must be placed in `backend/src/core/utils/`.
+- Database-related code must be in `backend/src/core/database/`.
+- All AI-related features must be in `backend/src/features/ai/` (subfolders: `generation`, `evaluation`, `memory`, `prompts`).
+- API route files must be in `backend/src/api/routes/`.
+- Centralized imports must be managed via `backend/src/core/services/import_service.py`.
+- Configuration files must be in `backend/src/config/`.
+
+## Import Conventions
+- **All utility imports must use the `core.utils.*` path** (e.g., `from core.utils.helpers import ...`).
+- **All database imports must use the `core.database.*` path**.
+- **All AI feature imports must use the `features.ai.*` path**.
+- **All route files must import shared dependencies via `from core.services.import_service import *`**.
+- **No file should import directly from `utils.*` or `routes.*`** (legacy pattern).
+- **When updating imports, search for ALL instances and update them systematically**.
+
+## Legacy Code
+- The `z_backend_old/` directory is for legacy reference only. Do not use or update imports in this directory for production code.
+- **Focus on the current `backend/src/` structure only**.
+
+## File Placement
+- Place new shared helpers in the appropriate `core/utils/` or `core/database/` subdirectory.
+- Place new AI logic in the appropriate `features/ai/` submodule.
+- Place new API endpoints in `api/routes/` and register them in the appropriate blueprint.
+
+## Development Workflow
+- **Use `docker compose -f docker-compose.dev.yml up backend`** for backend testing (not `make run`)
+- **Monitor container logs** for real-time error feedback
+- **Fix import issues systematically**: Update all related files, not just the one causing the error
+- **Add missing imports** to `core.services.import_service.py` when needed
+- **Include necessary imports** like `logging` when using `logger = logging.getLogger(__name__)`
+
+## Error Handling
+- **Fix errors directly** when the solution is clear from the error message
+- **Don't ask clarifying questions** for obvious import or syntax errors
+- **Provide comprehensive summaries** of all fixes made
+- **Test thoroughly** after making changes to ensure no new errors are introduced
+
+## General
+- Keep all configuration and environment files in `backend/src/config/`.
+- Document any new structure changes in this file.
+- **Prefer beautiful and modern UI** when building web apps from scratch
+- **Add all necessary import statements, dependencies, and endpoints** required to run the code
+- **Bias towards not asking the user for help** if the answer can be found through code analysis
+
+## Communication Style
+- **Provide comprehensive summaries** of work completed
+- **Use checkmarks (✅) and clear formatting** to show progress
+- **Explain the reasoning** behind structural decisions
+- **Show final results** with clear success indicators

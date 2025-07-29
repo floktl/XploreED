@@ -794,7 +794,8 @@ export const getMistralChatHistory = async () => {
     credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to fetch chat history");
-  return res.json();
+  const data = await res.json();
+  return data.history || [];
 };
 
 // Add to Mistral chat history

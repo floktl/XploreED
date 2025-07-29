@@ -34,6 +34,8 @@ if not db_path.exists():
 
 def get_connection():
     """Return a connection to the configured SQLite database file."""
+    if not DB:
+        raise RuntimeError("Database file path is not configured")
     return sqlite3.connect(DB)
 
 def execute_query(query, params=(), fetch=False, many=False):
@@ -57,15 +59,17 @@ def execute_query(query, params=(), fetch=False, many=False):
                     results = [dict(row) for row in cursor.fetchall()]
                     return results
                 except Exception as e:
-                    raise
+                    return []
 
             try:
                 conn.commit()
-                return True
+                return True if not fetch else []
             except Exception as e:
                 raise
 
     except Exception as e:
+        if fetch:
+            return []
         return None
 
 
@@ -115,10 +119,10 @@ def fetch_one(
         order_by=order_by,
         limit=1,
     )
-    return rows[0] if rows else None
+    return rows[0] if isinstance(rows, list) and rows else None
 
 
-def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
+def fetch_topic_memory(username: str, include_correct: bool = False) -> list | bool:
     """Retrieve topic memory rows for a user.
 
     If ``include_correct`` is ``False`` (default), only entries that were
@@ -130,20 +134,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> list:
     try:
         rows = select_rows(
             "topic_memory",
-            columns=[
-                "grammar",
-                "topic",
-                "skill_type",
-                "context",
-                "lesson_content_id",
-                "ease_factor",
-                "intervall",
-                "next_repeat",
-                "repetitions",
-                "last_review",
-                "correct",
-                "quality",
-            ],
+            columns="grammar, topic, skill_type, context, lesson_content_id, ease_factor, intervall, next_repeat, repetitions, last_review, correct, quality",
             where=where,
             params=(username,),
         )
@@ -179,7 +170,7 @@ def fetch_custom(query, params=()):
 def fetch_one_custom(query, params=()):
     """Return the first row from a custom query or ``None``."""
     results = fetch_custom(query, params)
-    return results[0] if results else None
+    return results[0] if isinstance(results, list) and results else None
 
 
 def select_rows(
@@ -226,5 +217,5 @@ def select_one(
         group_by=group_by,
         limit=1,
     )
-    return rows[0] if rows else None
+    return rows[0] if isinstance(rows, list) and rows else None
 

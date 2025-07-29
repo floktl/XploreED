@@ -1,110 +1,18 @@
-"""Flask application setup and route registration."""
+"""
+German Class Tool - Backend Application Module
 
-from flask import Flask, jsonify, render_template  # type: ignore
-from flask_cors import CORS  # type: ignore
-from pathlib import Path
-import os
-import sys
-import logging
+This module provides backward compatibility for the Flask application.
+It imports the configured app from main.py to maintain existing deployment
+and import patterns.
 
-# # === Configure logging to suppress urllib3 debug logs ===
-# logging.getLogger('urllib3').setLevel(logging.WARNING)
-# logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
+For new code, prefer importing directly from main.py:
+    from main import app
 
-# Suppress werkzeug info logs except for errors
-import logging
-logging.getLogger('werkzeug').disabled = True
+For detailed architecture information, see: docs/backend_structure.md
+"""
 
-# === Load environment variables EARLY ===
-try:
-    from dotenv import load_dotenv  # type: ignore
-except Exception:
-    def load_dotenv(dotenv_path=None, **_):  # type: ignore
-        """Manually load environment variables from ``dotenv_path`` if present."""
-        if dotenv_path and os.path.exists(dotenv_path):
-            with open(dotenv_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
-                        os.environ.setdefault(key, value)
+# Import the configured Flask application from main.py
+from main import app
 
-env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
-load_dotenv(dotenv_path=env_path)
-
-# === Now import modules that rely on env vars ===
-import api.routes.auth  # noqa: F401
-import api.routes.admin
-import api.routes.debug
-import api.routes.game
-import api.routes.lesson_progress
-import api.routes.lessons
-import api.routes.profile
-import api.routes.translate
-import api.routes.user
-import api.routes.ai
-import api.routes.support
-import api.routes.settings
-
-from app.extensions import limiter
-from app.blueprint import registered_blueprints
-
-# from routes.ai import ai_bp
-# app.register_blueprint(ai_bp, url_prefix="/api")
-
-# === Create and configure Flask app ===
-app = Flask(__name__)
-# === JWT config ===
-debug_mode = os.getenv("FLASK_ENV", "development") == "development"
-app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
-
-# --- DEV MODE: Relax cookie and CORS restrictions for Fusion and local tools ---
-if debug_mode:
-    app.config["SESSION_COOKIE_SAMESITE"] = None  # Allow cross-site cookies
-    app.config["SESSION_COOKIE_SECURE"] = False   # Allow non-HTTPS cookies
-    app.config["JWT_COOKIE_SECURE"] = False
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = False
-    allowed_origin = ["*"]  # Allow all origins in dev
-else:
-    app.config["SESSION_COOKIE_SAMESITE"] = "None"
-    app.config["SESSION_COOKIE_SECURE"] = True
-    app.config["JWT_COOKIE_SECURE"] = True
-    app.config["JWT_COOKIE_CSRF_PROTECT"] = True
-    allowed_origin = os.getenv("FRONTEND_URL", "").split(",")
-
-app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
-app.config["JWT_ACCESS_CSRF_FIELD_NAME"] = "csrf_token"
-
-# === Register Blueprints ===
-for bp in registered_blueprints:
-    app.register_blueprint(bp)
-
-# === Enable CORS ===
-CORS(app, origins=allowed_origin, supports_credentials=True)
-
-
-# === Init limiter and database ===
-limiter.init_app(app)
-
-
-@app.errorhandler(500)
-def server_error(_):
-    """Return custom 500 error page."""
-    return render_template("500.html"), 500
-
-# === Debug registered routes ===
-print("\n\ud83d\udd0d Registered Blueprints:", file=sys.stderr, flush=True)
-for name, bp in app.blueprints.items():
-    print(f" - {name}", file=sys.stderr, flush=True)
-
-print("\n\ud83d\udd0d Registered Routes:", file=sys.stderr, flush=True)
-for rule in app.url_map.iter_rules():
-    methods = ",".join(sorted(rule.methods))
-    print(f" - {rule.rule} [{methods}] \u2192 {rule.endpoint}", file=sys.stderr, flush=True)
-
-
-# === Run app ===
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5050))
-    app.run(host="0.0.0.0", port=port, debug=debug_mode)
+# Export the app for backward compatibility
+__all__ = ['app']
