@@ -24,21 +24,21 @@ env_path = Path(__file__).resolve().parent / 'secrets' / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # === Now import modules that rely on env vars ===
-import routes.auth  # noqa: F401
-import routes.admin
-import routes.debug
-import routes.game
-import routes.lesson_progress
-import routes.lessons
-import routes.profile
-import routes.translate
-import routes.user
-import routes.ai
-import routes.support
-import routes.settings
+import api.routes.auth  # noqa: F401
+import api.routes.admin
+import api.routes.debug
+import api.routes.game
+import api.routes.lesson_progress
+import api.routes.lessons
+import api.routes.profile
+import api.routes.translate
+import api.routes.user
+import api.routes.ai
+import api.routes.support
+import api.routes.settings
 
-from app.extensions import limiter
-from app.blueprint import registered_blueprints
+from config.extensions import limiter
+from config.blueprint import registered_blueprints
 
 # from routes.ai import ai_bp
 # app.register_blueprint(ai_bp, url_prefix="/api")
