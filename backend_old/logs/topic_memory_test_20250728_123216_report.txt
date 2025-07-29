@@ -1,0 +1,50 @@
+================================================================================
+TOPIC MEMORY UPDATE REPORT
+User: test
+Session: topic_memory_test_20250728_123216
+Started: 2025-07-28 12:32:16.786966
+================================================================================
+
+🆕 NEW TOPIC MEMORY ENTRIES
+--------------------------------------------------------------------------------
+Topic                Skill           Quality  EF     Reps   Interval Topic      Context                       
+--------------------------------------------------------------------------------
+preposition with dative case translation     2        2.5    0      0        sports     I swim in the pool.           
+
+📝 UPDATED TOPIC MEMORY ENTRIES
+------------------------------------------------------------------------------------------------------------------------
+Topic                Skill           Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval Row ID   Context                       
+------------------------------------------------------------------------------------------------------------------------
+personal pronoun     gap-fill        3        2.2      2.0      3          4          14           31           1456     ___ spielt Fußball.           
+subject-verb agreement gap-fill        3        2.5      2.4      0          1          0            1            1444     ___ spielt Fußball.           
+definite article     translation     2        2.5      2.5      0          0          1            1            1436     I swim in the pool.           
+verb conjugation     translation     2        2.5      2.5      0          0          1            1            1475     I swim in the pool.           
+verb conjugation     gap-fill        0        2.8      2.8      3          0          16           1            1449     ___ laufen schnell.           
+
+ VOCABULARY UPDATES
+--------------------------------------------------------------------------------
+Word            Quality  Old EF   New EF   Old Reps   New Reps   Old Interval New Interval
+--------------------------------------------------------------------------------
+spielt          3        NEW      2.5      NEW        0          NEW          1           
+Fußball         3        2.5      2.4      1          2          1            6           
+Er              3        NEW      2.6      NEW        1          NEW          1           
+I               2        NEW      2.2      NEW        1          NEW          1           
+swim            2        NEW      2.5      NEW        0          NEW          1           
+in              2        NEW      2.5      NEW        0          NEW          1           
+the             2        NEW      2.5      NEW        0          NEW          1           
+pool            2        NEW      2.5      NEW        0          NEW          1           
+Ich             2        NEW      2.2      NEW        0          NEW          1           
+schwimme        2        NEW      2.5      NEW        0          NEW          1           
+im              2        NEW      2.5      NEW        0          NEW          1           
+Pool            2        2.5      2.5      0          0          1            1           
+laufen          0        NEW      2.5      NEW        0          NEW          1           
+schnell         0        NEW      2.5      NEW        0          NEW          1           
+
+📊 SUMMARY
+------------------------------
+New Topic Entries: 1
+Updated Topic Entries: 5
+Vocabulary Updates: 14
+Total Updates: 20
+
+================================================================================
