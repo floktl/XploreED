@@ -1,27 +1,90 @@
+<!--
+German Class Tool - Unauthorized Access Template
+
+This template provides the error page displayed when a user attempts to access
+a protected resource without proper authentication (401 Unauthorized),
+following clean architecture principles as outlined in the documentation.
+
+Template Features:
+- Clear authentication requirement messaging
+- User-friendly navigation to login page
+- Responsive design with consistent styling
+- Accessible link to authentication flow
+
+For detailed architecture information, see: docs/backend_structure.md
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Unauthorized</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unauthorized - German Class Tool</title>
+
+  <!-- === Unauthorized Page Styles === -->
   <style>
     body {
       background: #fff7f7;
-      font-family: system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       text-align: center;
-      padding: 60px;
+      padding: 60px 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
-    h1 { color: #e67e22; }
-    p { color: #444; }
+
+    h1 {
+      color: #e67e22;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+    }
+
+    p {
+      color: #444;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
     a {
       color: #007bff;
       text-decoration: none;
       font-weight: bold;
+      padding: 12px 24px;
+      background: #f8f9fa;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    a:hover {
+      background: #007bff;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .unauthorized-container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <h1>🔒 Unauthorized</h1>
-  <p>You need to be logged in to access this page.</p>
-  <p><a href="/">Go to login</a></p>
+  <!-- === Unauthorized Content === -->
+  <div class="unauthorized-container">
+    <h1>🔒 Unauthorized</h1>
+    <p>You need to be logged in to access this page.</p>
+    <p><a href="/">Go to login</a></p>
+  </div>
 </body>
 </html>

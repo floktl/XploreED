@@ -19,6 +19,9 @@ from threading import Thread
 
 from core.services.import_service import *
 from features.ai.generation.helpers import format_feedback_block
+from features.ai.memory.vocabulary_memory import translate_to_german
+from features.ai.evaluation.translation_evaluator import evaluate_translation_ai
+from features.ai.generation.translate_helpers import update_memory_async
 
 
 logger = logging.getLogger(__name__)
@@ -200,6 +203,32 @@ def get_translation_job_status(job_id: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         logger.error(f"Error getting job {job_id} status: {e}")
         return None
+
+
+def get_translation_status(job_id: str) -> Dict[str, Any]:
+    """
+    Get the status of a translation job.
+
+    Args:
+        job_id: The translation job ID
+
+    Returns:
+        Dictionary containing job status and results
+    """
+    # TODO: Implement actual translation status logic
+    logger.info(f"Getting translation status for job {job_id}")
+
+    # Placeholder implementation
+    return {
+        "job_id": job_id,
+        "status": "completed",
+        "progress": 100,
+        "result": {
+            "translated_text": "Placeholder translation",
+            "confidence": 0.95,
+            "processing_time": 1.5
+        }
+    }
 
 
 def stream_translation_feedback(english: str, student_input: str, username: str) -> str:

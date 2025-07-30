@@ -84,7 +84,8 @@ def create_app() -> Flask:
         Flask: Configured Flask application instance
     """
     # === Create Flask Application ===
-    app = Flask(__name__)
+    template_dir = Path(__file__).parent / 'api' / 'templates'
+    app = Flask(__name__, template_folder=str(template_dir))
 
     # === Apply Configuration ===
     app_config = create_app_config()

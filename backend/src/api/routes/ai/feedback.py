@@ -12,7 +12,10 @@ Date: 2025
 import logging
 from typing import Dict, Any
 
+from flask import request, jsonify # type: ignore
 from core.services.import_service import *
+from core.utils.helpers import require_user
+from config.blueprint import ai_bp
 from features.ai.feedback_helpers import (
     get_feedback_progress,
     generate_feedback_with_progress,

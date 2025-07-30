@@ -13,6 +13,7 @@ from features.ai.prompts.exercise_prompts import (
 )
 from features.ai.memory.vocabulary_memory import _extract_json
 from features.ai.memory.logger import topic_memory_logger
+from typing import Optional
 
 def _normalize_umlauts(s: str) -> str:
     # Accept ae == ä, oe == ö, ue == ü (and vice versa)
@@ -120,7 +121,7 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> d
 
     return compare_topic_qualities(reference, student)
 
-def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int, topic: str = None) -> None:
+def _update_single_topic(username: str, grammar: str, skill: str, context: str, quality: int, topic: Optional[str] = None) -> None:
     """Insert or update one topic memory row based on ``quality``."""
     # print("\033[95m💾 [TOPIC MEMORY FLOW] 💾 Starting _update_single_topic for user: {} grammar: {} skill: {} quality: {}\033[0m".format(username, grammar, skill, quality), flush=True)
 

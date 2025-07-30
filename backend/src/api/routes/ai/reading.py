@@ -11,7 +11,11 @@ Date: 2025
 
 import logging
 
+from flask import request, jsonify, current_app # type: ignore
 from core.services.import_service import *
+from core.utils.helpers import require_user, run_in_background
+from config.blueprint import ai_bp
+from external.mistral.client import send_prompt
 from features.ai.generation.reading_helpers import (
     ai_reading_exercise
 )

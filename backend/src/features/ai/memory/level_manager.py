@@ -110,9 +110,11 @@ def check_auto_level_up(username: str) -> bool:
         )
         # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully updated user level in database\033[0m", flush=True)
         return True
-    # else:
-    #     if progress < 0.9:
-    #         # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Progress {:.1%} below 90% threshold - no advancement\033[0m".format(progress), flush=True)
-    #     elif level >= 10:
-    #         # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ User already at maximum level 10 - no advancement\033[0m", flush=True)
-        # return False
+    else:
+        if progress < 0.9:
+            # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Progress {:.1%} below 90% threshold - no advancement\033[0m".format(progress), flush=True)
+            pass
+        elif level >= 10:
+            # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ User already at maximum level 10 - no advancement\033[0m", flush=True)
+            pass
+        return False

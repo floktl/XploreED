@@ -5,7 +5,7 @@ Topic Memory Logger - Creates detailed logs of topic memory updates in table for
 import os
 import json
 import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from pathlib import Path
 
 class TopicMemoryLogger:
@@ -16,8 +16,8 @@ class TopicMemoryLogger:
         # print(f"🔧 [LOGGER DEBUG] 🔧 Initializing logger with log_dir: {self.log_dir}", flush=True)
         self.log_dir.mkdir(exist_ok=True)
         # print(f"🔧 [LOGGER DEBUG] 🔧 Created/verified log directory: {self.log_dir}", flush=True)
-        self.current_session = None
-        self.session_data = {
+        self.current_session: Optional[str] = None
+        self.session_data: dict = {
             "new_entries": [],
             "updated_entries": [],
             "vocabulary_updates": [],

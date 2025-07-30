@@ -3,7 +3,7 @@
 import random
 from difflib import SequenceMatcher
 
-from core.database.connection import *
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection, fetch_topic_memory
 from features.ai.prompts.utils import make_prompt, FEEDBACK_SYSTEM_PROMPT
 from features.ai.prompts.exercise_prompts import (
     feedback_generation_prompt,

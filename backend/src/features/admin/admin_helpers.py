@@ -12,7 +12,11 @@ import logging
 from typing import Dict, Any, List, Optional, Tuple
 from bs4 import BeautifulSoup
 
-from core.services.import_service import *
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from core.utils.html_helpers import strip_ai_data, inject_block_ids, update_lesson_blocks_from_html
+from api.middleware.session import session_manager
+from core.utils.helpers import user_exists
+from werkzeug.security import generate_password_hash
 
 
 logger = logging.getLogger(__name__)
@@ -397,7 +401,7 @@ def get_lesson_progress_summary() -> Dict[int, Dict[str, Any]]:
                 summary[lesson_id] = {"percent": 0, "num_blocks": total_blocks}
                 continue
 
-            total_percent = 0
+            total_percent = 0.0
             for user_id in users:
                 completed_row = select_one(
                     "lesson_progress",

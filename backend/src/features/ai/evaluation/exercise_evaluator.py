@@ -166,8 +166,8 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
     exercise_map = {str(ex.get("id")): ex for ex in all_exercises}
     # print("\033[94m📝 [TOPIC MEMORY FLOW] 📝 Created exercise map with {} exercises\033[0m".format(len(exercise_map)), flush=True)
 
-    results = []
-    reviewed = set()
+    results: list = []
+    reviewed: set = set()
 
     for ex_id, user_answer in answers.items():
         # print("\033[93m🎯 [TOPIC MEMORY FLOW] 🎯 Processing exercise ID: {} with answer: '{}'\033[0m".format(ex_id, user_answer), flush=True)

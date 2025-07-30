@@ -13,6 +13,10 @@ import os
 from typing import Dict, Any, Optional, Tuple
 
 from core.services.import_service import *
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from werkzeug.security import generate_password_hash, check_password_hash
+from api.middleware.session import session_manager
+from core.utils.helpers import user_exists
 from features.ai.memory.level_manager import initialize_topic_memory_for_level
 
 
