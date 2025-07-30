@@ -33,7 +33,7 @@ def get_all_database_data() -> Dict[str, Any]:
         Exception: If database operations fail
     """
     try:
-        db_path = os.getenv("DB_FILE", "user_data.db")
+        db_path = os.getenv("DB_FILE", "database/user_data.db")
         logger.info(f"Retrieving all database data from {db_path}")
 
         with get_connection() as conn:
