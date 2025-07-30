@@ -27,6 +27,8 @@ from features.ai.generation.helpers import (
     generate_feedback_prompt
 )
 from core.database.connection import fetch_topic_memory
+from core.utils.helpers import run_in_background
+from core.database.connection import select_rows
 
 # Cached feedback data
 FEEDBACK_FILE = [

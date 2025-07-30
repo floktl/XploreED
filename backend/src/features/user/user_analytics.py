@@ -9,7 +9,7 @@ Date: 2025
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
@@ -101,7 +101,7 @@ class UserAnalyticsManager:
             self.logger.error(f"Failed to calculate learning progress for user {self.user_id}: {e}")
             raise
 
-    def _get_exercise_statistics(self) -> Dict[str, any]:
+    def _get_exercise_statistics(self) -> Dict[str, Any]:
         """
         Retrieve exercise statistics from the database.
 
@@ -180,7 +180,7 @@ class UserAnalyticsManager:
             self.logger.error(f"Error calculating learning streak: {e}")
             return 0
 
-    def _get_user_profile(self) -> Dict[str, any]:
+    def _get_user_profile(self) -> Dict[str, Any]:
         """
         Retrieve user profile information.
 
@@ -281,7 +281,7 @@ class UserAnalyticsManager:
             return "Every step forward is progress. You're doing great!"
 
 
-def create_user_analytics_report(user_id: str) -> Dict[str, any]:
+def create_user_analytics_report(user_id: str) -> Dict[str, Any]:
     """
     Create a comprehensive analytics report for a user.
 

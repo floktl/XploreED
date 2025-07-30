@@ -12,7 +12,10 @@ Date: 2025
 import logging
 from typing import Dict, Any
 
+from flask import request, jsonify # type: ignore
 from core.services.import_service import *
+from core.utils.helpers import require_user, run_in_background
+from config.blueprint import ai_bp
 from features.ai.exercise_helpers import (
     check_gap_fill_correctness,
     parse_submission_data,

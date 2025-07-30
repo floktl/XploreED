@@ -11,6 +11,7 @@ Date: 2025
 import logging
 from typing import Dict, Optional, Any
 
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from core.services.import_service import *
 from features.ai.memory.vocabulary_memory import normalize_word, vocab_exists, save_vocab
 from features.ai.generation.user_helpers import fetch_vocab_entries

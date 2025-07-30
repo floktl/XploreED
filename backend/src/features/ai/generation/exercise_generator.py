@@ -5,9 +5,10 @@ import random
 import logging
 import traceback
 from threading import Thread
-from datetime import datetime
+from datetime import datetime, date
+from typing import Optional, Dict, Any
 from flask import current_app, jsonify
-from core.database.connection import insert_row, select_rows, fetch_one, select_one
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from features.ai.memory.level_manager import check_auto_level_up
 from core.utils.helpers import require_user
 from .helpers import (
@@ -20,7 +21,6 @@ from .helpers import (
 )
 from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct
 from features.ai.evaluation.exercise_evaluator import evaluate_answers_with_ai, process_ai_answers
-import datetime
 from core.utils.json_helpers import extract_json
 from features.ai.prompts.utils import make_prompt, SYSTEM_PROMPT
 from features.ai.prompts.exercise_prompts import exercise_generation_prompt
@@ -48,10 +48,10 @@ logger = logging.getLogger(__name__)
 # import logging
 # logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
-def log_exercise_event(event_type: str, username: str, details: dict = None):
+def log_exercise_event(event_type: str, username: str, details: Optional[Dict[Any, Any]] = None):
     """Log exercise-related events with timestamp and user context."""
     log_data = {
-        "timestamp": datetime.datetime.now().isoformat(),
+        "timestamp": datetime.now().isoformat(),
         "event_type": event_type,
         "username": username,
         "details": details or {}
@@ -145,7 +145,7 @@ def save_exercise_submission_async(
     block_id: str,
     answers: dict,
     exercises: list,
-    exercise_block: dict = None,
+    exercise_block: Optional[Dict[Any, Any]] = None,
 ) -> None:
     """Save exercise submission and update spaced repetition in a thread. Also update exercise history."""
     # print("\033[95m🔄 [TOPIC MEMORY FLOW] 🔄 Starting save_exercise_submission_async for user: {} block: {}\033[0m".format(username, block_id), flush=True)
@@ -374,7 +374,7 @@ def generate_new_exercises(
     try:
         upcoming = sorted(
             (entry for entry in topic_memory if "next_repeat" in entry),
-            key=lambda x: datetime.datetime.fromisoformat(x["next_repeat"]),
+                            key=lambda x: datetime.fromisoformat(x["next_repeat"]),
         )[:10]
         filtered_topic_memory = [
             {
@@ -397,10 +397,10 @@ def generate_new_exercises(
             for entry in vocabular
             if (
                 (entry.get("sm2_due_date") or entry.get("next_review"))
-                and datetime.datetime.fromisoformat(
+                                    and datetime.fromisoformat(
                     entry.get("sm2_due_date") or entry.get("next_review")
                 ).date()
-                <= datetime.date.today()
+                                    <= date.today()
             )
         ][:10]
     except Exception as e:
@@ -681,7 +681,7 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
         {
             "exercises": json.dumps(ai_block),
             "next_exercises": json.dumps(next_block or {}),
-            "exercises_updated_at": datetime.datetime.now().isoformat(),
+            "exercises_updated_at": datetime.now().isoformat(),
         },
         parent_function="_generate_blocks_for_new_user"
     )
@@ -740,7 +740,7 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
         {
             "exercises": json.dumps(ai_block),
             "next_exercises": json.dumps(next_block or {}),
-            "exercises_updated_at": datetime.datetime.now().isoformat(),
+            "exercises_updated_at": datetime.now().isoformat(),
         },
         parent_function="_generate_blocks_for_existing_user"
     )

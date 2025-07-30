@@ -12,6 +12,9 @@ import logging
 from typing import Dict, Any, List, Optional, Tuple
 
 from core.services.import_service import *
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from datetime import datetime, timedelta
+from typing import Any, Optional, List
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +46,7 @@ def submit_feedback(message: str, username: Optional[str] = None) -> Tuple[bool,
 
         feedback_data = {
             'message': message,
-            'created_at': datetime.datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow().isoformat()
         }
 
         # Add username if provided
@@ -249,7 +252,6 @@ def get_feedback_statistics() -> Dict[str, Any]:
         registered_feedback = total_feedback - anonymous_feedback
 
         # Get recent feedback count (last 7 days)
-        from datetime import datetime, timedelta
         week_ago = datetime.now() - timedelta(days=7)
 
         recent_row = select_one(
@@ -393,7 +395,7 @@ def get_user_feedback(username: str, limit: int = 20) -> List[Dict[str, Any]]:
         raise
 
 
-def create_support_ticket(username: str, subject: str, message: str, priority: str = "normal") -> Tuple[bool, Optional[str], Optional[int]]:
+def create_support_ticket(username: str, subject: str, message: str, priority: str = "normal", attachments: Optional[List[Any]] = None) -> Tuple[bool, Optional[str], Optional[int]]:
     """
     Create a support ticket for a user.
 
@@ -440,8 +442,11 @@ def create_support_ticket(username: str, subject: str, message: str, priority: s
             'message': message,
             'priority': priority,
             'status': 'open',
-            'created_at': datetime.datetime.utcnow().isoformat()
+            'created_at': datetime.utcnow().isoformat()
         }
+
+        if attachments:
+            ticket_data['attachments'] = str(attachments)
 
         success = insert_row('support_tickets', ticket_data)
 
@@ -468,3 +473,250 @@ def create_support_ticket(username: str, subject: str, message: str, priority: s
     except Exception as e:
         logger.error(f"Error creating support ticket for user {username}: {e}")
         return False, "Database error", None
+
+
+def create_support_request(username: str, subject: str, description: str, urgency: str = "medium", contact_method: str = "email", attachments: Optional[List[Any]] = None) -> int:
+    """
+    Create a new support request.
+
+    Args:
+        username: The username creating the request
+        subject: Request subject line
+        description: Detailed description of the issue
+        urgency: Urgency level (low, medium, high, urgent)
+        contact_method: Preferred contact method (email, phone, chat)
+        attachments: List of file attachments
+
+    Returns:
+        int: The support request ID
+
+    Raises:
+        ValueError: If required parameters are invalid
+    """
+    try:
+        if not username:
+            raise ValueError("Username is required")
+
+        if not subject or not subject.strip():
+            raise ValueError("Subject is required")
+
+        if not description or not description.strip():
+            raise ValueError("Description is required")
+
+        subject = subject.strip()
+        description = description.strip()
+
+        if len(subject) > 200:
+            raise ValueError("Subject is too long (maximum 200 characters)")
+
+        if len(description) > 2000:
+            raise ValueError("Description is too long (maximum 2000 characters)")
+
+        valid_urgency_levels = ["low", "medium", "high", "urgent"]
+        if urgency not in valid_urgency_levels:
+            urgency = "medium"
+
+        valid_contact_methods = ["email", "phone", "chat"]
+        if contact_method not in valid_contact_methods:
+            contact_method = "email"
+
+        logger.info(f"Creating support request for user {username} with urgency {urgency}")
+
+        request_data = {
+            'username': username,
+            'subject': subject,
+            'description': description,
+            'urgency': urgency,
+            'contact_method': contact_method,
+            'status': 'open',
+            'created_at': datetime.utcnow().isoformat()
+        }
+
+        if attachments:
+            request_data['attachments'] = str(attachments)
+
+        success = insert_row('support_requests', request_data)
+
+        if success:
+            # Get the request ID
+            request_row = select_one(
+                "support_requests",
+                columns="id",
+                where="username = ? AND subject = ? AND created_at = ?",
+                params=(username, subject, request_data['created_at'])
+            )
+
+            request_id = request_row.get("id") if request_row else 0
+
+            logger.info(f"Successfully created support request {request_id} for user {username}")
+            return request_id
+        else:
+            logger.error(f"Failed to create support request for user {username}")
+            raise Exception("Failed to create support request")
+
+    except ValueError as e:
+        logger.error(f"Validation error creating support request: {e}")
+        raise
+    except Exception as e:
+        logger.error(f"Error creating support request for user {username}: {e}")
+        raise
+
+
+def get_system_status() -> Dict[str, Any]:
+    """
+    Get system status and health information.
+
+    Returns:
+        Dictionary containing system status information
+    """
+    try:
+        logger.info("Getting system status")
+
+        # Check database connectivity
+        try:
+            db_test = select_one("users", columns="COUNT(*) as count")
+            db_status = "healthy" if db_test else "unhealthy"
+        except Exception as e:
+            logger.error(f"Database health check failed: {e}")
+            db_status = "unhealthy"
+
+        # Check external services (placeholder)
+        external_apis = {
+            "mistral_ai": "unknown",
+            "elevenlabs": "unknown",
+            "redis": "unknown"
+        }
+
+        # Get application version
+        version = "1.0.0"  # This could be read from a config file
+
+        status_info = {
+            "services": {
+                "database": db_status,
+                "api": "healthy"
+            },
+            "database": {
+                "status": db_status,
+                "type": "sqlite"
+            },
+            "external_apis": external_apis,
+            "version": version
+        }
+
+        logger.info(f"Retrieved system status: {status_info}")
+        return status_info
+
+    except Exception as e:
+        logger.error(f"Error getting system status: {e}")
+        raise
+
+
+def get_help_content(topic: str, language: str = "en", format_type: str = "json") -> Optional[str]:
+    """
+    Retrieve help documentation and user guides.
+
+    Args:
+        topic: Help topic to retrieve
+        language: Content language preference
+        format_type: Response format (html, markdown, json)
+
+    Returns:
+        Help content or None if not found
+    """
+    try:
+        logger.info(f"Getting help content for topic '{topic}' in {language}")
+
+        # This is a placeholder implementation
+        # In a real application, this would fetch from a database or file system
+        help_content = {
+            "getting-started": {
+                "title": "Getting Started",
+                "content": "Welcome to the German Class Tool! This guide will help you get started with learning German.",
+                "sections": [
+                    "Creating an account",
+                    "Taking the placement test",
+                    "Starting your first lesson"
+                ]
+            },
+            "vocabulary": {
+                "title": "Vocabulary Learning",
+                "content": "Learn how to effectively study and review German vocabulary.",
+                "sections": [
+                    "Spaced repetition system",
+                    "Vocabulary exercises",
+                    "Review scheduling"
+                ]
+            },
+            "grammar": {
+                "title": "Grammar Exercises",
+                "content": "Master German grammar through interactive exercises.",
+                "sections": [
+                    "Grammar concepts",
+                    "Exercise types",
+                    "Progress tracking"
+                ]
+            },
+            "pronunciation": {
+                "title": "Pronunciation Guide",
+                "content": "Improve your German pronunciation with audio exercises.",
+                "sections": [
+                    "Audio playback",
+                    "Pronunciation practice",
+                    "Feedback system"
+                ]
+            },
+            "troubleshooting": {
+                "title": "Troubleshooting",
+                "content": "Common issues and their solutions.",
+                "sections": [
+                    "Technical problems",
+                    "Account issues",
+                    "Learning difficulties"
+                ]
+            },
+            "account": {
+                "title": "Account Management",
+                "content": "Manage your account settings and preferences.",
+                "sections": [
+                    "Profile settings",
+                    "Privacy options",
+                    "Data management"
+                ]
+            }
+        }
+
+        # Get content for the requested topic
+        topic_content = help_content.get(topic, help_content.get("getting-started"))
+
+        if not topic_content:
+            logger.warning(f"Help content not found for topic '{topic}'")
+            return None
+
+        # Format the content based on requested format
+        if format_type == "html":
+            content = f"""
+            <h1>{topic_content['title']}</h1>
+            <p>{topic_content['content']}</p>
+            <h2>Sections:</h2>
+            <ul>
+            {''.join([f'<li>{section}</li>' for section in topic_content['sections']])}
+            </ul>
+            """
+        elif format_type == "markdown":
+            content = f"""
+            # {topic_content['title']}
+
+            {topic_content['content']}
+
+            ## Sections:
+            {''.join([f'- {section}' for section in topic_content['sections']])}
+            """
+        else:  # json format
+            content = str(topic_content)
+
+        logger.info(f"Retrieved help content for topic '{topic}'")
+        return content
+
+    except Exception as e:
+        logger.error(f"Error retrieving help content for topic '{topic}': {e}")
+        return None

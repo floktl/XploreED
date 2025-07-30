@@ -12,7 +12,7 @@ import logging
 from typing import Dict, Any, List, Optional
 
 from core.services.import_service import *
-from core.database.connection import select_rows, select_one
+from core.database.connection import select_rows, select_one, update_row, insert_row
 
 
 logger = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ def get_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
             params=(username, lesson_id),
         )
 
-        progress = {row[0]: bool(row[1]) for row in rows}
+        progress = {row["block_id"]: bool(row["completed"]) for row in rows}
 
         logger.info(f"Retrieved progress for {len(progress)} blocks for user {username}, lesson {lesson_id}")
         return progress
@@ -280,7 +280,7 @@ def get_lesson_statistics(username: str, lesson_id: int) -> Dict[str, Any]:
                 "completion_date": None
             }
 
-        total_blocks = lesson_info.get("num_blocks") or 0
+        total_blocks = lesson_info.get("num_blocks", 0) or 0
 
         # Get completed blocks count
         completed_row = select_one(
@@ -311,7 +311,7 @@ def get_lesson_statistics(username: str, lesson_id: int) -> Dict[str, Any]:
             )
             completion_date = completion_row.get("completion_date") if completion_row else None
 
-        percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks > 0 else 0
+        percent_complete = int(((completed_blocks or 0) / (total_blocks or 1)) * 100) if total_blocks and total_blocks > 0 else 0
 
         stats = {
             "lesson_id": lesson_id,
@@ -370,7 +370,7 @@ def _build_lesson_summary(username: str, lesson_id: int, lesson_data: Dict[str, 
         )
 
         # Calculate completion percentage
-        percent_complete = int((completed_blocks / total_blocks) * 100) if total_blocks > 0 else 100
+        percent_complete = int(((completed_blocks or 0) / (total_blocks or 1)) * 100) if total_blocks and total_blocks > 0 else 100
         if completed:
             percent_complete = 100
 
@@ -432,3 +432,131 @@ def validate_lesson_access(username: str, lesson_id: int) -> bool:
     except Exception as e:
         logger.error(f"Error validating lesson access for user {username}, lesson {lesson_id}: {e}")
         return False
+
+
+def validate_block_completion(user: str, lesson_id: int, block_id: str) -> Dict[str, Any]:
+    """
+    Validate if a user can complete a specific lesson block.
+
+    Args:
+        user: The username
+        lesson_id: The lesson ID
+        block_id: The block ID
+
+    Returns:
+        Dictionary containing validation result
+    """
+    # TODO: Implement actual validation logic
+    logger.info(f"Validating block completion for user {user}, lesson {lesson_id}, block {block_id}")
+
+    return {
+        "valid": True,
+        "message": "Block completion validated",
+        "user": user,
+        "lesson_id": lesson_id,
+        "block_id": block_id
+    }
+
+
+def get_lesson_blocks(lesson_id: int) -> List[Dict[str, Any]]:
+    """
+    Get all blocks for a specific lesson.
+
+    Args:
+        lesson_id: The lesson ID
+
+    Returns:
+        List of lesson blocks
+    """
+    # TODO: Implement actual block retrieval logic
+    logger.info(f"Getting blocks for lesson {lesson_id}")
+
+    # Placeholder implementation
+    blocks = select_rows(
+        "lesson_blocks",
+        columns="*",
+        where="lesson_id = ?",
+        params=(lesson_id,)
+    )
+
+    return blocks or []
+
+
+def update_lesson_content(lesson_id: int, updates: Dict[str, Any]) -> bool:
+    """
+    Update lesson content.
+
+    Args:
+        lesson_id: The lesson ID
+        updates: Dictionary containing updates
+
+    Returns:
+        True if update was successful, False otherwise
+    """
+    # TODO: Implement actual lesson content update logic
+    logger.info(f"Updating lesson content for lesson {lesson_id}")
+
+    try:
+        success = update_row(
+            "lesson_content",
+            updates,
+            "lesson_id = ?",
+            (lesson_id,)
+        )
+        return success
+    except Exception as e:
+        logger.error(f"Error updating lesson content: {e}")
+        return False
+
+
+def publish_lesson(lesson_id: int, published: bool) -> bool:
+    """
+    Publish or unpublish a lesson.
+
+    Args:
+        lesson_id: The lesson ID
+        published: Whether to publish (True) or unpublish (False)
+
+    Returns:
+        True if operation was successful, False otherwise
+    """
+    # TODO: Implement actual lesson publishing logic
+    logger.info(f"{'Publishing' if published else 'Unpublishing'} lesson {lesson_id}")
+
+    try:
+        success = update_row(
+            "lesson_content",
+            {"published": 1 if published else 0},
+            "lesson_id = ?",
+            (lesson_id,)
+        )
+        return success
+    except Exception as e:
+        logger.error(f"Error publishing lesson: {e}")
+        return False
+
+
+def get_lesson_analytics(lesson_id: int, timeframe: str = "all") -> Dict[str, Any]:
+    """
+    Get analytics for a specific lesson.
+
+    Args:
+        lesson_id: The lesson ID
+        timeframe: Time period for analytics (week, month, all)
+
+    Returns:
+        Dictionary containing lesson analytics
+    """
+    # TODO: Implement actual lesson analytics logic
+    logger.info(f"Getting analytics for lesson {lesson_id} with timeframe {timeframe}")
+
+    # Placeholder implementation
+    return {
+        "lesson_id": lesson_id,
+        "timeframe": timeframe,
+        "total_users": 0,
+        "completion_rate": 0.0,
+        "average_time": 0,
+        "popular_blocks": [],
+        "user_feedback": []
+    }

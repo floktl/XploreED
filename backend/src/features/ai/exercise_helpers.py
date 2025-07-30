@@ -22,6 +22,9 @@ from features.ai.evaluation.exercise_evaluator import (
     generate_alternative_answers,
     generate_explanation
 )
+from features.ai.generation.exercise_generator import evaluate_exercises
+from features.ai.exercise_helpers import compile_score_summary, save_exercise_submission_async, run_in_background
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from features.ai.generation.exercise_generator import prefetch_next_exercises
 from features.ai.generation.helpers import _adjust_gapfill_results
 

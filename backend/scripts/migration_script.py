@@ -68,6 +68,28 @@ try:
     """
     )
 
+    # ✅ Add missing columns to users table if they don't exist
+    cursor.execute("PRAGMA table_info(users);")
+    user_columns = [col[1] for col in cursor.fetchall()]
+
+    if "email" not in user_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN email TEXT;")
+        print("✅ 'email' column added to users table.")
+    else:
+        print("ℹ️ 'email' column already exists in users table.")
+
+    if "skill_level" not in user_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN skill_level INTEGER DEFAULT 1;")
+        print("✅ 'skill_level' column added to users table.")
+    else:
+        print("ℹ️ 'skill_level' column already exists in users table.")
+
+    if "is_admin" not in user_columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0;")
+        print("✅ 'is_admin' column added to users table.")
+    else:
+        print("ℹ️ 'is_admin' column already exists in users table.")
+
     # ✅ Create results table
     cursor.execute(
         """

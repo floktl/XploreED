@@ -11,7 +11,10 @@ Date: 2025
 import logging
 from typing import Dict, Any, List, Optional, Tuple
 
-from core.services.import_service import *
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from werkzeug.security import generate_password_hash, check_password_hash
+from api.middleware.session import session_manager
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -351,7 +354,6 @@ def get_account_statistics(username: str) -> Dict[str, Any]:
             }
 
         # Calculate account age
-        from datetime import datetime
         created_at = user_row.get("created_at")
         account_age_days = 0
         if created_at:
@@ -450,4 +452,153 @@ def _update_user_preferences(username: str, preferences: Dict[str, Any]) -> bool
         return True
     except Exception as e:
         logger.error(f"Error updating preferences for user {username}: {e}")
+        return False
+
+
+def export_user_data(username: str) -> Optional[Dict[str, Any]]:
+    """
+    Export all user data for backup or transfer purposes.
+
+    Args:
+        username: The username to export data for
+
+    Returns:
+        Dictionary containing all user data or None if failed
+
+    Raises:
+        ValueError: If username is invalid
+    """
+    try:
+        if not username:
+            raise ValueError("Username is required")
+
+        logger.info(f"Exporting data for user {username}")
+
+        # Verify user exists
+        user_row = fetch_one('users', 'WHERE username = ?', (username,))
+        if not user_row:
+            logger.warning(f"User {username} not found for data export")
+            return None
+
+        exported_data = {
+            "user_info": {
+                "username": user_row.get("username"),
+                "created_at": user_row.get("created_at"),
+                "skill_level": user_row.get("skill_level", 0)
+            },
+            "settings": get_user_settings(username),
+            "vocabulary": fetch_all('vocab_log', 'WHERE username = ?', (username,)),
+            "topic_memory": fetch_all('topic_memory', 'WHERE username = ?', (username,)),
+            "exercise_submissions": fetch_all('exercise_submissions', 'WHERE username = ?', (username,)),
+            "lesson_progress": fetch_all('lesson_progress', 'WHERE user_id = ?', (username,)),
+            "game_results": fetch_all('results', 'WHERE username = ?', (username,)),
+            "ai_user_data": fetch_all('ai_user_data', 'WHERE username = ?', (username,)),
+            "exported_at": datetime.now().isoformat()
+        }
+
+        logger.info(f"Successfully exported data for user {username}")
+        return exported_data
+
+    except ValueError as e:
+        logger.error(f"Validation error exporting user data: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Error exporting data for user {username}: {e}")
+        return None
+
+
+def import_user_data(username: str, data: Dict[str, Any]) -> bool:
+    """
+    Import user data from a previous export.
+
+    Args:
+        username: The username to import data for
+        data: Dictionary containing exported user data
+
+    Returns:
+        True if data was imported successfully, False otherwise
+
+    Raises:
+        ValueError: If username or data is invalid
+    """
+    try:
+        if not username:
+            raise ValueError("Username is required")
+
+        if not data:
+            raise ValueError("Data is required")
+
+        logger.info(f"Importing data for user {username}")
+
+        # Verify user exists
+        user_row = fetch_one('users', 'WHERE username = ?', (username,))
+        if not user_row:
+            logger.warning(f"User {username} not found for data import")
+            return False
+
+        success_count = 0
+        total_operations = 0
+
+        # Import vocabulary data
+        if "vocabulary" in data and data["vocabulary"]:
+            for vocab_item in data["vocabulary"]:
+                vocab_item["username"] = username  # Ensure correct username
+                if insert_row("vocab_log", vocab_item):
+                    success_count += 1
+                total_operations += 1
+
+        # Import topic memory data
+        if "topic_memory" in data and data["topic_memory"]:
+            for topic_item in data["topic_memory"]:
+                topic_item["username"] = username  # Ensure correct username
+                if insert_row("topic_memory", topic_item):
+                    success_count += 1
+                total_operations += 1
+
+        # Import exercise submissions
+        if "exercise_submissions" in data and data["exercise_submissions"]:
+            for submission in data["exercise_submissions"]:
+                submission["username"] = username  # Ensure correct username
+                if insert_row("exercise_submissions", submission):
+                    success_count += 1
+                total_operations += 1
+
+        # Import lesson progress
+        if "lesson_progress" in data and data["lesson_progress"]:
+            for progress in data["lesson_progress"]:
+                progress["user_id"] = username  # Ensure correct user_id
+                if insert_row("lesson_progress", progress):
+                    success_count += 1
+                total_operations += 1
+
+        # Import game results
+        if "game_results" in data and data["game_results"]:
+            for result in data["game_results"]:
+                result["username"] = username  # Ensure correct username
+                if insert_row("results", result):
+                    success_count += 1
+                total_operations += 1
+
+        # Import AI user data
+        if "ai_user_data" in data and data["ai_user_data"]:
+            for ai_data in data["ai_user_data"]:
+                ai_data["username"] = username  # Ensure correct username
+                if insert_row("ai_user_data", ai_data):
+                    success_count += 1
+                total_operations += 1
+
+        # Import settings if provided
+        if "settings" in data and data["settings"]:
+            settings = data["settings"]
+            if "preferences" in settings:
+                _update_user_preferences(username, settings["preferences"])
+
+        logger.info(f"Successfully imported data for user {username}: {success_count}/{total_operations} operations")
+        return success_count > 0
+
+    except ValueError as e:
+        logger.error(f"Validation error importing user data: {e}")
+        return False
+    except Exception as e:
+        logger.error(f"Error importing data for user {username}: {e}")
         return False

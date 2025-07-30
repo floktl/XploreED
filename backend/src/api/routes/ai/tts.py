@@ -11,15 +11,18 @@ Date: 2025
 
 import logging
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
+from flask import request, jsonify, Response # type: ignore
 from core.services.import_service import *
+from core.utils.helpers import require_user
+from config.blueprint import ai_bp
 
 # Import ElevenLabs client
 try:
     from elevenlabs.client import ElevenLabs # type: ignore
 except ImportError:
-    ElevenLabs = None
+    ElevenLabs: Optional[Any] = None
     logging.warning("ElevenLabs client not available")
 
 
@@ -49,7 +52,7 @@ def tts():
         if not text:
             return jsonify({"error": "Text is required"}), 400
 
-        if not ElevenLabs:
+        if ElevenLabs is None:
             logger.error("ElevenLabs client not available")
             return jsonify({"error": "TTS service not available"}), 500
 
