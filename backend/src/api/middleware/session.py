@@ -13,6 +13,7 @@ Features:
 For detailed architecture information, see: docs/backend_structure.md
 """
 
+import os
 import uuid
 from typing import Optional
 from core.database.connection import execute_query, insert_row, fetch_one, delete_rows
@@ -28,14 +29,14 @@ class SessionManager:
     with persistent storage in the database.
     """
 
-    def __init__(self, db_path: str = "user_data.db"):
+    def __init__(self, db_path: str = None):
         """
         Initialize the session manager and ensure the sessions table exists.
 
         Args:
-            db_path: Path to the SQLite database file
+            db_path: Path to the SQLite database file (optional, uses DB_FILE env var if not provided)
         """
-        self.db_path = db_path
+        self.db_path = db_path or os.getenv("DB_FILE")
         self._init_session_table()
 
     def _init_session_table(self) -> None:
