@@ -4,7 +4,7 @@ User Analytics Module
 This module provides comprehensive analytics functionality for user behavior tracking,
 performance metrics, and learning progress analysis in the German learning platform.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

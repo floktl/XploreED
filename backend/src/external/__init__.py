@@ -1,5 +1,5 @@
 """
-German Class Tool - External Integrations Module
+XplorED - External Integrations Module
 
 This module provides external service integrations used throughout the backend application,
 following clean architecture principles as outlined in the documentation.

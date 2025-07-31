@@ -1,5 +1,5 @@
 """
-German Class Tool - Core Module
+XplorED - Core Module
 
 This module provides core business logic and infrastructure components,
 following clean architecture principles as outlined in the documentation.

@@ -1,5 +1,5 @@
 """
-German Class Tool - Debug and Development API Routes
+XplorED - Debug and Development API Routes
 
 This module contains API routes for debugging, development, and system diagnostics,
 following clean architecture principles as outlined in the documentation.

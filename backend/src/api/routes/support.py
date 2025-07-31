@@ -1,5 +1,5 @@
 """
-German Class Tool - Support and Feedback API Routes
+XplorED - Support and Feedback API Routes
 
 This module contains API routes for user support, feedback submission,
 and help system functionality, following clean architecture principles
@@ -38,7 +38,6 @@ from features.support.support_helpers import (
     get_system_status,
     get_help_content
 )
-from api.middleware.session import session_manager
 from config.blueprint import support_bp
 
 
@@ -401,7 +400,7 @@ def get_help_topics_route():
             {
                 "id": "getting-started",
                 "title": "Getting Started",
-                "description": "Learn how to use the German Class Tool",
+                "description": "Learn how to use the XplorED",
                 "category": "basics"
             },
             {

@@ -1,6 +1,6 @@
-# German Class Tool - Backend (New Structure)
+# XplorED - Backend (New Structure)
 
-This is the restructured backend for the German Class Tool application, organized with clean architecture principles.
+This is the restructured backend for the XplorED application, organized with clean architecture principles.
 
 ## 🏗️ Architecture Overview
 

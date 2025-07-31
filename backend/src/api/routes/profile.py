@@ -1,5 +1,5 @@
 """
-German Class Tool - User Profile API Routes
+XplorED - User Profile API Routes
 
 This module contains API routes for user profile management and statistics,
 following clean architecture principles as outlined in the documentation.

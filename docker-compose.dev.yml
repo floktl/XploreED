@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   frontend:
-    image: node:18
+    image: node:20
     working_dir: /app
     volumes:
       - ./frontend:/app

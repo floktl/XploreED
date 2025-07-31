@@ -5,7 +5,7 @@ This module contains API routes for AI-powered lesson generation and management.
 All business logic has been moved to appropriate helper modules to maintain
 separation of concerns.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -72,7 +72,7 @@ def ai_weakness_lesson():
         try:
             resp = send_prompt(
                 "You are a helpful German teacher.",
-                {"role": "user", "content": user_prompt},
+                user_prompt,
                 temperature=0.7,
             )
             if resp.status_code == 200:

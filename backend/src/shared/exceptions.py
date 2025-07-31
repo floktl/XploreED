@@ -1,5 +1,5 @@
 """
-German Class Tool - Shared Exceptions
+XplorED - Shared Exceptions
 
 This module contains all custom exceptions used throughout the backend,
 following clean architecture principles as outlined in the documentation.
@@ -18,7 +18,7 @@ For detailed architecture information, see: docs/backend_structure.md
 
 # === Base Exception ===
 class GermanClassToolException(Exception):
-    """Base exception for all German Class Tool application errors."""
+    """Base exception for all XplorED application errors."""
     pass
 
 

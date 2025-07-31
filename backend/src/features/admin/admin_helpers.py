@@ -4,7 +4,7 @@ Admin Helper Functions
 This module contains helper functions for admin operations that are used
 by the admin routes but should not be in the route files themselves.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from core.utils.html_helpers import strip_ai_data, inject_block_ids, update_lesson_blocks_from_html
-from api.middleware.session import session_manager
 from core.utils.helpers import user_exists
 from werkzeug.security import generate_password_hash
 
@@ -547,6 +546,7 @@ def update_user_data(username: str, user_data: Dict[str, Any]) -> Tuple[bool, Op
         # Update username across all tables if changed
         if new_username != username:
             _update_username_across_tables(username, new_username)
+            from api.middleware.session import session_manager
             session_manager.destroy_user_sessions(username)
             username = new_username
 
@@ -599,6 +599,7 @@ def delete_user_data(username: str) -> Tuple[bool, Optional[str]]:
         delete_rows("users", "WHERE username = ?", (username,))
 
         # Destroy user sessions
+        from api.middleware.session import session_manager
         session_manager.destroy_user_sessions(username)
 
         logger.info(f"Successfully deleted user data for {username}")

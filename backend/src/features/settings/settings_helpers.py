@@ -4,7 +4,7 @@ Settings Helper Functions
 This module contains helper functions for user settings operations that are used
 by the settings routes but should not be in the route files themselves.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -13,7 +13,6 @@ from typing import Dict, Any, List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
-from api.middleware.session import session_manager
 from datetime import datetime
 
 
@@ -140,6 +139,7 @@ def deactivate_user_account(username: str) -> Tuple[bool, Optional[str], Dict[st
             conn.commit()
 
         # Destroy all user sessions
+        from api.middleware.session import session_manager
         session_manager.destroy_user_sessions(username)
 
         total_deleted = sum(deletion_stats.values())

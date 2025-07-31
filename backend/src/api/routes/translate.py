@@ -1,5 +1,5 @@
 """
-German Class Tool - Translation API Routes
+XplorED - Translation API Routes
 
 This module contains API routes for text translation functionality,
 following clean architecture principles as outlined in the documentation.

@@ -4,7 +4,7 @@ Vocabulary Manager
 This module contains core vocabulary management functions for CRUD operations
 on vocabulary entries.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -13,7 +13,7 @@ from typing import Dict, Optional, Any, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
 from features.ai.memory.vocabulary_memory import normalize_word, vocab_exists, save_vocab
-from features.ai.generation.user_helpers import fetch_vocab_entries
+from features.vocabulary.vocab_helpers import fetch_vocab_entries
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 """
-German Class Tool - Core Utility Helpers
+XplorED - Core Utility Helpers
 
 This module provides core utility functions for user session management and authentication,
 following clean architecture principles as outlined in the documentation.

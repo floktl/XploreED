@@ -1,10 +1,10 @@
 """
 Features Package
 
-This package contains all feature modules for the German Class Tool application,
+This package contains all feature modules for the XplorED application,
 organized by business domain and following clean architecture principles.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

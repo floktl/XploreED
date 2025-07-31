@@ -1,8 +1,8 @@
-"""Helper functions for user-related routes."""
+"""Helper functions for vocabulary-related routes."""
 
 import datetime
 from core.database.connection import select_rows, select_one, update_row
-from features.ai.memory.spaced_repetition import sm2
+from features.spaced_repetition.algorithm import sm2
 
 VOCAB_COLUMNS = [
     "rowid as id",

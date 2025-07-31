@@ -1,5 +1,5 @@
 """
-German Class Tool - Shared Constants
+XplorED - Shared Constants
 
 This module contains all application-wide constants used throughout the backend,
 following clean architecture principles as outlined in the documentation.

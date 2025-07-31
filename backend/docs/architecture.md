@@ -2,7 +2,7 @@
 
 ## **Overview**
 
-The German Class Tool backend follows a **Clean Architecture** pattern with clear separation of concerns, modular design, and scalable structure. The architecture is designed to support AI-powered German language learning with real-time feedback and personalized content generation.
+The XplorED backend follows a **Clean Architecture** pattern with clear separation of concerns, modular design, and scalable structure. The architecture is designed to support AI-powered German language learning with real-time feedback and personalized content generation.
 
 ## **Architecture Principles**
 
@@ -350,4 +350,4 @@ tests/
 
 ---
 
-This architecture provides a solid foundation for the German Class Tool, ensuring scalability, maintainability, and extensibility while supporting the complex requirements of AI-powered language learning.
+This architecture provides a solid foundation for the XplorED, ensuring scalability, maintainability, and extensibility while supporting the complex requirements of AI-powered language learning.

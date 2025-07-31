@@ -6,7 +6,7 @@ general AI questions, streaming responses, and chat history management.
 All business logic has been moved to appropriate helper modules to maintain
 separation of concerns.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

@@ -1,7 +1,7 @@
 """
-German Class Tool - Backend Source Module
+XplorED - Backend Source Module
 
-This module serves as the main entry point for the German Class Tool backend application,
+This module serves as the main entry point for the XplorED backend application,
 following clean architecture principles as outlined in the documentation.
 
 Application Components:

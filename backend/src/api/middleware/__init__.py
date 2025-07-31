@@ -1,5 +1,5 @@
 """
-German Class Tool - API Middleware Module
+XplorED - API Middleware Module
 
 This module provides middleware components for the API layer,
 following clean architecture principles as outlined in the documentation.

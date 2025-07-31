@@ -1,5 +1,5 @@
 """
-German Class Tool - Lesson Progress Tracking API Routes
+XplorED - Lesson Progress Tracking API Routes
 
 This module contains API routes for lesson progress tracking and completion management,
 following clean architecture principles as outlined in the documentation.
@@ -34,7 +34,7 @@ from core.services.import_service import *
 from core.utils.helpers import require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import lesson_progress_bp
-from features.lessons.lesson_progress_helpers import (
+from features.progress.progress_tracker import (
     get_user_lesson_progress,
     update_block_progress,
     mark_lesson_complete,

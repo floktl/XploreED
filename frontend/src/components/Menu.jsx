@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Target, Book, Library, Bot, BarChart3 } from "lucide-react";
+import { FileText, Target, Book, Library, Bot, BarChart3, Brain } from "lucide-react";
 
 import Button from "./UI/Button";
 import Card from "./UI/Card";
@@ -59,12 +59,13 @@ export default function Menu() {
 
     setCurrentPageContent({
       type: "menu",
-      description: "This is the main menu of the XplorED app. Users can access translation practice, sentence order games, AI training exercises, AI reading exercises, and more. Each button navigates to a different learning module.",
+      description: "This is the main menu of the XplorED app. Users can access translation practice, sentence order games, AI training exercises, AI reading exercises, weakness lessons, and more. Each button navigates to a different learning module.",
       sections: [
         { label: "Translation Practice", path: "/translate", icon: "FileText" },
         { label: "Sentence Order Game", path: "/level-game", icon: "Target" },
         { label: "AI Training Exercises", path: "/ai-feedback", icon: "Bot" },
         { label: "AI Reading Exercise", path: "/reading-exercise", icon: "Book" },
+        { label: "Weakness Lesson", path: "/weakness-lesson", icon: "Brain" },
         // Add more sections as needed
       ]
     });
@@ -113,6 +114,15 @@ export default function Menu() {
             >
               <Book className="w-5 h-5" />
               AI Reading Exercise
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate("/weakness-lesson")}
+              className="justify-start gap-3"
+            >
+              <Brain className="w-5 h-5" />
+              Weakness Lesson
             </Button>
             {/* ...rest of the menu... */}
           </div>

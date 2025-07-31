@@ -1,5 +1,5 @@
 """
-German Class Tool - Backend Application Entry Point
+XplorED - Backend Application Entry Point
 
 This module serves as the main entry point for the Flask application,
 following clean architecture principles as outlined in the documentation.
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     port = env_info["port"]
     debug_mode = env_info["debug_mode"]
 
-    print(f"🚀 Starting German Class Tool Backend...")
+    print(f"🚀 Starting XplorED Backend...")
     print(f"   Environment: {env_info['environment']}")
     print(f"   Debug Mode: {debug_mode}")
     print(f"   Port: {port}")

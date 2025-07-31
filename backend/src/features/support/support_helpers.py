@@ -4,7 +4,7 @@ Support Helper Functions
 This module contains helper functions for support and feedback operations that are used
 by the support routes but should not be in the route files themselves.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -631,7 +631,7 @@ def get_help_content(topic: str, language: str = "en", format_type: str = "json"
         help_content = {
             "getting-started": {
                 "title": "Getting Started",
-                "content": "Welcome to the German Class Tool! This guide will help you get started with learning German.",
+                "content": "Welcome to the XplorED! This guide will help you get started with learning German.",
                 "sections": [
                     "Creating an account",
                     "Taking the placement test",

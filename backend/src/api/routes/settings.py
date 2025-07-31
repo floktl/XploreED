@@ -1,5 +1,5 @@
 """
-German Class Tool - User Settings API Routes
+XplorED - User Settings API Routes
 
 This module contains API routes for user settings management and preferences,
 following clean architecture principles as outlined in the documentation.

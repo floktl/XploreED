@@ -1,5 +1,5 @@
 """
-German Class Tool - Core Utilities Module
+XplorED - Core Utilities Module
 
 This module provides core utility functions and helpers for the backend application,
 following clean architecture principles as outlined in the documentation.

@@ -87,7 +87,7 @@ def ai_reading_exercise():
     ] if vocab_rows else []
 
     topic_rows = fetch_topic_memory(username)
-    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+    topic_memory = [dict(row) for row in topic_rows] if isinstance(topic_rows, list) else []
 
     block = generate_reading_exercise(style, level, vocab_data, topic_memory)
     if not block or not block.get("text") or not block.get("questions"):

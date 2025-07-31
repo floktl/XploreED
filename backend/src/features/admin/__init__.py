@@ -3,31 +3,37 @@ Admin Feature Module
 
 This module contains administrative functions and user management functionality.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
 from .admin_helpers import (
-    get_all_users,
-    get_user_details,
-    update_user_role,
-    delete_user,
-    get_system_statistics,
+    get_all_game_results,
+    get_user_game_results,
+    create_lesson_content,
+    get_all_lessons,
+    get_lesson_by_id,
+    update_lesson_content,
+    delete_lesson_content,
     get_lesson_progress_summary,
     get_individual_lesson_progress,
-    get_admin_dashboard_data,
-    manage_system_settings
+    get_all_users,
+    update_user_data,
+    delete_user_data
 )
 
 __all__ = [
     # Admin Helpers
-    'get_all_users',
-    'get_user_details',
-    'update_user_role',
-    'delete_user',
-    'get_system_statistics',
+    'get_all_game_results',
+    'get_user_game_results',
+    'create_lesson_content',
+    'get_all_lessons',
+    'get_lesson_by_id',
+    'update_lesson_content',
+    'delete_lesson_content',
     'get_lesson_progress_summary',
     'get_individual_lesson_progress',
-    'get_admin_dashboard_data',
-    'manage_system_settings'
+    'get_all_users',
+    'update_user_data',
+    'delete_user_data'
 ]

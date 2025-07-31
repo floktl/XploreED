@@ -1,5 +1,5 @@
 """
-German Class Tool - Shared Module
+XplorED - Shared Module
 
 This module provides shared components used throughout the backend application,
 following clean architecture principles as outlined in the documentation.

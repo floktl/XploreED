@@ -3,7 +3,7 @@ Vocabulary Feature Module
 
 This module contains vocabulary management and analytics functionality.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

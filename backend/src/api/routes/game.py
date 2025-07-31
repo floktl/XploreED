@@ -1,5 +1,5 @@
 """
-German Class Tool - Educational Games API Routes
+XplorED - Educational Games API Routes
 
 This module contains API routes for educational games and interactive learning activities,
 following clean architecture principles as outlined in the documentation.

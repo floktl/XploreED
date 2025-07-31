@@ -1,5 +1,5 @@
 """
-German Class Tool - JSON Processing Utilities
+XplorED - JSON Processing Utilities
 
 This module provides JSON parsing and extraction utilities,
 following clean architecture principles as outlined in the documentation.

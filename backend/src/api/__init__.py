@@ -1,5 +1,5 @@
 """
-German Class Tool - API Layer Module
+XplorED - API Layer Module
 
 This module provides the API layer components for the backend application,
 following clean architecture principles as outlined in the documentation.

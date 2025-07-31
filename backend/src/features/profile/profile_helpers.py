@@ -4,7 +4,7 @@ Profile Helper Functions
 This module contains helper functions for user profile operations that are used
 by the profile routes but should not be in the route files themselves.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

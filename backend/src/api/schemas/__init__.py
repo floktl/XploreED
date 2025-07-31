@@ -1,5 +1,5 @@
 """
-German Class Tool - API Schemas Module
+XplorED - API Schemas Module
 
 This module provides data validation and serialization schemas for the API layer,
 following clean architecture principles as outlined in the documentation.

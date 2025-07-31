@@ -1,5 +1,5 @@
 """
-German Class Tool - Admin Management API Routes
+XplorED - Admin Management API Routes
 
 This module contains API routes for administrative functions and system management,
 following clean architecture principles as outlined in the documentation.
