@@ -16,15 +16,12 @@ from flask import request, jsonify # type: ignore
 from core.services.import_service import *
 from core.utils.helpers import require_user, run_in_background
 from config.blueprint import ai_bp
-from features.exercise.exercise_evaluator import (
+from features.exercise import (
     check_gap_fill_correctness,
     parse_submission_data,
     evaluate_first_exercise,
     create_immediate_results,
     evaluate_remaining_exercises_async,
-    get_exercise_results,
-    argue_exercise_evaluation,
-    get_topic_memory_status
 )
 from features.ai.evaluation.exercise_evaluator import process_ai_answers
 

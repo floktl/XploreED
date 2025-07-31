@@ -1,6 +1,6 @@
 import re
 import json
-from features.ai.prompts.exercise_prompts import detect_topics_prompt
+from features.ai.prompts import detect_topics_prompt
 from external.mistral.client import send_prompt
 
 

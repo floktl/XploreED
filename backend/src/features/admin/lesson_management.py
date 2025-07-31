@@ -1,103 +1,26 @@
 """
-Admin Helper Functions
+XplorED - Admin Lesson Management Module
 
-This module contains helper functions for admin operations that are used
-by the admin routes but should not be in the route files themselves.
+This module provides lesson management functions for admin operations,
+following clean architecture principles as outlined in the documentation.
 
-Author: XplorED Team
-Date: 2025
+Lesson Management Components:
+- Lesson Content: Creation, updating, and deletion of lesson content
+- Lesson Progress: Tracking and analysis of lesson completion
+- Block Management: HTML block processing and metadata management
+- Progress Analytics: Lesson completion statistics and user progress
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
 from typing import Dict, Any, List, Optional, Tuple
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 
-from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows
 from core.utils.html_helpers import strip_ai_data, inject_block_ids, update_lesson_blocks_from_html
-from core.utils.helpers import user_exists
-from werkzeug.security import generate_password_hash
-
 
 logger = logging.getLogger(__name__)
-
-
-def get_all_game_results() -> List[Dict[str, Any]]:
-    """
-    Retrieve all game results for admin review.
-
-    Returns:
-        List of game results with user and performance data
-
-    Raises:
-        Exception: If database operations fail
-    """
-    try:
-        logger.info("Retrieving all game results for admin review")
-
-        results = select_rows(
-            "results",
-            columns=["username", "level", "correct", "answer", "timestamp"],
-            order_by="username ASC, timestamp DESC",
-        )
-
-        logger.info(f"Retrieved {len(results)} game results")
-        return results
-
-    except Exception as e:
-        logger.error(f"Error retrieving game results: {e}")
-        raise
-
-
-def get_user_game_results(username: str) -> List[Dict[str, Any]]:
-    """
-    Get game results for a specific user.
-
-    Args:
-        username: The username to get results for
-
-    Returns:
-        List of game results for the user
-
-    Raises:
-        ValueError: If username is invalid
-    """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        username = username.strip()
-        if not username:
-            raise ValueError("Username cannot be empty")
-
-        logger.info(f"Retrieving game results for user {username}")
-
-        rows = select_rows(
-            "results",
-            columns=["level", "correct", "answer", "timestamp"],
-            where="username = ?",
-            params=(username,),
-            order_by="timestamp DESC",
-        )
-
-        results = [
-            {
-                "level": row["level"],
-                "correct": bool(row["correct"]),
-                "answer": row["answer"],
-                "timestamp": row["timestamp"]
-            }
-            for row in rows
-        ]
-
-        logger.info(f"Retrieved {len(results)} game results for user {username}")
-        return results
-
-    except ValueError as e:
-        logger.error(f"Validation error getting user game results: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting game results for user {username}: {e}")
-        raise
 
 
 def create_lesson_content(lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
@@ -134,10 +57,12 @@ def create_lesson_content(lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[s
 
         # Extract block IDs from HTML
         soup = BeautifulSoup(content, "html.parser")
-        block_ids = {
-            el["data-block-id"] for el in soup.select('[data-block-id]')
-            if el.has_attr("data-block-id")
-        }
+        block_ids = set()
+        for el in soup.select('[data-block-id]'):
+            if el.has_attr("data-block-id"):
+                block_id = el.get("data-block-id")
+                if isinstance(block_id, str) and block_id:
+                    block_ids.add(block_id)
         num_blocks = len(block_ids)
 
         # Insert lesson row
@@ -284,10 +209,12 @@ def update_lesson_content(lesson_id: int, lesson_data: Dict[str, Any]) -> Tuple[
 
         # Count block IDs
         soup = BeautifulSoup(content, "html.parser")
-        block_ids = {
-            el["data-block-id"] for el in soup.select('[data-block-id]')
-            if el.has_attr("data-block-id")
-        }
+        block_ids = set()
+        for el in soup.select('[data-block-id]'):
+            if el.has_attr("data-block-id"):
+                block_id = el.get("data-block-id")
+                if isinstance(block_id, str) and block_id:
+                    block_ids.add(block_id)
         num_blocks = len(block_ids)
 
         # Update the lesson row
@@ -409,7 +336,7 @@ def get_lesson_progress_summary() -> Dict[int, Dict[str, Any]]:
                     params=(lesson_id, user_id),
                 )
                 completed = completed_row.get("count") if completed_row else 0
-                total_percent += (completed / total_blocks) * 100
+                total_percent += (completed / total_blocks) * 100 if total_blocks and total_blocks > 0 else 0
 
             summary[lesson_id] = {
                 "percent": round(total_percent / len(users)),
@@ -481,162 +408,4 @@ def get_individual_lesson_progress(lesson_id: int) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting individual lesson progress for lesson ID {lesson_id}: {e}")
-        raise
-
-
-def get_all_users() -> List[Dict[str, Any]]:
-    """
-    Get a list of all registered users.
-
-    Returns:
-        List of user data with basic information
-
-    Raises:
-        Exception: If database operations fail
-    """
-    try:
-        logger.info("Retrieving all registered users")
-
-        rows = select_rows(
-            "users",
-            columns=["username", "created_at", "skill_level"],
-            order_by="username",
-        )
-
-        logger.info(f"Retrieved {len(rows)} users")
-        return rows
-
-    except Exception as e:
-        logger.error(f"Error retrieving users: {e}")
-        raise
-
-
-def update_user_data(username: str, user_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
-    """
-    Update user information including username, password, and skill level.
-
-    Args:
-        username: The current username
-        user_data: Dictionary containing updated user information
-
-    Returns:
-        Tuple of (success, error_message)
-
-    Raises:
-        ValueError: If username or user_data is invalid
-    """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if not user_data:
-            raise ValueError("User data is required")
-
-        logger.info(f"Updating user data for {username}")
-
-        new_username = user_data.get("username", username).strip()
-        new_password = user_data.get("password")
-        skill_level = user_data.get("skill_level")
-
-        # Check if new username is taken
-        if new_username != username and user_exists(new_username):
-            logger.warning(f"Username update failed: {new_username} already exists")
-            return False, "Username already taken"
-
-        # Update username across all tables if changed
-        if new_username != username:
-            _update_username_across_tables(username, new_username)
-            from api.middleware.session import session_manager
-            session_manager.destroy_user_sessions(username)
-            username = new_username
-
-        # Update password if provided
-        if new_password:
-            hashed_password = generate_password_hash(new_password)
-            update_row("users", {"password": hashed_password}, "username = ?", (username,))
-
-        # Update skill level if provided
-        if skill_level is not None:
-            update_row("users", {"skill_level": int(skill_level)}, "username = ?", (username,))
-
-        logger.info(f"Successfully updated user data for {username}")
-        return True, None
-
-    except ValueError as e:
-        logger.error(f"Validation error updating user data: {e}")
-        return False, str(e)
-    except Exception as e:
-        logger.error(f"Error updating user data for {username}: {e}")
-        return False, "Database error"
-
-
-def delete_user_data(username: str) -> Tuple[bool, Optional[str]]:
-    """
-    Delete a user account and all associated data.
-
-    Args:
-        username: The username to delete
-
-    Returns:
-        Tuple of (success, error_message)
-
-    Raises:
-        ValueError: If username is invalid
-    """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        logger.info(f"Deleting user data for {username}")
-
-        # Delete all user data from all tables
-        delete_rows("results", "WHERE username = ?", (username,))
-        delete_rows("vocab_log", "WHERE username = ?", (username,))
-        delete_rows("topic_memory", "WHERE username = ?", (username,))
-        delete_rows("ai_user_data", "WHERE username = ?", (username,))
-        delete_rows("exercise_submissions", "WHERE username = ?", (username,))
-        delete_rows("lesson_progress", "WHERE user_id = ?", (username,))
-        delete_rows("users", "WHERE username = ?", (username,))
-
-        # Destroy user sessions
-        from api.middleware.session import session_manager
-        session_manager.destroy_user_sessions(username)
-
-        logger.info(f"Successfully deleted user data for {username}")
-        return True, None
-
-    except ValueError as e:
-        logger.error(f"Validation error deleting user data: {e}")
-        return False, str(e)
-    except Exception as e:
-        logger.error(f"Error deleting user data for {username}: {e}")
-        return False, "Database error"
-
-
-def _update_username_across_tables(old_username: str, new_username: str) -> None:
-    """
-    Update username across all database tables.
-
-    Args:
-        old_username: The old username
-        new_username: The new username
-    """
-    try:
-        tables_and_columns = [
-            ("users", "username"),
-            ("results", "username"),
-            ("vocab_log", "username"),
-            ("lesson_progress", "user_id"),
-            ("topic_memory", "username"),
-            ("ai_user_data", "username"),
-            ("exercise_submissions", "username"),
-        ]
-
-        for table, column in tables_and_columns:
-            update_row(table, {column: new_username}, f"{column} = ?", (old_username,))
-
-        logger.info(f"Updated username from {old_username} to {new_username} across all tables")
-
-    except Exception as e:
-        logger.error(f"Error updating username across tables: {e}")
         raise

@@ -5,8 +5,9 @@ from difflib import SequenceMatcher
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection, fetch_topic_memory
 from features.ai.prompts.utils import make_prompt, FEEDBACK_SYSTEM_PROMPT
-from features.ai.prompts.exercise_prompts import (
+from features.ai.prompts import (
     feedback_generation_prompt,
+    exercise_generation_prompt,
 )
 from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct
 from external.mistral.client import send_request

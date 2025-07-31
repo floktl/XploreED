@@ -22,9 +22,7 @@ from external.mistral.client import send_prompt
 from features.ai.generation.helpers import (
     store_user_ai_data
 )
-from features.ai.prompts.exercise_prompts import (
-    weakness_lesson_prompt
-)
+from features.ai.prompts import weakness_lesson_prompt
 from core.utils.html_helpers import clean_html
 
 

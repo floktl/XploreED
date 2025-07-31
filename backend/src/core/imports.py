@@ -15,11 +15,11 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 # === Flask and Web Framework Imports ===
-from flask import request, jsonify, render_template, make_response, abort
-from flask_cors import CORS
-from bs4 import BeautifulSoup
+from flask import request, jsonify, render_template, make_response, abort # type: ignore
+from flask_cors import CORS # type: ignore
+from bs4 import BeautifulSoup # type: ignore
 import os
-import sys
+import sys # type: ignore
 from pathlib import Path
 
 # === Core Layer Imports ===
@@ -60,19 +60,27 @@ from features.vocabulary.vocabulary_analytics import (
 )
 
 # === Exercise Feature Imports ===
-from features.exercise.exercise_manager import (
-    create_exercise_block, get_exercise_block, get_user_exercise_blocks,
-    submit_exercise_answers, get_exercise_results, delete_exercise_block,
-    update_exercise_block_status, get_exercise_statistics
-)
-from features.exercise.exercise_evaluator import (
-    check_gap_fill_correctness, parse_submission_data, evaluate_first_exercise,
-    create_immediate_results, evaluate_remaining_exercises_async,
-    get_exercise_results, argue_exercise_evaluation, get_topic_memory_status
+from features.exercise import (
+    create_exercise_block,
+    get_exercise_block,
+    get_user_exercise_blocks,
+    submit_exercise_answers,
+    get_exercise_results,
+    delete_exercise_block,
+    update_exercise_block_status,
+    get_exercise_statistics,
+    check_gap_fill_correctness,
+    parse_submission_data,
+    evaluate_first_exercise,
+    create_immediate_results,
+    evaluate_remaining_exercises_async,
+    argue_exercise_evaluation,
+    get_topic_memory_status,
 )
 
+
 # === Progress Feature Imports ===
-from features.progress.progress_tracker import (
+from features.progress import (
     track_lesson_progress, get_lesson_progress, track_exercise_progress,
     track_vocabulary_progress, track_game_progress, get_user_progress_summary,
     reset_user_progress, get_progress_trends, get_user_lesson_progress,
@@ -114,18 +122,27 @@ from features.support.support_helpers import (
 )
 
 # === Admin Feature Imports ===
-from features.admin.admin_helpers import (
-    get_all_game_results, get_user_game_results, create_lesson_content,
-    get_all_lessons, get_lesson_by_id, update_lesson_content,
-    delete_lesson_content, get_lesson_progress_summary,
-    get_individual_lesson_progress, get_all_users, update_user_data,
-    delete_user_data
+from features.admin import (
+    get_all_game_results,
+    get_user_game_results,
+    create_lesson_content,
+    get_all_lessons,
+    get_lesson_by_id,
+    update_lesson_content,
+    delete_lesson_content,
+    get_lesson_progress_summary,
+    get_individual_lesson_progress,
+    get_all_users,
+    update_user_data,
+    delete_user_data,
 )
 
 # === Debug Feature Imports ===
-from features.debug.debug_helpers import (
-    get_all_database_data, debug_user_ai_data, get_database_schema,
-    get_user_statistics
+from features.debug import (
+    get_all_database_data,
+    debug_user_ai_data,
+    get_database_schema,
+    get_user_statistics,
 )
 
 # === Grammar Feature Imports ===
@@ -134,10 +151,15 @@ from features.grammar.detector import (
 )
 
 # === Game Feature Imports ===
-from features.game.game_helpers import (
-    get_user_game_level, generate_game_sentence, create_game_round,
-    evaluate_game_answer, get_game_statistics, create_game_session,
-    update_game_progress, calculate_game_score
+from features.game import (
+    get_user_game_level,
+    generate_game_sentence,
+    create_game_round,
+    evaluate_game_answer,
+    get_game_statistics,
+    create_game_session,
+    update_game_progress,
+    calculate_game_score,
 )
 from features.game.sentence_order import (
     generate_ai_sentence, get_scrambled_sentence, evaluate_order,
@@ -150,10 +172,14 @@ from features.user.user_analytics import (
 )
 
 # === Auth Feature Imports ===
-from features.auth.auth_helpers import (
-    authenticate_user, authenticate_admin, create_user_account,
-    destroy_user_session, get_user_session_info, validate_session,
-    get_user_statistics
+from features.auth import (
+    authenticate_user,
+    authenticate_admin,
+    create_user_account,
+    destroy_user_session,
+    get_user_session_info,
+    validate_session,
+    get_user_statistics,
 )
 
 # === External Layer Imports ===

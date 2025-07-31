@@ -7,7 +7,7 @@ import traceback
 from threading import Thread
 from datetime import datetime, date
 from typing import Optional, Dict, Any
-from flask import current_app, jsonify
+from flask import current_app, jsonify # type: ignore
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from features.ai.memory.level_manager import check_auto_level_up
 from core.utils.helpers import require_user
@@ -17,13 +17,13 @@ from .helpers import (
     _create_ai_block,
     store_user_ai_data,
     _ensure_schema,
-    print_db_exercise_blocks
+    # print_db_exercise_blocks
 )
 from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct
 from features.ai.evaluation.exercise_evaluator import evaluate_answers_with_ai, process_ai_answers
 from core.utils.json_helpers import extract_json
 from features.ai.prompts.utils import make_prompt, SYSTEM_PROMPT
-from features.ai.prompts.exercise_prompts import exercise_generation_prompt
+from features.ai.prompts import exercise_generation_prompt
 from external.mistral.client import send_request
 from .. import (
     EXERCISE_TEMPLATE,
@@ -35,18 +35,134 @@ import re
 
 # Configure logging to write to log.txt
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('log.txt', mode='a'),
+        logging.FileHandler('log.txt'),
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(__name__)
 
-# Suppress werkzeug info logs except for errors
-# import logging
-# logging.getLogger('werkzeug').setLevel(logging.ERROR)
+from external.mistral.client import send_prompt
+from features.ai.prompts import exercise_generation_prompt, feedback_generation_prompt
+from features.ai.memory.logger import topic_memory_logger
+
+
+from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+
+
+def _normalize_umlauts(text: str) -> str:
+    """Normalize German umlauts for comparison."""
+    umlaut_map = {
+        'ä': 'ae', 'ö': 'oe', 'ü': 'ue',
+        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
+        'ß': 'ss'
+    }
+    for umlaut, replacement in umlaut_map.items():
+        text = text.replace(umlaut, replacement)
+    return text
+
+
+def _strip_final_punct(text: str) -> str:
+    """Strip final punctuation from text."""
+    return text.rstrip(".,!?;:")
+
+
+def check_gap_fill_correctness(exercise: dict, user_answer: str, correct_answer: str) -> bool:
+    """
+    Check if a gap-fill answer is correct based on grammatical context.
+
+    Args:
+        exercise: The exercise dictionary containing question and type
+        user_answer: The user's submitted answer
+        correct_answer: The correct answer for comparison
+
+    Returns:
+        True if the answer is correct, False otherwise
+    """
+    try:
+        # Get the question text to understand the context
+        question = exercise.get("question", "").lower()
+        user_ans = user_answer.lower().strip()
+        correct_ans = correct_answer.lower().strip()
+
+        # First try exact match
+        if user_ans == correct_ans:
+            return True
+
+        # Check for common German grammar patterns
+        # Pattern 1: Personal pronouns with verb conjugation
+        if "habe" in question or "habe " in question:
+            if user_ans in ["ich", "i"] and correct_ans in ["ich", "i"]:
+                return True
+            elif user_ans in ["du", "d"] and correct_ans in ["ich", "i"]:
+                return False
+
+        if "bist" in question or "bist " in question:
+            if user_ans in ["du", "d"] and correct_ans in ["du", "d"]:
+                return True
+            elif user_ans in ["ich", "i"] and correct_ans in ["du", "d"]:
+                return False
+
+        if "ist" in question or "ist " in question:
+            if user_ans in ["er", "sie", "es"] and correct_ans in ["er", "sie", "es"]:
+                return True
+
+        if "sind" in question or "sind " in question:
+            if user_ans in ["sie", "wir"] and correct_ans in ["sie", "wir"]:
+                return True
+
+        # Pattern 2: Verb conjugation in translations
+        verb_patterns = {
+            "gehen": ["gehe", "gehst", "geht", "gehen", "geht"],
+            "kommen": ["komme", "kommst", "kommt", "kommen", "kommt"],
+            "machen": ["mache", "machst", "macht", "machen", "macht"],
+            "haben": ["habe", "hast", "hat", "haben", "habt"],
+            "sein": ["bin", "bist", "ist", "sind", "seid"]
+        }
+
+        for verb, forms in verb_patterns.items():
+            if verb in question:
+                if user_ans in forms and correct_ans in forms:
+                    return True
+
+        # Pattern 3: Articles and gender
+        articles = {
+            "der": ["der", "den", "dem", "des"],
+            "die": ["die", "der", "den"],
+            "das": ["das", "dem", "des"]
+        }
+
+        for article, forms in articles.items():
+            if article in question:
+                if user_ans in forms and correct_ans in forms:
+                    return True
+
+        # If no specific patterns match, check for similar forms
+        if _normalize_umlauts(user_ans) == _normalize_umlauts(correct_ans):
+            return True
+
+        # Check for common abbreviations
+        abbreviations = {
+            "ich": "i",
+            "du": "d",
+            "sie": "s",
+            "er": "e",
+            "es": "e"
+        }
+
+        if user_ans in abbreviations and abbreviations[user_ans] == correct_ans:
+            return True
+
+        if correct_ans in abbreviations and abbreviations[correct_ans] == user_ans:
+            return True
+
+        return False
+
+    except Exception as e:
+        logging.error(f"Error checking gap-fill correctness: {e}")
+        return False
+
 
 def log_exercise_event(event_type: str, username: str, details: Optional[Dict[Any, Any]] = None):
     """Log exercise-related events with timestamp and user context."""
@@ -93,7 +209,8 @@ def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
         {"word": row["vocab"], "translation": row.get("translation")}
         for row in vocab_rows
     ]
-    topic_rows = fetch_topic_memory(username) or []
+    topic_rows_result = fetch_topic_memory(username)
+    topic_rows = topic_rows_result if topic_rows_result is not False and topic_rows_result is not True else []
     topic_data = [dict(row) for row in topic_rows]
     return vocab_data, topic_data
 
@@ -123,7 +240,7 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
             exercise_type = ex.get("type", "")
             if exercise_type == "gap-fill":
                 # Use the local check_gap_fill_correctness function
-                from features.exercise.exercise_evaluator import check_gap_fill_correctness
+
                 is_correct = check_gap_fill_correctness(ex, user_ans, correct_ans)
             else:
                 # For other exercise types, use exact match
@@ -158,7 +275,7 @@ def save_exercise_submission_async(
         "answers": answers
     })
 
-    from flask import current_app
+    from flask import current_app # type: ignore
     app = current_app._get_current_object()
     def run():
         # print("\033[93m⚡ [TOPIC MEMORY FLOW] ⚡ Background thread started for topic memory processing\033[0m", flush=True)
@@ -281,7 +398,8 @@ def get_ai_exercises():
         for row in vocab_rows
     ]
 
-    topic_memory = fetch_topic_memory(username) or []
+    topic_memory_result = fetch_topic_memory(username)
+    topic_memory = topic_memory_result if topic_memory_result is not False and topic_memory_result is not True else []
 
     # Replace get_user_level with safe fallback
     row_user = fetch_one("users", "WHERE username = ?", (username,))
@@ -304,13 +422,15 @@ def get_ai_exercises():
         log_exercise_event("exercise_generation_empty", str(username), {})
         return jsonify({"error": "Mistral error"}), 500
 
-    exercises = ai_block.get("exercises") if ai_block and isinstance(ai_block.get("exercises"), list) else []
+    exercises_raw = ai_block.get("exercises") if ai_block else None
+    exercises = exercises_raw if exercises_raw and isinstance(exercises_raw, list) else []
     safe_recent_questions = recent_questions if recent_questions is not None else []
     filtered = [ex for ex in exercises if ex.get("question") not in safe_recent_questions]
 
     if ai_block is not None:
         ai_block["exercises"] = filtered[:3]
-        exercises = ai_block["exercises"] if ai_block and isinstance(ai_block.get("exercises"), list) else []
+        exercises_raw = ai_block.get("exercises") if ai_block else None
+        exercises = exercises_raw if exercises_raw and isinstance(exercises_raw, list) else []
         for ex in exercises:
             ex.pop("correctAnswer", None)
 
@@ -361,6 +481,18 @@ def generate_new_exercises(
 
     if recent_questions is None:
         recent_questions = []
+
+    # Ensure topic_memory is a list
+    if topic_memory is None or topic_memory is False:
+        topic_memory = []
+
+    # Ensure vocabular is a list
+    if vocabular is None:
+        vocabular = []
+
+    # Ensure example_exercise_block is a dict
+    if example_exercise_block is None:
+        example_exercise_block = {}
 
     # Get recent topics to avoid repetition
     recent_topics = []
@@ -480,7 +612,7 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
     ] if vocab_rows else []
 
     topic_rows = fetch_topic_memory(username)
-    topic_memory = [dict(row) for row in topic_rows] if topic_rows else []
+    topic_memory = [dict(row) for row in topic_rows] if topic_rows and topic_rows is not False and topic_rows is not True else []
 
     row = fetch_one("users", "WHERE username = ?", (username,))
     level = row.get("skill_level", 0) if row else 0
