@@ -29,7 +29,7 @@ class SessionManager:
     with persistent storage in the database.
     """
 
-    def __init__(self, db_path: str = None):
+    def __init__(self, db_path: Optional[str] = None):
         """
         Initialize the session manager and ensure the sessions table exists.
 

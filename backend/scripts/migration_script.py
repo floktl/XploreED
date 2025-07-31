@@ -1,63 +1,92 @@
-# scripts/migration_script.py
-"""Database migration script executed on container startup."""
+"""
+XplorED - Database Migration Script
+
+This module provides database initialization and migration functionality,
+following clean architecture principles as outlined in the documentation.
+
+Migration Components:
+- Database Setup: Initial database creation and table setup
+- Schema Migration: Column additions and schema updates
+- Environment Configuration: Environment variable loading and path resolution
+- Error Handling: Graceful error handling for Docker and local environments
+
+For detailed architecture information, see: docs/backend_structure.md
+"""
 
 import os
 import sqlite3
+import logging
 from pathlib import Path
+from typing import List, Optional
 
-try:
-    from dotenv import load_dotenv  # type: ignore
-except Exception:
-    def load_dotenv(dotenv_path=None, **_):  # type: ignore
-        if dotenv_path and os.path.exists(dotenv_path):
-            with open(dotenv_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith('#') and '=' in line:
-                        key, value = line.split('=', 1)
-                        os.environ.setdefault(key, value)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-# Load .env file early! (with fallback paths)
-env_paths = [
-    Path(__file__).resolve().parent.parent / "secrets" / ".env",
-    Path(__file__).resolve().parent.parent.parent / "secrets" / ".env",
-    Path("/app/secrets/.env"),
-    Path("/app/backend/secrets/.env"),
-]
+def load_environment_variables() -> None:
+    """Load environment variables from .env files with fallback paths."""
+    try:
+        from dotenv import load_dotenv  # type: ignore
+    except ImportError:
+        logger.warning("python-dotenv not available, using fallback loader")
+        load_dotenv = _fallback_dotenv_loader
 
-for env_path in env_paths:
-    if env_path.exists():
-        load_dotenv(dotenv_path=env_path)
-        break
+    # Define possible .env file locations
+    env_paths = [
+        Path(__file__).resolve().parent.parent / "secrets" / ".env",
+        Path(__file__).resolve().parent.parent.parent / "secrets" / ".env",
+        Path("/app/secrets/.env"),
+        Path("/app/backend/secrets/.env"),
+    ]
 
-# Get database path from environment with fallbacks
-db_path = os.getenv("DB_FILE", "database/user_data.db")
-db_path = Path(db_path)
-
-# Handle relative paths in Docker environment
-if not db_path.is_absolute():
-    # If we're in a Docker container, make it absolute
-    if os.path.exists("/app"):
-        db_path = Path("/app") / db_path
+    # Try to load from each location
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=str(env_path))
+            logger.info(f"Loaded environment from: {env_path}")
+            break
     else:
-        # Local development
-        db_path = Path(__file__).resolve().parent.parent / db_path
+        logger.warning("No .env file found in any expected location")
 
-# Ensure database directory exists
-db_path.parent.mkdir(parents=True, exist_ok=True)
 
-print(f"🔄 Running migration script...")
-print(f"   Database path: {db_path}")
-print(f"   Database directory: {db_path.parent}")
+def _fallback_dotenv_loader(dotenv_path: Optional[str] = None, **kwargs) -> None:
+    """Fallback .env loader when python-dotenv is not available."""
+    if not dotenv_path or not os.path.exists(dotenv_path):
+        return
 
-try:
-    # Connect to database
-    conn = sqlite3.connect(str(db_path))
-    cursor = conn.cursor()
-    print("✅ Database connection established")
+    with open(dotenv_path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                key, value = line.split('=', 1)
+                os.environ.setdefault(key, value)
 
-    # ✅ Create users table
+
+def resolve_database_path() -> Path:
+    """Resolve the database file path with proper fallbacks."""
+    db_path = os.getenv("DB_FILE", "database/user_data.db")
+    db_path = Path(db_path)
+
+    # Handle relative paths in Docker environment
+    if not db_path.is_absolute():
+        if os.path.exists("/app"):
+            # Docker container environment
+            db_path = Path("/app") / db_path
+        else:
+            # Local development environment
+            db_path = Path(__file__).resolve().parent.parent / db_path
+
+    # Ensure database directory exists
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+
+    logger.info(f"Database path resolved to: {db_path}")
+    return db_path
+
+
+def create_users_table(cursor: sqlite3.Cursor) -> None:
+    """Create and update the users table with all required columns."""
+    # Create base table
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -65,32 +94,29 @@ try:
             password TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-    """
+        """
     )
 
-    # ✅ Add missing columns to users table if they don't exist
+    # Check existing columns and add missing ones
     cursor.execute("PRAGMA table_info(users);")
     user_columns = [col[1] for col in cursor.fetchall()]
 
-    if "email" not in user_columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN email TEXT;")
-        print("✅ 'email' column added to users table.")
-    else:
-        print("ℹ️ 'email' column already exists in users table.")
+    column_updates = [
+        ("email", "TEXT"),
+        ("skill_level", "INTEGER DEFAULT 1"),
+        ("is_admin", "INTEGER DEFAULT 0"),
+    ]
 
-    if "skill_level" not in user_columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN skill_level INTEGER DEFAULT 1;")
-        print("✅ 'skill_level' column added to users table.")
-    else:
-        print("ℹ️ 'skill_level' column already exists in users table.")
+    for column_name, column_definition in column_updates:
+        if column_name not in user_columns:
+            cursor.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_definition};")
+            logger.info(f"Added '{column_name}' column to users table")
+        else:
+            logger.debug(f"'{column_name}' column already exists in users table")
 
-    if "is_admin" not in user_columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0;")
-        print("✅ 'is_admin' column added to users table.")
-    else:
-        print("ℹ️ 'is_admin' column already exists in users table.")
 
-    # ✅ Create results table
+def create_results_table(cursor: sqlite3.Cursor) -> None:
+    """Create the results table for storing exercise results."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS results (
@@ -101,10 +127,14 @@ try:
             answer TEXT,
             timestamp TEXT
         );
-    """
+        """
     )
+    logger.info("Results table created/verified")
 
-    # ✅ Create vocab_log table
+
+def create_vocab_log_table(cursor: sqlite3.Cursor) -> None:
+    """Create and update the vocab_log table with spaced repetition columns."""
+    # Create base table
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS vocab_log (
@@ -122,66 +152,38 @@ try:
             context TEXT,
             exercise TEXT
         );
-    """
+        """
     )
 
-    # ✅ Add spaced repetition columns if missing
+    # Check existing columns and add missing ones
     cursor.execute("PRAGMA table_info(vocab_log);")
     vocab_cols = [col[1] for col in cursor.fetchall()]
-    if "repetitions" not in vocab_cols:
-        cursor.execute(
-            "ALTER TABLE vocab_log ADD COLUMN repetitions INTEGER DEFAULT 0;"
-        )
-        print("✅ 'repetitions' column added.")
-    else:
-        print("ℹ️ 'repetitions' column already exists.")
 
-    if "interval_days" not in vocab_cols:
-        cursor.execute(
-            "ALTER TABLE vocab_log ADD COLUMN interval_days INTEGER DEFAULT 1;"
-        )
-        print("✅ 'interval_days' column added.")
-    else:
-        print("ℹ️ 'interval_days' column already exists.")
+    column_updates = [
+        ("repetitions", "INTEGER DEFAULT 0"),
+        ("interval_days", "INTEGER DEFAULT 1"),
+        ("ef", "REAL DEFAULT 2.5"),
+        ("next_review", "DATETIME"),
+        ("created_at", "DATETIME"),
+        ("context", "TEXT"),
+        ("exercise", "TEXT"),
+    ]
 
-    if "ef" not in vocab_cols:
-        cursor.execute("ALTER TABLE vocab_log ADD COLUMN ef REAL DEFAULT 2.5;")
-        print("✅ 'ef' column added.")
-    else:
-        print("ℹ️ 'ef' column already exists.")
+    for column_name, column_definition in column_updates:
+        if column_name not in vocab_cols:
+            cursor.execute(f"ALTER TABLE vocab_log ADD COLUMN {column_name} {column_definition};")
 
-    if "next_review" not in vocab_cols:
-        cursor.execute("ALTER TABLE vocab_log ADD COLUMN next_review DATETIME;")
-        cursor.execute(
-            "UPDATE vocab_log SET next_review = CURRENT_TIMESTAMP WHERE next_review IS NULL;"
-        )
-        print("✅ 'next_review' column added.")
-    else:
-        print("ℹ️ 'next_review' column already exists.")
+            # Set default values for datetime columns
+            if column_name in ["next_review", "created_at"]:
+                cursor.execute(f"UPDATE vocab_log SET {column_name} = CURRENT_TIMESTAMP WHERE {column_name} IS NULL;")
 
-    # ✅ Add new metadata columns
-    if "created_at" not in vocab_cols:
-        cursor.execute("ALTER TABLE vocab_log ADD COLUMN created_at DATETIME;")
-        cursor.execute(
-            "UPDATE vocab_log SET created_at = CURRENT_TIMESTAMP WHERE created_at IS NULL;"
-        )
-        print("✅ 'created_at' column added.")
-    else:
-        print("ℹ️ 'created_at' column already exists.")
+            logger.info(f"Added '{column_name}' column to vocab_log table")
+        else:
+            logger.debug(f"'{column_name}' column already exists in vocab_log table")
 
-    if "context" not in vocab_cols:
-        cursor.execute("ALTER TABLE vocab_log ADD COLUMN context TEXT;")
-        print("✅ 'context' column added.")
-    else:
-        print("ℹ️ 'context' column already exists.")
 
-    if "exercise" not in vocab_cols:
-        cursor.execute("ALTER TABLE vocab_log ADD COLUMN exercise TEXT;")
-        print("✅ 'exercise' column added.")
-    else:
-        print("ℹ️ 'exercise' column already exists.")
-
-    # ✅ Create topic_memory table
+def create_topic_memory_table(cursor: sqlite3.Cursor) -> None:
+    """Create the topic_memory table for spaced repetition of grammar topics."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS topic_memory (
@@ -199,10 +201,13 @@ try:
             quality INTEGER DEFAULT 0,
             PRIMARY KEY (username, grammar, topic, skill_type)
         );
-    """
+        """
     )
+    logger.info("Topic memory table created/verified")
 
-    # ✅ Create sessions table
+
+def create_sessions_table(cursor: sqlite3.Cursor) -> None:
+    """Create the sessions table for user session management."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS sessions (
@@ -210,10 +215,13 @@ try:
             username TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
-    """
+        """
     )
+    logger.info("Sessions table created/verified")
 
-    # ✅ Create user_progress table
+
+def create_user_progress_table(cursor: sqlite3.Cursor) -> None:
+    """Create the user_progress table for tracking user learning progress."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS user_progress (
@@ -224,10 +232,13 @@ try:
             last_activity DATETIME DEFAULT CURRENT_TIMESTAMP,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-    """
+        """
     )
+    logger.info("User progress table created/verified")
 
-    # ✅ Create user_settings table
+
+def create_user_settings_table(cursor: sqlite3.Cursor) -> None:
+    """Create the user_settings table for user preferences."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS user_settings (
@@ -238,17 +249,50 @@ try:
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-    """
+        """
     )
+    logger.info("User settings table created/verified")
 
-    # Commit changes and close connection
-    conn.commit()
-    conn.close()
 
-    print("✅ Database migration completed successfully!")
+def run_migration() -> None:
+    """Execute the complete database migration process."""
+    logger.info("🔄 Starting database migration...")
 
-except Exception as e:
-    print(f"⚠️ Migration script encountered an error: {str(e)}")
-    print("   This is normal during Docker build if database is not accessible.")
-    print("   Migration will run again during container startup if needed.")
-    # Don't exit with error code to allow Docker build to continue
+    # Load environment variables
+    load_environment_variables()
+
+    # Resolve database path
+    db_path = resolve_database_path()
+    logger.info(f"Database path: {db_path}")
+    logger.info(f"Database directory: {db_path.parent}")
+
+    try:
+        # Connect to database
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        logger.info("✅ Database connection established")
+
+        # Create/update all tables
+        create_users_table(cursor)
+        create_results_table(cursor)
+        create_vocab_log_table(cursor)
+        create_topic_memory_table(cursor)
+        create_sessions_table(cursor)
+        create_user_progress_table(cursor)
+        create_user_settings_table(cursor)
+
+        # Commit changes and close connection
+        conn.commit()
+        conn.close()
+
+        logger.info("✅ Database migration completed successfully!")
+
+    except Exception as e:
+        logger.error(f"❌ Migration script encountered an error: {str(e)}")
+        logger.info("   This is normal during Docker build if database is not accessible.")
+        logger.info("   Migration will run again during container startup if needed.")
+        # Don't exit with error code to allow Docker build to continue
+
+
+if __name__ == "__main__":
+    run_migration()

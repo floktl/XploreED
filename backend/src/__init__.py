@@ -21,6 +21,16 @@ For detailed architecture information, see: docs/backend_structure.md
 # The main application entry point is in main.py
 # This module provides the overall structure and organization
 
+# === Import Main Components ===
+from . import main
+from . import app
+from . import api
+from . import config
+from . import core
+from . import external
+from . import features
+from . import shared
+
 # === Export Configuration ===
 __all__ = [
     # Main application components

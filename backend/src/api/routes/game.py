@@ -34,7 +34,7 @@ from core.services.import_service import *
 from core.utils.helpers import get_current_user, require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import game_bp
-from features.game.game_helpers import (
+from features.game import (
     get_user_game_level,
     generate_game_sentence,
     create_game_round,
@@ -42,7 +42,7 @@ from features.game.game_helpers import (
     get_game_statistics,
     create_game_session,
     update_game_progress,
-    calculate_game_score
+    calculate_game_score,
 )
 
 

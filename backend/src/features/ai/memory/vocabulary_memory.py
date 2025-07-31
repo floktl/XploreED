@@ -4,7 +4,7 @@ import re
 import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
-from features.ai.prompts.exercise_prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
+from features.ai.prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
 from core.database.connection import update_row, select_one, fetch_one, insert_row
 from features.spaced_repetition.algorithm import sm2
 from external.mistral.client import send_prompt

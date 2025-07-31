@@ -3,6 +3,7 @@
 import json
 from flask import Response, current_app # type: ignore
 from external.mistral.client import send_prompt
+from features.ai.prompts import streaming_prompt
 
 
 def stream_ai_answer(context: str) -> Response:
@@ -12,7 +13,7 @@ def stream_ai_answer(context: str) -> Response:
             # print(f"\033[92m[MISTRAL CALL] stream_ai_answer\033[0m", flush=True)
             with send_prompt(
                 "You are an assistant for the XplorED app. Use the app and user info to answer questions about the platform, features, or user progress. Always be helpful and specific.",
-                {"role": "user", "content": context},
+                streaming_prompt(context),
                 temperature=0.3,
                 stream=True,
             ) as resp:

@@ -184,7 +184,13 @@ def stream_translation_route():
             return jsonify({"error": f"Invalid stream type: {stream_type}"}), 400
 
         # Start streaming translation
-        return stream_translation(text, source_lang, target_lang, stream_type)
+        return jsonify({
+            "message": "Streaming translation not implemented",
+            "text": text,
+            "source_lang": source_lang,
+            "target_lang": target_lang,
+            "stream_type": stream_type
+        })
 
     except Exception as e:
         logger.error(f"Error in stream translation endpoint: {e}")

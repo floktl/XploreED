@@ -34,9 +34,14 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from core.services.import_service import *
 from core.database.connection import select_one, update_row, insert_row
 from core.utils.helpers import get_current_user, require_user, is_admin
-from features.auth.auth_helpers import (
+from features.auth import (
     authenticate_user,
-    validate_session
+    authenticate_admin,
+    create_user_account,
+    destroy_user_session,
+    get_user_session_info,
+    validate_session,
+    get_user_statistics,
 )
 from config.blueprint import auth_bp
 

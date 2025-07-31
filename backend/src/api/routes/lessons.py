@@ -226,7 +226,7 @@ def create_lesson_route():
             "created_at": datetime.now().isoformat()
         }
 
-        lesson_id = create_lesson_content(lesson_data)
+        lesson_id = insert_row("lesson_content", lesson_data)
 
         if lesson_id:
             return jsonify({
@@ -378,6 +378,17 @@ def get_lesson_progress_route(lesson_id: int):
         completed_blocks = len([p for p in progress if p.get("completed")])
         completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
 
+        # Get last updated timestamp
+        last_updated = None
+        if progress:
+            valid_dates = []
+            for p in progress:
+                date = p.get("updated_at")
+                if date is not None:
+                    valid_dates.append(date)
+            if valid_dates:
+                last_updated = max(valid_dates)
+
         return jsonify({
             "lesson_id": lesson_id,
             "lesson_title": lesson.get("title"),
@@ -385,7 +396,7 @@ def get_lesson_progress_route(lesson_id: int):
             "completed_blocks": completed_blocks,
             "completion_percentage": round(completion_percentage, 2),
             "progress": progress,
-            "last_updated": max([p.get("updated_at") for p in progress]) if progress else None
+            "last_updated": last_updated
         })
 
     except Exception as e:

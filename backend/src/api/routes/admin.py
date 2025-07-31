@@ -34,15 +34,19 @@ from core.services.import_service import *
 from core.utils.helpers import is_admin
 from core.database.connection import select_one, select_rows, update_row, delete_rows
 from config.blueprint import admin_bp
-from features.admin.admin_helpers import (
+from features.admin import (
+    get_all_game_results,
+    get_user_game_results,
+    create_lesson_content,
+    get_all_lessons,
+    get_lesson_by_id,
+    update_lesson_content,
+    delete_lesson_content,
+    get_lesson_progress_summary,
+    get_individual_lesson_progress,
     get_all_users,
     update_user_data,
     delete_user_data,
-    get_all_lessons,
-    get_lesson_by_id,
-    create_lesson_content,
-    update_lesson_content,
-    delete_lesson_content
 )
 
 

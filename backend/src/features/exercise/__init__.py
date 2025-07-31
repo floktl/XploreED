@@ -1,50 +1,63 @@
 """
-Exercise Feature Module
+XplorED - Exercise Package
 
-This module contains exercise management and evaluation functionality.
+This package provides exercise functionality for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
 
-Author: XplorED Team
-Date: 2025
+Exercise Modules:
+- exercise_creation: Exercise block creation and management
+- exercise_evaluation: Exercise evaluation and processing
+- exercise_results: Exercise results and statistics
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
-from .exercise_manager import (
+from .exercise_creation import (
     create_exercise_block,
     get_exercise_block,
     get_user_exercise_blocks,
-    submit_exercise_answers,
-    get_exercise_results,
     delete_exercise_block,
     update_exercise_block_status,
-    get_exercise_statistics
 )
 
-from .exercise_evaluator import (
-    check_gap_fill_correctness,
+from .exercise_evaluation import (
     parse_submission_data,
     evaluate_first_exercise,
     create_immediate_results,
     evaluate_remaining_exercises_async,
-    argue_exercise_evaluation,
-    get_topic_memory_status
 )
 
-__all__ = [
-    # Exercise Management
-    'create_exercise_block',
-    'get_exercise_block',
-    'get_user_exercise_blocks',
-    'submit_exercise_answers',
-    'get_exercise_results',
-    'delete_exercise_block',
-    'update_exercise_block_status',
-    'get_exercise_statistics',
+from .exercise_results import (
+    submit_exercise_answers,
+    get_exercise_results,
+    get_exercise_statistics,
+    argue_exercise_evaluation,
+    get_topic_memory_status,
+)
 
-    # Exercise Evaluation
-    'check_gap_fill_correctness',
-    'parse_submission_data',
-    'evaluate_first_exercise',
-    'create_immediate_results',
-    'evaluate_remaining_exercises_async',
-    'argue_exercise_evaluation',
-    'get_topic_memory_status'
+# Import from AI evaluation to avoid circular imports
+from features.ai.evaluation.exercise_evaluator import check_gap_fill_correctness
+
+# Re-export all exercise functions for backward compatibility
+__all__ = [
+    # Exercise creation
+    "create_exercise_block",
+    "get_exercise_block",
+    "get_user_exercise_blocks",
+    "delete_exercise_block",
+    "update_exercise_block_status",
+
+    # Exercise evaluation
+    "check_gap_fill_correctness",
+    "parse_submission_data",
+    "evaluate_first_exercise",
+    "create_immediate_results",
+    "evaluate_remaining_exercises_async",
+
+    # Exercise results
+    "submit_exercise_answers",
+    "get_exercise_results",
+    "get_exercise_statistics",
+    "argue_exercise_evaluation",
+    "get_topic_memory_status",
 ]

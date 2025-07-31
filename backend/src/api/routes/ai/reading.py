@@ -26,8 +26,9 @@ from features.ai.evaluation.translation_evaluator import (
     _strip_final_punct,
     _normalize_umlauts
 )
-from features.ai.prompts.exercise_prompts import (
-    feedback_generation_prompt
+from features.ai.prompts import (
+    feedback_generation_prompt,
+    reading_explanation_prompt,
 )
 from features.ai.memory.vocabulary_memory import (
     extract_words,
@@ -109,11 +110,15 @@ def submit_reading_exercise():
             explanation = ""
             if status == "incorrect":
                 # Generate a very short explanation using AI
-                prompt = f"Explain in one short sentence (no more than 12 words) why the answer '{answers.get(qid, '')}' is incorrect for the question: {q.get('question')} (correct answer: {q.get('correctAnswer')})"
+                prompt = reading_explanation_prompt(
+                    answers.get(qid, ''),
+                    q.get('question'),
+                    q.get('correctAnswer')
+                )
                 try:
                     resp = send_prompt(
                         "You are a helpful German teacher.",
-                        {"role": "user", "content": prompt},
+                        prompt,
                         temperature=0.3
                     )
                     logger.debug(f"AI explanation response: {resp.status_code}")

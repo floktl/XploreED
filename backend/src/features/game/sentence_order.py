@@ -2,7 +2,7 @@
 """Logic for the sentence ordering game and feedback helpers."""
 
 from core.database.connection import get_connection, insert_row, select_rows
-from features.ai.prompts.exercise_prompts import game_sentence_prompt
+from features.ai.prompts import game_sentence_prompt
 from external.mistral.client import send_prompt
 from features.ai.generation.helpers import generate_feedback_prompt
 from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct

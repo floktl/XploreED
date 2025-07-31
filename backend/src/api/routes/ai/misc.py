@@ -20,6 +20,10 @@ from config.blueprint import ai_bp
 from core.database.connection import select_one, select_rows, insert_row
 from features.ai.generation.misc_helpers import stream_ai_answer
 from external.mistral.client import send_prompt
+from features.ai.prompts import (
+    ai_context_prompt,
+    ai_question_prompt,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -130,7 +134,7 @@ def ask_ai():
         try:
             resp = send_prompt(
                 "You are a helpful German teacher.",
-                {"role": "user", "content": context},
+                ai_context_prompt(weaknesses_summary, lesson_progress_summary, question),
                 temperature=0.7,
             )
             if resp.status_code == 200:
@@ -293,7 +297,7 @@ def ask_ai_context():
         try:
             resp = send_prompt(
                 "You are a helpful German teacher.",
-                {"role": "user", "content": full_question},
+                ai_question_prompt(context, question),
                 temperature=0.7,
             )
             if resp.status_code == 200:

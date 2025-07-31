@@ -7,7 +7,7 @@ from features.ai.memory.level_manager import check_auto_level_up
 from features.spaced_repetition.algorithm import sm2
 from features.ai.memory.vocabulary_memory import translate_to_german
 from external.mistral.client import send_prompt
-from features.ai.prompts.exercise_prompts import (
+from features.ai.prompts import (
     evaluate_translation_prompt,
     quality_evaluation_prompt,
 )

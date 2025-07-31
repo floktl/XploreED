@@ -126,14 +126,20 @@ def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[D
         }
 
         # Save the entry
-        success = save_vocab(vocab_data)
+        success = save_vocab(
+            username=user,
+            german_word=norm_word,
+            context=vocab_data["context"],
+            exercise=vocab_data["exercise"],
+            article=vocab_data["article"]
+        )
         if not success:
             logger.error(f"Failed to save vocabulary entry for '{word}'")
             return None
 
         # Return the created entry
         result = vocab_data.copy()
-        result["is_new"] = True
+        result["is_new"] = "true"
         logger.info(f"Created new vocabulary entry for '{word}'")
         return result
 

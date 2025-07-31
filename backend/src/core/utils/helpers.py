@@ -81,7 +81,7 @@ def require_user() -> str:
     username = session_manager.get_user(session_id)
     if not username:
         abort(make_response(jsonify({"msg": "Unauthorized"}), 401))
-    return username
+    return username  # type: ignore
 
 
 # === Background Processing Utilities ===
