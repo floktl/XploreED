@@ -1,46 +1,37 @@
 """
 Lessons Feature Module
 
-This module contains lesson management and progress tracking functionality.
+This module contains lesson management functionality.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
 from .lesson_helpers import (
     get_lesson_content,
-    get_user_lessons,
-    create_lesson,
-    update_lesson,
-    delete_lesson,
-    get_lesson_statistics
-)
-
-from .lesson_progress_helpers import (
-    get_user_lesson_progress,
-    update_block_progress,
-    mark_lesson_complete,
-    check_lesson_completion_status,
-    mark_lesson_as_completed,
-    get_lesson_progress_summary,
-    reset_lesson_progress
+    get_user_lessons_summary,
+    get_lesson_progress,
+    update_lesson_progress,
+    get_lesson_statistics,
+    validate_lesson_access,
+    validate_block_completion,
+    get_lesson_blocks,
+    update_lesson_content,
+    publish_lesson,
+    get_lesson_analytics
 )
 
 __all__ = [
     # Lesson Helpers
     'get_lesson_content',
-    'get_user_lessons',
-    'create_lesson',
-    'update_lesson',
-    'delete_lesson',
+    'get_user_lessons_summary',
+    'get_lesson_progress',
+    'update_lesson_progress',
     'get_lesson_statistics',
-
-    # Lesson Progress Helpers
-    'get_user_lesson_progress',
-    'update_block_progress',
-    'mark_lesson_complete',
-    'check_lesson_completion_status',
-    'mark_lesson_as_completed',
-    'get_lesson_progress_summary',
-    'reset_lesson_progress'
+    'validate_lesson_access',
+    'validate_block_completion',
+    'get_lesson_blocks',
+    'update_lesson_content',
+    'publish_lesson',
+    'get_lesson_analytics'
 ]

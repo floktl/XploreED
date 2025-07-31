@@ -1,5 +1,5 @@
 """
-German Class Tool - Database Connection Management
+XplorED - Database Connection Management
 
 This module provides SQLite database connection and query management utilities,
 following clean architecture principles as outlined in the documentation.

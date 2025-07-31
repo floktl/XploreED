@@ -4,7 +4,7 @@ Vocabulary Analytics
 This module contains analytics functions for vocabulary usage tracking,
 performance metrics, and learning insights.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 

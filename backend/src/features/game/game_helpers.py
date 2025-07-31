@@ -4,7 +4,7 @@ Game Helper Functions
 This module contains helper functions for game operations that are used
 by the game routes but should not be in the route files themselves.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -16,7 +16,7 @@ from core.services.import_service import *
 from core.utils.html_helpers import ansi_to_html
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from features.game.sentence_order import evaluate_order, get_scrambled_sentence, generate_ai_sentence, LEVELS, save_result
-from features.user.vocabulary_helpers import save_vocab
+from features.ai.memory.vocabulary_memory import save_vocab
 from features.ai.memory.vocabulary_memory import extract_words
 
 

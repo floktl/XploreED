@@ -1,5 +1,5 @@
 """
-German Class Tool - Flask Extensions Configuration
+XplorED - Flask Extensions Configuration
 
 This module provides centralized Flask extension initialization and configuration,
 following clean architecture principles as outlined in the documentation.

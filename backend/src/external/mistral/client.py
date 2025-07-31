@@ -1,5 +1,5 @@
 """
-German Class Tool - Mistral AI Client
+XplorED - Mistral AI Client
 
 This module provides the external integration with Mistral AI's API for
 advanced language processing capabilities, following clean architecture principles.

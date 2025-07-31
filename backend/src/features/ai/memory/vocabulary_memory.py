@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from features.ai.prompts.exercise_prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
 from core.database.connection import update_row, select_one, fetch_one, insert_row
-from features.ai.memory.algorithm import sm2
+from features.spaced_repetition.algorithm import sm2
 from external.mistral.client import send_prompt
 from features.ai.memory.logger import topic_memory_logger
 
@@ -427,3 +427,48 @@ def review_vocab_word(
             }
         )
         # print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_vocabulary_update for existing entry successfully", flush=True)
+
+
+def get_user_vocab_stats(username: str) -> dict:
+    """
+    Get vocabulary statistics for a user.
+
+    Args:
+        username: The username to get stats for
+
+    Returns:
+        Dictionary containing vocabulary statistics
+    """
+    try:
+        # Get total vocabulary count
+        total_result = select_rows(
+            "vocab_log",
+            columns=["COUNT(*) as total_count"],
+            where="username = ?",
+            params=(username,)
+        )
+
+        # Get mastered vocabulary count (words with high ease factor and repetitions)
+        mastered_result = select_rows(
+            "vocab_log",
+            columns=["COUNT(*) as mastered_count"],
+            where="username = ? AND ef >= 2.5 AND repetitions >= 3",
+            params=(username,)
+        )
+
+        total_count = total_result[0].get('total_count', 0) if total_result else 0
+        mastered_count = mastered_result[0].get('mastered_count', 0) if mastered_result else 0
+
+        return {
+            'total_count': total_count,
+            'mastered_count': mastered_count,
+            'learning_count': total_count - mastered_count
+        }
+
+    except Exception as e:
+        print(f"Error getting vocab stats for user {username}: {e}")
+        return {
+            'total_count': 0,
+            'mastered_count': 0,
+            'learning_count': 0
+        }

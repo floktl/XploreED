@@ -2,7 +2,7 @@
 
 ## **Overview**
 
-The German Class Tool API is a RESTful service built with Flask that provides comprehensive German language learning functionality. The API follows REST principles and uses JSON for data exchange.
+The XplorED API is a RESTful service built with Flask that provides comprehensive German language learning functionality. The API follows REST principles and uses JSON for data exchange.
 
 ## **Base URL**
 

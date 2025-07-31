@@ -1,5 +1,5 @@
 """
-German Class Tool - Backend Application Module
+XplorED - Backend Application Module
 
 This module provides backward compatibility for the Flask application.
 It imports the configured app from main.py to maintain existing deployment

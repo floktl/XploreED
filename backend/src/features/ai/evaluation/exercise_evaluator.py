@@ -202,7 +202,7 @@ def process_ai_answers(username: str, block_id: str, answers: dict, exercise_blo
             exercise_type = ex.get("type", "")
             if exercise_type == "gap-fill":
                 # Use the check_gap_fill_correctness function from exercise_helpers
-                from features.ai.exercise_helpers import check_gap_fill_correctness
+                from features.exercise.exercise_evaluator import check_gap_fill_correctness
                 is_correct = check_gap_fill_correctness(ex, user_ans, correct_ans_norm)
             else:
                 # For other exercise types, use exact match

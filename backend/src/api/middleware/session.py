@@ -1,5 +1,5 @@
 """
-German Class Tool - Session Management Middleware
+XplorED - Session Management Middleware
 
 This module provides SQLite-backed session management for the API,
 following clean architecture principles as outlined in the documentation.

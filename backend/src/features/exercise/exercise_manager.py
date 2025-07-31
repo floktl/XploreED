@@ -4,7 +4,7 @@ Exercise Manager
 This module contains core exercise management functions for CRUD operations
 on exercises and exercise results.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -14,7 +14,7 @@ import datetime
 from typing import Dict, Optional, Any, List, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
-from features.ai.exercise_helpers import check_gap_fill_correctness, parse_submission_data
+from .exercise_evaluator import check_gap_fill_correctness, parse_submission_data
 
 logger = logging.getLogger(__name__)
 

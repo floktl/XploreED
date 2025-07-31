@@ -1,5 +1,5 @@
 """
-German Class Tool - Configuration Module
+XplorED - Configuration Module
 
 This module provides centralized configuration management for the backend application,
 following clean architecture principles as outlined in the documentation.

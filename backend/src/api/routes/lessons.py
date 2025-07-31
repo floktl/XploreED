@@ -1,5 +1,5 @@
 """
-German Class Tool - Lesson Management API Routes
+XplorED - Lesson Management API Routes
 
 This module contains API routes for lesson content management and delivery,
 following clean architecture principles as outlined in the documentation.

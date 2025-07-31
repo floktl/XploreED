@@ -5,7 +5,7 @@ This module contains API routes for AI-powered exercise evaluation and managemen
 All business logic has been moved to appropriate helper modules to maintain
 separation of concerns.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
@@ -16,7 +16,7 @@ from flask import request, jsonify # type: ignore
 from core.services.import_service import *
 from core.utils.helpers import require_user, run_in_background
 from config.blueprint import ai_bp
-from features.ai.exercise_helpers import (
+from features.exercise.exercise_evaluator import (
     check_gap_fill_correctness,
     parse_submission_data,
     evaluate_first_exercise,

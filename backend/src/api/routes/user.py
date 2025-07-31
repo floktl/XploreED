@@ -1,5 +1,5 @@
 """
-German Class Tool - User Account and Vocabulary Routes
+XplorED - User Account and Vocabulary Routes
 
 This module contains API routes for user account management, profile data,
 and vocabulary operations, following clean architecture principles as outlined
@@ -27,14 +27,14 @@ from core.services.import_service import *
 from core.utils.helpers import get_current_user
 from core.database.connection import select_rows, insert_row, select_one, update_row, delete_rows, fetch_topic_memory
 from config.blueprint import user_bp
-from features.user.vocabulary_helpers import (
+from features.vocabulary.vocabulary_manager import (
     lookup_vocabulary_word,
     search_vocabulary_with_ai,
     get_user_vocabulary_entries,
     delete_user_vocabulary,
     delete_specific_vocabulary
 )
-from features.ai.generation.user_helpers import select_vocab_word_due_for_review, update_vocab_after_review
+from features.vocabulary.vocab_helpers import select_vocab_word_due_for_review, update_vocab_after_review
 
 
 # === Logging Configuration ===

@@ -1,5 +1,5 @@
 """
-German Class Tool - Import Service Management
+XplorED - Import Service Management
 
 This module provides centralized import management for route modules,
 following clean architecture principles as outlined in the documentation.
@@ -97,7 +97,7 @@ from features.ai.evaluation.translation_evaluator import (
     evaluate_translation_ai,
     update_topic_memory_translation,
 )
-from features.ai.memory.spaced_repetition import sm2
+from features.spaced_repetition.algorithm import sm2
 from features.ai.evaluation.exercise_evaluator import (
     evaluate_answers_with_ai,
     process_ai_answers,

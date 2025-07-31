@@ -1,5 +1,5 @@
 """
-German Class Tool - Core Services Module
+XplorED - Core Services Module
 
 This module provides core business logic services for the backend application,
 following clean architecture principles as outlined in the documentation.

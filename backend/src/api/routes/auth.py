@@ -1,5 +1,5 @@
 """
-German Class Tool - Authentication API Routes
+XplorED - Authentication API Routes
 
 This module contains API routes for user authentication and session management,
 following clean architecture principles as outlined in the documentation.
@@ -34,7 +34,6 @@ from werkzeug.security import generate_password_hash, check_password_hash # type
 from core.services.import_service import *
 from core.database.connection import select_one, update_row, insert_row
 from core.utils.helpers import get_current_user, require_user, is_admin
-from api.middleware.session import session_manager
 from features.auth.auth_helpers import (
     authenticate_user,
     validate_session

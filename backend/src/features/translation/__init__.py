@@ -3,27 +3,25 @@ Translation Feature Module
 
 This module contains translation services and language tools functionality.
 
-Author: German Class Tool Team
+Author: XplorED Team
 Date: 2025
 """
 
 from .translation_helpers import (
-    translate_text,
-    translate_with_context,
-    get_translation_history,
-    save_translation,
-    get_user_translations,
-    delete_translation,
-    get_translation_statistics
+    create_translation_job,
+    process_translation_job,
+    get_translation_job_status,
+    get_translation_status,
+    stream_translation_feedback,
+    cleanup_expired_jobs
 )
 
 __all__ = [
     # Translation Helpers
-    'translate_text',
-    'translate_with_context',
-    'get_translation_history',
-    'save_translation',
-    'get_user_translations',
-    'delete_translation',
-    'get_translation_statistics'
+    'create_translation_job',
+    'process_translation_job',
+    'get_translation_job_status',
+    'get_translation_status',
+    'stream_translation_feedback',
+    'cleanup_expired_jobs'
 ]

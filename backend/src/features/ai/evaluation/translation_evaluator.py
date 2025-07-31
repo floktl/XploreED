@@ -4,7 +4,7 @@ import datetime
 from features.grammar.detector import detect_language_topics
 from core.database.connection import insert_row, update_row, select_one
 from features.ai.memory.level_manager import check_auto_level_up
-from features.ai.memory.spaced_repetition import sm2
+from features.spaced_repetition.algorithm import sm2
 from features.ai.memory.vocabulary_memory import translate_to_german
 from external.mistral.client import send_prompt
 from features.ai.prompts.exercise_prompts import (

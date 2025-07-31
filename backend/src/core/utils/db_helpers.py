@@ -1,5 +1,5 @@
 """
-German Class Tool - Database Helper Utilities
+XplorED - Database Helper Utilities
 
 This module provides convenient database operation imports and utilities,
 following clean architecture principles as outlined in the documentation.

@@ -1,5 +1,5 @@
 """
-German Class Tool - HTML Processing Utilities
+XplorED - HTML Processing Utilities
 
 This module provides HTML processing and manipulation utilities for lesson content,
 following clean architecture principles as outlined in the documentation.

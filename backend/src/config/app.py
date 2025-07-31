@@ -1,5 +1,5 @@
 """
-German Class Tool - Flask Application Configuration
+XplorED - Flask Application Configuration
 
 This module provides Flask application configuration management,
 following clean architecture principles as outlined in the documentation.

@@ -1,5 +1,5 @@
 """
-German Class Tool - Shared Type Definitions
+XplorED - Shared Type Definitions
 
 This module contains all type definitions and data structures used throughout the backend,
 following clean architecture principles as outlined in the documentation.

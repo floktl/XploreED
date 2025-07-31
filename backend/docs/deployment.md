@@ -2,7 +2,7 @@
 
 ## **Overview**
 
-This guide covers the deployment of the German Class Tool backend across different environments, from local development to production. The application is designed to be containerized and can be deployed using Docker and Docker Compose.
+This guide covers the deployment of the XplorED backend across different environments, from local development to production. The application is designed to be containerized and can be deployed using Docker and Docker Compose.
 
 ## **Prerequisites**
 
@@ -605,4 +605,4 @@ docker exec -it backend sqlite3 database/user_data.db ".restore backup_20240101_
 
 ---
 
-This deployment guide provides comprehensive instructions for deploying the German Class Tool backend across various environments and platforms. Follow the appropriate section based on your deployment target and requirements.
+This deployment guide provides comprehensive instructions for deploying the XplorED backend across various environments and platforms. Follow the appropriate section based on your deployment target and requirements.

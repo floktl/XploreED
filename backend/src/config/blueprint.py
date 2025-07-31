@@ -1,5 +1,5 @@
 """
-German Class Tool - Blueprint Configuration
+XplorED - Blueprint Configuration
 
 This module provides centralized Flask blueprint definitions and registration,
 following clean architecture principles as outlined in the documentation.

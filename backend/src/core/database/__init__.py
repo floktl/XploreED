@@ -1,5 +1,5 @@
 """
-German Class Tool - Core Database Module
+XplorED - Core Database Module
 
 This module provides database connection and management functionality,
 following clean architecture principles as outlined in the documentation.
