@@ -33,11 +33,11 @@ from core.services.import_service import *
 from core.utils.helpers import require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import profile_bp
-from features.profile.profile_helpers import (
+from features.profile import (
     get_user_game_results,
     get_user_profile_summary,
     get_user_achievements,
-    get_user_activity_timeline
+    get_user_activity_timeline,
 )
 from features.debug import get_user_statistics
 

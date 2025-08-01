@@ -71,7 +71,7 @@ from utils.ai.translation_utils import (
     evaluate_translation_ai,
     update_topic_memory_translation,
 )
-from utils.spaced_repetition.algorithm import sm2
+from features.spaced_repetition import sm2
 from routes.ai.helpers.ai_evaluation_helpers import (
     evaluate_answers_with_ai,
     process_ai_answers,

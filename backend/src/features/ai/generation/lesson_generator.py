@@ -1,7 +1,7 @@
 """Helper functions for lesson routes."""
 
-from features.grammar.detector import detect_language_topics
-from features.ai.evaluation.translation_evaluator import update_topic_memory_reading
+from features.grammar import detect_language_topics
+from features.ai.evaluation import update_topic_memory_reading
 from features.ai.memory.level_manager import check_auto_level_up
 from core.utils.helpers import run_in_background
 

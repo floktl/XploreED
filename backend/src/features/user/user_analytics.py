@@ -1,11 +1,16 @@
 """
-User Analytics Module
+XplorED - User Analytics Module
 
-This module provides comprehensive analytics functionality for user behavior tracking,
-performance metrics, and learning progress analysis in the German learning platform.
+This module provides core user analytics and data collection functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
 
-Author: XplorED Team
-Date: 2025
+User Analytics Components:
+- Analytics Data Collection: Collect and calculate user analytics data
+- Progress Tracking: Track user learning progress and performance
+- Statistics Calculation: Calculate comprehensive user statistics
+- Data Management: Manage user analytics data and metrics
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
@@ -16,7 +21,6 @@ from dataclasses import dataclass
 from core.services.import_service import *
 from core.database.connection import select_rows, select_one, insert_row
 from features.ai.memory.vocabulary_memory import get_user_vocab_stats
-
 
 logger = logging.getLogger(__name__)
 
@@ -98,201 +102,145 @@ class UserAnalyticsManager:
             self.logger.error(f"Validation error for user {self.user_id}: {e}")
             raise
         except Exception as e:
-            self.logger.error(f"Failed to calculate learning progress for user {self.user_id}: {e}")
+            self.logger.error(f"Error calculating learning progress for user {self.user_id}: {e}")
             raise
 
     def _get_exercise_statistics(self) -> Dict[str, Any]:
         """
-        Retrieve exercise statistics from the database.
+        Get exercise statistics for the user.
 
         Returns:
-            Dict containing exercise statistics
+            Dictionary containing exercise statistics
         """
         try:
             # Get total exercises completed
-            exercises_result = select_rows(
+            total_exercises_result = select_one(
                 "results",
-                columns=["COUNT(*) as total", "AVG(correct) as avg_score", "MAX(timestamp) as last_activity"],
+                columns="COUNT(*) as count",
                 where="username = ?",
                 params=(self.user_id,)
             )
+            total_exercises = total_exercises_result.get("count", 0) if total_exercises_result else 0
 
-            if not exercises_result:
-                return {
-                    'total_exercises': 0,
-                    'average_score': 0.0,
-                    'last_activity': datetime.now()
-                }
+            # Get correct answers
+            correct_answers_result = select_one(
+                "results",
+                columns="COUNT(*) as count",
+                where="username = ? AND correct = 1",
+                params=(self.user_id,)
+            )
+            correct_answers = correct_answers_result.get("count", 0) if correct_answers_result else 0
 
-            result = exercises_result[0]
+            # Calculate average score
+            average_score = (correct_answers / total_exercises * 100) if total_exercises > 0 else 0.0
+
+            # Get last activity
+            last_activity_result = select_one(
+                "results",
+                columns="MAX(timestamp) as last_timestamp",
+                where="username = ?",
+                params=(self.user_id,)
+            )
+            last_activity_str = last_activity_result.get("last_timestamp") if last_activity_result else None
+            last_activity = datetime.fromisoformat(last_activity_str) if last_activity_str else datetime.now()
+
             return {
-                'total_exercises': result.get('total', 0),
-                'average_score': float(result.get('avg_score', 0.0)),
-                'last_activity': datetime.fromisoformat(result.get('last_activity', datetime.now().isoformat()))
+                "total_exercises": total_exercises,
+                "correct_answers": correct_answers,
+                "average_score": round(average_score, 2),
+                "last_activity": last_activity
             }
 
         except Exception as e:
-            self.logger.error(f"Database error fetching exercise statistics: {e}")
+            self.logger.error(f"Error getting exercise statistics for user {self.user_id}: {e}")
             return {
-                'total_exercises': 0,
-                'average_score': 0.0,
-                'last_activity': datetime.now()
+                "total_exercises": 0,
+                "correct_answers": 0,
+                "average_score": 0.0,
+                "last_activity": datetime.now()
             }
 
     def _calculate_learning_streak(self) -> int:
         """
-        Calculate the user's current learning streak in days.
+        Calculate the user's current learning streak.
 
         Returns:
-            Number of consecutive days the user has been active
+            Number of consecutive days with activity
         """
         try:
-            # Get user activity dates
-            activity_dates = select_rows(
+            # Get recent activity (last 30 days)
+            recent_activity = select_rows(
                 "results",
-                columns=["DISTINCT DATE(timestamp) as activity_date"],
-                where="username = ?",
+                columns="DISTINCT DATE(timestamp) as activity_date",
+                where="username = ? AND timestamp >= date('now', '-30 days')",
                 params=(self.user_id,),
                 order_by="activity_date DESC"
             )
 
-            if not activity_dates:
+            if not recent_activity:
                 return 0
-
-            # Convert to datetime objects
-            dates = [datetime.fromisoformat(row['activity_date']) for row in activity_dates]
-            dates.sort(reverse=True)
 
             # Calculate streak
             streak = 0
-            current_date = datetime.now().date()
+            current_date = None
 
-            for date in dates:
-                date_obj = date.date()
-                if current_date - date_obj == timedelta(days=streak):
-                    streak += 1
+            for row in recent_activity:
+                activity_date = row.get("activity_date")
+                if current_date is None:
+                    current_date = activity_date
+                    streak = 1
                 else:
-                    break
+                    # Check if consecutive day
+                    try:
+                        if current_date and activity_date:
+                            current_dt = datetime.strptime(current_date, "%Y-%m-%d")
+                            activity_dt = datetime.strptime(activity_date, "%Y-%m-%d")
+                            if (current_dt - activity_dt).days == 1:
+                                streak += 1
+                                current_date = activity_date
+                            else:
+                                break
+                        else:
+                            break
+                    except:
+                        break
 
             return streak
 
         except Exception as e:
-            self.logger.error(f"Error calculating learning streak: {e}")
+            self.logger.error(f"Error calculating learning streak for user {self.user_id}: {e}")
             return 0
 
     def _get_user_profile(self) -> Dict[str, Any]:
         """
-        Retrieve user profile information.
+        Get user profile information.
 
         Returns:
-            Dict containing user profile data
+            Dictionary containing user profile data
         """
         try:
-            profile = select_one(
+            user_profile = select_one(
                 "users",
-                columns=["skill_level", "created_at"],
+                columns="*",
                 where="username = ?",
                 params=(self.user_id,)
             )
-
-            return profile or {}
+            return user_profile or {}
 
         except Exception as e:
-            self.logger.error(f"Error fetching user profile: {e}")
+            self.logger.error(f"Error getting user profile for {self.user_id}: {e}")
             return {}
-
-    def generate_learning_insights(self) -> Dict[str, str]:
-        """
-        Generate personalized learning insights based on analytics.
-
-        Returns:
-            Dict containing personalized insights and recommendations
-        """
-        try:
-            analytics = self.calculate_learning_progress()
-
-            insights = {
-                'strength': self._identify_strengths(analytics),
-                'weakness': self._identify_weaknesses(analytics),
-                'recommendation': self._generate_recommendations(analytics),
-                'motivation': self._generate_motivational_message(analytics)
-            }
-
-            return insights
-
-        except Exception as e:
-            self.logger.error(f"Error generating insights: {e}")
-            return {
-                'strength': 'Consistent learning effort',
-                'weakness': 'Need more practice',
-                'recommendation': 'Continue with daily exercises',
-                'motivation': 'Keep up the great work!'
-            }
-
-    def _identify_strengths(self, analytics: UserAnalyticsData) -> str:
-        """Identify user's learning strengths."""
-        if analytics.learning_streak_days >= 7:
-            return f"Excellent consistency! {analytics.learning_streak_days} day streak"
-        elif analytics.average_score >= 0.8:
-            return f"Strong performance with {analytics.average_score:.1%} average score"
-        elif analytics.vocabulary_mastered >= 100:
-            return f"Impressive vocabulary mastery: {analytics.vocabulary_mastered} words"
-        else:
-            return "Dedicated learning approach"
-
-    def _identify_weaknesses(self, analytics: UserAnalyticsData) -> str:
-        """Identify areas for improvement."""
-        if analytics.average_score < 0.6:
-            return "Focus on accuracy - consider reviewing previous lessons"
-        elif analytics.learning_streak_days < 3:
-            return "Build consistency with daily practice"
-        elif analytics.vocabulary_mastered < 50:
-            return "Expand vocabulary through reading and exercises"
-        else:
-            return "Continue building on current progress"
-
-    def _generate_recommendations(self, analytics: UserAnalyticsData) -> str:
-        """Generate personalized learning recommendations."""
-        recommendations = []
-
-        if analytics.average_score < 0.7:
-            recommendations.append("Review previous exercises to improve accuracy")
-
-        if analytics.learning_streak_days < 5:
-            recommendations.append("Try to practice daily to build consistency")
-
-        if analytics.vocabulary_mastered < 100:
-            recommendations.append("Focus on vocabulary building exercises")
-
-        if not recommendations:
-            recommendations.append("Continue with current learning path")
-
-        return "; ".join(recommendations)
-
-    def _generate_motivational_message(self, analytics: UserAnalyticsData) -> str:
-        """Generate motivational message based on progress."""
-        if analytics.learning_streak_days >= 10:
-            return f"Amazing dedication! {analytics.learning_streak_days} days strong!"
-        elif analytics.total_exercises_completed >= 100:
-            return f"Fantastic progress! {analytics.total_exercises_completed} exercises completed!"
-        elif analytics.average_score >= 0.8:
-            return "Outstanding performance! Keep up the excellent work!"
-        else:
-            return "Every step forward is progress. You're doing great!"
 
 
 def create_user_analytics_report(user_id: str) -> Dict[str, Any]:
     """
     Create a comprehensive analytics report for a user.
 
-    This function provides a high-level interface for generating
-    complete user analytics reports.
-
     Args:
-        user_id: The user identifier
+        user_id: The user ID to create report for
 
     Returns:
-        Dict containing complete analytics report
+        Dictionary containing the analytics report
 
     Raises:
         ValueError: If user_id is invalid
@@ -301,38 +249,38 @@ def create_user_analytics_report(user_id: str) -> Dict[str, Any]:
         if not user_id:
             raise ValueError("User ID is required")
 
-        analytics_manager = UserAnalyticsManager(user_id)
-        analytics_data = analytics_manager.calculate_learning_progress()
-        insights = analytics_manager.generate_learning_insights()
+        logger.info(f"Creating analytics report for user: {user_id}")
 
+        # Create analytics manager
+        analytics_manager = UserAnalyticsManager(user_id)
+
+        # Calculate learning progress
+        analytics_data = analytics_manager.calculate_learning_progress()
+
+        # Create report
         report = {
-            'user_id': user_id,
-            'generated_at': datetime.now().isoformat(),
-            'analytics': {
-                'total_exercises': analytics_data.total_exercises_completed,
-                'average_score': analytics_data.average_score,
-                'vocabulary_mastered': analytics_data.vocabulary_mastered,
-                'learning_streak': analytics_data.learning_streak_days,
-                'skill_level': analytics_data.skill_level,
-                'last_activity': analytics_data.last_activity_date.isoformat()
-            },
-            'insights': insights,
-            'recommendations': insights['recommendation']
+            "user_id": user_id,
+            "report_generated_at": datetime.now().isoformat(),
+            "analytics": {
+                "total_exercises_completed": analytics_data.total_exercises_completed,
+                "average_score": analytics_data.average_score,
+                "vocabulary_mastered": analytics_data.vocabulary_mastered,
+                "learning_streak_days": analytics_data.learning_streak_days,
+                "last_activity_date": analytics_data.last_activity_date.isoformat(),
+                "skill_level": analytics_data.skill_level
+            }
         }
 
-        logger.info(f"Generated analytics report for user: {user_id}")
+        logger.info(f"Successfully created analytics report for user {user_id}")
         return report
 
     except ValueError as e:
-        logger.error(f"Invalid input for analytics report: {e}")
+        logger.error(f"Validation error creating analytics report: {e}")
         raise
     except Exception as e:
-        logger.error(f"Failed to generate analytics report: {e}")
-        raise
-
-
-# Constants for analytics thresholds
-MIN_ACTIVITY_DAYS = 3
-TARGET_AVERAGE_SCORE = 0.8
-MIN_VOCABULARY_MASTERED = 50
-EXCELLENT_STREAK_DAYS = 7
+        logger.error(f"Error creating analytics report for user {user_id}: {e}")
+        return {
+            "user_id": user_id,
+            "error": str(e),
+            "report_generated_at": datetime.now().isoformat()
+        }

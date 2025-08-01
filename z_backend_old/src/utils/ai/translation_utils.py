@@ -4,7 +4,7 @@ import datetime
 from utils.grammar.grammar_utils import detect_language_topics
 from database import insert_row, update_row, select_one
 from utils.spaced_repetition.level_utils import check_auto_level_up
-from utils.spaced_repetition.algorithm import sm2
+from features.spaced_repetition import sm2
 from utils.spaced_repetition.vocab_utils import translate_to_german
 from utils.ai.ai_api import send_prompt
 from utils.ai.prompts import (

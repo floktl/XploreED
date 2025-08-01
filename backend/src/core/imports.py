@@ -41,22 +41,20 @@ from config.blueprint import (
 from features import *
 
 # Individual feature imports for specific functions
-from features.ai.generation.exercise_generator import generate_training_exercises
-from features.ai.evaluation.exercise_evaluator import evaluate_answers_with_ai
+from features.ai.generation.exercise_creation import generate_training_exercises
+from features.ai.evaluation import evaluate_answers_with_ai
 from features.ai.generation.reading_helpers import generate_reading_exercise
 from features.ai.generation.lesson_generator import update_reading_memory_async
 from features.ai.generation.misc_helpers import stream_ai_answer
 from features.ai.generation.translate_helpers import update_memory_async
 
 # === Vocabulary Feature Imports ===
-from features.vocabulary.vocabulary_manager import (
+from features.vocabulary import (
     lookup_vocabulary_word, get_user_vocabulary_entries, delete_user_vocabulary,
     delete_specific_vocabulary, search_vocabulary_with_ai, update_vocabulary_entry,
-    get_vocabulary_statistics
-)
-from features.vocabulary.vocabulary_analytics import (
-    get_vocabulary_learning_progress, get_vocabulary_difficulty_analysis,
-    get_vocabulary_study_recommendations, get_vocabulary_export_data
+    get_vocabulary_statistics, get_vocabulary_learning_progress,
+    get_vocabulary_difficulty_analysis, get_vocabulary_study_recommendations,
+    get_vocabulary_export_data
 )
 
 # === Exercise Feature Imports ===
@@ -89,36 +87,39 @@ from features.progress import (
 )
 
 # === Lesson Feature Imports ===
-from features.lessons.lesson_helpers import (
+from features.lessons import (
     get_lesson_content, get_user_lessons_summary, get_lesson_progress,
-    update_lesson_progress, get_lesson_statistics
+    update_lesson_progress, get_lesson_statistics, validate_lesson_access,
+    validate_block_completion, get_lesson_blocks, update_lesson_content,
+    publish_lesson, get_lesson_analytics
 )
 
 # === Translation Feature Imports ===
-from features.translation.translation_helpers import (
+from features.translation import (
     create_translation_job, process_translation_job, get_translation_job_status,
     get_translation_status, stream_translation_feedback, cleanup_expired_jobs
 )
 
 # === Profile Feature Imports ===
-from features.profile.profile_helpers import (
+from features.profile import (
     get_user_game_results, get_user_profile_summary, get_user_achievements,
     get_user_activity_timeline
 )
 
 # === Settings Feature Imports ===
-from features.settings.settings_helpers import (
+from features.settings import (
     update_user_password, deactivate_user_account, debug_delete_user_data,
     get_user_settings, update_user_settings, get_account_statistics,
-    export_user_data, import_user_data
+    export_user_data, import_user_data, validate_import_data
 )
 
 # === Support Feature Imports ===
-from features.support.support_helpers import (
+from features.support import (
     submit_feedback, get_feedback_list, get_feedback_by_id, delete_feedback,
-    get_feedback_statistics, search_feedback, get_user_feedback,
-    create_support_ticket, create_support_request, get_system_status,
-    get_help_content
+    get_feedback_statistics, search_feedback, get_user_feedback, create_support_ticket,
+    create_support_request, get_system_status, get_help_content, get_help_topics,
+    search_help_content, get_support_request, update_support_request_status,
+    get_user_support_requests, get_pending_support_requests
 )
 
 # === Admin Feature Imports ===
@@ -146,7 +147,7 @@ from features.debug import (
 )
 
 # === Grammar Feature Imports ===
-from features.grammar.detector import (
+from features.grammar import (
     detect_language_topics
 )
 
@@ -167,8 +168,8 @@ from features.game.sentence_order import (
 )
 
 # === User Feature Imports ===
-from features.user.user_analytics import (
-    create_user_analytics_report
+from features.user import (
+    create_user_analytics_report, generate_learning_insights, create_comprehensive_user_report
 )
 
 # === Auth Feature Imports ===
@@ -253,6 +254,7 @@ __all__ = [
     "get_user_settings", "update_user_settings", "update_user_password",
     "deactivate_user_account", "debug_delete_user_data",
     "get_user_settings", "update_user_settings", "get_account_statistics",
+    "export_user_data", "import_user_data", "validate_import_data",
 
     # Support feature imports
     "submit_feedback", "get_feedback_list", "get_feedback_by_id",

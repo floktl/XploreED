@@ -23,7 +23,7 @@ from features.exercise import (
     create_immediate_results,
     evaluate_remaining_exercises_async,
 )
-from features.ai.evaluation.exercise_evaluator import process_ai_answers
+from features.ai.evaluation import process_ai_answers
 
 
 logger = logging.getLogger(__name__)

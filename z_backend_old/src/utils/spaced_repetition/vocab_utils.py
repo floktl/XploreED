@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from utils.ai.prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
 from database import update_row, select_one, fetch_one, insert_row
-from .algorithm import sm2
+from features.spaced_repetition import sm2
 from utils.ai.ai_api import send_prompt
 from utils.ai.topic_memory_logger import topic_memory_logger
 

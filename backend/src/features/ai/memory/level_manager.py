@@ -1,4 +1,17 @@
-"""Helpers for level progress tracking and initialization."""
+"""
+XplorED - Level Manager Module
+
+This module provides level progress tracking and initialization functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
+
+Level Manager Components:
+- Level Initialization: Initialize topic memory for user skill levels
+- Progress Calculation: Calculate user progress through skill levels
+- Auto Level Up: Automatically increase user levels based on performance
+- Topic Management: Manage grammar topics for each skill level
+
+For detailed architecture information, see: docs/backend_structure.md
+"""
 
 import datetime
 from core.database.connection import select_rows, insert_row, update_row, fetch_one

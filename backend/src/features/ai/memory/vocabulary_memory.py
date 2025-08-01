@@ -1,12 +1,25 @@
-"""Utility helpers for vocabulary management and translation."""
+"""
+XplorED - Vocabulary Memory Module
+
+This module provides vocabulary memory and spaced repetition functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
+
+Vocabulary Memory Components:
+- Word Analysis: AI-powered German word analysis and translation
+- Vocabulary Management: Save, retrieve, and manage vocabulary entries
+- Spaced Repetition: Implement spaced repetition for vocabulary learning
+- Word Processing: Normalize and process German words and articles
+
+For detailed architecture information, see: docs/backend_structure.md
+"""
 
 import re
 import json
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from features.ai.prompts import analyze_word_prompt, translate_sentence_prompt, translate_word_prompt
-from core.database.connection import update_row, select_one, fetch_one, insert_row
-from features.spaced_repetition.algorithm import sm2
+from core.database.connection import update_row, select_one, fetch_one, insert_row, select_rows
+from features.spaced_repetition import sm2
 from external.mistral.client import send_prompt
 from features.ai.memory.logger import topic_memory_logger
 

@@ -1,6 +1,6 @@
 """Helper functions for translate routes."""
 
-from features.ai.evaluation.translation_evaluator import evaluate_topic_qualities_ai, update_topic_memory_translation
+from features.ai.evaluation import evaluate_topic_qualities_ai, update_topic_memory_translation
 from core.utils.helpers import run_in_background
 
 

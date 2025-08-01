@@ -1,3 +1,18 @@
+"""
+XplorED - Grammar Detection Module
+
+This module provides grammar detection and analysis functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
+
+Grammar Detection Components:
+- Language Topic Detection: Detect grammar topics in text using AI
+- JSON Parsing: Parse AI responses for grammar topics
+- Error Handling: Handle AI detection failures gracefully
+- Topic Extraction: Extract and clean grammar topics from text
+
+For detailed architecture information, see: docs/backend_structure.md
+"""
+
 import re
 import json
 from features.ai.prompts import detect_topics_prompt

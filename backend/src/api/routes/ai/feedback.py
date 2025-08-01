@@ -16,13 +16,13 @@ from flask import request, jsonify # type: ignore
 from core.services.import_service import *
 from core.utils.helpers import require_user
 from config.blueprint import ai_bp
-from features.ai.feedback_helpers import (
-    get_feedback_progress,
+from features.ai import (
     generate_feedback_with_progress,
+    get_feedback_progress,
     get_feedback_result,
+    generate_ai_feedback_simple,
     get_cached_feedback_list,
     get_cached_feedback_item,
-    generate_ai_feedback_simple
 )
 
 

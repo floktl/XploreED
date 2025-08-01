@@ -1,11 +1,16 @@
 """
-Vocabulary Analytics
+XplorED - Vocabulary Analytics Module
 
-This module contains analytics functions for vocabulary usage tracking,
-performance metrics, and learning insights.
+This module provides vocabulary analytics and learning insights functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
 
-Author: XplorED Team
-Date: 2025
+Vocabulary Analytics Components:
+- Learning Progress: Track vocabulary learning progress over time
+- Difficulty Analysis: Analyze vocabulary difficulty and learning patterns
+- Study Recommendations: Generate personalized study recommendations
+- Data Export: Export vocabulary data in various formats
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
