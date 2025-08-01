@@ -9,7 +9,7 @@ RUN npm run build
 # --- Stage 2: Backend dependencies + app copy ---
 FROM python:3.11-slim AS backend
 WORKDIR /app/backend
-COPY backend/requirements.txt .
+COPY backend/requirements/requirements.txt .
 RUN pip install --break-system-packages -r requirements.txt
 COPY backend/ .
 
@@ -35,13 +35,13 @@ COPY --from=frontend /app/frontend/dist /app/frontend/dist
 
 # Configure nginx
 RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/sites-enabled/default
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY infra/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Set Python path for imports
 ENV PYTHONPATH=/app/backend/src
 
 # Install Python requirements
-COPY backend/requirements.txt .
+COPY backend/requirements/requirements.txt .
 RUN pip install --break-system-packages -r requirements.txt
 
 # Debug: Check what files are in the backend directory

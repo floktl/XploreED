@@ -1,0 +1,76 @@
+2025-07-31 07:07:23,453 - features.auth.auth_helpers - INFO - Attempting authentication for user test4
+2025-07-31 07:07:23,581 - features.auth.auth_helpers - WARNING - Authentication failed: invalid password for user test4
+2025-07-31 07:07:34,432 - features.auth.auth_helpers - INFO - Attempting authentication for user test4
+2025-07-31 07:07:34,571 - features.auth.auth_helpers - INFO - Authentication successful for user test4
+2025-07-31 07:19:19,729 - api.routes.ai.lesson - INFO - User test4 requesting weakness lesson
+2025-07-31 07:19:19,749 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 07:19:19,944 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 422 683
+2025-07-31 07:19:19,947 - api.routes.ai.lesson - ERROR - Failed to generate weakness lesson for user test4: Unexpected error in Mistral API request: Mistral API error: 422 - {"detail":[{"type":"string_type","loc":["body","messages",1,"user","content","str"],"msg":"Input should be a valid string","input":{"role":"user","content":"Create a short HTML lesson in English for a German learner. Explain the topic 'Modalverben' (grammar)Return only valid HTML."}},{"type":"list_type","loc":["body","messages",1,"user","content","list[tagged-union[TextChunk,ImageURLChunk,DocumentURLChunk,ReferenceChunk,BBoxChunk,FileURLChunk,AudioChunk,FileChunk,ThinkChunk]]"],"msg":"Input should be a valid list","input":{"role":"user","content":"Create a short HTML lesson in English for a German learner. Explain the topic 'Modalverben' (grammar)Return only valid HTML."}}]}
+2025-07-31 07:24:51,386 - api.routes.ai.lesson - INFO - User test4 requesting weakness lesson
+2025-07-31 07:24:51,410 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 07:25:31,669 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-31 07:25:31,683 - api.routes.ai.lesson - INFO - Successfully generated weakness lesson for user test4
+2025-07-31 08:45:53,379 - features.auth.auth_helpers - INFO - Attempting authentication for user test4
+2025-07-31 08:45:53,502 - features.auth.auth_helpers - WARNING - Authentication failed: invalid password for user test4
+2025-07-31 08:45:57,602 - features.auth.auth_helpers - INFO - Attempting authentication for user test4
+2025-07-31 08:45:57,681 - features.auth.auth_helpers - INFO - Authentication successful for user test4
+2025-07-31 08:46:06,411 - api.routes.ai.training - INFO - Training exercises request from user: test4
+2025-07-31 08:46:06,411 - api.routes.ai.training - INFO - Training request data for user test4: answers_count=0
+2025-07-31 08:46:06,412 - api.routes.ai.training - INFO - User test4 has no answers, checking cached exercises
+2025-07-31 08:46:06,414 - api.routes.ai.training - INFO - No cached next exercises for user test4, prefetching
+2025-07-31 08:46:06,432 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 08:46:19,291 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-31 08:46:19,416 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 08:46:30,694 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-31 08:46:30,702 - api.routes.ai.training - INFO - Returning cached exercises for user test4
+2025-07-31 08:46:30,761 - api.routes.ai.training - INFO - Training exercises request from user: test4
+2025-07-31 08:46:30,762 - api.routes.ai.training - INFO - Training request data for user test4: answers_count=0
+2025-07-31 08:46:30,762 - api.routes.ai.training - INFO - User test4 has no answers, checking cached exercises
+2025-07-31 08:46:30,766 - api.routes.ai.training - INFO - No cached next exercises for user test4, prefetching
+2025-07-31 08:46:30,779 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 08:46:47,199 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-31 08:46:47,327 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 08:47:04,471 - urllib3.connectionpool - DEBUG - https://api.mistral.ai:443 "POST /v1/chat/completions HTTP/1.1" 200 None
+2025-07-31 08:47:04,483 - api.routes.ai.training - INFO - Returning cached exercises for user test4
+2025-07-31 09:15:48,821 - api.routes.ai.training - INFO - Training exercises request from user: test4
+2025-07-31 09:15:48,825 - api.routes.ai.training - INFO - Training request data for user test4: answers_count=0
+2025-07-31 09:15:48,825 - api.routes.ai.training - INFO - User test4 has no answers, checking cached exercises
+2025-07-31 09:15:48,826 - api.routes.ai.training - INFO - No cached next exercises for user test4, prefetching
+2025-07-31 09:15:48,843 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): api.mistral.ai:443
+2025-07-31 09:25:41,533 - api.routes.ai.training - ERROR - Failed to generate training exercises for user test4: Mistral API request failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2025-08-01 15:40:24 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 15:40:24 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-01 15:40:25 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-01 15:41:11 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 15:41:11 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-01 15:41:12 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-01 17:43:03 - config.logging_config - INFO - Logging configured - Level: DEBUG, File: /Users/flo/Desktop/XploreED/backend/logs/app.log
+2025-08-01 17:43:03 - __main__ - DEBUG - This is a DEBUG message
+2025-08-01 17:43:03 - __main__ - INFO - This is an INFO message
+2025-08-01 17:43:03 - __main__ - WARNING - This is a WARNING message
+2025-08-01 17:43:03 - __main__ - ERROR - This is an ERROR message
+2025-08-01 17:43:03 - __main__ - CRITICAL - This is a CRITICAL message
+2025-08-01 15:44:38 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 15:44:40 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-01 15:44:41 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-01 16:20:44 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 16:20:44 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-01 16:20:44 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-01 16:20:44 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-01 16:20:44 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-01 16:20:44 - __main__ - INFO - Database directory: /app/database
+2025-08-01 16:20:44 - __main__ - INFO - ✅ Database connection established
+2025-08-01 16:20:44 - __main__ - INFO - Results table created/verified
+2025-08-01 16:20:44 - __main__ - INFO - Topic memory table created/verified
+2025-08-01 16:20:44 - __main__ - INFO - Sessions table created/verified
+2025-08-01 16:20:44 - __main__ - INFO - User progress table created/verified
+2025-08-01 16:20:44 - __main__ - INFO - User settings table created/verified
+2025-08-01 16:20:44 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-01 16:20:44 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 16:20:44 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-01 16:20:45 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-01 16:20:45 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-01 16:20:45 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-01 16:20:46 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-01 16:21:03 - features.auth.authentication - INFO - Attempting authentication for user test4
+2025-08-01 16:21:03 - features.auth.authentication - INFO - Authentication successful for user test4

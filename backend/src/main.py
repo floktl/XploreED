@@ -49,6 +49,13 @@ def load_environment() -> None:
 # Load environment variables early
 load_environment()
 
+# === Setup Logging ===
+from config.logging_config import setup_logging
+
+# Configure logging with environment-based settings
+log_level = os.getenv("LOG_LEVEL", "INFO")
+setup_logging(log_level=log_level)
+
 # === Import Flask and Core Dependencies ===
 from flask import Flask, jsonify, render_template  # type: ignore
 from flask_cors import CORS  # type: ignore
