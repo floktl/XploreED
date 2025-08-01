@@ -17,7 +17,6 @@ import logging
 import json
 import time
 import os
-import redis
 from typing import Dict, Any, Optional, Tuple
 
 from core.services.import_service import *
@@ -25,17 +24,9 @@ from features.ai.generation.feedback_helpers import format_feedback_block
 from features.ai.memory.vocabulary_memory import translate_to_german
 from features.ai.evaluation import evaluate_translation_ai
 from features.ai.generation.translate_helpers import update_memory_async
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
-
-# Redis connection setup
-redis_url = os.getenv('REDIS_URL')
-if redis_url:
-    redis_client = redis.from_url(redis_url, decode_responses=True)
-else:
-    redis_host = os.getenv('REDIS_HOST', 'localhost')
-    logger.info(f"Connecting to Redis at: {redis_host}")
-    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 
 def stream_translation_feedback(english: str, student_input: str, username: str) -> str:

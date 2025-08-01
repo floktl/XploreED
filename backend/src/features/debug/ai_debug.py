@@ -15,11 +15,11 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import json
 import os
-import redis
 from typing import Dict, Any
 
 from core.database.connection import select_one
 from features.ai.generation.helpers import print_ai_user_data_titles
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -110,34 +110,19 @@ def _get_evaluation_status(username: str, block_id: str) -> Dict[str, Any]:
         Dictionary containing evaluation status
     """
     try:
-        # Connect to Redis
-        redis_url = os.getenv('REDIS_URL')
-        if redis_url:
-            redis_client = redis.from_url(redis_url, decode_responses=True)
-        else:
-            redis_host = os.getenv('REDIS_HOST', 'localhost')
-            redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
-
         result_key = f"exercise_result:{username}:{block_id}"
-        result_json = redis_client.get(result_key)
+        result_data = redis_client.get_json(result_key)
 
-        if not result_json:
+        if not result_data:
             return {
                 "status": "not_found",
                 "message": "No evaluation result found"
             }
 
-        try:
-            result_data = json.loads(result_json)
-            return {
-                "status": "found",
-                "data": result_data
-            }
-        except json.JSONDecodeError as e:
-            return {
-                "status": "error",
-                "message": f"Invalid JSON in result: {e}"
-            }
+        return {
+            "status": "found",
+            "data": result_data
+        }
 
     except Exception as e:
         logger.error(f"Error getting evaluation status for block {block_id}: {e}")

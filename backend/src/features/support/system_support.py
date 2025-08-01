@@ -80,10 +80,11 @@ def get_system_status() -> Dict[str, Any]:
         # Check Redis connection (if available)
         redis_status = "unknown"
         try:
-            import redis
-            r = redis.Redis(host='localhost', port=6379, db=0, socket_connect_timeout=1)
-            r.ping()
-            redis_status = "connected"
+            from external.redis import redis_client
+            if redis_client.is_connected():
+                redis_status = "connected"
+            else:
+                redis_status = "disconnected"
         except:
             redis_status = "disconnected"
 

@@ -10,21 +10,13 @@ Date: 2025
 """
 
 import logging
-import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
-from flask import request, jsonify, Response # type: ignore
+from flask import request, jsonify, Response  # type: ignore
 from core.services.import_service import *
 from core.utils.helpers import require_user
 from config.blueprint import ai_bp
-
-# Import ElevenLabs client
-try:
-    from elevenlabs.client import ElevenLabs # type: ignore
-except ImportError:
-    ElevenLabs: Optional[Any] = None
-    logging.warning("ElevenLabs client not available")
-
+from external.tts import convert_text_to_speech_service
 
 logger = logging.getLogger(__name__)
 
@@ -46,34 +38,36 @@ def tts():
 
         data = request.get_json() or {}
         text = data.get("text", "").strip()
-        voice_id = data.get("voice_id", "JBFqnCBsd6RMkjVDRZzb")
-        model_id = data.get("model_id", "eleven_multilingual_v2")
+        voice_id = data.get("voice_id")
+        model_id = data.get("model_id")
 
         if not text:
             return jsonify({"error": "Text is required"}), 400
 
-        if ElevenLabs is None:
-            logger.error("ElevenLabs client not available")
-            return jsonify({"error": "TTS service not available"}), 500
+        # Use service layer for TTS conversion
+        result = convert_text_to_speech_service(
+            text=text,
+            username=username,
+            voice_id=voice_id,
+            model_id=model_id
+        )
 
-        api_key = os.getenv("ELEVENLABS_API_KEY")
-        if not api_key:
-            logger.error("ELEVENLABS_API_KEY not configured")
-            return jsonify({"error": "TTS service not configured"}), 500
-
-        try:
-            client = ElevenLabs(api_key=api_key)
-            audio = client.text_to_speech.convert(
-                voice_id=voice_id,
-                text=text,
-                model_id=model_id,
-                output_format="mp3_44100_128",
-            )
+        if result["success"]:
             logger.info(f"Successfully generated TTS audio for user {username}")
-            return Response(audio, mimetype="audio/mpeg")
-        except Exception as e:
-            logger.error(f"ElevenLabs API error for user {username}: {e}")
-            return jsonify({"error": "TTS service error"}), 500
+            return Response(result["audio"], mimetype="audio/mpeg")
+        else:
+            error_code = result.get("error_code", "UNKNOWN_ERROR")
+            error_message = result.get("error", "TTS conversion failed")
+
+            # Map error codes to HTTP status codes
+            status_code = 500
+            if error_code in ["MISSING_TEXT", "INVALID_TEXT"]:
+                status_code = 400
+            elif error_code == "SERVICE_UNAVAILABLE":
+                status_code = 503
+
+            logger.error(f"TTS conversion failed for user {username}: {error_code} - {error_message}")
+            return jsonify({"error": error_message, "error_code": error_code}), status_code
 
     except ValueError as e:
         logger.error(f"Validation error in TTS request: {e}")
