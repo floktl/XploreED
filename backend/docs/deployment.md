@@ -81,14 +81,14 @@ CORS_ORIGINS=https://yourdomain.com
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd german_class_tool
+cd XploreED
 
 # Create virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
-pip install -r backend/requirements/base.txt
+pip install -r backend/requirements/requirements.txt
 ```
 
 ### **2. Environment Setup**
@@ -216,7 +216,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./ssl:/etc/nginx/ssl
     depends_on:
       - backend
@@ -243,15 +243,15 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker
 sudo chmod +x /usr/local/bin/docker-compose
 
 # Create application directory
-sudo mkdir -p /opt/german-class-tool
-sudo chown $USER:$USER /opt/german-class-tool
+sudo mkdir -p /opt/XploreED
+sudo chown $USER:$USER /opt/XploreED
 ```
 
 ### **2. Application Deployment**
 
 ```bash
 # Clone repository
-cd /opt/german-class-tool
+cd /opt/XploreED
 git clone <repository-url> .
 
 # Create environment file
@@ -281,7 +281,7 @@ sudo crontab -e
 
 ### **4. Nginx Configuration**
 
-Create `nginx/default.conf`:
+Create `infra/nginx/default.conf`:
 
 ```nginx
 upstream backend {
@@ -355,16 +355,16 @@ ssh -i your-key.pem ubuntu@your-instance-ip
 #### **ECS Deployment**
 ```bash
 # Create ECS cluster
-aws ecs create-cluster --cluster-name german-class-tool
+aws ecs create-cluster --cluster-name XploreED
 
 # Create task definition
 aws ecs register-task-definition --cli-input-json file://task-definition.json
 
 # Create service
 aws ecs create-service \
-    --cluster german-class-tool \
+    --cluster XploreED \
     --service-name backend \
-    --task-definition german-class-tool:1 \
+    --task-definition XploreED:1 \
     --desired-count 2
 ```
 
@@ -373,24 +373,24 @@ aws ecs create-service \
 #### **Compute Engine**
 ```bash
 # Create instance
-gcloud compute instances create german-class-tool \
+gcloud compute instances create XploreED \
     --zone=us-central1-a \
     --machine-type=e2-medium \
     --image-family=ubuntu-2004-lts \
     --image-project=ubuntu-os-cloud
 
 # Deploy application
-gcloud compute scp --recurse ./backend instance-name:/opt/german-class-tool/
+gcloud compute scp --recurse ./backend instance-name:/opt/XploreED/
 ```
 
 #### **Cloud Run**
 ```bash
 # Build and push image
-gcloud builds submit --tag gcr.io/PROJECT_ID/german-class-tool
+gcloud builds submit --tag gcr.io/PROJECT_ID/XploreED
 
 # Deploy to Cloud Run
-gcloud run deploy german-class-tool \
-    --image gcr.io/PROJECT_ID/german-class-tool \
+gcloud run deploy XploreED \
+    --image gcr.io/PROJECT_ID/XploreED \
     --platform managed \
     --region us-central1 \
     --allow-unauthenticated
@@ -401,13 +401,13 @@ gcloud run deploy german-class-tool \
 #### **App Service**
 ```bash
 # Create resource group
-az group create --name german-class-tool --location eastus
+az group create --name XploreED --location eastus
 
 # Create app service plan
-az appservice plan create --name german-class-tool-plan --resource-group german-class-tool --sku B1
+az appservice plan create --name XploreED-plan --resource-group XploreED --sku B1
 
 # Create web app
-az webapp create --name german-class-tool --resource-group german-class-tool --plan german-class-tool-plan --runtime "PYTHON|3.9"
+az webapp create --name XploreED --resource-group XploreED --plan XploreED-plan --runtime "PYTHON|3.9"
 ```
 
 ## **Monitoring and Maintenance**
@@ -429,13 +429,13 @@ docker-compose logs -f backend
 
 ```bash
 # Database backup
-docker exec -it german-class-tool-backend-1 sqlite3 database/user_data.db ".backup backup_$(date +%Y%m%d_%H%M%S).db"
+docker exec -it XploreED-backend-1 sqlite3 database/user_data.db ".backup backup_$(date +%Y%m%d_%H%M%S).db"
 
 # Automated backup script
 #!/bin/bash
 BACKUP_DIR="/opt/backups"
 DATE=$(date +%Y%m%d_%H%M%S)
-docker exec german-class-tool-backend-1 sqlite3 database/user_data.db ".backup $BACKUP_DIR/backup_$DATE.db"
+docker exec XploreED-backend-1 sqlite3 database/user_data.db ".backup $BACKUP_DIR/backup_$DATE.db"
 find $BACKUP_DIR -name "backup_*.db" -mtime +7 -delete
 ```
 
@@ -497,7 +497,7 @@ upstream backend {
 docker run -d \
     --name postgres \
     -e POSTGRES_PASSWORD=password \
-    -e POSTGRES_DB=german_class_tool \
+    -e POSTGRES_DB=XploreED \
     -v postgres_data:/var/lib/postgresql/data \
     postgres:13
 ```
@@ -518,10 +518,10 @@ sudo ufw enable
 
 ```bash
 # Run containers as non-root user
-docker run --user 1000:1000 german-class-tool
+docker run --user 1000:1000 XploreED
 
 # Scan for vulnerabilities
-docker scan german-class-tool
+docker scan XploreED
 ```
 
 ### **3. Secrets Management**
@@ -531,7 +531,7 @@ docker scan german-class-tool
 echo "your-secret-key" | docker secret create secret_key -
 
 # Use environment variables
-docker run -e SECRET_KEY=your-secret-key german-class-tool
+docker run -e SECRET_KEY=your-secret-key XploreED
 ```
 
 ## **Troubleshooting**
@@ -564,7 +564,7 @@ ports:
 docker stats
 
 # Increase memory limits
-docker run --memory=2g german-class-tool
+docker run --memory=2g XploreED
 ```
 
 ### **Debug Commands**

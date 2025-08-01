@@ -1,6 +1,6 @@
 .PHONY: build run migrate logs stop prune rebuild reset cytest shell db-delete frontend-backend
 
-IMAGE_NAME=german_class_tool
+IMAGE_NAME=XploreED
 COMPOSE=docker compose -f docker-compose.dev.yml
 DB_FILE=database/user_data.db
 
@@ -59,9 +59,9 @@ reset:
 # === Run Cypress end-to-end tests ===
 cytest:
 	@echo "🧪 Running Cypress tests..."
-	docker build -t cypress-only ./cypress-tests
+	docker build -t cypress-only ./tests/cypress-tests
 	docker run --rm -it \
-		-v $$PWD/cypress-tests:/e2e \
+		-v $$PWD/tests/cypress-tests:/e2e \
 		-w /e2e \
 		--network host \
 		cypress-only

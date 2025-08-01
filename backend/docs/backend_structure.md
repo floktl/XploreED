@@ -146,7 +146,7 @@ Third-party service integrations:
 
 1. **Install dependencies**:
    ```bash
-   pip install -r requirements/base.txt
+   pip install -r requirements/requirements.txt
    ```
 
 2. **Set up environment variables**:

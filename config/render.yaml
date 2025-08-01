@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: german-class-tool
+    name: XploreED
     env: docker
     plan: free
     dockerContext: .

@@ -20,7 +20,7 @@ services:
       - ./backend/secrets/.env
     command: >-
       sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
-      pip install -r requirements.txt &&
+      pip install -r requirements/requirements.txt &&
       python scripts/migration_script.py &&
       FLASK_ENV=development PYTHONPATH=src python src/main.py"
 

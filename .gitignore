@@ -21,9 +21,7 @@ DEEPL_API_KEY
 
 # Frontend files
 # Dependencies
-/node_modules/
 frontend/node_modules/
-package-lock.json
 frontend/package-lock.json
 # Database files
 backend/database/*.db

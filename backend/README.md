@@ -38,7 +38,7 @@ This is the restructured backend for the XplorED application, organized with cle
 
 1. **Install dependencies**:
    ```bash
-   pip install -r requirements/base.txt
+   pip install -r requirements/requirements.txt
    ```
 
 2. **Set up environment variables**:

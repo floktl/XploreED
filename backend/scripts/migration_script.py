@@ -1,26 +1,40 @@
 """
 XplorED - Database Migration Script
 
-This module provides database initialization and migration functionality,
-following clean architecture principles as outlined in the documentation.
+This script handles database schema creation and updates for the XplorED platform.
+It creates all necessary tables and ensures the database is properly initialized.
 
-Migration Components:
-- Database Setup: Initial database creation and table setup
-- Schema Migration: Column additions and schema updates
-- Environment Configuration: Environment variable loading and path resolution
+Features:
+- Database Schema Creation: Create all required tables
+- Environment Detection: Handle Docker and local environments
 - Error Handling: Graceful error handling for Docker and local environments
+- Logging: Proper logging configuration
 
 For detailed architecture information, see: docs/backend_structure.md
 """
 
-import os
 import sqlite3
-import logging
+import os
+import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Add src to path for imports
+# In Docker: /app/scripts/migration_script.py -> /app/src/
+# In local: backend/scripts/migration_script.py -> backend/src/
+if os.path.exists("/app"):
+    # Docker container environment
+    sys.path.insert(0, "/app/src")
+else:
+    # Local development environment
+    sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+# Import logging configuration
+from config.logging_config import setup_logging
+import logging
+
+# Setup logging
+setup_logging(log_level="INFO")
 logger = logging.getLogger(__name__)
 
 

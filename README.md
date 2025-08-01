@@ -1,4 +1,4 @@
-# german_class_tool
+# XploreED
 This project provides a small learning platform for German classes. It is composed of a Vue frontend and a Flask backend. Development is done with Docker Compose. The backend exposes REST APIs for authentication, a small game, lessons and spaced repetition vocabulary review.
 
 Database
@@ -16,6 +16,33 @@ The backend stores data in a SQLite file referenced by `DB_FILE` in the `.env` f
 - **ai_user_data** – caches AI exercises, the next exercise block and weakness lesson per user
 
 The schema creation queries can be found around lines 33‑258 of the migration script.
+
+## 📊 Project Documentation
+
+For detailed architecture diagrams and system design, see:
+- **Database Structure**: `docs/diagrams/database_structure.drawio`
+- **Exercise Generation Flow**: `docs/diagrams/exercise_gen.drawio`
+- **System Architecture**: `docs/diagrams/schematic.drawio`
+- **Diagrams Documentation**: `docs/diagrams/README.md`
+- **Development Guide**: `docs/AGENTS.md`
+
+## 📁 Project Structure
+
+```
+german_class_tool/
+├── 📖 README.md              # Project overview
+├── 🐳 Dockerfile             # Container configuration
+├── 🐳 docker-compose.dev.yml # Development setup
+├── 🛠️ Makefile               # Build commands
+├── 📚 docs/                  # Documentation
+├── 🏗️ backend/               # Flask application
+├── ⚛️ frontend/              # React application
+├── 🧪 tests/                 # Testing infrastructure
+├── 🏗️ infra/                 # Infrastructure configs
+├── ⚙️ config/                # Build configurations
+├── 🛠️ dev/                   # Development tools
+└── 📦 archive/               # Legacy code
+```
 
 ## Development
 
