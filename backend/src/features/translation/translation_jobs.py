@@ -18,7 +18,6 @@ import json
 import uuid
 import time
 import os
-import redis
 from typing import Dict, Any, Optional, Tuple
 from threading import Thread
 
@@ -27,17 +26,9 @@ from features.ai.generation.feedback_helpers import format_feedback_block
 from features.ai.memory.vocabulary_memory import translate_to_german
 from features.ai.evaluation import evaluate_translation_ai
 from features.ai.generation.translate_helpers import update_memory_async
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
-
-# Redis connection setup
-redis_url = os.getenv('REDIS_URL')
-if redis_url:
-    redis_client = redis.from_url(redis_url, decode_responses=True)
-else:
-    redis_host = os.getenv('REDIS_HOST', 'localhost')
-    logger.info(f"Connecting to Redis at: {redis_host}")
-    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 
 def create_translation_job(english: str, student_input: str, username: str) -> str:
@@ -66,10 +57,10 @@ def create_translation_job(english: str, student_input: str, username: str) -> s
             "created_at": time.time()
         }
 
-        redis_client.set(
+        redis_client.setex_json(
             f"translation_job:{job_id}",
-            json.dumps(initial_status),
-            ex=3600  # Expire after 1 hour
+            3600,  # Expire after 1 hour
+            initial_status
         )
 
         logger.info(f"Created translation job {job_id} for user {username}")
@@ -183,10 +174,10 @@ def _update_job_status(job_id: str, status: str, result: Dict[str, Any]) -> None
             "updated_at": time.time()
         }
 
-        redis_client.set(
+        redis_client.setex_json(
             f"translation_job:{job_id}",
-            json.dumps(job_data),
-            ex=3600  # Expire after 1 hour
+            3600,  # Expire after 1 hour
+            job_data
         )
 
         logger.info(f"Updated job {job_id} status to {status}")
@@ -214,13 +205,13 @@ def get_translation_job_status(job_id: str) -> Optional[Dict[str, Any]]:
 
         logger.info(f"Getting status for translation job {job_id}")
 
-        job_data = redis_client.get(f"translation_job:{job_id}")
+        job_data = redis_client.get_json(f"translation_job:{job_id}")
         if not job_data:
             logger.warning(f"Translation job {job_id} not found")
             return None
 
         try:
-            status_data = json.loads(job_data)
+            status_data = job_data
             logger.info(f"Retrieved status for job {job_id}: {status_data.get('status')}")
             return status_data
         except json.JSONDecodeError:
@@ -290,10 +281,9 @@ def cleanup_expired_jobs() -> int:
 
         for key in job_keys:
             try:
-                job_data = redis_client.get(key)
+                job_data = redis_client.get_json(key)
                 if job_data:
-                    status_data = json.loads(job_data)
-                    created_at = status_data.get("created_at", 0)
+                    created_at = job_data.get("created_at", 0)
 
                     # Check if job is older than 1 hour
                     if time.time() - created_at > 3600:

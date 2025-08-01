@@ -8,7 +8,6 @@ Utility Components:
 - helpers: Authentication and session management utilities
 - html_helpers: HTML processing and manipulation functions
 - json_helpers: JSON parsing and extraction utilities
-- db_helpers: Database operation convenience imports
 
 For detailed architecture information, see: docs/backend_structure.md
 """
@@ -16,7 +15,6 @@ For detailed architecture information, see: docs/backend_structure.md
 from . import helpers
 from . import html_helpers
 from . import json_helpers
-from . import db_helpers
 
 # Re-export commonly used items for convenience
 from .helpers import (
@@ -34,17 +32,6 @@ from .html_helpers import (
     ansi_to_html,
 )
 from .json_helpers import extract_json
-from .db_helpers import (
-    get_connection,
-    execute_query,
-    fetch_all,
-    fetch_one,
-    insert_row,
-    update_row,
-    delete_rows,
-    select_rows,
-    select_one,
-)
 
 
 # === Export Configuration ===
@@ -53,7 +40,6 @@ __all__ = [
     "helpers",
     "html_helpers",
     "json_helpers",
-    "db_helpers",
 
     # Helper functions
     "is_admin",
@@ -71,15 +57,4 @@ __all__ = [
 
     # JSON utilities
     "extract_json",
-
-    # Database utilities
-    "get_connection",
-    "execute_query",
-    "fetch_all",
-    "fetch_one",
-    "insert_row",
-    "update_row",
-    "delete_rows",
-    "select_rows",
-    "select_one",
 ]

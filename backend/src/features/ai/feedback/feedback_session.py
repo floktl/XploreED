@@ -17,16 +17,12 @@ import logging
 import os
 import json
 import uuid
-import redis
 from typing import Dict, Any, Optional
 
 from core.services.import_service import *
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
-
-# Connect to Redis (host from env, default 'localhost')
-redis_host = os.getenv('REDIS_HOST', 'localhost')
-redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 
 def create_feedback_session() -> str:
@@ -44,7 +40,7 @@ def create_feedback_session() -> str:
             "step": "init",
             "completed": False
         }
-        redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
+        redis_client.set_json(f"feedback_progress:{session_id}", progress)
         logger.info(f"Created feedback session: {session_id}")
         return session_id
 
@@ -64,11 +60,10 @@ def get_feedback_progress(session_id: str) -> Dict[str, Any]:
         Dictionary containing progress information
     """
     try:
-        progress_json = redis_client.get(f"feedback_progress:{session_id}")
-        if not progress_json:
+        progress = redis_client.get_json(f"feedback_progress:{session_id}")
+        if not progress:
             return {"error": "Session not found"}
 
-        progress = json.loads(progress_json)
         logger.debug(f"Feedback progress for session {session_id}: {progress['percentage']}% - {progress['status']}")
         return progress
 
@@ -97,7 +92,7 @@ def update_feedback_progress(session_id: str, percentage: int, status: str, step
             "step": step,
             "completed": percentage >= 100
         }
-        redis_client.set(f"feedback_progress:{session_id}", json.dumps(progress))
+        redis_client.set_json(f"feedback_progress:{session_id}", progress)
         logger.debug(f"Updated feedback progress for session {session_id}: {percentage}% - {status}")
         return True
 
@@ -117,11 +112,10 @@ def get_feedback_result(session_id: str) -> Dict[str, Any]:
         Dictionary containing the feedback result
     """
     try:
-        result_json = redis_client.get(f"feedback_result:{session_id}")
-        if not result_json:
+        result = redis_client.get_json(f"feedback_result:{session_id}")
+        if not result:
             return {"error": "Result not found"}
 
-        result = json.loads(result_json)
         logger.debug(f"Retrieved feedback result for session {session_id}")
         return result
 
@@ -139,7 +133,7 @@ def _store_feedback_result(session_id: str, result: Dict[str, Any]) -> None:
         result: The feedback result to store
     """
     try:
-        redis_client.set(f"feedback_result:{session_id}", json.dumps(result))
+        redis_client.set_json(f"feedback_result:{session_id}", result)
         logger.debug(f"Stored feedback result for session {session_id}")
 
     except Exception as e:

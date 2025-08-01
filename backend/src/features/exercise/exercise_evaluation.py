@@ -15,7 +15,6 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import re
 import os
-import redis
 import json
 import time
 from typing import Dict, Any, List, Optional, Tuple
@@ -23,17 +22,9 @@ from typing import Dict, Any, List, Optional, Tuple
 from features.ai.generation.exercise_processing import evaluate_exercises
 from features.ai.generation.feedback_helpers import _adjust_gapfill_results
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
-
-# Connect to Redis (host from env, default 'localhost')
-redis_url = os.getenv('REDIS_URL')
-if redis_url:
-    redis_client = redis.from_url(redis_url, decode_responses=True)
-else:
-    redis_host = os.getenv('REDIS_HOST', 'localhost')
-    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
-
 
 # Import the function from AI evaluation to avoid circular imports
 from features.ai.evaluation import check_gap_fill_correctness
@@ -180,7 +171,7 @@ def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: 
 
         # Store initial results in Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex(result_key, 300, json.dumps(initial_results))  # 5 minutes TTL
+        redis_client.setex_json(result_key, 300, initial_results)  # 5 minutes TTL
 
         # Start background evaluation
         _evaluate_all_exercises(username, block_id, exercises, answers, initial_results, exercise_block)
@@ -235,7 +226,7 @@ def _process_evaluation_results(username: str, block_id: str, exercises: List[Di
 
         # Update results in Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex(result_key, 3600, json.dumps(evaluation))  # 1 hour TTL
+        redis_client.setex_json(result_key, 3600, evaluation)  # 1 hour TTL
 
         # Store results in database if exercise block exists
         if exercise_block:

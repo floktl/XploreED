@@ -15,21 +15,13 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import json
 import os
-import redis
 from typing import Dict, Any, Optional, List
 import datetime
 
 from core.database.connection import select_one, select_rows, insert_row, update_row
+from external.redis import redis_client
 
 logger = logging.getLogger(__name__)
-
-# Connect to Redis (host from env, default 'localhost')
-redis_url = os.getenv('REDIS_URL')
-if redis_url:
-    redis_client = redis.from_url(redis_url, decode_responses=True)
-else:
-    redis_host = os.getenv('REDIS_HOST', 'localhost')
-    redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
 
 def submit_exercise_answers(username: str, block_id: str, answers: Dict[str, str]) -> bool:
@@ -109,15 +101,11 @@ def get_exercise_results(username: str, block_id: str) -> Optional[Dict[str, Any
 
         # First try to get results from Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        result_json = redis_client.get(result_key)
+        results = redis_client.get_json(result_key)
 
-        if result_json:
-            try:
-                results = json.loads(result_json)
-                logger.info(f"Retrieved exercise results from Redis for user '{username}' block {block_id}")
-                return results
-            except json.JSONDecodeError as e:
-                logger.error(f"Error parsing Redis results for user '{username}' block {block_id}: {e}")
+        if results:
+            logger.info(f"Retrieved exercise results from Redis for user '{username}' block {block_id}")
+            return results
 
         # Fallback to database
         block = select_one("exercise_blocks", where="block_id = ? AND username = ?", params=(block_id, username))
