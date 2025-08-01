@@ -2,7 +2,7 @@
 
 import datetime
 from database import select_rows, select_one, update_row
-from utils.spaced_repetition.algorithm import sm2
+from features.spaced_repetition import sm2
 
 VOCAB_COLUMNS = [
     "rowid as id",

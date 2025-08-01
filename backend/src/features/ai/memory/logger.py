@@ -1,5 +1,17 @@
 """
-Topic Memory Logger - Creates detailed logs of topic memory updates in table format
+XplorED - Topic Memory Logger Module
+
+This module provides topic memory logging and analytics functions for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
+
+Topic Memory Logger Components:
+- Session Management: Create and manage logging sessions for users
+- Topic Updates: Log topic memory updates and changes
+- Vocabulary Updates: Log vocabulary learning progress
+- Report Generation: Generate detailed reports and analytics
+- Data Export: Export logging data in various formats
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
 import os

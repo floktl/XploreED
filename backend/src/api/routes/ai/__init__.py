@@ -46,8 +46,8 @@ CEFR_LEVELS = [
 
 # Import submodules so routes get registered
 from . import exercise, feedback, training, lesson, misc, tts, reading
-from features.ai.evaluation.exercise_evaluator import evaluate_answers_with_ai
-from features.ai.generation.exercise_generator import generate_training_exercises
+from features.ai.evaluation import evaluate_answers_with_ai
+from features.ai.generation.exercise_creation import generate_training_exercises
 from features.ai.generation.reading_helpers import generate_reading_exercise
 
 __all__ = [

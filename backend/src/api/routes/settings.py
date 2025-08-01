@@ -34,14 +34,16 @@ from core.services.import_service import *
 from core.utils.helpers import require_user
 from core.database.connection import insert_row, select_one
 from config.blueprint import settings_bp
-from features.settings.settings_helpers import (
-    get_user_settings,
-    update_user_settings,
+from features.settings import (
     update_user_password,
     deactivate_user_account,
+    debug_delete_user_data,
+    get_user_settings,
+    update_user_settings,
     get_account_statistics,
     export_user_data,
-    import_user_data
+    import_user_data,
+    validate_import_data,
 )
 
 

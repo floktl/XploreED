@@ -4,8 +4,8 @@
 from core.database.connection import get_connection, insert_row, select_rows
 from features.ai.prompts import game_sentence_prompt
 from external.mistral.client import send_prompt
-from features.ai.generation.helpers import generate_feedback_prompt
-from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct
+from features.ai.generation.feedback_helpers import generate_feedback_prompt
+from features.ai.evaluation.translation_evaluation import _normalize_umlauts, _strip_final_punct
 import random
 from colorama import Fore, Style # type: ignore
 from datetime import datetime

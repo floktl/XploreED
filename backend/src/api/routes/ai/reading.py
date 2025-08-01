@@ -19,13 +19,14 @@ from external.mistral.client import send_prompt
 from features.ai.generation.reading_helpers import (
     ai_reading_exercise
 )
-from features.ai.generation.helpers import (
+from features.ai.generation.feedback_helpers import (
     format_feedback_block
 )
-from features.ai.evaluation.translation_evaluator import (
-    _strip_final_punct,
-    _normalize_umlauts
+from features.ai.evaluation import (
+    evaluate_topic_qualities_ai,
+    update_topic_memory_reading
 )
+from features.ai.evaluation.translation_evaluation import _strip_final_punct, _normalize_umlauts
 from features.ai.prompts import (
     feedback_generation_prompt,
     reading_explanation_prompt,

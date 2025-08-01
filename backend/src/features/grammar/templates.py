@@ -1,3 +1,19 @@
+"""
+XplorED - Grammar Templates Module
+
+This module provides German grammar templates and patterns for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
+
+Grammar Templates Components:
+- Article Patterns: German definite and indefinite articles
+- Preposition Patterns: German prepositions by case
+- Pronoun Patterns: German pronouns and their forms
+- Verb Patterns: German verb conjugations and forms
+- Grammar Rules: German grammar rules and patterns
+
+For detailed architecture information, see: docs/backend_structure.md
+"""
+
 import re
 
 NOM_ARTICLES = {"der", "die", "das", "ein", "eine"}

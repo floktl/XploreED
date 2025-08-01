@@ -20,8 +20,8 @@ import json
 import time
 from typing import Dict, Any, List, Optional, Tuple
 
-from features.ai.generation.exercise_generator import evaluate_exercises
-from features.ai.generation.helpers import _adjust_gapfill_results
+from features.ai.generation.exercise_processing import evaluate_exercises
+from features.ai.generation.feedback_helpers import _adjust_gapfill_results
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ else:
 
 
 # Import the function from AI evaluation to avoid circular imports
-from features.ai.evaluation.exercise_evaluator import check_gap_fill_correctness
+from features.ai.evaluation import check_gap_fill_correctness
 
 
 def parse_submission_data(data: Dict[str, Any]) -> Tuple[List[Dict], Dict[str, str], Optional[str]]:

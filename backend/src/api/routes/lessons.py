@@ -34,17 +34,18 @@ from core.services.import_service import *
 from core.utils.helpers import get_current_user, require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import lessons_bp
-from features.lessons.lesson_helpers import (
-    get_user_lessons_summary,
+from features.lessons import (
     get_lesson_content,
+    get_user_lessons_summary,
     get_lesson_progress,
     update_lesson_progress,
     get_lesson_statistics,
     validate_lesson_access,
+    validate_block_completion,
     get_lesson_blocks,
     update_lesson_content,
     publish_lesson,
-    get_lesson_analytics
+    get_lesson_analytics,
 )
 from core.utils.helpers import is_admin
 

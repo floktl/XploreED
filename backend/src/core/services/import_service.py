@@ -93,29 +93,34 @@ from features.ai.memory.vocabulary_memory import (
     translate_to_german,
     extract_words,
 )
-from features.ai.evaluation.translation_evaluator import (
-    evaluate_translation_ai,
-    update_topic_memory_translation,
-)
-from features.spaced_repetition.algorithm import sm2
-from features.ai.evaluation.exercise_evaluator import (
+from features.ai.evaluation import (
     evaluate_answers_with_ai,
     process_ai_answers,
+    evaluate_translation_ai,
+    evaluate_topic_qualities_ai,
+    update_topic_memory_translation,
+    update_topic_memory_reading,
+    compare_topic_qualities
 )
-from features.ai.generation.exercise_generator import (
+from features.spaced_repetition import sm2
+from features.ai.generation.exercise_processing import (
     fetch_vocab_and_topic_data,
     compile_score_summary,
     save_exercise_submission_async,
     evaluate_exercises,
     parse_submission_data,
+)
+from features.ai.generation.exercise_creation import (
     generate_new_exercises,
     generate_training_exercises,
     prefetch_next_exercises,
 )
 from api.routes.ai.exercise import get_ai_exercise_results
 from features.ai.generation.helpers import (
-    generate_feedback_prompt,
     store_user_ai_data,
+)
+from features.ai.generation.feedback_helpers import (
+    generate_feedback_prompt,
     _adjust_gapfill_results,
 )
 from features.ai.generation.lesson_generator import update_reading_memory_async

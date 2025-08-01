@@ -18,7 +18,7 @@ from core.services.import_service import *
 from core.utils.helpers import require_user, run_in_background
 from config.blueprint import ai_bp
 from core.database.connection import select_one
-from features.ai.generation.exercise_generator import (
+from features.ai.generation.exercise_creation import (
     generate_training_exercises,
     prefetch_next_exercises
 )

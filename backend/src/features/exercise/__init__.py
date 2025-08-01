@@ -36,7 +36,7 @@ from .exercise_results import (
 )
 
 # Import from AI evaluation to avoid circular imports
-from features.ai.evaluation.exercise_evaluator import check_gap_fill_correctness
+from features.ai.evaluation import check_gap_fill_correctness
 
 # Re-export all exercise functions for backward compatibility
 __all__ = [

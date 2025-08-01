@@ -51,7 +51,7 @@ from features.progress import (
     get_lesson_progress_summary,
     reset_lesson_progress,
 )
-from features.lessons.lesson_helpers import validate_block_completion
+from features.lessons import validate_block_completion
 
 
 # === Logging Configuration ===

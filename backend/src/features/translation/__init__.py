@@ -1,27 +1,37 @@
 """
-Translation Feature Module
+XplorED - Translation Package
 
-This module contains translation services and language tools functionality.
+This package provides translation services and language tools functionality for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
 
-Author: XplorED Team
-Date: 2025
+Translation Modules:
+- translation_jobs: Translation job management functions
+- translation_streaming: Translation streaming and feedback functions
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
-from .translation_helpers import (
+from .translation_jobs import (
     create_translation_job,
     process_translation_job,
     get_translation_job_status,
     get_translation_status,
-    stream_translation_feedback,
-    cleanup_expired_jobs
+    cleanup_expired_jobs,
 )
 
+from .translation_streaming import (
+    stream_translation_feedback,
+)
+
+# Re-export all translation functions for backward compatibility
 __all__ = [
-    # Translation Helpers
-    'create_translation_job',
-    'process_translation_job',
-    'get_translation_job_status',
-    'get_translation_status',
-    'stream_translation_feedback',
-    'cleanup_expired_jobs'
+    # Translation jobs
+    "create_translation_job",
+    "process_translation_job",
+    "get_translation_job_status",
+    "get_translation_status",
+    "cleanup_expired_jobs",
+
+    # Translation streaming
+    "stream_translation_feedback",
 ]

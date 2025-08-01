@@ -1,11 +1,15 @@
 """
-Spaced Repetition Algorithms
+XplorED - Spaced Repetition Algorithm Module
 
-This module contains spaced repetition algorithms such as SM2 for
-optimizing learning intervals and memory retention.
+This module provides spaced repetition algorithms for the XplorED platform,
+following clean architecture principles as outlined in the documentation.
 
-Author: German Class Tool Team
-Date: 2025
+Spaced Repetition Algorithm Components:
+- SM2 Algorithm: SuperMemo 2 spaced repetition algorithm implementation
+- Learning Optimization: Optimize learning intervals and memory retention
+- Memory Management: Manage spaced repetition data and calculations
+
+For detailed architecture information, see: docs/backend_structure.md
 """
 
 from __future__ import annotations

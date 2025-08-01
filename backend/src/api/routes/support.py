@@ -32,11 +32,24 @@ from flask import request, jsonify # type: ignore
 from core.services.import_service import *
 from core.utils.helpers import get_current_user, is_admin, require_user
 from core.database.connection import select_rows, select_one
-from features.support.support_helpers import (
+from features.support import (
     submit_feedback,
+    get_feedback_list,
+    get_feedback_by_id,
+    delete_feedback,
+    get_feedback_statistics,
+    search_feedback,
+    get_user_feedback,
+    create_support_ticket,
     create_support_request,
     get_system_status,
-    get_help_content
+    get_help_content,
+    get_help_topics,
+    search_help_content,
+    get_support_request,
+    update_support_request_status,
+    get_user_support_requests,
+    get_pending_support_requests,
 )
 from config.blueprint import support_bp
 

@@ -31,11 +31,13 @@ from core.services.import_service import *
 from core.utils.helpers import require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import translate_bp
-from features.translation.translation_helpers import (
+from features.translation import (
     create_translation_job,
+    process_translation_job,
     get_translation_job_status,
+    get_translation_status,
     stream_translation_feedback,
-    get_translation_status
+    cleanup_expired_jobs,
 )
 
 

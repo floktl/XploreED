@@ -27,14 +27,16 @@ from core.services.import_service import *
 from core.utils.helpers import get_current_user
 from core.database.connection import select_rows, insert_row, select_one, update_row, delete_rows, fetch_topic_memory
 from config.blueprint import user_bp
-from features.vocabulary.vocabulary_manager import (
+from features.vocabulary import (
     lookup_vocabulary_word,
-    search_vocabulary_with_ai,
     get_user_vocabulary_entries,
     delete_user_vocabulary,
-    delete_specific_vocabulary
+    delete_specific_vocabulary,
+    search_vocabulary_with_ai,
+    update_vocabulary_entry,
+    get_vocabulary_statistics,
 )
-from features.vocabulary.vocab_helpers import select_vocab_word_due_for_review, update_vocab_after_review
+from features.vocabulary import select_vocab_word_due_for_review, update_vocab_after_review
 
 
 # === Logging Configuration ===

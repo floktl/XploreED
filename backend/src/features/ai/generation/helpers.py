@@ -9,7 +9,7 @@ from features.ai.prompts import (
     feedback_generation_prompt,
     exercise_generation_prompt,
 )
-from features.ai.evaluation.translation_evaluator import _normalize_umlauts, _strip_final_punct
+from features.ai.evaluation.translation_evaluation import _normalize_umlauts, _strip_final_punct
 from external.mistral.client import send_request
 from .. import (
     EXERCISE_TEMPLATE,
@@ -61,59 +61,7 @@ def _ensure_schema(exercise_block: dict) -> dict:
     return exercise_block
 
 
-def generate_feedback_prompt(
-    summary: dict,
-    vocab: list | None = None,
-    topic_memory: list | None = None,
-) -> str:
-    """Return short feedback summary for the user."""
-    # print(f"\033[34m[AI-HELPERS] Entering: [generate_feedback_prompt] summary={repr(summary)}, vocab={repr(vocab)}, topic_memory={repr(topic_memory)}\033[0m", flush=True)
-    correct = summary.get("correct", 0)
-    total = summary.get("total", 0)
-    mistakes = summary.get("mistakes", [])
-
-    if total == 0:
-        return "No answers were submitted."
-
-    top_mistakes = [
-        f"Q: {m['question']} | Your: {m['your_answer']} | Correct: {m['correct_answer']}"
-        for m in mistakes[:2]
-    ]
-    mistakes_text = "\n".join(top_mistakes)
-
-    top_vocab = [
-        f"{v.get('word')} – {v.get('translation')}" for v in (vocab or [])[:3]
-        if v.get("word") and v.get("translation")
-    ]
-    examples_text = ", ".join(top_vocab)
-
-    topic_counts: dict[str, int] = {}
-    for entry in topic_memory or []:
-        for topic in str(entry.get("topic", "")).split(","):
-            t = topic.strip()
-            if t:
-                topic_counts[t] = topic_counts.get(t, 0) + 1
-    repeated_topics = [t for t, c in topic_counts.items() if c > 1][:3]
-    repeated_text = ", ".join(repeated_topics)
-
-    user_prompt = feedback_generation_prompt(
-        correct,
-        total,
-        mistakes_text,
-        repeated_text,
-        examples_text,
-    )
-
-    messages = make_prompt(user_prompt["content"], FEEDBACK_SYSTEM_PROMPT)
-    # print(f"\033[92m[MISTRAL CALL] generate_feedback_prompt\033[0m", flush=True)
-    try:
-        resp = send_request(messages, temperature=0.3)
-        if resp.status_code == 200:
-            return resp.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:
-        print("[generate_feedback_prompt] Error:", e, flush=True)
-
-    return "Great effort! We'll generate custom exercises to help you improve further."
+# generate_feedback_prompt moved to feedback_helpers.py
 
 
 def print_db_exercise_blocks(username, context, parent_function=None):
@@ -214,7 +162,7 @@ def _create_ai_block(username: str) -> dict | None:
 
     # Get recent questions to avoid duplicates
     try:
-        from .exercise_generator import get_recent_exercise_questions
+        from .exercise_creation import get_recent_exercise_questions
         recent_questions = get_recent_exercise_questions(username)
         # logger.info(f"_create_ai_block: Got {len(recent_questions)} recent questions for user {username}")
     except Exception as e:
@@ -222,7 +170,7 @@ def _create_ai_block(username: str) -> dict | None:
         recent_questions = []
 
     try:
-        from .exercise_generator import generate_new_exercises
+        from .exercise_creation import generate_new_exercises
 
         ai_block = generate_new_exercises(
             vocab_data, topic_memory, example_block, level=level, recent_questions=recent_questions, username=username
@@ -268,69 +216,10 @@ def _create_ai_block(username: str) -> dict | None:
     return ai_block
 
 
-def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | None) -> dict | None:
-    """Ensure AI evaluation for gap-fill exercises matches provided options."""
-    # print(f"\033[34m[AI-HELPERS] Entering: [_adjust_gapfill_results] exercises={repr(exercises)}, answers={repr(answers)}, evaluation={repr(evaluation)}\033[0m", flush=True)
-    if not evaluation or "results" not in evaluation:
-        return evaluation
-
-    id_map = {str(r.get("id")): r.get("correct_answer", "") for r in evaluation.get("results", [])}
-
-    for ex in exercises:
-        if ex.get("type") != "gap-fill":
-            continue
-        cid = str(ex.get("id"))
-        correct = id_map.get(cid, "")
-        options = ex.get("options") or []
-        if correct not in options and options:
-            norm_corr = str(correct).strip().lower()
-            best = options[0]
-            best_score = -1.0
-            for opt in options:
-                opt_norm = opt.lower()
-                score = SequenceMatcher(None, norm_corr, opt_norm).ratio()
-                if score > best_score:
-                    best = opt
-                    best_score = score
-                if opt_norm in norm_corr or norm_corr in opt_norm:
-                    best = opt
-                    break
-            id_map[cid] = best
-
-    evaluation["results"] = [{"id": k, "correct_answer": v} for k, v in id_map.items()]
-
-    pass_val = True
-    for ex in exercises:
-        cid = str(ex.get("id"))
-        ans = str(answers.get(cid, "")).strip().lower()
-        corr = str(id_map.get(cid, "")).strip().lower()
-        # Ignore final . or ? for all exercise types
-        ans = _strip_final_punct(ans)
-        corr = _strip_final_punct(corr)
-        # Normalize umlauts for both answers
-        ans = _normalize_umlauts(ans)
-        corr = _normalize_umlauts(corr)
-        if ans != corr:
-            pass_val = False
-    evaluation["pass"] = pass_val
-    return evaluation
+# _adjust_gapfill_results moved to feedback_helpers.py
 
 
-def format_feedback_block(user_answer, correct_answer, alternatives=None, explanation=None, diff=None, status=None):
-    # Normalize answers for comparison
-    ua = _strip_final_punct(str(user_answer)).strip().lower()
-    ca = _strip_final_punct(str(correct_answer)).strip().lower()
-    ua = _normalize_umlauts(ua)
-    ca = _normalize_umlauts(ca)
-
-    return {
-        "status": status or ("correct" if ua == ca else "incorrect"),
-        "correct": correct_answer,
-        "alternatives": alternatives or [],
-        "explanation": explanation or "",
-        "userAnswer": user_answer,
-        "diff": diff,
-    }
+# format_feedback_block moved to feedback_helpers.py
 
 def print_ai_user_data_titles(username):
     """Print only the block_id for current and next block for the given user to the backend logs, colorized and on two lines."""
@@ -357,34 +246,4 @@ def print_ai_user_data_titles(username):
         print(f"\033[91m| [DEBUG] Error printing ai_user_data block ids for user {username}: {e}\033[0m", flush=True)
 
 
-def get_recent_exercise_topics(username: str, limit: int = 3) -> list[str]:
-    """Get recent content topics used in exercise blocks to avoid repetition."""
-    try:
-        from core.database.connection import select_rows
-
-        # Get recent exercise blocks from ai_user_data
-        rows = select_rows(
-            "ai_user_data",
-            columns="exercises, next_exercises",
-            where="username = ?",
-            params=(username,),
-        )
-
-        recent_topics = []
-        for row in rows:
-            for field in ["exercises", "next_exercises"]:
-                if row.get(field):
-                    try:
-                        import json
-                        exercise_data = json.loads(row[field])
-                        if isinstance(exercise_data, dict) and exercise_data.get("topic"):
-                            topic = exercise_data["topic"]
-                            if topic and topic not in recent_topics:
-                                recent_topics.append(topic)
-                    except (json.JSONDecodeError, KeyError):
-                        continue
-
-        return recent_topics[:limit]
-    except Exception as e:
-        print(f"Error getting recent exercise topics: {e}", flush=True)
-        return []
+# get_recent_exercise_topics moved to feedback_helpers.py
