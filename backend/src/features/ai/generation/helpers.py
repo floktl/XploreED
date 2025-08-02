@@ -183,11 +183,6 @@ def _create_ai_block(username: str) -> dict | None:
     return ai_block
 
 
-# _adjust_gapfill_results moved to feedback_helpers.py
-
-
-# format_feedback_block moved to feedback_helpers.py
-
 def print_ai_user_data_titles(username):
     """Print only the block_id for current and next block for the given user to the backend logs, colorized and on two lines."""
     from core.database.connection import fetch_one

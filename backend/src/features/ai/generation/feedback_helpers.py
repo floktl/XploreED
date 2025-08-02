@@ -18,6 +18,7 @@ from typing import Dict, Any, List, Optional
 
 from core.database.connection import fetch_topic_memory
 from features.ai.prompts import feedback_generation_prompt
+from shared.exceptions import AIEvaluationError, DatabaseError
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +85,11 @@ def generate_feedback_prompt(
         logger.debug(f"Generated feedback prompt successfully")
         return user_prompt
 
+    except AIEvaluationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating feedback prompt: {e}")
-        return "Error generating feedback."
+        raise AIEvaluationError(f"Error generating feedback prompt: {str(e)}")
 
 
 def format_feedback_block(user_answer, correct_answer, alternatives=None, explanation=None, diff=None, status=None):
@@ -244,9 +247,11 @@ def get_recent_exercise_topics(username: str, limit: int = 3) -> list[str]:
         logger.debug(f"Retrieved {len(recent_topics[:limit])} recent topics for user {username}")
         return recent_topics[:limit]
 
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting recent exercise topics: {e}")
-        return []
+        raise DatabaseError(f"Error getting recent exercise topics: {str(e)}")
 
 
 def create_feedback_summary(exercises: List[Dict], answers: Dict[str, str], evaluation: Dict) -> Dict[str, Any]:
@@ -305,14 +310,8 @@ def create_feedback_summary(exercises: List[Dict], answers: Dict[str, str], eval
         logger.debug(f"Created feedback summary: {accuracy:.2f}% accuracy")
         return summary
 
+    except AIEvaluationError:
+        raise
     except Exception as e:
         logger.error(f"Error creating feedback summary: {e}")
-        return {
-            "total": 0,
-            "correct": 0,
-            "incorrect": 0,
-            "skipped": 0,
-            "accuracy": 0,
-            "mistakes": [],
-            "overall_feedback": "Error creating feedback summary"
-        }
+        raise AIEvaluationError(f"Error creating feedback summary: {str(e)}")

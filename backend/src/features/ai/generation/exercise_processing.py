@@ -24,11 +24,14 @@ from flask import current_app  # type: ignore
 
 from core.database.connection import (
     select_one, select_rows, insert_row, update_row, delete_rows,
-    fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+    fetch_one, fetch_all, fetch_custom, execute_query, get_connection,
+    fetch_topic_memory
 )
 from features.ai.memory.level_manager import check_auto_level_up
 from features.ai.evaluation import evaluate_answers_with_ai, process_ai_answers
 from features.ai.memory.logger import topic_memory_logger
+from shared.exceptions import ProcessingError, DatabaseError, AIEvaluationError
+from api.middleware.auth import require_user
 
 logger = logging.getLogger(__name__)
 
@@ -76,9 +79,16 @@ def save_exercise_submission_async(
 
             logger.info(f"Successfully processed exercise submission for user: {username}")
 
+        except ProcessingError:
+            raise
+        except DatabaseError:
+            raise
+        except AIEvaluationError:
+            raise
         except Exception as e:
             logger.error(f"Error processing exercise submission for user {username}: {e}")
             logger.error(traceback.format_exc())
+            raise ProcessingError(f"Error processing exercise submission: {str(e)}")
 
     # Run in background thread
     thread = Thread(target=run, daemon=True)
@@ -112,9 +122,11 @@ def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dic
         logger.info(f"Successfully evaluated exercises")
         return evaluation, summary
 
+    except ProcessingError:
+        raise
     except Exception as e:
         logger.error(f"Error evaluating exercises: {e}")
-        return None, {}
+        raise ProcessingError(f"Error evaluating exercises: {str(e)}")
 
 
 def parse_ai_submission_data(data: dict) -> tuple[list, dict, str | None]:
@@ -135,9 +147,11 @@ def parse_ai_submission_data(data: dict) -> tuple[list, dict, str | None]:
         logger.debug(f"Parsed submission data: {len(exercises)} exercises, {len(answers)} answers")
         return exercises, answers, block_id
 
+    except ProcessingError:
+        raise
     except Exception as e:
         logger.error(f"Error parsing submission data: {e}")
-        return [], {}, None
+        raise ProcessingError(f"Error parsing submission data: {str(e)}")
 
 
 def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
@@ -195,16 +209,11 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         logger.debug(f"Compiled score summary: {accuracy:.2f}% accuracy")
         return summary
 
+    except ProcessingError:
+        raise
     except Exception as e:
         logger.error(f"Error compiling score summary: {e}")
-        return {
-            "total": 0,
-            "correct": 0,
-            "incorrect": 0,
-            "skipped": 0,
-            "accuracy": 0,
-            "mistakes": []
-        }
+        raise ProcessingError(f"Error compiling score summary: {str(e)}")
 
 
 def log_exercise_event(event_type: str, username: str, details: Optional[Dict[Any, Any]] = None):
@@ -229,6 +238,7 @@ def log_exercise_event(event_type: str, username: str, details: Optional[Dict[An
 
     except Exception as e:
         logger.error(f"Error logging exercise event: {e}")
+        # Don't raise here as this is just logging
 
 
 def log_ai_user_data(username: str, context: str):
@@ -251,6 +261,7 @@ def log_ai_user_data(username: str, context: str):
 
     except Exception as e:
         logger.error(f"Error logging AI user data: {e}")
+        # Don't raise here as this is just logging
 
 
 def log_vocab_log(username: str, context: str):
@@ -273,6 +284,7 @@ def log_vocab_log(username: str, context: str):
 
     except Exception as e:
         logger.error(f"Error logging vocabulary event: {e}")
+        # Don't raise here as this is just logging
 
 
 def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
@@ -305,9 +317,13 @@ def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
         logger.debug(f"Fetched data for user {username}: {len(vocab_data)} vocab items, {len(topic_memory)} topic items")
         return vocab_data, topic_memory
 
+    except ProcessingError:
+        raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error fetching vocab and topic data for user {username}: {e}")
-        return [], []
+        raise DatabaseError(f"Error fetching vocab and topic data: {str(e)}")
 
 
 def get_ai_exercises():
@@ -353,9 +369,13 @@ def get_ai_exercises():
             logger.warning(f"Failed to generate new exercises for user: {username}")
             return None
 
+    except ProcessingError:
+        raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting AI exercises: {e}")
-        return None
+        raise DatabaseError(f"Error getting AI exercises: {str(e)}")
 
 
 def print_db_exercise_blocks(username, parent_str, parent_function=None):
@@ -389,3 +409,4 @@ def print_db_exercise_blocks(username, parent_str, parent_function=None):
 
     except Exception as e:
         logger.error(f"Error printing exercise blocks: {e}")
+        # Don't raise here as this is just debugging output

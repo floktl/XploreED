@@ -42,7 +42,7 @@ Organized by business domain:
   - `evaluation/` - AI evaluation logic
   - `memory/` - Spaced repetition system
   - `prompts/` - AI prompt templates
-  - `exercise_helpers.py` - Exercise AI logic
+  - `gap_fill_check.py` - Exercise AI logic
   - `feedback_helpers.py` - AI feedback system
 
 - **`auth/`** - Authentication & authorization
@@ -125,7 +125,7 @@ The AI module is the core intelligence of the application:
 - **`evaluation/`** - AI-powered assessment of user responses and progress
 - **`memory/`** - Spaced repetition algorithm for vocabulary retention
 - **`prompts/`** - AI prompt templates and conversation management
-- **`exercise_helpers.py`** - Exercise-specific AI logic and generation
+- **`gap_fill_check.py`** - Exercise-specific AI logic and generation
 - **`feedback_helpers.py`** - Intelligent feedback generation and analysis
 
 ### **Core Services (`src/core/`)**

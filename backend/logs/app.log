@@ -3757,3 +3757,346 @@ shared.exceptions.AIEvaluationError: Mistral API request failed: ('Connection ab
 2025-08-02 09:15:48 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
 2025-08-02 09:15:49 - external.redis.client - INFO - Redis client initialized with REDIS_URL
 2025-08-02 09:15:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:18:11 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:18:11 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:18:12 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:18:37 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:18:37 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:18:37 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:18:48 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:18:48 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:18:49 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:19:03 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:19:03 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:19:04 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:19:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:19:13 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:19:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:19:28 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:19:28 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:19:29 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:19:39 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:19:39 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:19:40 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:20:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:20:13 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:20:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:22:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:22:35 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-02 09:22:35 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-02 09:22:35 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-02 09:22:35 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-02 09:22:35 - __main__ - INFO - Database directory: /app/database
+2025-08-02 09:22:35 - __main__ - INFO - ✅ Database connection established
+2025-08-02 09:22:35 - __main__ - INFO - Results table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - Topic memory table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - Sessions table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - User progress table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - User settings table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - Support requests table created/verified
+2025-08-02 09:22:35 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-02 09:22:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:22:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:22:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:22:37 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:22:37 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:22:38 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:22:43 - features.profile.profile_summary - INFO - Getting profile summary for user admin
+2025-08-02 09:22:43 - core.services.user_service - INFO - Retrieved statistics for user admin: level 1
+2025-08-02 09:22:43 - features.profile.profile_summary - INFO - Retrieved profile summary for user admin: skill level 1
+2025-08-02 09:22:58 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:22:58 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:22:59 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:23:10 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:23:10 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:23:11 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:23:22 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:23:22 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:23:23 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:23:32 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:23:32 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:23:33 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:23:48 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:23:48 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:23:49 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:24:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:07 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-02 09:24:07 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-02 09:24:07 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-02 09:24:07 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-02 09:24:07 - __main__ - INFO - Database directory: /app/database
+2025-08-02 09:24:07 - __main__ - INFO - ✅ Database connection established
+2025-08-02 09:24:07 - __main__ - INFO - Results table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - Topic memory table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - Sessions table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - User progress table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - User settings table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - Support requests table created/verified
+2025-08-02 09:24:07 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-02 09:24:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:07 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:24:08 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:24:08 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:08 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:24:09 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:24:15 - features.profile.profile_summary - INFO - Getting profile summary for user admin
+2025-08-02 09:24:15 - core.services.user_service - INFO - Retrieved statistics for user admin: level 1
+2025-08-02 09:24:15 - features.profile.profile_summary - INFO - Retrieved profile summary for user admin: skill level 1
+2025-08-02 09:24:31 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:32 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:24:32 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:24:45 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:45 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:24:46 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:24:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:24:59 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:25:00 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:25:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:25:25 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:25:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:25:45 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:25:45 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:25:46 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:25:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:25:59 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:26:00 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:26:19 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:26:19 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:26:21 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:26:38 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:26:38 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:26:40 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:26:54 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:26:54 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:26:55 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:27:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:07 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:27:08 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:27:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:19 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:27:19 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:27:31 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:31 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:27:32 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:27:50 - features.profile.profile_summary - INFO - Getting profile summary for user admin
+2025-08-02 09:27:50 - core.services.user_service - INFO - Retrieved statistics for user admin: level 1
+2025-08-02 09:27:50 - features.profile.profile_summary - INFO - Retrieved profile summary for user admin: skill level 1
+2025-08-02 09:27:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:51 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-02 09:27:51 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-02 09:27:51 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-02 09:27:51 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-02 09:27:51 - __main__ - INFO - Database directory: /app/database
+2025-08-02 09:27:51 - __main__ - INFO - ✅ Database connection established
+2025-08-02 09:27:51 - __main__ - INFO - Results table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - Topic memory table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - Sessions table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - User progress table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - User settings table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - Support requests table created/verified
+2025-08-02 09:27:51 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-02 09:27:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:52 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:27:52 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:27:53 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:27:53 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:27:54 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:28:31 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:28:31 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-02 09:28:31 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-02 09:28:31 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-02 09:28:31 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-02 09:28:31 - __main__ - INFO - Database directory: /app/database
+2025-08-02 09:28:31 - __main__ - INFO - ✅ Database connection established
+2025-08-02 09:28:31 - __main__ - INFO - Results table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - Topic memory table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - Sessions table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - User progress table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - User settings table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - Support requests table created/verified
+2025-08-02 09:28:31 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-02 09:28:31 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:28:31 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:28:32 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:28:32 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:28:32 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:28:33 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:28:33 - features.profile.profile_summary - INFO - Getting profile summary for user admin
+2025-08-02 09:28:33 - core.services.user_service - INFO - Retrieved statistics for user admin: level 1
+2025-08-02 09:28:33 - features.profile.profile_summary - INFO - Retrieved profile summary for user admin: skill level 1
+2025-08-02 09:28:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:28:51 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:28:52 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:31:05 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:31:05 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:31:05 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:34:09 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:34:10 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:34:10 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:34:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:34:18 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:34:19 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:34:27 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:34:27 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:34:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:34:32 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:34:32 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:34:33 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:35:01 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:35:01 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:35:02 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:35:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:35:14 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:35:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:35:21 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:35:22 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:35:22 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:35:30 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:35:30 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:35:30 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:35:43 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:35:43 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:35:44 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:08 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:08 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:09 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:18 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:18 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:29 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:29 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:30 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:35 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:44 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:44 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:44 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:36:49 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:36:50 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:36:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:37:04 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:37:04 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:37:05 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:37:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:37:59 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:37:59 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:38:06 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:38:07 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:38:07 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:38:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:38:18 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:38:18 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:38:28 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:38:28 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:38:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:38:36 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:38:36 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:38:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:39:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:39:26 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:39:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:39:43 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:39:43 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:39:44 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:39:52 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:39:52 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:39:53 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:40:11 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:40:11 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:40:13 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:42:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:42:25 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:42:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:42:33 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:42:33 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:42:34 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:42:43 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:42:43 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:42:44 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:42:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:42:51 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:42:52 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:02 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:02 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:03 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:14 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:21 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:22 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:22 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:36 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:36 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:44 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:44 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:44 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:43:56 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:43:56 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:43:57 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:44:04 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:44:04 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:44:04 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:44:14 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:44:14 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:44:15 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:44:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:44:36 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:44:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:44:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:44:51 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:44:52 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:46:35 - api.routes.ai.training - INFO - Training exercises request from user: test4
+2025-08-02 09:46:35 - api.routes.ai.training - INFO - Training request data for user test4: answers_count=0
+2025-08-02 09:46:35 - api.routes.ai.training - INFO - User test4 has no answers, checking cached exercises
+2025-08-02 09:46:35 - api.routes.ai.training - INFO - No cached next exercises for user test4, prefetching
+2025-08-02 09:46:35 - features.ai.generation.exercise_creation - INFO - Generating training exercises for user: test4
+2025-08-02 09:46:35 - features.ai.generation.exercise_creation - INFO - Generating blocks for existing user: test4
+2025-08-02 09:46:35 - features.ai.generation.exercise_creation - INFO - Creating AI block with variation for user: test4
+2025-08-02 09:46:35 - features.ai.generation.exercise_creation - INFO - Generating new exercises for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Successfully generated exercise block for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Created AI block blk0001 for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Prefetching next exercises for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Creating AI block with variation for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Successfully generated blocks for existing user: test4
+2025-08-02 09:46:50 - api.routes.ai.training - INFO - Returning cached exercises for user test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Generating new exercises for user: test4
+2025-08-02 09:46:50 - api.routes.ai.training - INFO - Training exercises request from user: test4
+2025-08-02 09:46:50 - api.routes.ai.training - INFO - Training request data for user test4: answers_count=0
+2025-08-02 09:46:50 - api.routes.ai.training - INFO - User test4 has no answers, checking cached exercises
+2025-08-02 09:46:50 - api.routes.ai.training - INFO - No cached next exercises for user test4, prefetching
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Generating training exercises for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Generating blocks for existing user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Creating AI block with variation for user: test4
+2025-08-02 09:46:50 - features.ai.generation.exercise_creation - INFO - Generating new exercises for user: test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Successfully generated exercise block for user: test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Created AI block blk0001 for user: test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Prefetching next exercises for user: test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Successfully generated blocks for existing user: test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Creating AI block with variation for user: test4
+2025-08-02 09:47:04 - api.routes.ai.training - INFO - Returning cached exercises for user test4
+2025-08-02 09:47:04 - features.ai.generation.exercise_creation - INFO - Generating new exercises for user: test4
+2025-08-02 09:47:08 - features.ai.generation.exercise_creation - INFO - Successfully generated exercise block for user: test4
+2025-08-02 09:47:08 - features.ai.generation.exercise_creation - INFO - Created AI block blk0001 for user: test4
+2025-08-02 09:47:08 - features.ai.generation.exercise_creation - INFO - Successfully prefetched exercises for user: test4
+2025-08-02 09:47:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:47:18 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-02 09:47:18 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-02 09:47:18 - __main__ - INFO - Database path resolved to: /app/database/user_data.db
+2025-08-02 09:47:18 - __main__ - INFO - Database path: /app/database/user_data.db
+2025-08-02 09:47:18 - __main__ - INFO - Database directory: /app/database
+2025-08-02 09:47:18 - __main__ - INFO - ✅ Database connection established
+2025-08-02 09:47:18 - __main__ - INFO - Results table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - Topic memory table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - Sessions table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - User progress table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - User settings table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - Support requests table created/verified
+2025-08-02 09:47:18 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-02 09:47:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:47:19 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:47:19 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-02 09:47:19 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-02 09:47:20 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-02 09:47:20 - external.tts.client - INFO - TTS client initialized with ElevenLabs

@@ -24,7 +24,7 @@ from flask import current_app  # type: ignore
 from features.ai.memory.vocabulary_memory import review_vocab_word, extract_words
 from core.database.connection import *
 from features.grammar import detect_language_topics
-from features.ai.evaluation.exercise_helpers import check_gap_fill_correctness
+from features.ai.evaluation.gap_fill_check import check_gap_fill_correctness
 from shared.text_utils import _extract_json as extract_json
 from features.ai.prompts import answers_evaluation_prompt, alternative_answers_prompt, explanation_prompt
 from external.mistral.client import send_prompt
