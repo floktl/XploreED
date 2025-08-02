@@ -16,7 +16,7 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any, List, Optional
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from core.database.connection import select_rows, select_one, update_row, insert_row
 
 logger = logging.getLogger(__name__)

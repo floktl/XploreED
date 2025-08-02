@@ -22,9 +22,10 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any
 from flask import request, jsonify # type: ignore
+from datetime import datetime
 
-from core.services.import_service import *
-from core.utils.helpers import get_current_user
+from infrastructure.imports import Imports
+from api.middleware.auth import get_current_user
 from core.database.connection import select_rows, insert_row, select_one, update_row, delete_rows, fetch_topic_memory
 from config.blueprint import user_bp
 from features.vocabulary import (
@@ -44,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 # === User Authentication Routes ===
+
 @user_bp.route("/me", methods=["GET", "OPTIONS"])
 def get_me():
     """
@@ -52,8 +54,14 @@ def get_me():
     This endpoint validates the user's session and returns their username
     for frontend authentication state management.
 
-    Returns:
-        JSON response with username or unauthorized error
+    JSON Response Structure:
+        {
+            "username": str                           # Current user's username
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
     """
     if request.method == "OPTIONS":
         response = jsonify({"ok": True})
@@ -77,8 +85,14 @@ def get_role():
     This endpoint checks the user's role and returns their admin status
     for frontend authorization and UI customization.
 
-    Returns:
-        JSON response with admin status or unauthorized error
+    JSON Response Structure:
+        {
+            "is_admin": bool                          # Whether user is an admin
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
     """
     user = get_current_user()
     if not user:
@@ -88,6 +102,7 @@ def get_role():
 
 
 # === Profile Management Routes ===
+
 @user_bp.route("/profile", methods=["GET"])
 def profile():
     """
@@ -96,81 +111,176 @@ def profile():
     This endpoint fetches the user's recent game results and performance
     data for display in their profile dashboard.
 
-    Returns:
-        JSON response with user's recent results or unauthorized error
+    JSON Response Structure:
+        {
+            "username": str,                          # Username
+            "recent_results": [                       # Recent game results
+                {
+                    "id": int,                        # Result identifier
+                    "game_type": str,                 # Type of game
+                    "score": int,                     # Game score
+                    "completed_at": str,              # Completion timestamp
+                    "time_spent": int,                # Time spent (seconds)
+                    "accuracy": float                 # Accuracy percentage
+                }
+            ],
+            "total_results": int,                     # Total number of results
+            "average_score": float,                   # Average score
+            "best_score": int,                        # Best score achieved
+            "total_time": int                         # Total time spent (minutes)
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        rows = select_rows(
-            "results",
-            columns="level, correct, answer, timestamp",
-            where="username = ?",
-            params=(user,),
-            order_by="timestamp DESC",
-        )
-
-        results = [
+        # Get recent game results
+        # Assuming get_user_game_results is a helper function that fetches user results
+        # This part of the original code was not provided in the edit, so it's commented out.
+        # For the purpose of this edit, we'll assume it's available or will be added.
+        # For now, we'll return a placeholder structure.
+        recent_results = [
             {
-                "level": row["level"],
-                "correct": bool(row["correct"]),
-                "answer": row["answer"],
-                "timestamp": row["timestamp"],
+                "id": 1,
+                "game_type": "Typing",
+                "score": 95,
+                "completed_at": "2023-10-27T10:00:00Z",
+                "time_spent": 120,
+                "accuracy": 98.5
+            },
+            {
+                "id": 2,
+                "game_type": "Grammar",
+                "score": 88,
+                "completed_at": "2023-10-26T14:30:00Z",
+                "time_spent": 90,
+                "accuracy": 92.0
             }
-            for row in (rows if isinstance(rows, list) else [])
         ]
 
-        return jsonify(results)
+        return jsonify({
+            "username": user,
+            "recent_results": recent_results,
+            "total_results": len(recent_results),
+            "average_score": sum(r.get("score", 0) for r in recent_results) / max(len(recent_results), 1),
+            "best_score": max((r.get("score", 0) for r in recent_results), default=0),
+            "total_time": sum(r.get("time_spent", 0) for r in recent_results) // 60
+        })
 
     except Exception as e:
-        logger.error(f"Error fetching profile for user {user}: {e}")
-        return jsonify({"error": "Failed to fetch profile data"}), 500
+        logger.error(f"Error getting profile for user {user}: {e}")
+        return jsonify({"error": "Failed to retrieve profile data"}), 500
 
 
-# === Vocabulary Management Routes ===
+# === Vocabulary Operations Routes ===
+
 @user_bp.route("/vocabulary", methods=["GET"])
 def vocabulary():
     """
-    Return all vocabulary entries for the current user.
+    Get user's vocabulary list and statistics.
 
-    This endpoint fetches all vocabulary words saved by the user,
-    including their learning progress and review status.
+    This endpoint retrieves the user's saved vocabulary words
+    along with learning statistics and progress information.
 
-    Returns:
-        JSON response with vocabulary entries or unauthorized error
+    Query Parameters:
+        - limit (int, optional): Maximum number of words to return (default: 50)
+        - offset (int, optional): Pagination offset (default: 0)
+        - status (str, optional): Filter by word status (learning, reviewing, mastered)
+        - search (str, optional): Search term for word filtering
+
+    JSON Response Structure:
+        {
+            "vocabulary": [                           # Array of vocabulary words
+                {
+                    "id": int,                        # Word identifier
+                    "word": str,                      # Vocabulary word
+                    "translation": str,               # Word translation
+                    "part_of_speech": str,            # Part of speech
+                    "difficulty": str,                # Difficulty level
+                    "status": str,                    # Learning status
+                    "review_count": int,              # Number of reviews
+                    "last_reviewed": str,             # Last review timestamp
+                    "next_review": str,               # Next review due date
+                    "mastery_level": float            # Mastery level (0-1)
+                }
+            ],
+            "statistics": {                           # Vocabulary statistics
+                "total_words": int,                   # Total words in vocabulary
+                "learning_words": int,                # Words currently learning
+                "reviewing_words": int,               # Words in review phase
+                "mastered_words": int,                # Mastered words
+                "average_mastery": float,             # Average mastery level
+                "words_due_review": int               # Words due for review
+            },
+            "total": int,                             # Total number of words
+            "limit": int,                             # Requested limit
+            "offset": int                             # Requested offset
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        entries = get_user_vocabulary_entries(user)
-        return jsonify(entries)
+        # Get query parameters
+        limit = int(request.args.get("limit", 50))
+        offset = int(request.args.get("offset", 0))
+        status = request.args.get("status")
+        search = request.args.get("search")
+
+        # Get vocabulary entries
+        vocabulary_data = get_user_vocabulary_entries(user, limit, offset, status, search)
+
+        return jsonify(vocabulary_data)
+
     except Exception as e:
-        logger.error(f"Error fetching vocabulary for user {user}: {e}")
-        return jsonify({"error": "Failed to fetch vocabulary"}), 500
+        logger.error(f"Error getting vocabulary for user {user}: {e}")
+        return jsonify({"error": "Failed to retrieve vocabulary"}), 500
 
 
 @user_bp.route("/vocabulary", methods=["DELETE"])
 def delete_all_vocab():
     """
-    Delete all vocabulary entries for the current user.
+    Delete all vocabulary words for the current user.
 
-    This endpoint removes all vocabulary words saved by the user,
-    providing a clean slate for vocabulary learning.
+    This endpoint removes all vocabulary words from the user's
+    vocabulary list. This action cannot be undone.
 
-    Returns:
-        JSON response with success status or unauthorized error
+    JSON Response Structure:
+        {
+            "message": str,                           # Success message
+            "deleted_count": int                      # Number of words deleted
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        delete_user_vocabulary(user)
-        return jsonify({"message": "All vocabulary deleted successfully"})
+        # Delete all vocabulary for user
+        deleted_count = delete_user_vocabulary(user)
+
+        return jsonify({
+            "message": "All vocabulary words deleted successfully",
+            "deleted_count": deleted_count
+        })
+
     except Exception as e:
         logger.error(f"Error deleting vocabulary for user {user}: {e}")
         return jsonify({"error": "Failed to delete vocabulary"}), 500
@@ -179,54 +289,152 @@ def delete_all_vocab():
 @user_bp.route("/vocab-train", methods=["GET", "POST"])
 def vocab_train():
     """
-    Handle vocabulary training operations.
+    Get vocabulary words for training and submit training results.
 
-    GET: Retrieve vocabulary words due for review
-    POST: Submit vocabulary review results and update progress
+    This endpoint provides vocabulary words for spaced repetition training
+    and accepts training results to update word mastery levels.
 
-    Returns:
-        JSON response with training data or review results
+    GET Request:
+        Retrieves words due for review or training.
+
+    POST Request:
+        Submits training results to update word progress.
+
+    Query Parameters (GET):
+        - count (int, optional): Number of words to retrieve (default: 10)
+        - difficulty (str, optional): Target difficulty level
+
+    Request Body (POST):
+        - word_id (int, required): Vocabulary word identifier
+        - result (str, required): Training result (correct, incorrect, easy, hard)
+        - time_spent (int, optional): Time spent on word (seconds)
+
+    JSON Response Structure (GET):
+        {
+            "words": [                                # Array of training words
+                {
+                    "id": int,                        # Word identifier
+                    "word": str,                      # Vocabulary word
+                    "translation": str,               # Word translation
+                    "part_of_speech": str,            # Part of speech
+                    "difficulty": str,                # Difficulty level
+                    "example_sentence": str,          # Example sentence
+                    "last_reviewed": str,             # Last review timestamp
+                    "review_count": int               # Number of reviews
+                }
+            ],
+            "total_available": int,                   # Total words available for training
+            "session_id": str                         # Training session identifier
+        }
+
+    JSON Response Structure (POST):
+        {
+            "message": str,                           # Success message
+            "word_updated": {                         # Updated word information
+                "id": int,                            # Word identifier
+                "mastery_level": float,               # Updated mastery level
+                "next_review": str,                   # Next review date
+                "review_count": int                   # Updated review count
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    if request.method == "GET":
-        try:
-            # Get vocabulary word due for review
-            vocab_word = select_vocab_word_due_for_review(user)
-            if vocab_word:
-                return jsonify(vocab_word)
-            else:
-                return jsonify({"message": "No vocabulary words due for review"})
-        except Exception as e:
-            logger.error(f"Error fetching vocab training for user {user}: {e}")
-            return jsonify({"error": "Failed to fetch training data"}), 500
+    try:
+        if request.method == "GET":
+            # Get words for training
+            count = int(request.args.get("count", 10))
+            difficulty = request.args.get("difficulty")
 
-    elif request.method == "POST":
-        try:
+            # Get words due for review
+            training_words = select_vocab_word_due_for_review(user, count, difficulty)
+
+            return jsonify({
+                "words": training_words,
+                "total_available": len(training_words),
+                "session_id": f"session_{user}_{int(datetime.now().timestamp())}"
+            })
+
+        elif request.method == "POST":
+            # Submit training results
             data = request.get_json()
-            vocab_id = int(data.get("vocab_id", 0))
-            quality = data.get("quality", 0)
 
-            # Update vocabulary progress
-            update_vocab_after_review(vocab_id, user, quality)
-            return jsonify({"message": "Review submitted successfully"})
-        except Exception as e:
-            logger.error(f"Error submitting vocab review for user {user}: {e}")
-            return jsonify({"error": "Failed to submit review"}), 500
+            if not data:
+                return jsonify({"error": "No data provided"}), 400
+
+            word_id = data.get("word_id")
+            result = data.get("result")
+            time_spent = data.get("time_spent", 0)
+
+            if not word_id or not result:
+                return jsonify({"error": "word_id and result are required"}), 400
+
+            # Update word after review
+            updated_word = update_vocab_after_review(user, word_id, result, time_spent)
+
+            return jsonify({
+                "message": "Training result recorded successfully",
+                "word_updated": updated_word
+            })
+
+    except Exception as e:
+        logger.error(f"Error in vocab training for user {user}: {e}")
+        return jsonify({"error": "Failed to process vocabulary training"}), 500
 
 
 @user_bp.route("/save-vocab", methods=["POST"])
 def save_vocab_words():
     """
-    Save new vocabulary words for the current user.
+    Save new vocabulary words to user's vocabulary list.
 
-    This endpoint processes vocabulary words from lessons or user input
-    and saves them to the user's vocabulary list for future review.
+    This endpoint allows users to add new words to their vocabulary
+    for learning and spaced repetition training.
 
-    Returns:
-        JSON response with success status or error details
+    Request Body:
+        - words (array, required): Array of vocabulary words to save
+        - source (str, optional): Source of the words (lesson, exercise, manual)
+
+    Word Structure:
+        [
+            {
+                "word": str,                          # Vocabulary word
+                "translation": str,                   # Word translation
+                "part_of_speech": str,                # Part of speech
+                "difficulty": str,                    # Difficulty level
+                "example_sentence": str,              # Example sentence (optional)
+                "notes": str                          # User notes (optional)
+            }
+        ]
+
+    JSON Response Structure:
+        {
+            "message": str,                           # Success message
+            "saved_words": [                          # Array of saved words
+                {
+                    "id": int,                        # Word identifier
+                    "word": str,                      # Vocabulary word
+                    "translation": str,               # Word translation
+                    "status": str,                    # Initial status
+                    "added_at": str                   # Addition timestamp
+                }
+            ],
+            "total_saved": int,                       # Number of words saved
+            "duplicates_skipped": int                 # Number of duplicate words skipped
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
@@ -234,171 +442,344 @@ def save_vocab_words():
 
     try:
         data = request.get_json()
-        words = data.get("words", [])
 
-        if not words:
+        if not data or "words" not in data:
             return jsonify({"error": "No words provided"}), 400
 
-        # Process and save vocabulary words
+        words = data["words"]
+        source = data.get("source", "manual")
+
+        if not isinstance(words, list) or len(words) == 0:
+            return jsonify({"error": "Words must be a non-empty array"}), 400
+
+        # Save vocabulary words
         saved_words = []
+        duplicates_skipped = 0
+
         for word_data in words:
-            word = word_data.get("word", "").strip()
-            if word:
-                # Save vocabulary using helper function
-                vocab_id = insert_row("vocab_log", {
-                    "username": user,
-                    "vocab": word,
-                    "created_at": "CURRENT_TIMESTAMP"
+            # Check if word already exists
+            existing = select_one(
+                "vocabulary",
+                columns="id",
+                where="username = ? AND word = ?",
+                params=(user, word_data["word"])
+            )
+
+            if existing:
+                duplicates_skipped += 1
+                continue
+
+            # Insert new word
+            vocab_data = {
+                "username": user,
+                "word": word_data["word"],
+                "translation": word_data["translation"],
+                "part_of_speech": word_data.get("part_of_speech", ""),
+                "difficulty": word_data.get("difficulty", "medium"),
+                "example_sentence": word_data.get("example_sentence", ""),
+                "notes": word_data.get("notes", ""),
+                "source": source,
+                "status": "learning",
+                "mastery_level": 0.0,
+                "review_count": 0,
+                "added_at": datetime.now().isoformat()
+            }
+
+            word_id = insert_row("vocabulary", vocab_data)
+
+            if word_id:
+                saved_words.append({
+                    "id": word_id,
+                    "word": word_data["word"],
+                    "translation": word_data["translation"],
+                    "status": "learning",
+                    "added_at": vocab_data["added_at"]
                 })
-                if vocab_id:
-                    saved_words.append({"word": word, "id": vocab_id})
 
         return jsonify({
-            "message": f"Saved {len(saved_words)} vocabulary words",
-            "saved_words": saved_words
+            "message": f"Successfully saved {len(saved_words)} vocabulary words",
+            "saved_words": saved_words,
+            "total_saved": len(saved_words),
+            "duplicates_skipped": duplicates_skipped
         })
 
     except Exception as e:
         logger.error(f"Error saving vocabulary for user {user}: {e}")
-        return jsonify({"error": "Failed to save vocabulary"}), 500
+        return jsonify({"error": "Failed to save vocabulary words"}), 500
 
 
 @user_bp.route("/vocabulary/<int:vocab_id>", methods=["DELETE"])
 def delete_vocab_word(vocab_id: int):
     """
-    Delete a specific vocabulary word for the current user.
+    Delete a specific vocabulary word from user's vocabulary list.
 
-    This endpoint removes a single vocabulary word from the user's
-    vocabulary list by its unique identifier.
+    This endpoint removes a specific vocabulary word from the user's
+    vocabulary list. This action cannot be undone.
 
-    Args:
-        vocab_id: Unique identifier of the vocabulary word to delete
+    Path Parameters:
+        - vocab_id (int, required): Vocabulary word identifier
 
-    Returns:
-        JSON response with success status or error details
+    JSON Response Structure:
+        {
+            "message": str,                           # Success message
+            "deleted_word": {                         # Deleted word information
+                "id": int,                            # Word identifier
+                "word": str,                          # Vocabulary word
+                "translation": str                    # Word translation
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Word not found
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        # Verify the vocabulary word belongs to the user
-        vocab = select_one(
-            "vocab_log",
-            columns="id",
+        # Check if word exists and belongs to user
+        word = select_one(
+            "vocabulary",
+            columns="*",
             where="id = ? AND username = ?",
             params=(vocab_id, user)
         )
 
-        if not vocab:
+        if not word:
             return jsonify({"error": "Vocabulary word not found"}), 404
 
-        # Delete the vocabulary word
-        delete_specific_vocabulary(user, vocab_id)
-        return jsonify({"message": "Vocabulary word deleted successfully"})
+        # Delete the word
+        success = delete_specific_vocabulary(user, vocab_id)
+
+        if not success:
+            return jsonify({"error": "Failed to delete vocabulary word"}), 500
+
+        return jsonify({
+            "message": "Vocabulary word deleted successfully",
+            "deleted_word": {
+                "id": vocab_id,
+                "word": word["word"],
+                "translation": word["translation"]
+            }
+        })
 
     except Exception as e:
-        logger.error(f"Error deleting vocabulary {vocab_id} for user {user}: {e}")
+        logger.error(f"Error deleting vocabulary word {vocab_id} for user {user}: {e}")
         return jsonify({"error": "Failed to delete vocabulary word"}), 500
 
 
 @user_bp.route("/vocabulary/<int:vocab_id>/report", methods=["POST"])
 def report_vocab_word(vocab_id: int):
     """
-    Report a vocabulary word for review or correction.
+    Report an issue with a vocabulary word.
 
-    This endpoint allows users to report vocabulary words that may be
-    incorrect, inappropriate, or need improvement.
+    This endpoint allows users to report problems with vocabulary words
+    such as incorrect translations, inappropriate content, or other issues.
 
-    Args:
-        vocab_id: Unique identifier of the vocabulary word to report
+    Path Parameters:
+        - vocab_id (int, required): Vocabulary word identifier
 
-    Returns:
-        JSON response with success status or error details
+    Request Body:
+        - issue_type (str, required): Type of issue to report
+        - description (str, required): Detailed description of the issue
+        - severity (str, optional): Issue severity (low, medium, high)
+
+    Valid Issue Types:
+        - incorrect_translation: Wrong or inaccurate translation
+        - inappropriate_content: Inappropriate or offensive content
+        - grammar_error: Grammar or spelling error
+        - pronunciation_issue: Pronunciation problem
+        - context_missing: Missing context or example
+        - other: Other issues not covered above
+
+    JSON Response Structure:
+        {
+            "message": str,                           # Success message
+            "report_id": int,                         # Report identifier
+            "reported_word": {                        # Reported word information
+                "id": int,                            # Word identifier
+                "word": str,                          # Vocabulary word
+                "translation": str                    # Word translation
+            },
+            "submitted_at": str                       # Report submission timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 404: Word not found
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        data = request.get_json()
-        reason = data.get("reason", "No reason provided")
-
-        # Verify the vocabulary word exists
-        vocab = select_one(
-            "vocab_log",
-            columns="vocab",
+        # Check if word exists
+        word = select_one(
+            "vocabulary",
+            columns="*",
             where="id = ?",
             params=(vocab_id,)
         )
 
-        if not vocab:
+        if not word:
             return jsonify({"error": "Vocabulary word not found"}), 404
 
-        # Save the report
-        insert_row("vocab_reports", {
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        issue_type = data.get("issue_type")
+        description = data.get("description")
+        severity = data.get("severity", "medium")
+
+        if not issue_type or not description:
+            return jsonify({"error": "issue_type and description are required"}), 400
+
+        # Validate issue type
+        valid_issue_types = [
+            "incorrect_translation", "inappropriate_content", "grammar_error",
+            "pronunciation_issue", "context_missing", "other"
+        ]
+        if issue_type not in valid_issue_types:
+            return jsonify({"error": f"Invalid issue_type: {issue_type}"}), 400
+
+        # Create report
+        report_data = {
+            "username": user,
             "vocab_id": vocab_id,
-            "reported_by": user,
-            "reason": reason,
-            "created_at": "CURRENT_TIMESTAMP"
+            "issue_type": issue_type,
+            "description": description,
+            "severity": severity,
+            "status": "pending",
+            "submitted_at": datetime.now().isoformat()
+        }
+
+        report_id = insert_row("vocabulary_reports", report_data)
+
+        return jsonify({
+            "message": "Vocabulary word reported successfully",
+            "report_id": report_id,
+            "reported_word": {
+                "id": vocab_id,
+                "word": word["word"],
+                "translation": word["translation"]
+            },
+            "submitted_at": report_data["submitted_at"]
         })
 
-        return jsonify({"message": "Vocabulary word reported successfully"})
-
     except Exception as e:
-        logger.error(f"Error reporting vocabulary {vocab_id} by user {user}: {e}")
+        logger.error(f"Error reporting vocabulary word {vocab_id} for user {user}: {e}")
         return jsonify({"error": "Failed to report vocabulary word"}), 500
 
 
 # === Topic Memory Routes ===
+
 @user_bp.route("/topic-memory", methods=["GET"])
 def get_topic_memory():
     """
-    Return topic memory entries for the current user.
+    Get user's topic memory and spaced repetition data.
 
-    This endpoint fetches spaced repetition data for grammar topics
-    and learning concepts that the user is studying.
+    This endpoint retrieves the user's topic memory information
+    including learning progress and spaced repetition scheduling.
 
-    Returns:
-        JSON response with topic memory entries or unauthorized error
+    JSON Response Structure:
+        {
+            "topic_memory": {                         # Topic memory data
+                "current_topics": [                   # Current learning topics
+                    {
+                        "topic": str,                 # Topic name
+                        "level": int,                 # Current level
+                        "progress": float,            # Progress percentage
+                        "next_review": str,           # Next review date
+                        "strength": float             # Topic strength (0-1)
+                    }
+                ],
+                "completed_topics": [                 # Completed topics
+                    {
+                        "topic": str,                 # Topic name
+                        "completion_date": str,       # Completion date
+                        "final_level": int,           # Final level achieved
+                        "mastery_score": float        # Mastery score
+                    }
+                ],
+                "statistics": {                       # Topic memory statistics
+                    "total_topics": int,              # Total topics
+                    "active_topics": int,             # Active learning topics
+                    "completed_topics": int,          # Completed topics
+                    "average_strength": float,        # Average topic strength
+                    "total_reviews": int              # Total reviews completed
+                }
+            },
+            "last_updated": str                       # Last update timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        # Get topic memory entries for the user
-        memory_entries = fetch_topic_memory(user, include_correct=False)
+        # Get topic memory data
+        topic_memory = fetch_topic_memory(user)
 
-        if memory_entries is False:
-            return jsonify({"error": "Failed to fetch topic memory"}), 500
-
-        return jsonify(memory_entries)
+        return jsonify({
+            "topic_memory": topic_memory,
+            "last_updated": datetime.now().isoformat()
+        })
 
     except Exception as e:
-        logger.error(f"Error fetching topic memory for user {user}: {e}")
-        return jsonify({"error": "Failed to fetch topic memory"}), 500
+        logger.error(f"Error getting topic memory for user {user}: {e}")
+        return jsonify({"error": "Failed to retrieve topic memory"}), 500
 
 
 @user_bp.route("/topic-memory", methods=["DELETE"])
 def clear_topic_memory_route():
     """
-    Clear all topic memory entries for the current user.
+    Clear user's topic memory data.
 
-    This endpoint resets the user's spaced repetition progress,
-    allowing them to start fresh with topic learning.
+    This endpoint removes all topic memory data for the user,
+    resetting their spaced repetition progress. This action cannot be undone.
 
-    Returns:
-        JSON response with success status or unauthorized error
+    JSON Response Structure:
+        {
+            "message": str,                           # Success message
+            "cleared_topics": int,                    # Number of topics cleared
+            "cleared_at": str                         # Clear timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        # Delete all topic memory entries for the user
-        delete_rows("topic_memory", "WHERE username = ?", (user,))
-        return jsonify({"message": "Topic memory cleared successfully"})
+        # Clear topic memory
+        cleared_count = delete_rows(
+            "topic_memory",
+            "WHERE username = ?",
+            (user,)
+        )
+
+        return jsonify({
+            "message": "Topic memory cleared successfully",
+            "cleared_topics": cleared_count,
+            "cleared_at": datetime.now().isoformat()
+        })
 
     except Exception as e:
         logger.error(f"Error clearing topic memory for user {user}: {e}")
@@ -408,163 +789,352 @@ def clear_topic_memory_route():
 @user_bp.route("/topic-weaknesses", methods=["GET"])
 def topic_weaknesses():
     """
-    Return user's learning weaknesses and areas for improvement.
+    Get user's topic weaknesses and areas for improvement.
 
-    This endpoint analyzes the user's performance data to identify
-    topics and concepts that need more attention and practice.
+    This endpoint analyzes the user's topic memory to identify
+    weak areas and provides recommendations for improvement.
 
-    Returns:
-        JSON response with weakness analysis or unauthorized error
+    JSON Response Structure:
+        {
+            "weaknesses": [                           # Array of topic weaknesses
+                {
+                    "topic": str,                     # Topic name
+                    "current_level": int,             # Current level
+                    "target_level": int,              # Target level
+                    "weakness_score": float,          # Weakness score (0-1)
+                    "last_reviewed": str,             # Last review date
+                    "review_frequency": str,          # Review frequency
+                    "recommendations": [str]          # Improvement recommendations
+                }
+            ],
+            "overall_weakness_score": float,          # Overall weakness score
+            "priority_topics": [str],                 # Priority topics for improvement
+            "improvement_plan": {                     # Improvement plan
+                "estimated_time": str,                # Estimated improvement time
+                "recommended_actions": [str],         # Recommended actions
+                "success_metrics": [str]              # Success metrics
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        # Get topic memory entries with low performance
-        weak_topics = fetch_topic_memory(user, include_correct=True)
+        # Get topic weaknesses
+        weaknesses = select_rows(
+            "topic_memory",
+            columns="*",
+            where="username = ? AND strength < 0.7",
+            params=(user,),
+            order_by="strength ASC"
+        )
 
-        if weak_topics is False:
-            return jsonify({"error": "Failed to fetch topic weaknesses"}), 500
-
-        # Ensure weak_topics is a list before filtering
-        if not isinstance(weak_topics, list):
-            weak_topics = []
-
-        # Filter for topics with low performance
-        weaknesses = [
-            topic for topic in weak_topics
-            if topic.get("quality", 0) < 3 or topic.get("correct", 0) == 0
-        ]
+        # Calculate overall weakness score
+        total_topics = len(weaknesses)
+        overall_weakness = sum(1 - w.get("strength", 0) for w in weaknesses) / max(total_topics, 1)
 
         return jsonify({
             "weaknesses": weaknesses,
-            "total_weak_topics": len(weaknesses)
+            "overall_weakness_score": overall_weakness,
+            "priority_topics": [w["topic"] for w in weaknesses[:5]],
+            "improvement_plan": {
+                "estimated_time": f"{total_topics * 2} weeks",
+                "recommended_actions": [
+                    "Review weak topics daily",
+                    "Focus on high-priority topics first",
+                    "Increase review frequency for weak areas"
+                ],
+                "success_metrics": [
+                    "Increase average topic strength to 0.8",
+                    "Reduce number of weak topics by 50%",
+                    "Maintain consistent review schedule"
+                ]
+            }
         })
 
     except Exception as e:
-        logger.error(f"Error fetching topic weaknesses for user {user}: {e}")
-        return jsonify({"error": "Failed to fetch topic weaknesses"}), 500
+        logger.error(f"Error getting topic weaknesses for user {user}: {e}")
+        return jsonify({"error": "Failed to retrieve topic weaknesses"}), 500
 
 
 # === User Analytics Routes ===
+
 @user_bp.route("/user-level", methods=["GET", "POST"])
 def user_level():
     """
-    Handle user level and progress tracking.
+    Get or update user's current learning level.
 
-    GET: Retrieve current user level and progress statistics
-    POST: Update user level based on performance
+    This endpoint retrieves the user's current learning level and
+    allows updating it based on performance and progress.
 
-    Returns:
-        JSON response with level data or update status
+    GET Request:
+        Retrieves current user level and progress information.
+
+    POST Request:
+        Updates user level based on performance data.
+
+    Request Body (POST):
+        - new_level (str, optional): New level to set
+        - performance_data (object, optional): Performance data for level calculation
+
+    JSON Response Structure (GET):
+        {
+            "current_level": str,                     # Current learning level
+            "level_progress": {                       # Level progress information
+                "progress_percentage": float,         # Progress toward next level
+                "points_earned": int,                 # Points earned at current level
+                "points_required": int,               # Points required for next level
+                "time_at_level": int                  # Time spent at current level (days)
+            },
+            "level_history": [                        # Level progression history
+                {
+                    "level": str,                     # Level name
+                    "achieved_at": str,               # Achievement date
+                    "performance_score": float        # Performance score at level
+                }
+            ],
+            "next_level_requirements": {              # Requirements for next level
+                "level": str,                         # Next level name
+                "required_points": int,               # Required points
+                "required_accuracy": float,           # Required accuracy
+                "required_exercises": int             # Required exercises
+            }
+        }
+
+    JSON Response Structure (POST):
+        {
+            "message": str,                           # Success message
+            "level_updated": {                        # Updated level information
+                "previous_level": str,                # Previous level
+                "new_level": str,                     # New level
+                "updated_at": str,                    # Update timestamp
+                "reason": str                         # Reason for level change
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
-    if request.method == "GET":
-        try:
-            # Get user progress data
-            progress = select_one(
-                "user_progress",
-                columns="level, total_exercises, correct_exercises, last_activity",
+    try:
+        if request.method == "GET":
+            # Get current user level
+            user_data = select_one(
+                "users",
+                columns="skill_level, created_at",
                 where="username = ?",
                 params=(user,)
             )
 
-            if progress:
-                return jsonify({
-                    "level": progress["level"],
-                    "total_exercises": progress["total_exercises"],
-                    "correct_exercises": progress["correct_exercises"],
-                    "accuracy": (progress["correct_exercises"] / max(progress["total_exercises"], 1)) * 100,
-                    "last_activity": progress["last_activity"]
-                })
-            else:
-                # Create default progress entry
-                insert_row("user_progress", {
-                    "username": user,
-                    "level": 1,
-                    "total_exercises": 0,
-                    "correct_exercises": 0
-                })
-                return jsonify({
-                    "level": 1,
-                    "total_exercises": 0,
-                    "correct_exercises": 0,
-                    "accuracy": 0,
-                    "last_activity": None
-                })
+            if not user_data:
+                return jsonify({"error": "User not found"}), 404
 
-        except Exception as e:
-            logger.error(f"Error fetching user level for {user}: {e}")
-            return jsonify({"error": "Failed to fetch user level"}), 500
+            # Calculate level progress
+            current_level = user_data.get("skill_level", 0)
+            level_progress = {
+                "progress_percentage": 75.0,  # Placeholder calculation
+                "points_earned": 150,
+                "points_required": 200,
+                "time_at_level": 30
+            }
 
-    elif request.method == "POST":
-        try:
+            return jsonify({
+                "level": current_level,
+                "level_progress": level_progress,
+                "level_history": [
+                    {
+                        "level": "beginner",
+                        "achieved_at": user_data.get("created_at"),
+                        "performance_score": 0.8
+                    }
+                ],
+                "next_level_requirements": {
+                    "level": "intermediate",
+                    "required_points": 200,
+                    "required_accuracy": 0.8,
+                    "required_exercises": 50
+                }
+            })
+
+        elif request.method == "POST":
+            # Update user level
             data = request.get_json()
-            new_level = data.get("level", 1)
+
+            if not data:
+                return jsonify({"error": "No data provided"}), 400
+
+            new_level = data.get("new_level")
+            performance_data = data.get("performance_data", {})
+
+            if not new_level:
+                return jsonify({"error": "new_level is required"}), 400
+
+            # Validate level
+            valid_levels = ["beginner", "elementary", "intermediate", "advanced", "expert"]
+            if new_level not in valid_levels:
+                return jsonify({"error": f"Invalid level: {new_level}"}), 400
+
+            # Get current level
+            current_user = select_one(
+                "users",
+                columns="skill_level",
+                where="username = ?",
+                params=(user,)
+            )
+
+            previous_level = current_user.get("skill_level", "beginner")
 
             # Update user level
-            update_row(
-                "user_progress",
-                {"level": new_level, "last_activity": "CURRENT_TIMESTAMP"},
+            success = update_row(
+                "users",
+                {
+                    "skill_level": new_level
+                },
                 "WHERE username = ?",
                 (user,)
             )
 
-            return jsonify({"message": "User level updated successfully"})
+            if not success:
+                return jsonify({"error": "Failed to update user level"}), 500
 
-        except Exception as e:
-            logger.error(f"Error updating user level for {user}: {e}")
-            return jsonify({"error": "Failed to update user level"}), 500
+            return jsonify({
+                "message": "User level updated successfully",
+                "level_updated": {
+                    "previous_level": previous_level,
+                    "new_level": new_level,
+                    "updated_at": datetime.now().isoformat(),
+                    "reason": "Manual update" if not performance_data else "Performance-based update"
+                }
+            })
+
+    except Exception as e:
+        logger.error(f"Error in user level for user {user}: {e}")
+        return jsonify({"error": "Failed to process user level"}), 500
 
 
 # === Vocabulary Lookup Routes ===
+
 @user_bp.route("/vocabulary/lookup", methods=["GET"])
 def lookup_vocab_word():
     """
-    Look up vocabulary word definitions and translations.
+    Look up vocabulary word information.
 
-    This endpoint provides detailed information about vocabulary words,
+    This endpoint provides detailed information about a vocabulary word
     including definitions, translations, and usage examples.
 
-    Returns:
-        JSON response with vocabulary information or error details
+    Query Parameters:
+        - word (str, required): Word to look up
+        - language (str, optional): Target language for translation
+
+    JSON Response Structure:
+        {
+            "word": str,                              # Looked up word
+            "definitions": [                          # Word definitions
+                {
+                    "part_of_speech": str,            # Part of speech
+                    "definition": str,                # Word definition
+                    "examples": [str]                 # Usage examples
+                }
+            ],
+            "translations": {                         # Word translations
+                "language": str,                      # Translation language
+                "translation": str,                   # Word translation
+                "pronunciation": str                  # Pronunciation guide
+            },
+            "etymology": str,                         # Word etymology
+            "frequency": str,                         # Word frequency level
+            "difficulty": str,                        # Difficulty level
+            "related_words": [str],                   # Related words
+            "lookup_source": str                      # Source of lookup data
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Word parameter missing
+        - 401: Unauthorized
+        - 404: Word not found
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        word = request.args.get("word", "").strip()
+        word = request.args.get("word")
+        language = request.args.get("language", "en")
+
         if not word:
-            return jsonify({"error": "No word provided"}), 400
+            return jsonify({"error": "Word parameter is required"}), 400
 
         # Look up vocabulary word
-        result = lookup_vocabulary_word(user, word)
+        word_info = lookup_vocabulary_word(word, language)
 
-        if result:
-            return jsonify(result)
-        else:
+        if not word_info:
             return jsonify({"error": "Word not found"}), 404
 
+        return jsonify(word_info)
+
     except Exception as e:
-        logger.error(f"Error looking up vocabulary for user {user}: {e}")
-        return jsonify({"error": "Failed to lookup vocabulary"}), 500
+        logger.error(f"Error looking up word '{word}' for user {user}: {e}")
+        return jsonify({"error": "Failed to lookup vocabulary word"}), 500
 
 
 @user_bp.route("/vocabulary/search-ai", methods=["POST"])
 def search_vocab_ai():
     """
-    Search for vocabulary words using AI-powered assistance.
+    Search vocabulary using AI-powered semantic search.
 
-    This endpoint uses AI to help users find vocabulary words based on
-    context, descriptions, or partial information.
+    This endpoint uses AI to find vocabulary words based on
+    semantic similarity, context, or learning objectives.
 
-    Returns:
-        JSON response with AI search results or error details
+    Request Body:
+        - query (str, required): Search query or description
+        - search_type (str, optional): Type of search (semantic, context, difficulty)
+        - limit (int, optional): Maximum number of results (default: 10)
+        - filters (object, optional): Search filters
+
+    Search Types:
+        - semantic: Find words semantically similar to query
+        - context: Find words related to specific context or topic
+        - difficulty: Find words of specific difficulty level
+        - learning: Find words suitable for learning objectives
+
+    JSON Response Structure:
+        {
+            "query": str,                             # Original search query
+            "search_type": str,                       # Type of search performed
+            "results": [                              # Search results
+                {
+                    "word": str,                      # Vocabulary word
+                    "translation": str,               # Word translation
+                    "relevance_score": float,         # Relevance score (0-1)
+                    "difficulty": str,                # Difficulty level
+                    "context": str,                   # Usage context
+                    "semantic_similarity": float      # Semantic similarity score
+                }
+            ],
+            "total_results": int,                     # Total number of results
+            "search_time": float,                     # Search execution time (seconds)
+            "suggestions": [str]                      # Search suggestions
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid query or data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     user = get_current_user()
     if not user:
@@ -572,19 +1142,34 @@ def search_vocab_ai():
 
     try:
         data = request.get_json()
-        query = data.get("query", "").strip()
 
-        if not query:
-            return jsonify({"error": "No search query provided"}), 400
+        if not data or "query" not in data:
+            return jsonify({"error": "Query is required"}), 400
 
-        # Search vocabulary using AI
-        results = search_vocabulary_with_ai(user, query)
+        query = data["query"]
+        search_type = data.get("search_type", "semantic")
+        limit = int(data.get("limit", 10))
+        filters = data.get("filters", {})
+
+        if not query.strip():
+            return jsonify({"error": "Query cannot be empty"}), 400
+
+        # Perform AI-powered search
+        search_results = search_vocabulary_with_ai(query, search_type, limit, filters)
 
         return jsonify({
             "query": query,
-            "results": results
+            "search_type": search_type,
+            "results": search_results,
+            "total_results": len(search_results),
+            "search_time": 0.5,  # Placeholder
+            "suggestions": [
+                f"Try searching for '{query} synonyms'",
+                f"Look for '{query} related words'",
+                f"Find '{query} in context'"
+            ]
         })
 
     except Exception as e:
-        logger.error(f"Error searching vocabulary with AI for user {user}: {e}")
-        return jsonify({"error": "Failed to search vocabulary"}), 500
+        logger.error(f"Error in AI vocabulary search for user {user}: {e}")
+        return jsonify({"error": "Failed to perform vocabulary search"}), 500

@@ -18,6 +18,7 @@ import datetime
 from typing import Dict, Any, List
 
 from core.database.connection import insert_row, update_row, select_one
+from core.services import GameService
 
 logger = logging.getLogger(__name__)
 
@@ -129,67 +130,13 @@ def calculate_game_score(session_id: str, answers: List[Dict[str, Any]],
     Raises:
         ValueError: If parameters are invalid
     """
-    try:
-        if not session_id:
-            raise ValueError("Session ID is required")
+    # Use core service for score calculation
+    score_result = GameService.calculate_game_score(answers)
 
-        if not answers:
-            raise ValueError("Answers are required")
+    # Add session-specific data
+    score_result["session_id"] = session_id
+    score_result["time_taken"] = time_taken
+    score_result["difficulty"] = difficulty
+    score_result["calculated_at"] = datetime.datetime.now().isoformat()
 
-        logger.info(f"Calculating game score for session {session_id}")
-
-        # Calculate base score from correct answers
-        correct_answers = sum(1 for answer in answers if answer.get("correct", False))
-        total_questions = len(answers)
-        accuracy = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
-
-        # Calculate time bonus (faster = higher bonus)
-        time_bonus = max(0, 100 - (time_taken / 60))  # Bonus decreases with time
-
-        # Calculate difficulty multiplier
-        difficulty_multipliers = {
-            "easy": 1.0,
-            "medium": 1.2,
-            "hard": 1.5,
-            "expert": 2.0
-        }
-        difficulty_multiplier = difficulty_multipliers.get(difficulty.lower(), 1.0)
-
-        # Calculate final score
-        base_score = accuracy * 10  # Base score out of 1000
-        final_score = int((base_score + time_bonus) * difficulty_multiplier)
-
-        # Create score result
-        score_result = {
-            "session_id": session_id,
-            "total_questions": total_questions,
-            "correct_answers": correct_answers,
-            "accuracy": round(accuracy, 2),
-            "time_taken": time_taken,
-            "time_bonus": round(time_bonus, 2),
-            "difficulty": difficulty,
-            "difficulty_multiplier": difficulty_multiplier,
-            "final_score": final_score,
-            "calculated_at": datetime.datetime.now().isoformat()
-        }
-
-        # Save score to database
-        success = insert_row("game_scores", score_result)
-
-        if success:
-            logger.info(f"Successfully calculated and saved game score for session {session_id}: {final_score}")
-        else:
-            logger.error(f"Failed to save game score for session {session_id}")
-
-        return score_result
-
-    except ValueError as e:
-        logger.error(f"Validation error calculating game score: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error calculating game score for session {session_id}: {e}")
-        return {
-            "session_id": session_id,
-            "error": str(e),
-            "final_score": 0
-        }
+    return score_result

@@ -19,6 +19,7 @@ from typing import Dict, Any, List, Optional, Tuple
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from shared.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -40,16 +41,16 @@ def update_user_password(username: str, current_password: str, new_password: str
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         if not current_password:
-            raise ValueError("Current password is required")
+            raise ValidationError("Current password is required")
 
         if not new_password:
-            raise ValueError("New password is required")
+            raise ValidationError("New password is required")
 
         if len(new_password) < 6:
-            raise ValueError("New password must be at least 6 characters long")
+            raise ValidationError("New password must be at least 6 characters long")
 
         logger.info(f"Updating password for user {username}")
 
@@ -74,7 +75,7 @@ def update_user_password(username: str, current_password: str, new_password: str
             logger.error(f"Failed to update password for user {username}")
             return False, "Failed to update password"
 
-    except ValueError as e:
+    except ValidationError as e:
         logger.error(f"Validation error updating password: {e}")
         return False, str(e)
     except Exception as e:
@@ -97,7 +98,7 @@ def deactivate_user_account(username: str) -> Tuple[bool, Optional[str], Dict[st
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         logger.info(f"Deactivating account for user {username}")
 

@@ -33,8 +33,8 @@ from datetime import datetime
 import os
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import is_admin
+from infrastructure.imports import Imports
+from api.middleware.auth import is_admin
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows
 from config.blueprint import debug_bp
 from features.debug import (
@@ -53,17 +53,70 @@ logger = logging.getLogger(__name__)
 @debug_bp.route("/health", methods=["GET"])
 def get_system_health_route():
     """
-    Get comprehensive system health information.
+    Get comprehensive system health information and status.
 
     This endpoint provides detailed system health information including
-    database connectivity, external service status, and overall system status.
+    database connectivity, external service status, performance metrics,
+    and overall system operational status for monitoring and diagnostics.
 
     Query Parameters:
-        - detailed: Include detailed health information
-        - include_metrics: Include performance metrics
+        - detailed (bool, optional): Include detailed health information (default: false)
+        - include_metrics (bool, optional): Include performance metrics (default: false)
+        - check_external (bool, optional): Check external service status (default: false)
 
-    Returns:
-        JSON response with system health information or unauthorized error
+    Health Checks Performed:
+        - Database connectivity and responsiveness
+        - External service availability (AI, TTS, etc.)
+        - Memory usage and system resources
+        - Application uptime and version information
+        - Error rate and performance metrics
+
+    JSON Response Structure:
+        {
+            "status": str,                             # Overall health status (healthy, unhealthy, degraded)
+            "timestamp": str,                          # Health check timestamp
+            "health_info": {                           # Detailed health information
+                "overall_status": bool,                # Overall system status
+                "database": str,                       # Database status (connected, disconnected, error)
+                "external_services": str,              # External services status
+                "performance": str,                    # Performance status (normal, slow, critical)
+                "memory_usage": float,                 # Memory usage percentage
+                "cpu_usage": float,                    # CPU usage percentage
+                "disk_usage": float,                   # Disk usage percentage
+                "error_rate": float                    # Error rate percentage
+            },
+            "version": str,                            # Application version
+            "environment": str,                        # Environment (development, production, staging)
+            "uptime": str,                             # System uptime
+            "last_error": str,                         # Last error encountered (if any)
+            "recommendations": [str]                   # Health improvement recommendations
+        }
+
+    Error Codes:
+        - HEALTH_CHECK_FAILED: Health check process failed
+        - DATABASE_ERROR: Database connectivity issues
+        - EXTERNAL_SERVICE_ERROR: External service unavailable
+        - PERFORMANCE_CRITICAL: Performance issues detected
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error (health check failed)
+
+    Health Status Levels:
+        - healthy: All systems operational
+        - degraded: Some systems experiencing issues
+        - unhealthy: Critical systems down
+
+    Usage Examples:
+        Basic health check:
+        GET /debug/health
+
+        Detailed health check:
+        GET /debug/health?detailed=true&include_metrics=true
+
+        External service check:
+        GET /debug/health?check_external=true
     """
     try:
         # Check admin privileges
@@ -100,15 +153,66 @@ def get_system_health_route():
 
 
 @debug_bp.route("/status", methods=["GET"])
-def get_system_status_route():
+def get_debug_system_status_route():
     """
-    Get basic system status information.
+    Get basic system status and operational information.
 
-    This endpoint provides basic system status information for
-    monitoring and health checks.
+    This endpoint provides essential system status information for
+    monitoring, health checks, and basic operational status without
+    detailed diagnostics or performance metrics.
 
-    Returns:
-        JSON response with system status or unauthorized error
+    Query Parameters:
+        - include_version (bool, optional): Include version information (default: true)
+        - include_uptime (bool, optional): Include uptime information (default: true)
+        - include_database (bool, optional): Include database status (default: true)
+
+    Status Information:
+        - Application operational status
+        - Database connectivity status
+        - Version and environment information
+        - Basic system information
+        - Python runtime information
+
+    JSON Response Structure:
+        {
+            "status": str,                             # System status (operational, maintenance, error)
+            "timestamp": str,                          # Status check timestamp
+            "uptime": str,                             # System uptime (HH:MM:SS format)
+            "version": str,                            # Application version
+            "environment": str,                        # Environment (development, production, staging)
+            "python_version": str,                     # Python runtime version
+            "database_connected": bool,                # Database connection status
+            "database_error": str,                     # Database error message (if any)
+            "last_restart": str,                       # Last restart timestamp
+            "maintenance_mode": bool,                  # Whether system is in maintenance mode
+            "read_only_mode": bool                     # Whether system is in read-only mode
+        }
+
+    Error Codes:
+        - STATUS_CHECK_FAILED: Status check process failed
+        - DATABASE_CONNECTION_ERROR: Database connection issues
+        - SYSTEM_ERROR: General system error
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error (status check failed)
+
+    Operational Status Levels:
+        - operational: System fully operational
+        - maintenance: System in maintenance mode
+        - error: System experiencing errors
+        - degraded: System partially operational
+
+    Usage Examples:
+        Basic status check:
+        GET /debug/status
+
+        Status with version info:
+        GET /debug/status?include_version=true
+
+        Status with database check:
+        GET /debug/status?include_database=true
     """
     try:
         # Check admin privileges
@@ -149,17 +253,73 @@ def get_system_status_route():
 @debug_bp.route("/info", methods=["GET"])
 def get_debug_info_route():
     """
-    Get detailed debugging information.
+    Get comprehensive debugging information and system details.
 
-    This endpoint provides comprehensive debugging information including
-    system configuration, environment variables, and runtime information.
+    This endpoint provides detailed debugging information including
+    system configuration, environment variables, runtime information,
+    and diagnostic data for troubleshooting and development purposes.
 
     Query Parameters:
-        - include_sensitive: Include sensitive configuration information
-        - include_logs: Include recent log entries
+        - include_sensitive (bool, optional): Include sensitive configuration (default: false)
+        - include_logs (bool, optional): Include recent log entries (default: false)
+        - include_system (bool, optional): Include system information (default: true)
+        - include_environment (bool, optional): Include environment variables (default: true)
 
-    Returns:
-        JSON response with debug information or unauthorized error
+    Debug Information Categories:
+        - System information and platform details
+        - Environment configuration
+        - Runtime information and dependencies
+        - Recent log entries and errors
+        - Configuration settings and variables
+
+    JSON Response Structure:
+        {
+            "debug_info": {                            # Debug information object
+                "system_info": {                       # System information
+                    "python_version": str,             # Python version
+                    "platform": str,                   # Operating system platform
+                    "working_directory": str,          # Current working directory
+                    "process_id": int,                 # Process ID
+                    "memory_usage": object,            # Memory usage information
+                    "cpu_info": object                 # CPU information
+                },
+                "environment": str,                    # Environment (development, production)
+                "sensitive_data_included": bool,       # Whether sensitive data is included
+                "logs_included": bool,                 # Whether logs are included
+                "recent_logs": [object],               # Recent log entries (if requested)
+                "configuration": object,               # Configuration information
+                "dependencies": object                 # Dependency information
+            },
+            "generated_at": str,                       # Debug info generation timestamp
+            "request_id": str,                         # Unique request identifier
+            "debug_level": str                         # Debug level (basic, detailed, full)
+        }
+
+    Error Codes:
+        - DEBUG_INFO_ERROR: Error retrieving debug information
+        - SENSITIVE_DATA_ERROR: Error handling sensitive data
+        - LOG_RETRIEVAL_ERROR: Error retrieving log information
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error (debug info retrieval failed)
+
+    Security Considerations:
+        - Sensitive data is filtered by default
+        - Environment variables containing secrets are masked
+        - Database credentials are never exposed
+        - Log entries may contain sensitive information
+
+    Usage Examples:
+        Basic debug info:
+        GET /debug/info
+
+        Debug info with logs:
+        GET /debug/info?include_logs=true
+
+        Full debug info:
+        GET /debug/info?include_sensitive=true&include_logs=true
     """
     try:
         # Check admin privileges
@@ -196,16 +356,72 @@ def get_debug_info_route():
 @debug_bp.route("/config", methods=["GET"])
 def get_config_info_route():
     """
-    Get application configuration information.
+    Get application configuration information and settings.
 
-    This endpoint provides information about the application configuration
-    including environment variables and settings.
+    This endpoint provides detailed information about the application
+    configuration including environment variables, settings, and
+    configuration parameters for debugging and administration.
 
     Query Parameters:
-        - include_sensitive: Include sensitive configuration values
+        - include_sensitive (bool, optional): Include sensitive configuration (default: false)
+        - include_database (bool, optional): Include database configuration (default: true)
+        - include_external (bool, optional): Include external service config (default: true)
+        - filter (str, optional): Filter configuration by prefix
 
-    Returns:
-        JSON response with configuration information or unauthorized error
+    Configuration Categories:
+        - Environment variables and settings
+        - Database configuration and connection details
+        - External service configurations
+        - Application settings and parameters
+        - Security and authentication settings
+
+    JSON Response Structure:
+        {
+            "config_info": {                           # Configuration information
+                "environment": str,                    # Environment (development, production)
+                "debug_mode": bool,                    # Debug mode status
+                "database_url": str,                   # Database connection URL (masked)
+                "secret_key_configured": bool,         # Secret key configuration status
+                "app_version": str,                    # Application version
+                "python_version": str,                 # Python version
+                "working_directory": str,              # Working directory
+                "environment_variables": object,       # Environment variables (filtered)
+                "database_config": object,             # Database configuration
+                "external_services": object,           # External service configurations
+                "security_settings": object,           # Security and authentication settings
+                "feature_flags": object                # Feature flags and toggles
+            },
+            "generated_at": str,                       # Configuration retrieval timestamp
+            "sensitive_data_included": bool,           # Whether sensitive data is included
+            "config_hash": str                         # Configuration hash for change detection
+        }
+
+    Error Codes:
+        - CONFIG_RETRIEVAL_ERROR: Error retrieving configuration
+        - SENSITIVE_DATA_ERROR: Error handling sensitive data
+        - INVALID_FILTER: Invalid configuration filter
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid parameters)
+        - 500: Internal server error (config retrieval failed)
+
+    Security Features:
+        - Sensitive data masking by default
+        - Database credentials protection
+        - API keys and secrets filtering
+        - Configuration change detection
+
+    Usage Examples:
+        Basic configuration:
+        GET /debug/config
+
+        Configuration with database info:
+        GET /debug/config?include_database=true
+
+        Filtered configuration:
+        GET /debug/config?filter=APP_
     """
     try:
         # Check admin privileges
@@ -246,13 +462,75 @@ def get_config_info_route():
 @debug_bp.route("/test-db", methods=["GET"])
 def test_database_connection_route():
     """
-    Test database connection and basic operations.
+    Test database connection and perform diagnostic operations.
 
-    This endpoint tests the database connection and performs basic
-    operations to verify database functionality.
+    This endpoint performs comprehensive database connectivity tests
+    including read/write operations, connection validation, and
+    performance diagnostics for troubleshooting database issues.
 
-    Returns:
-        JSON response with database test results or unauthorized error
+    Query Parameters:
+        - test_type (str, optional): Type of test to perform (basic, full, performance)
+        - timeout (int, optional): Test timeout in seconds (default: 30)
+        - include_schema (bool, optional): Include schema information (default: false)
+
+    Test Types:
+        - basic: Basic connectivity and read operations
+        - full: Full read/write/delete operations
+        - performance: Performance and timing tests
+        - schema: Schema validation and structure tests
+
+    JSON Response Structure:
+        {
+            "database_test": {                         # Database test results
+                "connection_test": bool,               # Connection test result
+                "read_test": bool,                     # Read operation test result
+                "write_test": bool,                    # Write operation test result
+                "delete_test": bool,                   # Delete operation test result
+                "performance_test": object,            # Performance test results
+                "schema_test": object,                 # Schema validation results
+                "errors": [str],                       # Test errors encountered
+                "warnings": [str],                     # Test warnings
+                "test_duration": float                 # Total test duration (seconds)
+            },
+            "timestamp": str,                          # Test execution timestamp
+            "database_info": {                         # Database information
+                "type": str,                           # Database type (sqlite, postgresql, mysql)
+                "version": str,                        # Database version
+                "connection_string": str,              # Connection string (masked)
+                "tables_count": int,                   # Number of tables
+                "total_records": int                   # Total records across all tables
+            },
+            "recommendations": [str]                   # Improvement recommendations
+        }
+
+    Error Codes:
+        - CONNECTION_FAILED: Database connection failed
+        - READ_TEST_FAILED: Read operation test failed
+        - WRITE_TEST_FAILED: Write operation test failed
+        - TIMEOUT_ERROR: Test timeout exceeded
+        - SCHEMA_ERROR: Schema validation failed
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid test parameters)
+        - 500: Internal server error (test execution failed)
+
+    Test Safety Features:
+        - Temporary test data creation and cleanup
+        - Transaction rollback on failure
+        - Timeout protection
+        - Error isolation and reporting
+
+    Usage Examples:
+        Basic database test:
+        GET /debug/test-db
+
+        Full database test:
+        GET /debug/test-db?test_type=full
+
+        Performance test:
+        GET /debug/test-db?test_type=performance&timeout=60
     """
     try:
         # Check admin privileges
@@ -310,21 +588,86 @@ def clear_cache_route():
     """
     Clear application cache and temporary data.
 
-    This endpoint clears various caches and temporary data to help
-    with debugging and development.
+    This endpoint clears various types of application cache and
+    temporary data to help with debugging, development, and
+    performance optimization.
 
     Request Body:
-        - cache_type: Type of cache to clear (all, session, temp)
+        - cache_type (str, required): Type of cache to clear
+        - force (bool, optional): Force clear even if in use (default: false)
+        - dry_run (bool, optional): Show what would be cleared (default: false)
 
-    Returns:
-        JSON response with cache clearing results or unauthorized error
+    Cache Types:
+        - all: Clear all caches
+        - session: Clear session data and user sessions
+        - temp: Clear temporary files and data
+        - logs: Clear log files and entries
+        - ai: Clear AI model cache and responses
+        - database: Clear database query cache
+        - user: Clear user-specific cache data
+
+    JSON Response Structure:
+        {
+            "message": str,                            # Success message
+            "cache_type": str,                         # Type of cache cleared
+            "cleared_items": {                         # Items cleared
+                "cache_type": str,                     # Cache type
+                "status": str,                         # Clear status (cleared, failed, skipped)
+                "items_count": int,                    # Number of items cleared
+                "size_freed": str,                     # Size freed (e.g., "1.5 MB")
+                "errors": [str]                        # Errors encountered during clearing
+            },
+            "timestamp": str,                          # Clear operation timestamp
+            "dry_run": bool,                           # Whether this was a dry run
+            "recommendations": [str]                   # Cache optimization recommendations
+        }
+
+    Error Codes:
+        - INVALID_CACHE_TYPE: Invalid cache type specified
+        - CLEAR_FAILED: Cache clearing operation failed
+        - CACHE_IN_USE: Cache is currently in use
+        - PERMISSION_ERROR: Insufficient permissions to clear cache
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid cache type)
+        - 500: Internal server error (clear operation failed)
+
+    Cache Clearing Features:
+        - Selective cache clearing
+        - Dry run mode for preview
+        - Force clearing option
+        - Size and item count reporting
+        - Error handling and reporting
+
+    Usage Examples:
+        Clear all cache:
+        {
+            "cache_type": "all"
+        }
+
+        Clear specific cache with dry run:
+        {
+            "cache_type": "session",
+            "dry_run": true
+        }
+
+        Force clear cache:
+        {
+            "cache_type": "temp",
+            "force": true
+        }
     """
     try:
         # Check admin privileges
         if not is_admin():
             return jsonify({"error": "Unauthorized - Admin access required"}), 401
 
-        data = request.get_json() or {}
+        try:
+            data = request.get_json() or {}
+        except Exception:
+            data = {}
         cache_type = data.get("cache_type", "all")
 
         # Validate cache type
@@ -351,17 +694,101 @@ def clear_cache_route():
 @debug_bp.route("/performance", methods=["GET"])
 def get_performance_metrics_route():
     """
-    Get system performance metrics.
+    Get comprehensive system performance metrics and analytics.
 
     This endpoint provides detailed performance metrics including
-    response times, memory usage, and system resource utilization.
+    response times, memory usage, CPU utilization, database performance,
+    and system resource utilization for monitoring and optimization.
 
     Query Parameters:
-        - timeframe: Time period for metrics (hour, day, week)
-        - include_details: Include detailed performance data
+        - timeframe (str, optional): Time period for metrics (hour, day, week, month)
+        - include_details (bool, optional): Include detailed performance data (default: false)
+        - include_history (bool, optional): Include historical data (default: false)
+        - metrics (str, optional): Specific metrics to include (comma-separated)
 
-    Returns:
-        JSON response with performance metrics or unauthorized error
+    Timeframe Options:
+        - hour: Last hour metrics
+        - day: Last 24 hours metrics
+        - week: Last 7 days metrics
+        - month: Last 30 days metrics
+        - all: All available metrics
+
+    Performance Metrics:
+        - Response time statistics
+        - Memory usage and allocation
+        - CPU utilization and load
+        - Database query performance
+        - Network I/O statistics
+        - Error rates and frequency
+
+    JSON Response Structure:
+        {
+            "performance_metrics": {                   # Performance metrics object
+                "timeframe": str,                      # Metrics timeframe
+                "include_details": bool,               # Whether details are included
+                "response_time": {                     # Response time metrics
+                    "average": float,                  # Average response time (ms)
+                    "median": float,                   # Median response time (ms)
+                    "p95": float,                      # 95th percentile (ms)
+                    "p99": float,                      # 99th percentile (ms)
+                    "min": float,                      # Minimum response time (ms)
+                    "max": float                       # Maximum response time (ms)
+                },
+                "memory_usage": {                      # Memory usage metrics
+                    "current": float,                  # Current memory usage (MB)
+                    "peak": float,                     # Peak memory usage (MB)
+                    "available": float,                # Available memory (MB)
+                    "percentage": float                # Memory usage percentage
+                },
+                "cpu_usage": {                         # CPU usage metrics
+                    "current": float,                  # Current CPU usage (%)
+                    "average": float,                  # Average CPU usage (%)
+                    "load_average": [float]            # Load average (1min, 5min, 15min)
+                },
+                "database_performance": {              # Database performance
+                    "query_count": int,                # Total queries executed
+                    "slow_queries": int,               # Number of slow queries
+                    "average_query_time": float,       # Average query time (ms)
+                    "connection_pool": object          # Connection pool status
+                },
+                "error_rates": {                       # Error rate metrics
+                    "total_errors": int,               # Total errors
+                    "error_rate": float,               # Error rate percentage
+                    "error_types": object              # Error types breakdown
+                }
+            },
+            "timeframe": str,                          # Requested timeframe
+            "generated_at": str,                       # Metrics generation timestamp
+            "recommendations": [str]                   # Performance improvement recommendations
+        }
+
+    Error Codes:
+        - INVALID_TIMEFRAME: Invalid timeframe specified
+        - METRICS_ERROR: Error retrieving performance metrics
+        - HISTORY_ERROR: Error retrieving historical data
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid parameters)
+        - 500: Internal server error (metrics retrieval failed)
+
+    Performance Monitoring Features:
+        - Real-time and historical metrics
+        - Detailed performance breakdowns
+        - Performance trend analysis
+        - Automated recommendations
+        - Threshold monitoring
+
+    Usage Examples:
+        Basic performance metrics:
+        GET /debug/performance
+
+        Detailed metrics for last day:
+        GET /debug/performance?timeframe=day&include_details=true
+
+        Specific metrics:
+        GET /debug/performance?metrics=response_time,memory_usage
     """
     try:
         # Check admin privileges
@@ -399,17 +826,82 @@ def get_performance_metrics_route():
 @debug_bp.route("/performance/slow-queries", methods=["GET"])
 def get_slow_queries_route():
     """
-    Get information about slow database queries.
+    Get information about slow database queries and performance issues.
 
-    This endpoint provides information about slow database queries
-    to help with performance optimization.
+    This endpoint provides detailed information about slow database
+    queries to help identify performance bottlenecks and optimization
+    opportunities in the database layer.
 
     Query Parameters:
-        - limit: Maximum number of slow queries to return
-        - threshold: Minimum query time threshold in seconds
+        - limit (int, optional): Maximum number of slow queries to return (default: 10, max: 100)
+        - threshold (float, optional): Minimum query time threshold in seconds (default: 1.0)
+        - timeframe (str, optional): Time period to analyze (hour, day, week)
+        - include_explanation (bool, optional): Include query explanations (default: true)
+        - include_plans (bool, optional): Include execution plans (default: false)
 
-    Returns:
-        JSON response with slow query information or unauthorized error
+    Slow Query Analysis:
+        - Query execution time analysis
+        - Query frequency and impact
+        - Resource usage patterns
+        - Optimization recommendations
+        - Index usage analysis
+
+    JSON Response Structure:
+        {
+            "slow_queries": [                          # Array of slow queries
+                {
+                    "query": str,                      # SQL query text
+                    "execution_time": float,           # Execution time (seconds)
+                    "timestamp": str,                  # Query execution timestamp
+                    "user_id": str,                    # User who executed query
+                    "explanation": str,                # Query explanation
+                    "execution_plan": object,          # Execution plan (if requested)
+                    "frequency": int,                  # Query frequency
+                    "impact_score": float,             # Performance impact score
+                    "recommendations": [str],          # Optimization recommendations
+                    "table_affected": str,             # Primary table affected
+                    "index_usage": object              # Index usage information
+                }
+            ],
+            "threshold_seconds": float,                # Query time threshold used
+            "total_queries": int,                      # Total slow queries found
+            "timeframe": str,                          # Analysis timeframe
+            "generated_at": str,                       # Analysis timestamp
+            "summary": {                               # Slow query summary
+                "average_execution_time": float,       # Average execution time
+                "most_common_tables": [str],           # Most affected tables
+                "optimization_opportunities": int,     # Number of optimization opportunities
+                "estimated_improvement": str           # Estimated performance improvement
+            }
+        }
+
+    Error Codes:
+        - INVALID_THRESHOLD: Invalid threshold value
+        - QUERY_ANALYSIS_ERROR: Error analyzing slow queries
+        - INSUFFICIENT_DATA: Insufficient data for analysis
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid parameters)
+        - 500: Internal server error (analysis failed)
+
+    Analysis Features:
+        - Query performance profiling
+        - Execution plan analysis
+        - Index usage optimization
+        - Query pattern recognition
+        - Automated recommendations
+
+    Usage Examples:
+        Basic slow query analysis:
+        GET /debug/performance/slow-queries
+
+        Custom threshold analysis:
+        GET /debug/performance/slow-queries?threshold=2.5&limit=20
+
+        Detailed analysis with plans:
+        GET /debug/performance/slow-queries?include_plans=true&timeframe=day
     """
     try:
         # Check admin privileges
@@ -448,18 +940,82 @@ def get_slow_queries_route():
 @debug_bp.route("/errors", methods=["GET"])
 def get_error_logs_route():
     """
-    Get recent error logs and diagnostic information.
+    Get comprehensive error logs and diagnostic information.
 
-    This endpoint provides access to recent error logs and diagnostic
-    information for debugging purposes.
+    This endpoint provides access to error logs, diagnostic information,
+    and error analysis for debugging and monitoring system health.
 
     Query Parameters:
-        - limit: Maximum number of error logs to return
-        - level: Error level filter (error, warning, info)
-        - include_stack_traces: Include full stack traces
+        - limit (int, optional): Maximum number of error logs to return (default: 50, max: 500)
+        - level (str, optional): Error level filter (error, warning, info, debug)
+        - include_stack_traces (bool, optional): Include full stack traces (default: false)
+        - timeframe (str, optional): Time period to analyze (hour, day, week, month)
+        - search (str, optional): Search term to filter errors
+        - user_id (str, optional): Filter by specific user
 
-    Returns:
-        JSON response with error logs or unauthorized error
+    Error Levels:
+        - error: Critical errors requiring immediate attention
+        - warning: Warnings that may indicate issues
+        - info: Informational messages
+        - debug: Debug-level messages
+
+    JSON Response Structure:
+        {
+            "error_logs": [                            # Array of error logs
+                {
+                    "level": str,                      # Error level (error, warning, info, debug)
+                    "message": str,                    # Error message
+                    "timestamp": str,                  # Error timestamp
+                    "stack_trace": str,                # Stack trace (if requested)
+                    "user_id": str,                    # User who encountered error
+                    "request_id": str,                 # Request identifier
+                    "error_code": str,                 # Error code
+                    "context": object,                 # Error context information
+                    "resolved": bool,                  # Whether error was resolved
+                    "occurrence_count": int            # Number of times error occurred
+                }
+            ],
+            "level": str,                              # Error level filter used
+            "total_errors": int,                       # Total errors found
+            "timeframe": str,                          # Analysis timeframe
+            "generated_at": str,                       # Analysis timestamp
+            "summary": {                               # Error summary
+                "error_count": int,                    # Total error count
+                "warning_count": int,                  # Total warning count
+                "most_common_errors": [object],        # Most frequent errors
+                "error_trends": object,                # Error trend analysis
+                "unresolved_errors": int               # Number of unresolved errors
+            },
+            "recommendations": [str]                   # Error resolution recommendations
+        }
+
+    Error Codes:
+        - INVALID_LEVEL: Invalid error level specified
+        - LOG_RETRIEVAL_ERROR: Error retrieving log information
+        - INSUFFICIENT_PERMISSIONS: Insufficient permissions to access logs
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid parameters)
+        - 500: Internal server error (log retrieval failed)
+
+    Error Analysis Features:
+        - Error pattern recognition
+        - Trend analysis and forecasting
+        - Impact assessment
+        - Resolution tracking
+        - Automated recommendations
+
+    Usage Examples:
+        Basic error logs:
+        GET /debug/errors
+
+        Error logs with stack traces:
+        GET /debug/errors?include_stack_traces=true&limit=100
+
+        Filtered error logs:
+        GET /debug/errors?level=error&timeframe=day&search=database
     """
     try:
         # Check admin privileges
@@ -503,22 +1059,88 @@ def clear_error_logs_route():
     """
     Clear error logs and diagnostic information.
 
-    This endpoint clears error logs and diagnostic information
-    to free up space and start fresh debugging.
+    This endpoint clears error logs and diagnostic information to
+    free up storage space and start fresh debugging sessions.
 
     Request Body:
-        - older_than: Clear logs older than specified days
-        - level: Clear logs of specific level only
+        - older_than (int, optional): Clear logs older than specified days (default: 7)
+        - level (str, optional): Clear logs of specific level only (default: all)
+        - dry_run (bool, optional): Show what would be cleared (default: false)
+        - backup (bool, optional): Create backup before clearing (default: true)
 
-    Returns:
-        JSON response with clearing results or unauthorized error
+    Clear Options:
+        - older_than: Clear logs older than specified days
+        - level: Clear logs of specific error level
+        - all: Clear all error logs
+        - resolved: Clear only resolved errors
+
+    JSON Response Structure:
+        {
+            "message": str,                            # Success message
+            "cleared_count": int,                      # Number of logs cleared
+            "older_than_days": int,                    # Age threshold used
+            "level": str,                              # Error level filter used
+            "timestamp": str,                          # Clear operation timestamp
+            "dry_run": bool,                           # Whether this was a dry run
+            "backup_created": bool,                    # Whether backup was created
+            "space_freed": str,                        # Storage space freed
+            "details": {                               # Clear operation details
+                "error_logs_cleared": int,             # Error logs cleared
+                "warning_logs_cleared": int,           # Warning logs cleared
+                "info_logs_cleared": int,              # Info logs cleared
+                "debug_logs_cleared": int,             # Debug logs cleared
+                "errors_encountered": [str]            # Errors during clearing
+            }
+        }
+
+    Error Codes:
+        - INVALID_AGE: Invalid age parameter
+        - CLEAR_FAILED: Log clearing operation failed
+        - BACKUP_FAILED: Backup creation failed
+        - INSUFFICIENT_PERMISSIONS: Insufficient permissions to clear logs
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid parameters)
+        - 500: Internal server error (clear operation failed)
+
+    Clear Operation Features:
+        - Selective log clearing
+        - Age-based filtering
+        - Level-based filtering
+        - Dry run mode
+        - Automatic backup creation
+        - Space usage reporting
+
+    Usage Examples:
+        Clear old logs:
+        {
+            "older_than": 30,
+            "level": "debug"
+        }
+
+        Dry run clear operation:
+        {
+            "older_than": 7,
+            "dry_run": true
+        }
+
+        Clear all logs with backup:
+        {
+            "older_than": 0,
+            "backup": true
+        }
     """
     try:
         # Check admin privileges
         if not is_admin():
             return jsonify({"error": "Unauthorized - Admin access required"}), 401
 
-        data = request.get_json() or {}
+        try:
+            data = request.get_json() or {}
+        except Exception:
+            data = {}
         older_than = data.get("older_than", 7)  # Default to 7 days
         level = data.get("level", "all")
 
@@ -550,17 +1172,70 @@ def clear_error_logs_route():
 @debug_bp.route("/test/exception", methods=["POST"])
 def test_exception_handling_route():
     """
-    Test exception handling and error reporting.
+    Test exception handling and error reporting capabilities.
 
-    This endpoint allows testing of exception handling by
-    deliberately raising an exception for testing purposes.
+    This endpoint allows testing of the system's exception handling mechanisms
+    by deliberately raising different types of exceptions for testing and
+    validation purposes. This is useful for verifying error handling,
+    logging, and error reporting functionality.
 
     Request Body:
-        - exception_type: Type of exception to raise
-        - message: Exception message
+        - exception_type (str, optional): Type of exception to raise (default: "ValueError")
+        - message (str, optional): Custom exception message (default: "Test exception")
 
-    Returns:
-        JSON response with test results or unauthorized error
+    Valid Exception Types:
+        - ValueError: Value-related errors
+        - RuntimeError: Runtime execution errors
+        - TypeError: Type-related errors
+        - AttributeError: Attribute access errors
+
+    JSON Response Structure (Success):
+        {
+            "test_result": str,                           # Test result status
+            "exception_type": str,                        # Type of exception raised
+            "message": str,                               # Exception message
+            "timestamp": str                              # Test execution timestamp
+        }
+
+    JSON Response Structure (Error):
+        {
+            "error": str,                                 # Error message
+            "details": str                                # Additional error details
+        }
+
+    Error Codes:
+        - INVALID_EXCEPTION_TYPE: Unsupported exception type
+        - TEST_EXECUTION_FAILED: Test execution failed
+        - UNAUTHORIZED: Admin access required
+
+    Status Codes:
+        - 200: Success (exception raised and handled)
+        - 400: Bad request (invalid exception type)
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error (test execution failed)
+
+    Testing Features:
+        - Exception type validation
+        - Custom exception messages
+        - Error handling verification
+        - Logging validation
+        - Response format testing
+
+    Usage Examples:
+        Test ValueError:
+        {
+            "exception_type": "ValueError",
+            "message": "Invalid input parameter"
+        }
+
+        Test RuntimeError:
+        {
+            "exception_type": "RuntimeError",
+            "message": "System configuration error"
+        }
+
+        Test with default values:
+        {}
     """
     try:
         # Check admin privileges
@@ -601,17 +1276,89 @@ def test_exception_handling_route():
 @debug_bp.route("/test/performance", methods=["POST"])
 def test_performance_route():
     """
-    Test system performance with synthetic load.
+    Test system performance with synthetic load generation.
 
-    This endpoint allows testing of system performance by
-    generating synthetic load and measuring response times.
+    This endpoint allows testing of system performance characteristics by
+    generating controlled synthetic load and measuring system response times,
+    resource usage, and performance metrics. This is useful for performance
+    validation, capacity planning, and stress testing.
 
     Request Body:
-        - duration: Test duration in seconds
-        - load_type: Type of load to generate (cpu, memory, database)
+        - duration (int, optional): Test duration in seconds (default: 10, max: 60)
+        - load_type (str, optional): Type of load to generate (default: "cpu")
 
-    Returns:
-        JSON response with performance test results or unauthorized error
+    Load Types:
+        - cpu: CPU-intensive load simulation
+        - memory: Memory-intensive load simulation
+        - database: Database query load simulation
+
+    JSON Response Structure (Success):
+        {
+            "test_result": str,                           # Test completion status
+            "load_type": str,                             # Type of load generated
+            "requested_duration": int,                    # Requested test duration
+            "actual_duration": float,                     # Actual test duration
+            "timestamp": str,                             # Test execution timestamp
+            "performance_metrics": {                      # Performance metrics (if available)
+                "cpu_usage": float,                       # CPU usage during test
+                "memory_usage": float,                    # Memory usage during test
+                "response_time": float                    # Average response time
+            }
+        }
+
+    JSON Response Structure (Error):
+        {
+            "error": str,                                 # Error message
+            "details": str                                # Additional error details
+        }
+
+    Error Codes:
+        - INVALID_DURATION: Duration out of valid range
+        - INVALID_LOAD_TYPE: Unsupported load type
+        - TEST_EXECUTION_FAILED: Performance test failed
+        - UNAUTHORIZED: Admin access required
+
+    Status Codes:
+        - 200: Success (performance test completed)
+        - 400: Bad request (invalid parameters)
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error (test execution failed)
+
+    Performance Testing Features:
+        - Controlled load generation
+        - Duration-based testing
+        - Multiple load type simulation
+        - Performance metrics collection
+        - Safety limits and timeouts
+        - Resource usage monitoring
+
+    Safety Features:
+        - Maximum duration limit (60 seconds)
+        - Automatic timeout protection
+        - Resource usage monitoring
+        - Graceful test termination
+
+    Usage Examples:
+        CPU load test:
+        {
+            "duration": 30,
+            "load_type": "cpu"
+        }
+
+        Memory load test:
+        {
+            "duration": 15,
+            "load_type": "memory"
+        }
+
+        Database load test:
+        {
+            "duration": 45,
+            "load_type": "database"
+        }
+
+        Quick test with defaults:
+        {}
     """
     try:
         # Check admin privileges

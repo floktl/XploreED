@@ -25,11 +25,12 @@ from flask import current_app, jsonify  # type: ignore
 
 from core.database.connection import (
     select_one, select_rows, insert_row, update_row, delete_rows,
-    fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+    fetch_one, fetch_all, fetch_custom, execute_query, get_connection,
+    fetch_topic_memory
 )
 from features.ai.memory.level_manager import check_auto_level_up
-from core.utils.helpers import require_user
-from core.utils.json_helpers import extract_json
+from api.middleware.auth import require_user
+from shared.text_utils import _extract_json as extract_json
 from features.ai.prompts.utils import make_prompt, SYSTEM_PROMPT
 from features.ai.prompts import exercise_generation_prompt
 from external.mistral.client import send_request, send_prompt
@@ -93,13 +94,34 @@ def generate_new_exercises(
 
         # Determine CEFR level
         cefr_level = CEFR_LEVELS[max(0, min(level or 0, 10))]
+        level_val = level or 0
+
+        # Create example exercise block (placeholder)
+        example_exercise_block = {
+            "lessonId": "example",
+            "title": "Example Exercise",
+            "level": level_val,
+            "topic": "general",
+            "exercises": [
+                {
+                    "id": "ex1",
+                    "type": "gap-fill",
+                    "question": "Ich _____ Deutsch.",
+                    "options": ["spreche", "sprechen", "spricht", "sprechst"],
+                    "correctAnswer": "spreche"
+                }
+            ],
+            "feedbackPrompt": "Great job!"
+        }
 
         # Create prompt
         user_prompt = exercise_generation_prompt(
+            level_val=level_val,
             cefr_level=cefr_level,
-            vocab_text=vocab_text,
-            topic_text=topic_text,
-            recent_text=recent_text
+            example_exercise_block=example_exercise_block,
+            vocabular=vocabular or [],
+            filtered_topic_memory=topic_memory or [],
+            recent_questions=", ".join(recent_questions[:5]) if recent_questions else ""
         )
 
         logger.debug(f"Sending exercise generation prompt to AI")

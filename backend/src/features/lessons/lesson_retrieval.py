@@ -16,8 +16,8 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any, List, Optional
 
-from core.services.import_service import *
 from core.database.connection import select_rows, select_one, update_row, insert_row
+from core.services import LessonService
 
 logger = logging.getLogger(__name__)
 
@@ -35,44 +35,7 @@ def get_user_lessons_summary(username: str) -> List[Dict[str, Any]]:
     Raises:
         ValueError: If username is invalid
     """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        logger.info(f"Getting lesson summary for user {username}")
-
-        # Get all published lessons for the user
-        lessons = select_rows(
-            "lesson_content",
-            columns=[
-                "lesson_id",
-                "title",
-                "created_at",
-                "target_user",
-                "num_blocks",
-                "ai_enabled",
-            ],
-            where="(target_user IS NULL OR target_user = ?) AND published = 1",
-            params=(username,),
-            order_by="created_at DESC",
-        )
-
-        results = []
-
-        for lesson in lessons:
-            lesson_id = lesson["lesson_id"]
-            lesson_summary = _build_lesson_summary(username, lesson_id, lesson)
-            results.append(lesson_summary)
-
-        logger.info(f"Retrieved {len(results)} lesson summaries for user {username}")
-        return results
-
-    except ValueError as e:
-        logger.error(f"Validation error getting lesson summary: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting lesson summary for user {username}: {e}")
-        raise
+    return LessonService.get_user_lessons_summary(username)
 
 
 def get_lesson_content(username: str, lesson_id: int) -> Optional[Dict[str, Any]]:
@@ -89,46 +52,7 @@ def get_lesson_content(username: str, lesson_id: int) -> Optional[Dict[str, Any]
     Raises:
         ValueError: If username or lesson_id is invalid
     """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if not lesson_id or lesson_id <= 0:
-            raise ValueError("Valid lesson ID is required")
-
-        logger.info(f"Getting lesson content for user {username}, lesson {lesson_id}")
-
-        # Get lesson content with user access control
-        rows = select_rows(
-            "lesson_content",
-            columns=["title", "content", "created_at", "num_blocks", "ai_enabled"],
-            where="lesson_id = ? AND (target_user IS NULL OR target_user = ?) AND published = 1",
-            params=(lesson_id, username),
-        )
-
-        if not rows:
-            logger.warning(f"Lesson {lesson_id} not found or not accessible for user {username}")
-            return None
-
-        lesson_data = rows[0]
-        lesson_content = {
-            "lesson_id": lesson_id,
-            "title": lesson_data["title"],
-            "content": lesson_data["content"],
-            "created_at": lesson_data["created_at"],
-            "num_blocks": lesson_data["num_blocks"],
-            "ai_enabled": bool(lesson_data["ai_enabled"]),
-        }
-
-        logger.info(f"Retrieved lesson content for user {username}, lesson {lesson_id}")
-        return lesson_content
-
-    except ValueError as e:
-        logger.error(f"Validation error getting lesson content: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting lesson content for user {username}, lesson {lesson_id}: {e}")
-        return None
+    return LessonService.get_lesson_content(username, lesson_id)
 
 
 def get_lesson_blocks(lesson_id: int) -> List[Dict[str, Any]]:
@@ -144,35 +68,7 @@ def get_lesson_blocks(lesson_id: int) -> List[Dict[str, Any]]:
     Raises:
         ValueError: If lesson_id is invalid
     """
-    try:
-        if not lesson_id or lesson_id <= 0:
-            raise ValueError("Valid lesson ID is required")
-
-        logger.info(f"Getting lesson blocks for lesson {lesson_id}")
-
-        # Get lesson blocks
-        blocks = select_rows(
-            "lesson_blocks",
-            columns=["block_id", "block_type", "content", "order_index", "metadata"],
-            where="lesson_id = ?",
-            params=(lesson_id,),
-            order_by="order_index ASC",
-        )
-
-        if blocks:
-            result = [dict(block) for block in blocks]
-            logger.info(f"Retrieved {len(result)} blocks for lesson {lesson_id}")
-            return result
-        else:
-            logger.info(f"No blocks found for lesson {lesson_id}")
-            return []
-
-    except ValueError as e:
-        logger.error(f"Validation error getting lesson blocks: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting lesson blocks for lesson {lesson_id}: {e}")
-        return []
+    return LessonService.get_lesson_blocks(lesson_id)
 
 
 def validate_lesson_access(username: str, lesson_id: int) -> bool:
@@ -189,33 +85,7 @@ def validate_lesson_access(username: str, lesson_id: int) -> bool:
     Raises:
         ValueError: If username or lesson_id is invalid
     """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if not lesson_id or lesson_id <= 0:
-            raise ValueError("Valid lesson ID is required")
-
-        logger.info(f"Validating lesson access for user {username}, lesson {lesson_id}")
-
-        # Check if lesson exists and user has access
-        lesson = select_one(
-            "lesson_content",
-            columns=["lesson_id"],
-            where="lesson_id = ? AND (target_user IS NULL OR target_user = ?) AND published = 1",
-            params=(lesson_id, username),
-        )
-
-        has_access = lesson is not None
-        logger.info(f"Lesson access validation for user {username}, lesson {lesson_id}: {has_access}")
-        return has_access
-
-    except ValueError as e:
-        logger.error(f"Validation error checking lesson access: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error validating lesson access for user {username}, lesson {lesson_id}: {e}")
-        return False
+    return LessonService.validate_lesson_access(username, lesson_id)
 
 
 def _build_lesson_summary(username: str, lesson_id: int, lesson_data: Dict[str, Any]) -> Dict[str, Any]:

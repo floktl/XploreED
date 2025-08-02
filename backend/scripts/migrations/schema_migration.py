@@ -27,7 +27,7 @@ import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from core.database.connection import get_connection
+from src.core.database.connection import get_connection
 
 
 with get_connection() as conn:
@@ -270,6 +270,26 @@ with get_connection() as conn:
         """
     )
     print("✅ 'support_feedback' table created (if not exists).")
+
+    # ✅ Create support_requests table
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS support_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            description TEXT NOT NULL,
+            urgency TEXT DEFAULT 'medium',
+            contact_method TEXT DEFAULT 'email',
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            attachments TEXT,
+            admin_notes TEXT
+        );
+        """
+    )
+    print("✅ 'support_requests' table created (if not exists).")
 
     # ✅ Create exercise_submissions table
     cursor.execute(

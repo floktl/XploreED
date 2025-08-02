@@ -19,7 +19,6 @@ import json
 import uuid
 from typing import Dict, Any, Optional
 
-from core.services.import_service import *
 from external.redis import redis_client
 
 logger = logging.getLogger(__name__)

@@ -34,7 +34,6 @@ export default function AIFeedback() {
         <div className={`min-h-screen flex flex-col ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <main className="flex-1 pb-20">
                 <Container>
-                    <Title>{exerciseTitle}</Title>
                     <AIExerciseBlock
                         blockId="training"
                         fetchExercisesFn={getTrainingExercises}

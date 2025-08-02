@@ -18,7 +18,8 @@ from typing import Dict, Any, List, Optional, Tuple
 from bs4 import BeautifulSoup  # type: ignore
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows
-from core.utils.html_helpers import strip_ai_data, inject_block_ids, update_lesson_blocks_from_html
+from core.processing import strip_ai_data, inject_block_ids
+from features.lessons import update_lesson_blocks_from_html
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +177,7 @@ def get_lesson_by_id(lesson_id: int) -> Optional[Dict[str, Any]]:
         raise
 
 
-def update_lesson_content(lesson_id: int, lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+def update_admin_lesson_content(lesson_id: int, lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
     """
     Update an existing lesson with new content and metadata.
 

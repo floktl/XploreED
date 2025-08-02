@@ -1,0 +1,773 @@
+{
+  "test_info": {
+    "timestamp": "2025-08-02T05:45:24Z",
+    "backend_url": "http://localhost:5050",
+    "test_user": "testuser",
+    "admin_user": "admin"
+  },
+  "endpoints": {
+  "/": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Root endpoint (should return 404)",
+    "category": "Public",
+    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
+  },
+  "/api": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "API prefix endpoint",
+    "category": "Public",
+    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
+  },
+  "/api/register": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "User registration",
+    "category": "Authentication",
+    "response": "{   \"error\": \"Username already exists\" } "
+  },
+  "/api/login": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "User login",
+    "category": "Authentication",
+    "response": "{   \"error\": \"Invalid credentials\",   \"message\": \"Invalid username or password\" } "
+  },
+  "/api/login": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Admin login",
+    "category": "Authentication",
+    "response": "{   \"message\": \"Login successful\",   \"session_id\": \"712e7b11-93d6-4f2c-8132-3582ed83a966\",   \"user\": {     \"is_admin\": 1,     \"skill_level\": 0,     \"username\": \"admin\"   } } "
+  },
+  "/api/logout": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "User logout",
+    "category": "Authentication",
+    "response": "{   \"message\": \"Logout successful\" } "
+  },
+  "/api/session": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Session validation",
+    "category": "Authentication",
+    "response": "{   \"error\": \"Invalid session\" } "
+  },
+  "/api/password/reset": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Password reset request",
+    "category": "Authentication",
+    "response": "{   \"error\": \"Email not found\" } "
+  },
+  "/api/2fa/enable": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "2FA enable",
+    "category": "Authentication",
+    "response": "{   \"error\": \"Failed to enable 2FA\" } "
+  },
+  "/api/profile": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get user profile",
+    "category": "User Management",
+    "response": "{   \"average_score\": 91.5,   \"best_score\": 95,   \"recent_results\": [     {       \"accuracy\": 98.5,       \"completed_at\": \"2023-10-27T10:00:00Z\",       \"game_type\": \"Typing\",       \"id\": 1,       \"score\": 95,       \"time_spent\": 120     },     {       \"accuracy\": 92.0,       \"completed_at\": \"2023-10-26T14:30:00Z\",       \"game_type\": \"Grammar\",       \"id\": 2,       \"score\": 88,       \"time_spent\": 90     }   ],   \"total_results\": 2,   \"total_time\": 3,   \"username\": \"admin\" } "
+  },
+  "/api/me": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get current user info",
+    "category": "User Management",
+    "response": "{   \"username\": \"admin\" } "
+  },
+  "/api/role": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get user role",
+    "category": "User Management",
+    "response": "{   \"is_admin\": true } "
+  },
+  "/api/vocabulary": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get user vocabulary",
+    "category": "User Management",
+    "response": "{   \"error\": \"Failed to retrieve vocabulary\" } "
+  },
+  "/api/vocab-train": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get vocabulary training",
+    "category": "User Management",
+    "response": "{   \"error\": \"Failed to process vocabulary training\" } "
+  },
+  "/api/save-vocab": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Save vocabulary",
+    "category": "User Management",
+    "response": "{   \"error\": \"No words provided\" } "
+  },
+  "/api/topic-memory": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get topic memory",
+    "category": "User Management",
+    "response": "{   \"last_updated\": \"2025-08-02T05:45:24.776244\",   \"topic_memory\": [     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"personal pronouns\",       \"id\": 138,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     },     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"sein\",       \"id\": 139,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     },     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"haben\",       \"id\": 140,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     }   ] } "
+  },
+  "/api/topic-weaknesses": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get topic weaknesses",
+    "category": "User Management",
+    "response": "{   \"improvement_plan\": {     \"estimated_time\": \"0 weeks\",     \"recommended_actions\": [       \"Review weak topics daily\",       \"Focus on high-priority topics first\",       \"Increase review frequency for weak areas\"     ],     \"success_metrics\": [       \"Increase average topic strength to 0.8\",       \"Reduce number of weak topics by 50%\",       \"Maintain consistent review schedule\"     ]   },   \"overall_weakness_score\": 0.0,   \"priority_topics\": [],   \"weaknesses\": [] } "
+  },
+  "/api/user-level": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get user level",
+    "category": "User Management",
+    "response": "{   \"level\": 0,   \"level_history\": [     {       \"achieved_at\": \"2025-08-02 05:07:27\",       \"level\": \"beginner\",       \"performance_score\": 0.8     }   ],   \"level_progress\": {     \"points_earned\": 150,     \"points_required\": 200,     \"progress_percentage\": 75.0,     \"time_at_level\": 30   },   \"next_level_requirements\": {     \"level\": \"intermediate\",     \"required_accuracy\": 0.8,     \"required_exercises\": 50,     \"required_points\": 200   } } "
+  },
+  "/api/info": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get profile info",
+    "category": "Profile",
+    "response": "{   \"error\": \"User profile not found\" } "
+  },
+  "/api/statistics": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get profile statistics",
+    "category": "Profile",
+    "response": "{   \"error\": \"Failed to retrieve learning statistics\" } "
+  },
+  "/api/statistics/detailed": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get detailed statistics",
+    "category": "Profile",
+    "response": "{   \"error\": \"Failed to retrieve detailed statistics\" } "
+  },
+  "/api/achievements": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get achievements",
+    "category": "Profile",
+    "response": "{   \"error\": \"Failed to retrieve achievements\" } "
+  },
+  "/api/analytics": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get profile analytics",
+    "category": "Profile",
+    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T05:45:24.897760\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
+  },
+  "/api/analytics/strengths": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get strengths analytics",
+    "category": "Profile",
+    "response": "{   \"error\": \"Failed to retrieve learning strengths\" } "
+  },
+  "/api/analytics/weaknesses": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get weaknesses analytics",
+    "category": "Profile",
+    "response": "{   \"error\": \"Failed to retrieve learning weaknesses\" } "
+  },
+  "/api/settings/preferences": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get user preferences",
+    "category": "Settings",
+    "response": "{   \"last_updated\": null,   \"preferences\": {     \"account_info\": {       \"created_at\": \"2025-08-02 05:07:27\",       \"is_active\": true,       \"last_login\": null     },     \"preferences\": {       \"auto_play_audio\": false,       \"daily_goal\": 30,       \"difficulty_level\": \"beginner\",       \"email_notifications\": false,       \"language\": \"en\",       \"notifications_enabled\": true,       \"sound_enabled\": true,       \"study_reminders\": true,       \"theme\": \"light\"     },     \"retrieved_at\": \"2025-08-02T05:45:24.936805\",     \"statistics\": {       \"account_age_days\": 0,       \"average_exercise_score\": 0.0,       \"favorite_activity\": \"none\",       \"last_activity\": null,       \"learning_streak_days\": 0,       \"total_exercises_completed\": 0,       \"total_games_played\": 0,       \"total_lessons_completed\": 0,       \"total_study_time_minutes\": 0,       \"total_vocabulary_reviews\": 0,       \"username\": \"admin\",       \"weakest_area\": \"none\"     },     \"username\": \"admin\"   } } "
+  },
+  "/api/settings/learning": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get learning settings",
+    "category": "Settings",
+    "response": "{   \"error\": \"Failed to retrieve learning settings\" } "
+  },
+  "/api/settings/notifications": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get notification settings",
+    "category": "Settings",
+    "response": "{   \"error\": \"Failed to retrieve notification settings\" } "
+  },
+  "/api/settings/privacy": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get privacy settings",
+    "category": "Settings",
+    "response": "{   \"error\": \"Failed to retrieve privacy settings\" } "
+  },
+  "/api/settings/account": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get account settings",
+    "category": "Settings",
+    "response": "{   \"error\": \"Failed to retrieve account settings\" } "
+  },
+  "/api/settings/export": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Export user data",
+    "category": "Settings",
+    "response": "{   \"error\": \"Failed to export user data\" } "
+  },
+  "/api/lessons": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get lessons list",
+    "category": "Lessons",
+    "response": "{   \"error\": \"Failed to retrieve lessons\" } "
+  },
+  "/api/lessons/1": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get specific lesson",
+    "category": "Lessons",
+    "response": "{   \"error\": \"Lesson not found\" } "
+  },
+  "/api/lessons/1/progress": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get lesson progress",
+    "category": "Lessons",
+    "response": "{   \"error\": \"Lesson not found\" } "
+  },
+  "/api/lessons/1/analytics": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get lesson analytics",
+    "category": "Lessons",
+    "response": "{   \"error\": \"Lesson not found\" } "
+  },
+  "/api/progress": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get progress summary",
+    "category": "Progress",
+    "response": "{   \"generated_at\": \"2025-08-02T05:45:25.070429\",   \"progress\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"completion_rate\": 0.0,     \"lessons_started\": 0,     \"recent_activity\": [],     \"streak_days\": 0,     \"total_activities\": 0,     \"total_completed_blocks\": 0,     \"total_lessons\": 0,     \"user\": \"admin\"   },   \"timeframe\": \"all\" } "
+  },
+  "/api/progress/summary": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get progress summary",
+    "category": "Progress",
+    "response": "{   \"generated_at\": \"2025-08-02T05:45:25.084099\",   \"progress_summary\": {     \"activity_breakdown\": {       \"games\": {}     },     \"areas_for_improvement\": [],     \"average_score\": 0.0,     \"end_date\": \"2025-08-02T05:45:25.081433\",     \"exercises_completed\": 0,     \"games_played\": 0,     \"improvement_rate\": 0.0,     \"lessons_completed\": 0,     \"period_days\": 30,     \"recent_activity\": [],     \"start_date\": \"2025-07-03T05:45:25.081433\",     \"streak_days\": 0,     \"top_performing_areas\": [],     \"total_activities\": 0,     \"total_time_spent\": 0,     \"username\": \"admin\",     \"vocabulary_reviews\": 0   },   \"user\": \"admin\" } "
+  },
+  "/api/track/exercise": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Track exercise progress",
+    "category": "Progress",
+    "response": "{   \"error\": \"Block ID is required\" } "
+  },
+  "/api/track/vocabulary": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Track vocabulary progress",
+    "category": "Progress",
+    "response": "{   \"error\": \"Failed to track vocabulary progress\" } "
+  },
+  "/api/track/game": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Track game progress",
+    "category": "Progress",
+    "response": "{   \"error\": \"Game type is required\" } "
+  },
+  "/api/reset": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Reset progress",
+    "category": "Progress",
+    "response": "{   \"error\": \"Failed to reset progress\" } "
+  },
+  "/api/analytics": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get progress analytics",
+    "category": "Progress",
+    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T05:45:25.194775\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
+  },
+  "/api/analytics/trends": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get progress trends",
+    "category": "Progress",
+    "response": "{   \"daily_activity\": {     \"2025-08-02\": {       \"exercises\": 0,       \"games\": 0,       \"lessons\": 0,       \"total\": 0,       \"vocabulary\": 0     }   },   \"generated_at\": \"2025-08-02T05:45:25.240953\",   \"learning_patterns\": {     \"activity_distribution\": {},     \"most_active_hour\": null,     \"preferred_time\": \"unknown\"   },   \"performance_trends\": {     \"average_score\": 0,     \"performance_change\": 0,     \"total_exercises\": 0,     \"trend_direction\": \"stable\"   },   \"recommendations\": [     \"Try to complete at least 3 activities per day to maintain consistent progress\",     \"Start with a simple lesson or vocabulary review to get back into learning\"   ],   \"trends\": {     \"data_points\": [],     \"metric\": \"completion_rate\",     \"overall_trend\": \"stable\",     \"period\": \"month\"   },   \"user\": \"admin\" } "
+  },
+  "/api/sync": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Sync progress",
+    "category": "Progress",
+    "response": "{   \"error\": \"Progress data is required\" } "
+  },
+  "/api/sync/status": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get sync status",
+    "category": "Progress",
+    "response": "{   \"device_count\": 0,   \"last_sync\": null,   \"sync_status\": \"never_synced\",   \"user\": \"admin\" } "
+  },
+  "/api/export": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Export progress data",
+    "category": "Progress",
+    "response": "{   \"data\": {     \"exported_at\": \"2025-08-02T05:45:25.274011\",     \"format\": \"json\",     \"include_details\": false,     \"user\": \"admin\"   },   \"exported_at\": \"2025-08-02T05:45:25.274017\",   \"format\": \"json\",   \"message\": \"Progress data exported successfully\" } "
+  },
+  "/api/games": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get games list",
+    "category": "Games",
+    "response": "{   \"games\": [],   \"recommended_games\": [],   \"total\": 0,   \"user_level\": 0 } "
+  },
+  "/api/games/1": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get specific game",
+    "category": "Games",
+    "response": "{   \"error\": \"Game not found\" } "
+  },
+  "/api/games/1/start": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Start game session",
+    "category": "Games",
+    "response": "{   \"error\": \"Game not found\" } "
+  },
+  "/api/results": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get game results",
+    "category": "Games",
+    "response": "{   \"error\": \"Failed to retrieve game results\" } "
+  },
+  "/api/results/1": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get specific result",
+    "category": "Games",
+    "response": "{   \"error\": \"Game result not found\" } "
+  },
+  "/api/analytics": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get game analytics",
+    "category": "Games",
+    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T05:45:25.369810\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
+  },
+  "/api/analytics/performance": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get performance analytics",
+    "category": "Games",
+    "response": "{   \"error\": \"Failed to retrieve performance analytics\" } "
+  },
+  "/api/ai-exercise/1/submit": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Submit AI exercise",
+    "category": "AI",
+    "response": "{   \"pass\": false,   \"results\": [],   \"streaming\": true,   \"summary\": {     \"correct\": 0,     \"mistakes\": [],     \"total\": 0   } } "
+  },
+  "/api/ai-exercise/1/results": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get AI exercise results",
+    "category": "AI",
+    "response": "{   \"error\": \"Exercise results not found\" } "
+  },
+  "/api/ai-exercise/1/argue": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Argue AI exercise",
+    "category": "AI",
+    "response": "{   \"error\": \"Exercise ID is required\" } "
+  },
+  "/api/ai-exercise/1/topic-memory-status": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get topic memory status",
+    "category": "AI",
+    "response": "{   \"block_id\": \"1\",   \"last_update\": null,   \"memory_impact\": {     \"recommendations\": [],     \"strengthened_concepts\": [],     \"weak_areas\": []   },   \"topic_memory_updated\": false,   \"update_status\": \"not_started\" } "
+  },
+  "/api/ai-feedback/progress/1": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get AI feedback progress",
+    "category": "AI",
+    "response": "{   \"error\": \"Session not found\" } "
+  },
+  "/api/ai-feedback/generate-with-progress": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Generate feedback with progress",
+    "category": "AI",
+    "response": "{   \"error\": \"No answers provided\" } "
+  },
+  "/api/ai-feedback/result/1": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Get AI feedback result",
+    "category": "AI",
+    "response": "{   \"error\": \"Result not found\" } "
+  },
+  "/api/ai-feedback": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get AI feedback list",
+    "category": "AI",
+    "response": "{   \"error\": \"Server error\" } "
+  },
+  "/api/ai-feedback/1": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get specific AI feedback",
+    "category": "AI",
+    "response": "{   \"error\": \"Server error\" } "
+  },
+  "/api/ai-feedback": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Create AI feedback",
+    "category": "AI",
+    "response": "{   \"error\": \"No answers provided\" } "
+  },
+  "/api/reading-exercise": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Create reading exercise",
+    "category": "AI",
+    "response": "{   \"exercise_id\": \"aa434692-4c4e-466c-b717-03e88b2062b5\",   \"questions\": [     {       \"id\": 1,       \"options\": [         \"Er ist ein Mann.\",         \"Er ist ein Junge.\",         \"Er ist ein Baby.\"       ],       \"question\": \"Wer ist Hans?\\n\\n- Er ist ein Mann.\\n- Er ist ein Junge.\\n- Er ist ein Baby.\"     },     {       \"id\": 2,       \"options\": [         \"Er wohnt in M\\u00fcnchen.\",         \"Er wohnt in Berlin.\",         \"Er wohnt in Hamburg.\"       ],       \"question\": \"Wo wohnt Hans?\\n\\n- Er wohnt in M\\u00fcnchen.\\n- Er wohnt in Berlin.\\n- Er wohnt in Hamburg.\"     },     {       \"id\": 3,       \"options\": [         \"Sie ist sch\\u00fcchtern.\",         \"Sie ist sehr nett.\",         \"Sie ist traurig.\"       ],       \"question\": \"Wie ist Anna?\\n\\n- Sie ist sch\\u00fcchtern.\\n- Sie ist sehr nett.\\n- Sie ist traurig.\"     },     {       \"id\": 4,       \"options\": [         \"Sie haben ein Spiel.\",         \"Sie haben ein Picknick.\",         \"Sie haben ein Konzert.\"       ],       \"question\": \"Was haben Hans und Anna im Park?\\n\\n- Sie haben ein Spiel.\\n- Sie haben ein Picknick.\\n- Sie haben ein Konzert.\"     },     {       \"id\": 5,       \"options\": [         \"Er hat ein Buch.\",         \"Er hat einen Ball.\",         \"Er hat ein Fahrrad.\"       ],       \"question\": \"Was hat Hans im Park?\\n\\n- Er hat ein Buch.\\n- Er hat einen Ball.\\n- Er hat ein Fahrrad.\"     },     {       \"id\": 6,       \"options\": [         \"Sie hat ein Spielzeug.\",         \"Sie hat ein Buch.\",         \"Sie hat einen Hund.\"       ],       \"question\": \"Was hat Anna im Park?\\n\\n- Sie hat ein Spielzeug.\\n- Sie hat ein Buch.\\n- Sie hat einen Hund.\"     },     {       \"id\": 7,       \"options\": [         \"Sie sind traurig.\",         \"Sie sind gl\\u00fccklich.\",         \"Sie sind m\\u00fcde.\"       ],       \"question\": \"Wie sind Hans und Anna im Park?\\n\\n- Sie sind traurig.\\n- Sie sind gl\\u00fccklich.\\n- Sie sind m\\u00fcde.\"     }   ],   \"text\": \"Hans ist ein Junge. Er wohnt in Berlin. Seine Schwester ist Anna. Sie ist sehr nett und hat viele Freunde.\\n\\nEines Tages, Hans und Anna sind im Park. Sie haben ein Picknick. Es ist ein sch\\u00f6ner Tag. Die Sonne ist warm und die V\\u00f6gel sind fr\\u00f6hlich.\\n\\nHans hat einen Ball. Er spielt mit dem Ball. Anna hat ein Buch. Sie liest das Buch. Sie sind gl\\u00fccklich.\" } "
+  },
+  "/api/reading-exercise/submit": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Submit reading exercise",
+    "category": "AI",
+    "response": "{   \"error\": \"Exercise not found or expired\" } "
+  },
+  "/api/weakness-lesson": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get weakness lesson",
+    "category": "AI",
+    "response": "{   \"details\": \"Mistral API request timed out after 60 seconds\",   \"error\": \"AI service error\" } "
+  },
+  "/api/training-exercises": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Generate training exercises",
+    "category": "AI",
+    "response": "{   \"error\": \"Failed to generate exercises\" } "
+  },
+  "/api/ai-exercise/training/submit": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Submit training exercise",
+    "category": "AI",
+    "response": "{   \"error\": \"No current exercises found\" } "
+  },
+  "/api/tts": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Text-to-speech",
+    "category": "AI",
+    "response": " "
+  },
+  "/api/translate": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Translate text",
+    "category": "Translation",
+    "response": "{   \"job_id\": \"trans_20250802_060425\",   \"message\": \"Translation job started successfully\",   \"status\": \"processing\" } "
+  },
+  "/api/translate/status/1": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get translation status",
+    "category": "Translation",
+    "response": "{   \"error\": \"Job not found or expired\",   \"job_id\": \"1\",   \"progress\": 0,   \"result\": null,   \"status\": \"not_found\" } "
+  },
+  "/api/translate/stream": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Stream translation",
+    "category": "Translation",
+    "response": "{   \"message\": \"Streaming translation not implemented\",   \"source_lang\": \"auto\",   \"stream_type\": \"sentence\",   \"target_lang\": \"de\",   \"text\": \"Hello world\" } "
+  },
+  "/api/support/feedback": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Submit support feedback",
+    "category": "Support",
+    "response": "{   \"feedback_id\": [     false,     \"Database error\"   ],   \"message\": \"Feedback submitted successfully\",   \"status\": \"pending\",   \"submitted_at\": \"2025-08-02T06:04:25.507202\" } "
+  },
+  "/api/support/feedback": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get support feedback",
+    "category": "Support",
+    "response": "{   \"error\": \"Failed to retrieve feedback\" } "
+  },
+  "/api/support/support-request": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Create support request",
+    "category": "Support",
+    "response": "{   \"error\": \"Failed to create support request\" } "
+  },
+  "/api/support/support-request/1": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get specific support request",
+    "category": "Support",
+    "response": "{   \"error\": \"Failed to retrieve support request\" } "
+  },
+  "/api/support/status": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get support status",
+    "category": "Support",
+    "response": "{   \"error\": \"cannot access local variable 'uptime' where it is not associated with a value\",   \"status\": \"error\",   \"timestamp\": \"2025-08-02T06:04:25.551483\" } "
+  },
+  "/api/support/help": {
+    "method": "GET",
+    "status": "ERROR",
+    "description": "Get support help",
+    "category": "Support",
+    "response": "{   \"error\": \"Failed to retrieve help content\" } "
+  },
+  "/api/support/help/topics": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get help topics",
+    "category": "Support",
+    "response": "[   {     \"category\": \"basics\",     \"description\": \"Learn how to get started with XplorED\",     \"id\": \"getting_started\",     \"popularity\": 100,     \"title\": \"Getting Started\"   },   {     \"category\": \"learning\",     \"description\": \"How to use and complete lessons\",     \"id\": \"lessons\",     \"popularity\": 85,     \"title\": \"Using Lessons\"   },   {     \"category\": \"learning\",     \"description\": \"Different types of exercises available\",     \"id\": \"exercises\",     \"popularity\": 75,     \"title\": \"Exercise Types\"   },   {     \"category\": \"learning\",     \"description\": \"How to learn and practice vocabulary\",     \"id\": \"vocabulary\",     \"popularity\": 70,     \"title\": \"Vocabulary Learning\"   } ] "
+  },
+  "/api/admin/users": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get admin users list",
+    "category": "Admin",
+    "response": "{   \"limit\": 50,   \"offset\": 0,   \"total\": 9,   \"users\": [] } "
+  },
+  "/api/admin/users/testuser": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get specific admin user",
+    "category": "Admin",
+    "response": "{   \"activity\": {},   \"progress\": {},   \"user\": {     \"created_at\": \"2025-08-01 19:37:50\",     \"email\": null,     \"is_admin\": 0,     \"password\": \"scrypt:32768:8:1$jrG4psHbqn7Vi4nD$6245f794e512d9092c88c10961de820128edc635e1c5764b359e9fb9d2d4c5d55693600c7ad8efd193074d826af9a4f1a18fea31c15eac0d35562773518e5a41\",     \"skill_level\": 0,     \"username\": \"testuser\"   } } "
+  },
+  "/api/admin/users/testuser/status": {
+    "method": "PUT",
+    "status": "CLIENT_ERROR",
+    "description": "Update user status",
+    "category": "Admin",
+    "response": "{   \"error\": \"User not found\" } "
+  },
+  "/api/admin/users/testuser/delete": {
+    "method": "DELETE",
+    "status": "CLIENT_ERROR",
+    "description": "Delete user",
+    "category": "Admin",
+    "response": "<!doctype html> <html lang=en> <title>405 Method Not Allowed</title> <h1>Method Not Allowed</h1> <p>The method is not allowed for the requested URL.</p> "
+  },
+  "/api/admin/system/analytics": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get system analytics",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.622469\",   \"system_analytics\": {     \"active_users\": 0,     \"timeframe\": \"month\",     \"total_exercises\": 0,     \"total_users\": 0   },   \"timeframe\": \"month\" } "
+  },
+  "/api/admin/system/settings": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get system settings",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.632174\",   \"system_settings\": [],   \"total_settings\": 0 } "
+  },
+  "/api/admin/system/settings": {
+    "method": "PUT",
+    "status": "CLIENT_ERROR",
+    "description": "Update system settings",
+    "category": "Admin",
+    "response": "{   \"error\": \"Settings data is required\" } "
+  },
+  "/api/admin/content/lessons": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get content lessons",
+    "category": "Admin",
+    "response": "{   \"lessons\": [],   \"limit\": 50,   \"total\": 0 } "
+  },
+  "/api/admin/content/lessons/1": {
+    "method": "PUT",
+    "status": "CLIENT_ERROR",
+    "description": "Update content lesson",
+    "category": "Admin",
+    "response": "{   \"error\": \"Lesson not found\" } "
+  },
+  "/api/admin/reports/user-activity": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get user activity reports",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.671966\",   \"user_activity_report\": {     \"activity_data\": {},     \"date_range\": {       \"end_date\": \"2025-08-02\",       \"start_date\": \"2025-07-03\"     },     \"group_by\": \"day\",     \"total_users\": 0   } } "
+  },
+  "/api/admin/reports/performance": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get performance reports",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.682588\",   \"performance_report\": {     \"date_range\": {       \"end_date\": \"2025-08-02T06:04:25.681265\",       \"start_date\": \"2025-07-26T06:04:25.681265\"     },     \"metrics\": {       \"active_users\": 0,       \"average_exercises_per_user\": 0.0,       \"total_exercises\": 0,       \"total_users\": 6     },     \"timeframe\": \"week\"   } } "
+  },
+  "/api/admin/security/reports": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get security reports",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.691782\",   \"security_report\": {     \"data\": {       \"failed_logins\": 0,       \"suspicious_activity\": 0,       \"total_events\": 0     },     \"timeframe\": \"week\",     \"type\": \"logins\"   } } "
+  },
+  "/api/admin/security/settings": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Get security settings",
+    "category": "Admin",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.701757\",   \"security_settings\": [],   \"total_settings\": 0 } "
+  },
+  "/api/admin/security/settings": {
+    "method": "PUT",
+    "status": "CLIENT_ERROR",
+    "description": "Update security settings",
+    "category": "Admin",
+    "response": "{   \"error\": \"Settings data is required\" } "
+  },
+  "/api/debug/health": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Health check",
+    "category": "Debug",
+    "response": "{   \"environment\": \"development\",   \"health_info\": {     \"database\": \"connected\",     \"external_services\": \"available\",     \"overall_status\": true,     \"performance\": \"normal\"   },   \"status\": \"healthy\",   \"timestamp\": \"2025-08-02T06:04:25.720771\",   \"version\": \"unknown\" } "
+  },
+  "/api/debug/test-db": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Database test",
+    "category": "Debug",
+    "response": "{   \"database_test\": {     \"connection_test\": true,     \"errors\": [],     \"read_test\": true,     \"write_test\": true   },   \"timestamp\": \"2025-08-02T06:04:25.736291\" } "
+  },
+  "/api/debug/status": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "System status",
+    "category": "Debug",
+    "response": "{   \"database_connected\": true,   \"environment\": \"development\",   \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",   \"status\": \"operational\",   \"timestamp\": \"2025-08-02T06:04:25.746265\",   \"uptime\": \"unknown\",   \"version\": \"unknown\" } "
+  },
+  "/api/debug/info": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "System info",
+    "category": "Debug",
+    "response": "{   \"debug_info\": {     \"environment\": \"development\",     \"logs_included\": false,     \"sensitive_data_included\": false,     \"system_info\": {       \"platform\": \"linux\",       \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",       \"working_directory\": \"/app\"     }   },   \"generated_at\": \"2025-08-02T06:04:25.755932\",   \"request_id\": \"debug_info_request\" } "
+  },
+  "/api/debug/config": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Configuration info",
+    "category": "Debug",
+    "response": "{   \"config_info\": {     \"app_version\": \"unknown\",     \"database_url\": \"sqlite:///database/user_data.db\",     \"debug_mode\": true,     \"environment\": \"development\",     \"environment_variables\": {       \"DB_FILE\": \"/app/database/user_data.db\",       \"FLASK_DEBUG\": \"true\",       \"FLASK_ENV\": \"development\",       \"FRONTEND_URL\": \"http://localhost:5173,http://localhost:8080\",       \"HOME\": \"/root\",       \"HOSTNAME\": \"01c349a695bb\",       \"JWT_COOKIE_CSRF_PROTECT\": \"True\",       \"JWT_COOKIE_SECURE\": \"false\",       \"LANG\": \"C.UTF-8\",       \"LC_ALL\": \"C.UTF-8\",       \"PATH\": \"/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",       \"PORT\": \"5050\",       \"PWD\": \"/app\",       \"PYTHONDONTWRITEBYTECODE\": \"1\",       \"PYTHONPATH\": \"src\",       \"PYTHON_SHA256\": \"8fb5f9fbc7609fa822cb31549884575db7fd9657cbffb89510b5d7975963a83a\",       \"PYTHON_VERSION\": \"3.11.13\",       \"REDIS_HOST\": \"redis\",       \"REDIS_URL\": \"redis://localhost:6379\",       \"WERKZEUG_RUN_MAIN\": \"true\",       \"WERKZEUG_SERVER_FD\": \"7\"     },     \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",     \"secret_key_configured\": false,     \"working_directory\": \"/app\"   },   \"generated_at\": \"2025-08-02T06:04:25.765043\" } "
+  },
+  "/api/debug/performance": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Performance metrics",
+    "category": "Debug",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.775471\",   \"performance_metrics\": {     \"include_details\": false,     \"memory_usage\": \"stable\",     \"response_time\": \"normal\",     \"timeframe\": \"hour\"   },   \"timeframe\": \"hour\" } "
+  },
+  "/api/debug/performance/slow-queries": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Slow queries",
+    "category": "Debug",
+    "response": "{   \"generated_at\": \"2025-08-02T06:04:25.784716\",   \"slow_queries\": [     {       \"execution_time\": 2.5,       \"explanation\": \"Missing index on username column\",       \"query\": \"SELECT * FROM users WHERE username = ?\",       \"timestamp\": \"2025-08-02T06:04:25.784711\",       \"user_id\": \"admin\"     }   ],   \"threshold_seconds\": 1.0,   \"total_queries\": 1 } "
+  },
+  "/api/debug/errors": {
+    "method": "GET",
+    "status": "SUCCESS",
+    "description": "Error logs",
+    "category": "Debug",
+    "response": "{   \"error_logs\": [     {       \"level\": \"error\",       \"message\": \"Sample error log\",       \"stack_trace\": null,       \"timestamp\": \"2025-08-02T06:04:25.795056\"     }   ],   \"generated_at\": \"2025-08-02T06:04:25.795061\",   \"level\": \"error\",   \"total_errors\": 1 } "
+  },
+  "/api/debug/clear-cache": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Clear cache",
+    "category": "Debug",
+    "response": "{   \"error\": \"Failed to clear cache\" } "
+  },
+  "/api/debug/errors/clear": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Clear error logs",
+    "category": "Debug",
+    "response": "{   \"error\": \"Failed to clear error logs\" } "
+  },
+  "/api/debug/test/exception": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Test exception handling",
+    "category": "Debug",
+    "response": "{   \"exception_type\": \"ValueError\",   \"message\": \"Test exception\",   \"test_result\": \"exception_raised\",   \"timestamp\": \"2025-08-02T06:04:25.825542\" } "
+  },
+  "/api/debug/test/performance": {
+    "method": "POST",
+    "status": "SUCCESS",
+    "description": "Test performance",
+    "category": "Debug",
+    "response": "{   \"actual_duration\": 5.002944,   \"load_type\": \"cpu\",   \"requested_duration\": 10,   \"test_result\": \"completed\",   \"timestamp\": \"2025-08-02T06:04:30.838781\" } "
+  },
+  "/api/debug/health": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Unauthorized admin access (should fail)",
+    "category": "Security",
+    "response": "{   \"error\": \"Unauthorized - Admin access required\" } "
+  },
+  "/api/login": {
+    "method": "POST",
+    "status": "CLIENT_ERROR",
+    "description": "Invalid login attempt",
+    "category": "Security",
+    "response": "{   \"error\": \"Invalid credentials\",   \"message\": \"Invalid username or password\" } "
+  },
+  "/api/register": {
+    "method": "POST",
+    "status": "ERROR",
+    "description": "Malformed JSON (should fail)",
+    "category": "Security",
+    "response": "{   \"error\": \"Registration failed\" } "
+  },
+  "/api/nonexistent": {
+    "method": "GET",
+    "status": "CLIENT_ERROR",
+    "description": "Non-existent endpoint (should fail)",
+    "category": "Security",
+    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
+  },
+  }
+}

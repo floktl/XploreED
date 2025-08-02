@@ -18,40 +18,6 @@ from typing import Dict
 
 logger = logging.getLogger(__name__)
 
-
-def _normalize_umlauts(text: str) -> str:
-    """
-    Normalize German umlauts for comparison.
-
-    Args:
-        text: Text to normalize
-
-    Returns:
-        Text with normalized umlauts
-    """
-    umlaut_map = {
-        'ä': 'ae', 'ö': 'oe', 'ü': 'ue',
-        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
-        'ß': 'ss'
-    }
-    for umlaut, replacement in umlaut_map.items():
-        text = text.replace(umlaut, replacement)
-    return text
-
-
-def _strip_final_punct(text: str) -> str:
-    """
-    Strip final punctuation from text.
-
-    Args:
-        text: Text to process
-
-    Returns:
-        Text with final punctuation removed
-    """
-    return text.rstrip(".,!?;:")
-
-
 def check_gap_fill_correctness(exercise: dict, user_answer: str, correct_answer: str) -> bool:
     """
     Check if a gap-fill answer is correct based on grammatical context.

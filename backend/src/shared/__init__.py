@@ -1,75 +1,51 @@
 """
-XplorED - Shared Module
+XplorED - Shared Package
 
-This module provides shared components used throughout the backend application,
+This package provides shared functionality for the XplorED platform,
 following clean architecture principles as outlined in the documentation.
 
-Components:
-- constants: Application-wide constants and configuration values
-- exceptions: Custom exception classes for error handling
+Shared Modules:
+- constants: Application-wide constants and configuration
+- exceptions: Custom exception classes
 - types: Type definitions and data structures
+- text_utils: Shared text processing utilities
 
 For detailed architecture information, see: docs/backend_structure.md
 """
 
-from . import constants
-from . import exceptions
-from . import types
-
-# Re-export commonly used items for convenience
-from .constants import *
-from .exceptions import *
-from .types import *
+from .constants import CEFR_LEVELS
+from .exceptions import (
+    AIEvaluationError, DatabaseError, ValidationError, AuthenticationError,
+    ExerciseGenerationError, TopicMemoryError, XplorEDException,
+    ConfigurationError, ProcessingError, TimeoutError
+)
+from .types import Exercise, ExerciseBlock, QualityScore, UserLevel
+from .text_utils import _extract_json, _normalize_umlauts, _strip_final_punct
 
 __all__ = [
-    # Module imports
-    "constants",
-    "exceptions",
-    "types",
-
     # Constants
-    "DEFAULT_TOPICS",
-    "MISTRAL_API_URL",
-    "MISTRAL_MODEL",
-    "SM2_DEFAULT_EF",
-    "SM2_DEFAULT_REPETITIONS",
-    "SM2_DEFAULT_INTERVAL",
-    "QUALITY_PERFECT",
-    "QUALITY_GOOD",
-    "QUALITY_ACCEPTABLE",
-    "QUALITY_POOR",
-    "QUALITY_VERY_POOR",
-    "QUALITY_BLACKOUT",
-    "EXERCISE_TYPE_GAP_FILL",
-    "EXERCISE_TYPE_TRANSLATION",
-    "SKILL_TYPE_GAP_FILL",
-    "SKILL_TYPE_TRANSLATION",
-    "SKILL_TYPE_READING",
-    "MIN_USER_LEVEL",
-    "MAX_USER_LEVEL",
     "CEFR_LEVELS",
 
     # Exceptions
-    "GermanClassToolException",
     "AIEvaluationError",
     "DatabaseError",
     "ValidationError",
     "AuthenticationError",
     "ExerciseGenerationError",
     "TopicMemoryError",
+    "XplorEDException",
+    "ConfigurationError",
+    "ProcessingError",
+    "TimeoutError",
 
     # Types
     "Exercise",
     "ExerciseBlock",
-    "TopicMemoryEntry",
-    "VocabularyEntry",
     "QualityScore",
     "UserLevel",
-    "CEFRLevel",
-    "ExerciseType",
-    "SkillType",
-    "TopicName",
-    "TopicQualities",
-    "ExerciseAnswers",
-    "UserData",
+
+    # Text utilities
+    "_extract_json",
+    "_normalize_umlauts",
+    "_strip_final_punct",
 ]

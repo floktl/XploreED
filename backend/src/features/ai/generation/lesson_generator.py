@@ -3,7 +3,7 @@
 from features.grammar import detect_language_topics
 from features.ai.evaluation import update_topic_memory_reading
 from features.ai.memory.level_manager import check_auto_level_up
-from core.utils.helpers import run_in_background
+from core.processing import run_in_background
 
 
 def update_reading_memory_async(username: str, text: str) -> None:

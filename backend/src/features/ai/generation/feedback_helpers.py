@@ -105,7 +105,7 @@ def format_feedback_block(user_answer, correct_answer, alternatives=None, explan
         Formatted feedback block
     """
     try:
-        from features.ai.evaluation.translation_evaluation import _normalize_umlauts, _strip_final_punct
+        from shared.text_utils import _normalize_umlauts, _strip_final_punct
 
         # Normalize answers for comparison
         ua = _strip_final_punct(str(user_answer)).strip().lower()
@@ -151,7 +151,7 @@ def _adjust_gapfill_results(exercises: list, answers: dict, evaluation: dict | N
     """
     try:
         from difflib import SequenceMatcher
-        from features.ai.evaluation.translation_evaluation import _normalize_umlauts, _strip_final_punct
+        from shared.text_utils import _normalize_umlauts, _strip_final_punct
 
         if not evaluation or "results" not in evaluation:
             return evaluation

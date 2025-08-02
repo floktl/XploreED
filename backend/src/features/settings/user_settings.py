@@ -18,6 +18,7 @@ from typing import Dict, Any, List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime
+from shared.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ def get_user_settings(username: str) -> Dict[str, Any]:
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         logger.info(f"Getting settings for user {username}")
 
@@ -74,7 +75,7 @@ def get_user_settings(username: str) -> Dict[str, Any]:
         logger.info(f"Retrieved settings for user {username}")
         return settings
 
-    except ValueError as e:
+    except ValidationError as e:
         logger.error(f"Validation error getting user settings: {e}")
         raise
     except Exception as e:
@@ -104,10 +105,10 @@ def update_user_settings(username: str, settings_data: Dict[str, Any]) -> Tuple[
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         if not settings_data:
-            raise ValueError("Settings data is required")
+            raise ValidationError("Settings data is required")
 
         logger.info(f"Updating settings for user {username}")
 
@@ -153,7 +154,7 @@ def update_user_settings(username: str, settings_data: Dict[str, Any]) -> Tuple[
             logger.error(f"Failed to update settings for user {username}: {error_msg}")
             return False, error_msg
 
-    except ValueError as e:
+    except ValidationError as e:
         logger.error(f"Validation error updating user settings: {e}")
         return False, str(e)
     except Exception as e:
@@ -176,7 +177,7 @@ def get_account_statistics(username: str) -> Dict[str, Any]:
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         logger.info(f"Getting account statistics for user {username}")
 

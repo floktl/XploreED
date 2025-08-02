@@ -8,7 +8,7 @@ This guide covers the deployment of the XplorED backend across different environ
 
 ### **System Requirements**
 - **Docker**: Version 20.10 or higher
-- **Docker Compose**: Version 2.0 or higher
+- **Docker Compose**: Version 2.0 or hig_get_current_timestampher
 - **Python**: Version 3.9 or higher (for local development)
 - **Git**: Version control system
 

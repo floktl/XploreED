@@ -47,7 +47,7 @@ def get_all_game_results() -> List[Dict[str, Any]]:
         raise
 
 
-def get_user_game_results(username: str) -> List[Dict[str, Any]]:
+def get_admin_user_game_results(username: str) -> List[Dict[str, Any]]:
     """
     Get game results for a specific user.
 

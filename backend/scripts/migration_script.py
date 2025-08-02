@@ -268,6 +268,28 @@ def create_user_settings_table(cursor: sqlite3.Cursor) -> None:
     logger.info("User settings table created/verified")
 
 
+def create_support_requests_table(cursor: sqlite3.Cursor) -> None:
+    """Create the support_requests table for support ticket management."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS support_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            description TEXT NOT NULL,
+            urgency TEXT DEFAULT 'medium',
+            contact_method TEXT DEFAULT 'email',
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            attachments TEXT,
+            admin_notes TEXT
+        );
+        """
+    )
+    logger.info("Support requests table created/verified")
+
+
 def run_migration() -> None:
     """Execute the complete database migration process."""
     logger.info("🔄 Starting database migration...")
@@ -294,6 +316,7 @@ def run_migration() -> None:
         create_sessions_table(cursor)
         create_user_progress_table(cursor)
         create_user_settings_table(cursor)
+        create_support_requests_table(cursor)
 
         # Commit changes and close connection
         conn.commit()

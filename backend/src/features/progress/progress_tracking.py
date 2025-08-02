@@ -73,54 +73,6 @@ def track_lesson_progress(username: str, lesson_id: int, block_id: str, complete
         return False
 
 
-def get_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
-    """
-    Get completion status for each block in a lesson.
-
-    Args:
-        username: The username to get progress for
-        lesson_id: The lesson ID to get progress for
-
-    Returns:
-        Dictionary mapping block IDs to completion status
-
-    Raises:
-        ValueError: If username or lesson_id is invalid
-    """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if not lesson_id or lesson_id <= 0:
-            raise ValueError("Valid lesson ID is required")
-
-        logger.info(f"Getting lesson progress for user {username}, lesson {lesson_id}")
-
-        rows = select_rows(
-            "lesson_progress",
-            columns=["block_id", "completed"],
-            where="user_id = ? AND lesson_id = ?",
-            params=(username, lesson_id),
-        )
-
-        progress = {}
-        for row in rows:
-            block_id = row.get("block_id")
-            completed = bool(row.get("completed", 0))
-            if block_id:
-                progress[block_id] = completed
-
-        logger.info(f"Retrieved progress for {len(progress)} blocks for user {username}, lesson {lesson_id}")
-        return progress
-
-    except ValueError as e:
-        logger.error(f"Validation error getting lesson progress: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting lesson progress for user {username}, lesson {lesson_id}: {e}")
-        return {}
-
-
 def track_exercise_progress(username: str, block_id: str, score: float, total_questions: int) -> bool:
     """
     Track progress for exercise completion.

@@ -365,77 +365,6 @@ def mark_lesson_as_completed(username: str, lesson_id: int) -> Tuple[bool, Optio
         return False, f"Error marking lesson as completed: {str(e)}"
 
 
-def get_lesson_progress_summary(username: str, lesson_id: int) -> Dict[str, Any]:
-    """
-    Get a comprehensive progress summary for a lesson.
-
-    Args:
-        username: The username to get summary for
-        lesson_id: The lesson ID to get summary for
-
-    Returns:
-        Dictionary containing lesson progress summary
-
-    Raises:
-        ValueError: If required parameters are invalid
-    """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if not lesson_id or lesson_id <= 0:
-            raise ValueError("Valid lesson ID is required")
-
-        logger.info(f"Getting lesson progress summary for user {username}, lesson {lesson_id}")
-
-        # Get lesson information
-        lesson = select_one(
-            "lesson_content",
-            columns=["title", "created_at"],
-            where="id = ?",
-            params=(lesson_id,)
-        )
-
-        # Get completion status
-        status = check_lesson_completion_status(username, lesson_id)
-
-        # Get recent activity
-        recent_activity = select_rows(
-            "lesson_progress",
-            columns=["block_id", "completed", "updated_at"],
-            where="user_id = ? AND lesson_id = ?",
-            params=(username, lesson_id),
-            order_by="updated_at DESC",
-            limit=10
-        )
-
-        summary = {
-            "lesson_id": lesson_id,
-            "username": username,
-            "lesson_title": lesson.get("title", "Unknown Lesson") if lesson else "Unknown Lesson",
-            "lesson_created": lesson.get("created_at") if lesson else None,
-            "completion_status": status,
-            "recent_activity": recent_activity,
-            "summary_generated_at": datetime.datetime.utcnow().isoformat()
-        }
-
-        logger.info(f"Generated lesson progress summary for user {username}, lesson {lesson_id}")
-        return summary
-
-    except ValueError as e:
-        logger.error(f"Validation error getting lesson progress summary: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting lesson progress summary for user {username}, lesson {lesson_id}: {e}")
-        return {
-            "lesson_id": lesson_id,
-            "username": username,
-            "error": str(e),
-            "completion_status": {},
-            "recent_activity": []
-        }
-
-
 def reset_lesson_progress(username: str, lesson_id: int) -> bool:
     """
     Reset progress for a specific lesson.
@@ -485,4 +414,4 @@ def reset_lesson_progress(username: str, lesson_id: int) -> bool:
         raise
     except Exception as e:
         logger.error(f"Error resetting lesson progress for user {username}, lesson {lesson_id}: {e}")
-        return Falsegit 
+        return Falsegit

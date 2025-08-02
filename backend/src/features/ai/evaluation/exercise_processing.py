@@ -190,23 +190,3 @@ def process_ai_answers(
 
     logger.info(f"Completed processing {len(results)} exercises for user {username}")
     return results
-
-
-def _normalize_umlauts(text: str) -> str:
-    """
-    Normalize German umlauts for comparison.
-
-    Args:
-        text: Text to normalize
-
-    Returns:
-        Text with normalized umlauts
-    """
-    umlaut_map = {
-        'ä': 'ae', 'ö': 'oe', 'ü': 'ue',
-        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
-        'ß': 'ss'
-    }
-    for umlaut, replacement in umlaut_map.items():
-        text = text.replace(umlaut, replacement)
-    return text

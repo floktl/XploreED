@@ -17,7 +17,7 @@ import logging
 from typing import Dict, Any, List, Optional, Tuple
 
 from core.database.connection import select_rows, update_row, delete_rows
-from core.utils.helpers import user_exists
+from core.authentication import user_exists
 from werkzeug.security import generate_password_hash  # type: ignore
 
 logger = logging.getLogger(__name__)

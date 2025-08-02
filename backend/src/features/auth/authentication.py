@@ -18,6 +18,7 @@ from typing import Dict, Any, Optional, Tuple
 
 from core.database.connection import fetch_one
 from werkzeug.security import check_password_hash  # type: ignore
+from shared.exceptions import ValidationError, AuthenticationError
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +39,13 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[str]
     """
     try:
         if not username or not password:
-            raise ValueError("Username and password are required")
+            raise ValidationError("Username and password are required")
 
         username = username.strip()
         password = password.strip()
 
         if not username or not password:
-            raise ValueError("Username and password cannot be empty")
+            raise ValidationError("Username and password cannot be empty")
 
         logger.info(f"Attempting authentication for user {username}")
 
@@ -61,13 +62,13 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[str]
             return False, None, "Invalid username or password"
 
         # Create session
-        from api.middleware.session import session_manager
+        from core.session import session_manager
         session_id = session_manager.create_session(username)
 
         logger.info(f"Authentication successful for user {username}")
         return True, session_id, None
 
-    except ValueError as e:
+    except ValidationError as e:
         logger.error(f"Validation error in authentication: {e}")
         return False, None, str(e)
     except Exception as e:
@@ -90,7 +91,7 @@ def authenticate_admin(password: str) -> Tuple[bool, Optional[str], Optional[str
     """
     try:
         if not password:
-            raise ValueError("Password is required")
+            raise ValidationError("Password is required")
 
         admin_password = os.getenv("ADMIN_PASSWORD")
         if not admin_password:
@@ -102,7 +103,7 @@ def authenticate_admin(password: str) -> Tuple[bool, Optional[str], Optional[str
             return False, None, "Invalid credentials"
 
         # Create admin session
-        from api.middleware.session import session_manager
+        from core.session import session_manager
         session_id = session_manager.create_session("admin")
 
         logger.info("Admin authentication successful")

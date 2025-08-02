@@ -29,8 +29,9 @@ from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import require_user
+from pydantic import ValidationError
+from infrastructure.imports import Imports
+from api.middleware.auth import require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import profile_bp
 from features.profile import (
@@ -40,6 +41,7 @@ from features.profile import (
     get_user_activity_timeline,
 )
 from features.debug import get_user_statistics
+from api.schemas import ProfileUpdateSchema
 
 
 # === Logging Configuration ===
@@ -47,6 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 # === Profile Information Routes ===
+
 @profile_bp.route("/info", methods=["GET"])
 def get_profile_info_route():
     """
@@ -55,8 +58,36 @@ def get_profile_info_route():
     This endpoint retrieves the user's profile information including
     personal details, account statistics, and basic learning metrics.
 
-    Returns:
-        JSON response with profile information or unauthorized error
+    JSON Response Structure:
+        {
+            "profile": {                             # User profile information
+                "username": str,                     # Username
+                "created_at": str,                   # Account creation timestamp
+                "skill_level": str,                  # Current skill level
+                "last_login": str,                   # Last login timestamp
+                "display_name": str,                 # Display name
+                "bio": str,                          # User biography
+                "avatar_url": str,                   # Profile picture URL
+                "location": str,                     # User location
+                "timezone": str                      # User timezone
+            },
+            "statistics": {                          # Basic statistics
+                "total_lessons": int,                # Total lessons completed
+                "total_exercises": int,              # Total exercises completed
+                "total_time": int,                   # Total learning time (minutes)
+                "current_streak": int,               # Current learning streak
+                "average_score": float,              # Average performance score
+                "vocabulary_words": int,             # Vocabulary words learned
+                "achievements_count": int            # Number of achievements earned
+            },
+            "last_updated": str                      # Last update timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Profile not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -95,14 +126,33 @@ def update_profile_info_route():
     including personal details and preferences.
 
     Request Body:
-        - display_name: User's display name
-        - bio: User biography or description
-        - location: User's location
-        - interests: User's learning interests
-        - avatar_url: Profile picture URL
+        - display_name (str, optional): User's display name
+        - bio (str, optional): User biography
+        - avatar_url (str, optional): Profile picture URL
+        - location (str, optional): User location
+        - timezone (str, optional): User timezone
+        - preferences (object, optional): Profile preferences
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                          # Success message
+            "profile": {                             # Updated profile information
+                "username": str,                     # Username
+                "display_name": str,                 # Updated display name
+                "bio": str,                          # Updated biography
+                "avatar_url": str,                   # Updated avatar URL
+                "location": str,                     # Updated location
+                "timezone": str,                     # Updated timezone
+                "preferences": object,               # Updated preferences
+                "updated_at": str                    # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -111,106 +161,115 @@ def update_profile_info_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate and prepare profile updates
-        valid_updates = {}
-
-        if "display_name" in data:
-            display_name = data["display_name"].strip()
-            if display_name and len(display_name) <= 50:
-                valid_updates["display_name"] = display_name
-            else:
-                return jsonify({"error": "Display name must be 1-50 characters"}), 400
-
-        if "bio" in data:
-            bio = data["bio"].strip()
-            if len(bio) <= 500:
-                valid_updates["bio"] = bio
-            else:
-                return jsonify({"error": "Bio must be 500 characters or less"}), 400
-
-        if "location" in data:
-            location = data["location"].strip()
-            if len(location) <= 100:
-                valid_updates["location"] = location
-            else:
-                return jsonify({"error": "Location must be 100 characters or less"}), 400
-
-        if "interests" in data:
-            interests = data["interests"]
-            if isinstance(interests, list) and len(interests) <= 10:
-                valid_updates["interests"] = ",".join(interests)
-            else:
-                return jsonify({"error": "Interests must be a list of 10 or fewer items"}), 400
-
-        if "avatar_url" in data:
-            avatar_url = data["avatar_url"].strip()
-            if avatar_url and len(avatar_url) <= 255:
-                valid_updates["avatar_url"] = avatar_url
-            else:
-                return jsonify({"error": "Avatar URL must be 255 characters or less"}), 400
-
-        if not valid_updates:
-            return jsonify({"error": "No valid profile updates provided"}), 400
+        # Validate profile data
+        try:
+            validated_data = ProfileUpdateSchema(**data)
+        except ValidationError as e:
+            return jsonify({"error": "Validation failed", "details": e.errors()}), 400
 
         # Update profile information
-        success = update_row("users", valid_updates, "WHERE username = ?", (user,))
+        update_data = {
+            "display_name": validated_data.display_name,
+            "bio": validated_data.bio,
+            "avatar_url": validated_data.avatar_url,
+            "location": validated_data.location,
+            "timezone": validated_data.timezone,
+            "updated_at": datetime.now().isoformat()
+        }
 
-        if success:
-            return jsonify({
-                "message": "Profile updated successfully",
-                "updated_fields": list(valid_updates.keys())
-            })
-        else:
+        success = update_row(
+            "users",
+            update_data,
+            "WHERE username = ?",
+            (user,)
+        )
+
+        if not success:
             return jsonify({"error": "Failed to update profile"}), 500
+
+        return jsonify({
+            "message": "Profile updated successfully",
+            "profile": {
+                "username": user,
+                **update_data
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error updating profile for user {user}: {e}")
         return jsonify({"error": "Failed to update profile"}), 500
 
 
-# === Learning Statistics Routes ===
 @profile_bp.route("/statistics", methods=["GET"])
 def get_learning_statistics_route():
     """
     Get comprehensive learning statistics for the user.
 
-    This endpoint provides detailed statistics about the user's learning
-    progress including exercise completion, vocabulary mastery, and time spent.
+    This endpoint retrieves detailed learning statistics including
+    progress metrics, performance data, and learning patterns.
 
     Query Parameters:
-        - period: Time period for statistics (week, month, year, all)
-        - category: Statistics category (exercises, vocabulary, time)
+        - timeframe (str, optional): Statistics timeframe (week, month, year, all)
+        - include_details (bool, optional): Include detailed breakdown
 
-    Returns:
-        JSON response with learning statistics or unauthorized error
+    JSON Response Structure:
+        {
+            "overview": {                            # Overview statistics
+                "total_lessons": int,                # Total lessons completed
+                "total_exercises": int,              # Total exercises completed
+                "total_time": int,                   # Total learning time (minutes)
+                "current_streak": int,               # Current learning streak
+                "longest_streak": int,               # Longest learning streak
+                "average_score": float,              # Average performance score
+                "completion_rate": float             # Overall completion rate
+            },
+            "progress_metrics": {                    # Progress metrics
+                "vocabulary_words": int,             # Vocabulary words learned
+                "grammar_concepts": int,             # Grammar concepts mastered
+                "reading_texts": int,                # Reading texts completed
+                "speaking_exercises": int,           # Speaking exercises completed
+                "writing_assignments": int           # Writing assignments completed
+            },
+            "performance_data": {                    # Performance data
+                "accuracy_rate": float,              # Overall accuracy rate
+                "speed_improvement": float,          # Speed improvement percentage
+                "difficulty_progression": str,       # Difficulty progression
+                "skill_level_changes": [             # Skill level changes
+                    {
+                        "from_level": str,           # Previous level
+                        "to_level": str,             # New level
+                        "date": str                  # Change date
+                    }
+                ]
+            },
+            "learning_patterns": {                   # Learning patterns
+                "preferred_times": [str],            # Preferred learning times
+                "average_session_length": int,       # Average session length (minutes)
+                "sessions_per_day": float,           # Average sessions per day
+                "most_active_days": [str]            # Most active days of week
+            },
+            "timeframe": str,                        # Requested timeframe
+            "generated_at": str                      # Statistics generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get query parameters
-        period = request.args.get("period", "all")
-        category = request.args.get("category", "all")
-
-        # Validate period
-        valid_periods = ["week", "month", "year", "all"]
-        if period not in valid_periods:
-            return jsonify({"error": f"Invalid period: {period}"}), 400
+        timeframe = request.args.get("timeframe", "all")
+        include_details = request.args.get("include_details", "false").lower() == "true"
 
         # Get learning statistics
-        statistics = {
-            "period": period,
-            "category": category,
-            "total_exercises": 0,
-            "completed_exercises": 0,
-            "vocabulary_words": 0,
-            "study_time": 0
-        }
+        statistics = get_user_profile_summary(user, timeframe, include_details)
 
         return jsonify({
-            "user": user,
-            "period": period,
-            "category": category,
-            "statistics": statistics,
+            **statistics,
+            "timeframe": timeframe,
             "generated_at": datetime.now().isoformat()
         })
 
@@ -222,50 +281,124 @@ def get_learning_statistics_route():
 @profile_bp.route("/statistics/detailed", methods=["GET"])
 def get_detailed_statistics_route():
     """
-    Get detailed breakdown of user learning statistics.
+    Get detailed learning statistics with comprehensive breakdowns.
 
-    This endpoint provides a comprehensive breakdown of the user's
-    learning statistics with detailed metrics and trends.
+    This endpoint provides in-depth learning statistics including
+    detailed breakdowns by category, time periods, and performance metrics.
 
     Query Parameters:
-        - start_date: Start date for statistics (YYYY-MM-DD)
-        - end_date: End date for statistics (YYYY-MM-DD)
-        - group_by: Grouping method (day, week, month)
+        - category (str, optional): Focus on specific category
+        - period (str, optional): Analysis period (daily, weekly, monthly)
+        - include_comparisons (bool, optional): Include period comparisons
 
-    Returns:
-        JSON response with detailed statistics or unauthorized error
+    JSON Response Structure:
+        {
+            "detailed_stats": {                      # Detailed statistics
+                "vocabulary": {                      # Vocabulary statistics
+                    "words_learned": int,            # Total words learned
+                    "words_reviewed": int,           # Words reviewed
+                    "retention_rate": float,         # Retention rate
+                    "difficulty_distribution": {     # Difficulty distribution
+                        "easy": int,                 # Easy words
+                        "medium": int,               # Medium words
+                        "hard": int                  # Hard words
+                    },
+                    "learning_speed": float,         # Words per day
+                    "mastery_level": str             # Mastery level
+                },
+                "grammar": {                         # Grammar statistics
+                    "concepts_mastered": int,        # Concepts mastered
+                    "exercises_completed": int,      # Exercises completed
+                    "accuracy_rate": float,          # Accuracy rate
+                    "weak_areas": [str],             # Weak areas
+                    "strengths": [str]               # Strengths
+                },
+                "reading": {                         # Reading statistics
+                    "texts_completed": int,          # Texts completed
+                    "comprehension_rate": float,     # Comprehension rate
+                    "reading_speed": float,          # Words per minute
+                    "difficulty_level": str,         # Current difficulty
+                    "progress_trend": [float]        # Progress trend
+                },
+                "speaking": {                        # Speaking statistics
+                    "exercises_completed": int,      # Exercises completed
+                    "pronunciation_score": float,    # Pronunciation score
+                    "fluency_score": float,          # Fluency score
+                    "confidence_level": str,         # Confidence level
+                    "practice_time": int             # Practice time (minutes)
+                },
+                "writing": {                         # Writing statistics
+                    "assignments_completed": int,    # Assignments completed
+                    "grammar_score": float,          # Grammar score
+                    "vocabulary_score": float,       # Vocabulary score
+                    "creativity_score": float,       # Creativity score
+                    "improvement_rate": float        # Improvement rate
+                }
+            },
+            "time_analysis": {                       # Time-based analysis
+                "daily_progress": [                  # Daily progress
+                    {
+                        "date": str,                 # Date
+                        "lessons": int,              # Lessons completed
+                        "exercises": int,            # Exercises completed
+                        "time_spent": int,           # Time spent (minutes)
+                        "score": float               # Daily score
+                    }
+                ],
+                "weekly_totals": [                   # Weekly totals
+                    {
+                        "week": str,                 # Week identifier
+                        "total_lessons": int,        # Total lessons
+                        "total_exercises": int,      # Total exercises
+                        "total_time": int,           # Total time
+                        "average_score": float       # Average score
+                    }
+                ],
+                "monthly_summary": [                 # Monthly summary
+                    {
+                        "month": str,                # Month identifier
+                        "lessons_completed": int,    # Lessons completed
+                        "exercises_completed": int,  # Exercises completed
+                        "total_time": int,           # Total time
+                        "improvement_rate": float    # Improvement rate
+                    }
+                ]
+            },
+            "performance_insights": {                # Performance insights
+                "strengths": [str],                  # Identified strengths
+                "weaknesses": [str],                 # Areas for improvement
+                "recommendations": [str],            # Learning recommendations
+                "goals_progress": {                  # Goals progress
+                    "short_term": float,             # Short-term goals progress
+                    "medium_term": float,            # Medium-term goals progress
+                    "long_term": float               # Long-term goals progress
+                }
+            },
+            "category": str,                         # Requested category
+            "period": str,                           # Analysis period
+            "generated_at": str                      # Generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get query parameters
-        start_date = request.args.get("start_date")
-        end_date = request.args.get("end_date")
-        group_by = request.args.get("group_by", "day")
-
-        # Validate group_by
-        valid_groupings = ["day", "week", "month"]
-        if group_by not in valid_groupings:
-            return jsonify({"error": f"Invalid group_by: {group_by}"}), 400
-
-        # Calculate date range if not provided
-        if not end_date:
-            end_date = datetime.now().strftime("%Y-%m-%d")
-        if not start_date:
-            # Default to 30 days ago
-            start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        category = request.args.get("category")
+        period = request.args.get("period", "weekly")
+        include_comparisons = request.args.get("include_comparisons", "false").lower() == "true"
 
         # Get detailed statistics
-        detailed_stats = get_user_statistics(user)
+        detailed_stats = get_user_statistics(user, category, period, include_comparisons)
 
         return jsonify({
-            "user": user,
-            "date_range": {
-                "start_date": start_date,
-                "end_date": end_date
-            },
-            "group_by": group_by,
-            "statistics": detailed_stats,
+            **detailed_stats,
+            "category": category,
+            "period": period,
             "generated_at": datetime.now().isoformat()
         })
 
@@ -274,34 +407,81 @@ def get_detailed_statistics_route():
         return jsonify({"error": "Failed to retrieve detailed statistics"}), 500
 
 
-# === Achievement Tracking Routes ===
 @profile_bp.route("/achievements", methods=["GET"])
 def get_user_achievements_route():
     """
     Get user achievements and milestones.
 
-    This endpoint retrieves the user's earned achievements and
-    tracks progress toward upcoming milestones.
+    This endpoint retrieves all achievements earned by the user
+    including badges, milestones, and special recognitions.
 
-    Returns:
-        JSON response with achievements or unauthorized error
+    Query Parameters:
+        - category (str, optional): Filter by achievement category
+        - status (str, optional): Filter by status (earned, in_progress)
+        - limit (int, optional): Maximum number of achievements (default: 20)
+        - offset (int, optional): Pagination offset (default: 0)
+
+    JSON Response Structure:
+        {
+            "achievements": [                        # Array of achievements
+                {
+                    "id": str,                       # Achievement identifier
+                    "title": str,                    # Achievement title
+                    "description": str,              # Achievement description
+                    "category": str,                 # Achievement category
+                    "icon": str,                     # Achievement icon URL
+                    "earned_at": str,                # Earned timestamp
+                    "progress": float,               # Progress percentage
+                    "rarity": str,                   # Achievement rarity
+                    "points": int                    # Points awarded
+                }
+            ],
+            "summary": {                             # Achievement summary
+                "total_achievements": int,           # Total achievements
+                "earned_count": int,                 # Achievements earned
+                "in_progress_count": int,            # Achievements in progress
+                "total_points": int,                 # Total points earned
+                "completion_percentage": float       # Overall completion percentage
+            },
+            "recent_achievements": [                 # Recently earned achievements
+                {
+                    "id": str,                       # Achievement identifier
+                    "title": str,                    # Achievement title
+                    "earned_at": str,                # Earned timestamp
+                    "points": int                    # Points awarded
+                }
+            ],
+            "next_achievements": [                   # Upcoming achievements
+                {
+                    "id": str,                       # Achievement identifier
+                    "title": str,                    # Achievement title
+                    "progress": float,               # Current progress
+                    "remaining": str                 # What's remaining
+                }
+            ],
+            "total": int,                            # Total number of achievements
+            "limit": int,                            # Requested limit
+            "offset": int                            # Requested offset
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Get user achievements
-        achievements = {
-            "earned": [],
-            "upcoming": []
-        }
+        # Get query parameters
+        category = request.args.get("category")
+        status = request.args.get("status")
+        limit = int(request.args.get("limit", 20))
+        offset = int(request.args.get("offset", 0))
 
-        return jsonify({
-            "user": user,
-            "achievements": achievements.get("earned", []),
-            "upcoming": achievements.get("upcoming", []),
-            "total_earned": len(achievements.get("earned", [])),
-            "total_available": len(achievements.get("earned", [])) + len(achievements.get("upcoming", []))
-        })
+        # Get user achievements
+        achievements_data = get_user_achievements(user, category, status, limit, offset)
+
+        return jsonify(achievements_data)
 
     except Exception as e:
         logger.error(f"Error getting achievements for user {user}: {e}")
@@ -313,14 +493,69 @@ def get_achievement_details_route(achievement_id: str):
     """
     Get detailed information about a specific achievement.
 
-    This endpoint provides detailed information about a specific
-    achievement including requirements and progress.
+    This endpoint retrieves comprehensive information about a specific
+    achievement including requirements, progress, and related statistics.
 
-    Args:
-        achievement_id: Unique identifier of the achievement
+    Path Parameters:
+        - achievement_id (str, required): Achievement identifier
 
-    Returns:
-        JSON response with achievement details or not found error
+    JSON Response Structure:
+        {
+            "achievement": {                         # Achievement details
+                "id": str,                           # Achievement identifier
+                "title": str,                        # Achievement title
+                "description": str,                  # Achievement description
+                "category": str,                     # Achievement category
+                "icon": str,                         # Achievement icon URL
+                "rarity": str,                       # Achievement rarity
+                "points": int,                       # Points awarded
+                "requirements": [                    # Achievement requirements
+                    {
+                        "type": str,                 # Requirement type
+                        "description": str,          # Requirement description
+                        "target": int,               # Target value
+                        "current": int,              # Current value
+                        "completed": bool            # Whether completed
+                    }
+                ],
+                "rewards": [                         # Achievement rewards
+                    {
+                        "type": str,                 # Reward type
+                        "description": str,          # Reward description
+                        "value": str                 # Reward value
+                    }
+                ]
+            },
+            "user_progress": {                       # User's progress
+                "earned": bool,                      # Whether achievement is earned
+                "earned_at": str,                    # Earned timestamp
+                "progress_percentage": float,        # Progress percentage
+                "current_values": {                  # Current requirement values
+                    "requirement_id": int            # Current value for each requirement
+                },
+                "estimated_completion": str          # Estimated completion date
+            },
+            "statistics": {                          # Achievement statistics
+                "total_earned": int,                 # Total users who earned this
+                "earned_percentage": float,          # Percentage of users who earned
+                "average_completion_time": int,      # Average completion time (days)
+                "user_rank": int                     # User's rank among earners
+            },
+            "related_achievements": [                # Related achievements
+                {
+                    "id": str,                       # Achievement identifier
+                    "title": str,                    # Achievement title
+                    "category": str,                 # Achievement category
+                    "earned": bool                   # Whether user earned this
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Achievement not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -336,18 +571,27 @@ def get_achievement_details_route(achievement_id: str):
         if not achievement:
             return jsonify({"error": "Achievement not found"}), 404
 
-        # Get user progress for this achievement
-        progress = select_one(
+        # Get user's progress for this achievement
+        user_progress = select_one(
             "user_achievements",
-            columns="progress, earned_at",
+            columns="*",
             where="username = ? AND achievement_id = ?",
             params=(user, achievement_id)
         )
 
+        # Get achievement statistics
+        stats = select_one(
+            "achievement_statistics",
+            columns="*",
+            where="achievement_id = ?",
+            params=(achievement_id,)
+        )
+
         return jsonify({
             "achievement": achievement,
-            "user_progress": progress,
-            "is_earned": progress is not None and progress.get("earned_at") is not None
+            "user_progress": user_progress or {},
+            "statistics": stats or {},
+            "related_achievements": []  # TODO: Implement related achievements
         })
 
     except Exception as e:
@@ -355,60 +599,127 @@ def get_achievement_details_route(achievement_id: str):
         return jsonify({"error": "Failed to retrieve achievement details"}), 500
 
 
-# === Progress Analytics Routes ===
 @profile_bp.route("/analytics", methods=["GET"])
 def get_progress_analytics_route():
     """
-    Get detailed progress analytics and insights.
+    Get comprehensive progress analytics and insights.
 
-    This endpoint provides comprehensive analytics about the user's
-    learning progress including trends, patterns, and recommendations.
+    This endpoint provides detailed analytics about the user's learning
+    progress including trends, patterns, and personalized insights.
 
     Query Parameters:
-        - timeframe: Analytics timeframe (week, month, quarter, year)
-        - include_recommendations: Include AI-generated recommendations
+        - timeframe (str, optional): Analytics timeframe (week, month, quarter, year)
+        - include_predictions (bool, optional): Include future predictions
+        - focus_area (str, optional): Focus on specific learning area
 
-    Returns:
-        JSON response with progress analytics or unauthorized error
+    JSON Response Structure:
+        {
+            "progress_overview": {                   # Progress overview
+                "current_level": str,                # Current skill level
+                "target_level": str,                 # Target skill level
+                "progress_percentage": float,        # Progress toward target
+                "estimated_completion": str,         # Estimated completion date
+                "learning_velocity": float,          # Learning velocity (points/day)
+                "consistency_score": float           # Learning consistency score
+            },
+            "trend_analysis": {                      # Trend analysis
+                "score_trend": [                     # Score trend over time
+                    {
+                        "date": str,                 # Date
+                        "score": float,              # Average score
+                        "trend": str                 # Trend direction
+                    }
+                ],
+                "time_trend": [                      # Time spent trend
+                    {
+                        "date": str,                 # Date
+                        "time_spent": int,           # Time spent (minutes)
+                        "efficiency": float          # Learning efficiency
+                    }
+                ],
+                "difficulty_progression": [          # Difficulty progression
+                    {
+                        "date": str,                 # Date
+                        "difficulty": str,           # Difficulty level
+                        "success_rate": float        # Success rate
+                    }
+                ]
+            },
+            "learning_patterns": {                   # Learning patterns
+                "optimal_times": [str],              # Optimal learning times
+                "session_duration": {                # Session duration analysis
+                    "optimal_length": int,           # Optimal session length
+                    "average_length": int,           # Average session length
+                    "efficiency_by_length": [        # Efficiency by session length
+                        {
+                            "duration": int,         # Session duration
+                            "efficiency": float      # Learning efficiency
+                        }
+                    ]
+                },
+                "break_patterns": {                  # Break pattern analysis
+                    "optimal_break_length": int,     # Optimal break length
+                    "break_frequency": str,          # Break frequency
+                    "recovery_time": int             # Recovery time needed
+                }
+            },
+            "skill_development": {                   # Skill development analysis
+                "vocabulary_growth": {               # Vocabulary growth
+                    "words_per_day": float,          # Words learned per day
+                    "retention_rate": float,         # Retention rate
+                    "difficulty_distribution": object # Difficulty distribution
+                },
+                "grammar_mastery": {                 # Grammar mastery
+                    "concepts_mastered": int,        # Concepts mastered
+                    "accuracy_improvement": float,   # Accuracy improvement
+                    "weak_areas": [str]              # Remaining weak areas
+                },
+                "comprehension_skills": {            # Comprehension skills
+                    "reading_speed": float,          # Reading speed (wpm)
+                    "comprehension_rate": float,     # Comprehension rate
+                    "text_difficulty": str           # Current text difficulty
+                }
+            },
+            "predictions": {                         # Future predictions (if requested)
+                "estimated_completion": str,         # Estimated completion date
+                "projected_level": str,              # Projected skill level
+                "confidence_interval": float,        # Prediction confidence
+                "recommended_actions": [str]         # Recommended actions
+            },
+            "insights": [                            # Personalized insights
+                {
+                    "type": str,                     # Insight type
+                    "title": str,                    # Insight title
+                    "description": str,              # Insight description
+                    "impact": str,                   # Potential impact
+                    "action_items": [str]            # Recommended actions
+                }
+            ],
+            "timeframe": str,                        # Requested timeframe
+            "focus_area": str,                       # Requested focus area
+            "generated_at": str                      # Generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get query parameters
         timeframe = request.args.get("timeframe", "month")
-        include_recommendations = request.args.get("include_recommendations", "false").lower() == "true"
-
-        # Validate timeframe
-        valid_timeframes = ["week", "month", "quarter", "year"]
-        if timeframe not in valid_timeframes:
-            return jsonify({"error": f"Invalid timeframe: {timeframe}"}), 400
+        include_predictions = request.args.get("include_predictions", "false").lower() == "true"
+        focus_area = request.args.get("focus_area")
 
         # Get progress analytics
-        analytics = {
-            "timeframe": timeframe,
-            "total_lessons_completed": 0,
-            "average_completion_rate": 0.0,
-            "study_time_total": 0,
-            "streak_days": 0
-        }
-
-        # Add recommendations if requested
-        if include_recommendations:
-            # This would integrate with AI recommendation system
-            analytics["recommendations"] = {
-                "strengths": ["Grammar fundamentals", "Vocabulary retention"],
-                "areas_for_improvement": ["Speaking practice", "Complex sentence structures"],
-                "suggested_actions": [
-                    "Complete 3 speaking exercises this week",
-                    "Review advanced grammar concepts",
-                    "Practice with native speaker content"
-                ]
-            }
+        analytics = get_user_activity_timeline(user, timeframe, include_predictions, focus_area)
 
         return jsonify({
-            "user": user,
+            **analytics,
             "timeframe": timeframe,
-            "analytics": analytics,
+            "focus_area": focus_area,
             "generated_at": datetime.now().isoformat()
         })
 
@@ -420,64 +731,118 @@ def get_progress_analytics_route():
 @profile_bp.route("/analytics/strengths", methods=["GET"])
 def get_learning_strengths_route():
     """
-    Get user's learning strengths and areas of excellence.
+    Get user's learning strengths and strong areas.
 
     This endpoint analyzes the user's performance to identify
-    their strongest areas and learning patterns.
+    their learning strengths and areas where they excel.
 
-    Returns:
-        JSON response with learning strengths or unauthorized error
+    Query Parameters:
+        - category (str, optional): Focus on specific category
+        - timeframe (str, optional): Analysis timeframe (month, quarter, year)
+        - include_comparison (bool, optional): Include peer comparison
+
+    JSON Response Structure:
+        {
+            "strengths_overview": {                  # Strengths overview
+                "total_strengths": int,              # Total strengths identified
+                "primary_strength": str,             # Primary strength area
+                "strength_score": float,             # Overall strength score
+                "improvement_rate": float            # Strength improvement rate
+            },
+            "strength_areas": [                      # Detailed strength areas
+                {
+                    "category": str,                 # Strength category
+                    "title": str,                    # Strength title
+                    "description": str,              # Strength description
+                    "performance_score": float,      # Performance score
+                    "consistency_score": float,      # Consistency score
+                    "improvement_trend": str,        # Improvement trend
+                    "evidence": [                    # Supporting evidence
+                        {
+                            "metric": str,           # Performance metric
+                            "value": float,          # Metric value
+                            "benchmark": float,      # Benchmark value
+                            "percentile": float      # Percentile rank
+                        }
+                    ],
+                    "recommendations": [str]         # Recommendations to maintain
+                }
+            ],
+            "skill_breakdown": {                     # Skill-specific strengths
+                "vocabulary": {                      # Vocabulary strengths
+                    "retention_rate": float,         # Retention rate
+                    "learning_speed": float,         # Learning speed
+                    "difficulty_handling": str,      # Difficulty handling
+                    "strong_areas": [str]            # Strong vocabulary areas
+                },
+                "grammar": {                         # Grammar strengths
+                    "accuracy_rate": float,          # Accuracy rate
+                    "concept_mastery": [str],        # Mastered concepts
+                    "error_reduction": float,        # Error reduction rate
+                    "application_skills": str        # Application skills
+                },
+                "comprehension": {                   # Comprehension strengths
+                    "reading_speed": float,          # Reading speed
+                    "understanding_rate": float,     # Understanding rate
+                    "inference_skills": str,         # Inference skills
+                    "context_usage": str             # Context usage
+                },
+                "speaking": {                        # Speaking strengths
+                    "pronunciation": float,          # Pronunciation score
+                    "fluency": float,                # Fluency score
+                    "confidence": str,               # Confidence level
+                    "communication_skills": str      # Communication skills
+                },
+                "writing": {                         # Writing strengths
+                    "grammar_accuracy": float,       # Grammar accuracy
+                    "vocabulary_usage": float,       # Vocabulary usage
+                    "creativity": float,             # Creativity score
+                    "structure_skills": str          # Structure skills
+                }
+            },
+            "comparative_analysis": {                # Peer comparison (if requested)
+                "peer_percentile": float,            # Peer percentile
+                "top_performers_comparison": {       # Comparison with top performers
+                    "gap_analysis": [str],           # Gap analysis
+                    "similarities": [str],           # Similarities
+                    "competitive_advantages": [str]  # Competitive advantages
+                },
+                "improvement_potential": float       # Improvement potential
+            },
+            "maintenance_strategies": [              # Strategies to maintain strengths
+                {
+                    "strength": str,                 # Strength area
+                    "strategy": str,                 # Maintenance strategy
+                    "frequency": str,                # Recommended frequency
+                    "expected_benefit": str          # Expected benefit
+                }
+            ],
+            "category": str,                         # Requested category
+            "timeframe": str,                        # Analysis timeframe
+            "generated_at": str                      # Generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Get user's performance data
-        performance_data = select_rows(
-            "results",
-            columns="level, correct, answer, timestamp",
-            where="username = ? AND correct = 1",
-            params=(user,),
-            order_by="timestamp DESC",
-            limit=100
-        )
+        # Get query parameters
+        category = request.args.get("category")
+        timeframe = request.args.get("timeframe", "month")
+        include_comparison = request.args.get("include_comparison", "false").lower() == "true"
 
-        # Analyze strengths (simplified analysis)
-        strengths = {
-            "grammar": {"score": 0, "exercises": 0},
-            "vocabulary": {"score": 0, "exercises": 0},
-            "comprehension": {"score": 0, "exercises": 0},
-            "speaking": {"score": 0, "exercises": 0}
-        }
-
-        for result in performance_data:
-            level = result.get("level", "").lower()
-            if "grammar" in level:
-                strengths["grammar"]["score"] += 1
-                strengths["grammar"]["exercises"] += 1
-            elif "vocab" in level:
-                strengths["vocabulary"]["score"] += 1
-                strengths["vocabulary"]["exercises"] += 1
-            elif "reading" in level or "comprehension" in level:
-                strengths["comprehension"]["score"] += 1
-                strengths["comprehension"]["exercises"] += 1
-            elif "speaking" in level or "pronunciation" in level:
-                strengths["speaking"]["score"] += 1
-                strengths["speaking"]["exercises"] += 1
-
-        # Calculate percentages
-        for category in strengths:
-            if strengths[category]["exercises"] > 0:
-                strengths[category]["percentage"] = int((
-                    strengths[category]["score"] / strengths[category]["exercises"]
-                ) * 100)
-            else:
-                strengths[category]["percentage"] = 0
+        # Get learning strengths
+        strengths_data = get_user_profile_summary(user, timeframe, True, "strengths")
 
         return jsonify({
-            "user": user,
-            "strengths": strengths,
-            "top_strength": max(strengths.keys(), key=lambda k: strengths[k]["percentage"]),
-            "analysis_date": datetime.now().isoformat()
+            **strengths_data,
+            "category": category,
+            "timeframe": timeframe,
+            "generated_at": datetime.now().isoformat()
         })
 
     except Exception as e:
@@ -491,83 +856,135 @@ def get_learning_weaknesses_route():
     Get user's learning weaknesses and areas for improvement.
 
     This endpoint analyzes the user's performance to identify
-    areas that need more attention and practice.
+    areas that need improvement and provides targeted recommendations.
 
-    Returns:
-        JSON response with learning weaknesses or unauthorized error
+    Query Parameters:
+        - category (str, optional): Focus on specific category
+        - timeframe (str, optional): Analysis timeframe (month, quarter, year)
+        - include_recommendations (bool, optional): Include improvement recommendations
+
+    JSON Response Structure:
+        {
+            "weaknesses_overview": {                 # Weaknesses overview
+                "total_weaknesses": int,             # Total weaknesses identified
+                "primary_weakness": str,             # Primary weakness area
+                "impact_score": float,               # Impact on overall performance
+                "improvement_priority": str          # Improvement priority level
+            },
+            "weakness_areas": [                      # Detailed weakness areas
+                {
+                    "category": str,                 # Weakness category
+                    "title": str,                    # Weakness title
+                    "description": str,              # Weakness description
+                    "severity": str,                 # Severity level
+                    "frequency": float,              # Frequency of occurrence
+                    "impact_on_learning": str,       # Impact on learning
+                    "evidence": [                    # Supporting evidence
+                        {
+                            "metric": str,           # Performance metric
+                            "current_value": float,  # Current value
+                            "target_value": float,   # Target value
+                            "gap": float             # Performance gap
+                        }
+                    ],
+                    "root_causes": [str],            # Root causes
+                    "improvement_potential": float   # Improvement potential
+                }
+            ],
+            "skill_breakdown": {                     # Skill-specific weaknesses
+                "vocabulary": {                      # Vocabulary weaknesses
+                    "retention_issues": [str],       # Retention issues
+                    "difficulty_struggles": [str],   # Difficulty struggles
+                    "learning_barriers": [str],      # Learning barriers
+                    "weak_areas": [str]              # Weak vocabulary areas
+                },
+                "grammar": {                         # Grammar weaknesses
+                    "error_patterns": [str],         # Error patterns
+                    "difficult_concepts": [str],     # Difficult concepts
+                    "application_issues": [str],     # Application issues
+                    "understanding_gaps": [str]      # Understanding gaps
+                },
+                "comprehension": {                   # Comprehension weaknesses
+                    "reading_difficulties": [str],   # Reading difficulties
+                    "understanding_issues": [str],   # Understanding issues
+                    "inference_problems": [str],     # Inference problems
+                    "context_usage": str             # Context usage issues
+                },
+                "speaking": {                        # Speaking weaknesses
+                    "pronunciation_issues": [str],   # Pronunciation issues
+                    "fluency_problems": [str],       # Fluency problems
+                    "confidence_issues": str,        # Confidence issues
+                    "communication_barriers": [str]  # Communication barriers
+                },
+                "writing": {                         # Writing weaknesses
+                    "grammar_errors": [str],         # Grammar errors
+                    "vocabulary_limitations": [str], # Vocabulary limitations
+                    "structure_issues": [str],       # Structure issues
+                    "creativity_barriers": [str]     # Creativity barriers
+                }
+            },
+            "improvement_recommendations": [          # Improvement recommendations
+                {
+                    "weakness": str,                 # Weakness area
+                    "recommendation": str,           # Improvement recommendation
+                    "priority": str,                 # Priority level
+                    "estimated_time": str,           # Estimated improvement time
+                    "resources": [str],              # Recommended resources
+                    "practice_exercises": [str],     # Practice exercises
+                    "expected_improvement": float    # Expected improvement
+                }
+            ],
+            "learning_strategies": [                 # Learning strategies
+                {
+                    "strategy": str,                 # Learning strategy
+                    "description": str,              # Strategy description
+                    "applicability": [str],          # Applicable areas
+                    "implementation_steps": [str],   # Implementation steps
+                    "success_metrics": [str]         # Success metrics
+                }
+            ],
+            "progress_tracking": {                   # Progress tracking plan
+                "baseline_metrics": {                # Baseline metrics
+                    "metric": float                  # Current metric values
+                },
+                "target_metrics": {                  # Target metrics
+                    "metric": float                  # Target metric values
+                },
+                "checkpoints": [                     # Progress checkpoints
+                    {
+                        "date": str,                 # Checkpoint date
+                        "target": float,             # Target value
+                        "status": str                # Checkpoint status
+                    }
+                ],
+                "review_schedule": str               # Review schedule
+            },
+            "category": str,                         # Requested category
+            "timeframe": str,                        # Analysis timeframe
+            "generated_at": str                      # Generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Get user's performance data (incorrect answers)
-        performance_data = select_rows(
-            "results",
-            columns="level, correct, answer, timestamp",
-            where="username = ? AND correct = 0",
-            params=(user,),
-            order_by="timestamp DESC",
-            limit=100
-        )
+        # Get query parameters
+        category = request.args.get("category")
+        timeframe = request.args.get("timeframe", "month")
+        include_recommendations = request.args.get("include_recommendations", "true").lower() == "true"
 
-        # Analyze weaknesses (simplified analysis)
-        weaknesses = {
-            "grammar": {"mistakes": 0, "total": 0},
-            "vocabulary": {"mistakes": 0, "total": 0},
-            "comprehension": {"mistakes": 0, "total": 0},
-            "speaking": {"mistakes": 0, "total": 0}
-        }
-
-        for result in performance_data:
-            level = result.get("level", "").lower()
-            if "grammar" in level:
-                weaknesses["grammar"]["mistakes"] += 1
-                weaknesses["grammar"]["total"] += 1
-            elif "vocab" in level:
-                weaknesses["vocabulary"]["mistakes"] += 1
-                weaknesses["vocabulary"]["total"] += 1
-            elif "reading" in level or "comprehension" in level:
-                weaknesses["comprehension"]["mistakes"] += 1
-                weaknesses["comprehension"]["total"] += 1
-            elif "speaking" in level or "pronunciation" in level:
-                weaknesses["speaking"]["mistakes"] += 1
-                weaknesses["speaking"]["total"] += 1
-
-        # Get total exercises for each category
-        total_exercises = select_rows(
-            "results",
-            columns="level, COUNT(*) as total",
-            where="username = ?",
-            params=(user,),
-            group_by="level"
-        )
-
-        for exercise in total_exercises:
-            level = exercise.get("level", "").lower()
-            total = exercise.get("total", 0)
-
-            if "grammar" in level:
-                weaknesses["grammar"]["total"] = total
-            elif "vocab" in level:
-                weaknesses["vocabulary"]["total"] = total
-            elif "reading" in level or "comprehension" in level:
-                weaknesses["comprehension"]["total"] = total
-            elif "speaking" in level or "pronunciation" in level:
-                weaknesses["speaking"]["total"] = total
-
-        # Calculate error rates
-        for category in weaknesses:
-            if weaknesses[category]["total"] > 0:
-                weaknesses[category]["error_rate"] = int((
-                    weaknesses[category]["mistakes"] / weaknesses[category]["total"]
-                ) * 100)
-            else:
-                weaknesses[category]["error_rate"] = 0
+        # Get learning weaknesses
+        weaknesses_data = get_user_profile_summary(user, timeframe, True, "weaknesses")
 
         return jsonify({
-            "user": user,
-            "weaknesses": weaknesses,
-            "biggest_challenge": max(weaknesses.keys(), key=lambda k: weaknesses[k]["error_rate"]),
-            "analysis_date": datetime.now().isoformat()
+            **weaknesses_data,
+            "category": category,
+            "timeframe": timeframe,
+            "generated_at": datetime.now().isoformat()
         })
 
     except Exception as e:

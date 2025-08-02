@@ -17,7 +17,6 @@ import logging
 import random
 from typing import Dict, Any, List, Optional
 
-from core.services.import_service import *
 from features.ai.evaluation import (
     evaluate_answers_with_ai,
     process_ai_answers
@@ -27,7 +26,7 @@ from features.ai.generation.feedback_helpers import (
     generate_feedback_prompt
 )
 from core.database.connection import fetch_topic_memory
-from core.utils.helpers import run_in_background
+from core.processing import run_in_background
 from core.database.connection import select_rows
 from .feedback_session import (
     create_feedback_session,

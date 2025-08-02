@@ -32,6 +32,13 @@ from .lesson_management import (
     get_lesson_analytics,
 )
 
+from .block_management import (
+    update_lesson_blocks_from_html,
+    get_lesson_block_ids,
+    delete_lesson_blocks,
+    # extract_lesson_block_ids_from_html,  # Renamed to avoid conflict with core.processing
+)
+
 # Re-export all lessons functions for backward compatibility
 __all__ = [
     # Lesson retrieval
@@ -50,4 +57,9 @@ __all__ = [
     "update_lesson_content",
     "publish_lesson",
     "get_lesson_analytics",
+
+    # Block management
+    "update_lesson_blocks_from_html",
+    "get_lesson_block_ids",
+    "delete_lesson_blocks",
 ]

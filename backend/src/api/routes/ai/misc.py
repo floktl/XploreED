@@ -14,8 +14,7 @@ import logging
 from typing import Dict, Any
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import require_user
+from api.middleware.auth import require_user
 from config.blueprint import ai_bp
 from core.database.connection import select_one, select_rows, insert_row
 from features.ai.generation.misc_helpers import stream_ai_answer

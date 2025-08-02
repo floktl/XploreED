@@ -30,17 +30,17 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import is_admin
+from infrastructure.imports import Imports
+from api.middleware.auth import is_admin
 from core.database.connection import select_one, select_rows, update_row, delete_rows
 from config.blueprint import admin_bp
 from features.admin import (
     get_all_game_results,
-    get_user_game_results,
+    get_admin_user_game_results,
     create_lesson_content,
     get_all_lessons,
     get_lesson_by_id,
-    update_lesson_content,
+    update_admin_lesson_content,
     delete_lesson_content,
     get_lesson_progress_summary,
     get_individual_lesson_progress,
@@ -55,6 +55,7 @@ logger = logging.getLogger(__name__)
 
 
 # === User Management Routes ===
+
 @admin_bp.route("/users", methods=["GET"])
 def get_users_route():
     """
@@ -64,14 +65,36 @@ def get_users_route():
     management including account status, activity, and statistics.
 
     Query Parameters:
-        - status: Filter by user status (active, inactive, suspended)
-        - skill_level: Filter by skill level
-        - limit: Maximum number of users to return
-        - offset: Pagination offset
-        - search: Search by username or email
+        - status (str, optional): Filter by user status (active, inactive, suspended)
+        - skill_level (str, optional): Filter by skill level
+        - limit (int, optional): Maximum number of users to return (default: 50)
+        - offset (int, optional): Pagination offset (default: 0)
+        - search (str, optional): Search by username or email
 
-    Returns:
-        JSON response with user data or unauthorized error
+    JSON Response Structure:
+        {
+            "users": [                            # Array of user data
+                {
+                    "id": int,                    # User identifier
+                    "username": str,              # Username
+                    "email": str,                 # Email address
+                    "skill_level": str,           # Skill level
+                    "status": str,                # Account status
+                    "created_at": str,            # Account creation timestamp
+                    "last_login": str,            # Last login timestamp
+                    "is_admin": bool              # Admin status
+                }
+            ],
+            "total": int,                         # Total number of users
+            "limit": int,                         # Requested limit
+            "offset": int                         # Requested offset
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 500: Internal server error
     """
     try:
         # Check admin privileges
@@ -142,11 +165,49 @@ def get_user_details_route(username: str):
     This endpoint provides comprehensive information about a specific
     user including their activity, progress, and account details.
 
-    Args:
-        username: Username of the user to get details for
+    Path Parameters:
+        - username (str, required): Username of the user to get details for
 
-    Returns:
-        JSON response with user details or not found error
+    JSON Response Structure:
+        {
+            "user": {                             # User information
+                "id": int,                        # User identifier
+                "username": str,                  # Username
+                "email": str,                     # Email address
+                "skill_level": str,               # Skill level
+                "status": str,                    # Account status
+                "created_at": str,                # Account creation timestamp
+                "last_login": str,                # Last login timestamp
+                "is_admin": bool,                 # Admin status
+                "profile_complete": bool          # Profile completion status
+            },
+            "activity": {                         # User activity data
+                "total_sessions": int,            # Total login sessions
+                "last_activity": str,             # Last activity timestamp
+                "average_session_time": float,    # Average session duration
+                "preferred_times": [str]          # Preferred activity times
+            },
+            "progress": {                         # Learning progress
+                "lessons_completed": int,         # Completed lessons
+                "exercises_completed": int,       # Completed exercises
+                "total_time_spent": int,          # Total learning time in minutes
+                "current_streak": int,            # Current learning streak
+                "average_score": float            # Average performance score
+            },
+            "statistics": {                       # Performance statistics
+                "vocabulary_words": int,          # Vocabulary words learned
+                "grammar_exercises": int,         # Grammar exercises completed
+                "reading_exercises": int,         # Reading exercises completed
+                "speaking_exercises": int         # Speaking exercises completed
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 404: User not found
+        - 500: Internal server error
     """
     try:
         # Check admin privileges
@@ -154,48 +215,36 @@ def get_user_details_route(username: str):
             return jsonify({"error": "Unauthorized - Admin access required"}), 401
 
         # Get user details
-        user = select_one(
+        user_data = select_one(
             "users",
             columns="*",
             where="username = ?",
             params=(username,)
         )
 
-        if not user:
+        if not user_data:
             return jsonify({"error": "User not found"}), 404
 
-        # Get user activity statistics
-        activity_stats = select_one(
-            "results",
-            columns="COUNT(*) as total_exercises, SUM(correct) as correct_answers",
+        # Get user activity data
+        activity_data = select_one(
+            "user_activity",
+            columns="*",
             where="username = ?",
             params=(username,)
         )
 
-        # Get recent activity
-        recent_activity = select_rows(
-            "results",
-            columns="level, correct, timestamp",
-            where="username = ?",
-            params=(username,),
-            order_by="timestamp DESC",
-            limit=10
-        )
-
-        # Get vocabulary progress
-        vocab_progress = select_one(
-            "vocab_log",
-            columns="COUNT(*) as total_words, COUNT(DISTINCT word) as unique_words",
+        # Get user progress data
+        progress_data = select_one(
+            "user_progress",
+            columns="*",
             where="username = ?",
             params=(username,)
         )
 
         return jsonify({
-            "user": user,
-            "activity_stats": activity_stats,
-            "recent_activity": recent_activity,
-            "vocab_progress": vocab_progress,
-            "last_updated": datetime.now().isoformat()
+            "user": user_data,
+            "activity": activity_data or {},
+            "progress": progress_data or {}
         })
 
     except Exception as e:
@@ -208,19 +257,42 @@ def update_user_status_route(username: str):
     """
     Update user account status (admin only).
 
-    This endpoint allows administrators to update user account status
-    including activation, suspension, and role changes.
+    This endpoint allows administrators to update user account status,
+    including activation, suspension, and account management.
 
-    Args:
-        username: Username of the user to update
+    Path Parameters:
+        - username (str, required): Username of the user to update
 
     Request Body:
-        - status: New account status (active, inactive, suspended)
-        - is_admin: Admin role status
-        - reason: Reason for status change (optional)
+        - status (str, required): New account status
+        - reason (str, optional): Reason for status change
+        - notes (str, optional): Administrative notes
 
-    Returns:
-        JSON response with update status or error details
+    Valid Status Values:
+        - active: Active account
+        - inactive: Inactive account
+        - suspended: Suspended account
+        - banned: Banned account
+        - pending: Pending activation
+
+    JSON Response Structure:
+        {
+            "message": str,                       # Success message
+            "user": {
+                "username": str,                  # Username
+                "status": str,                    # Updated status
+                "updated_at": str,                # Update timestamp
+                "updated_by": str                 # Admin who made the change
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid status or data
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 404: User not found
+        - 500: Internal server error
     """
     try:
         # Check admin privileges
@@ -232,10 +304,22 @@ def update_user_status_route(username: str):
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
+        status = data.get("status")
+        reason = data.get("reason", "")
+        notes = data.get("notes", "")
+
+        if not status:
+            return jsonify({"error": "Status is required"}), 400
+
+        # Validate status
+        valid_statuses = ["active", "inactive", "suspended", "banned", "pending"]
+        if status not in valid_statuses:
+            return jsonify({"error": f"Invalid status: {status}"}), 400
+
         # Check if user exists
         user = select_one(
             "users",
-            columns="id, username",
+            columns="id",
             where="username = ?",
             params=(username,)
         )
@@ -243,34 +327,43 @@ def update_user_status_route(username: str):
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        # Prepare updates
-        updates = {}
-
-        if "status" in data:
-            status = data["status"]
-            valid_statuses = ["active", "inactive", "suspended"]
-            if status in valid_statuses:
-                updates["status"] = status
-            else:
-                return jsonify({"error": f"Invalid status: {status}"}), 400
-
-        if "is_admin" in data:
-            updates["is_admin"] = bool(data["is_admin"])
-
-        if not updates:
-            return jsonify({"error": "No valid updates provided"}), 400
-
         # Update user status
-        success = update_row("users", updates, "WHERE username = ?", (username,))
+        success = update_row(
+            "users",
+            {
+                "status": status,
+                "updated_at": datetime.now().isoformat()
+            },
+            "WHERE username = ?",
+            (username,)
+        )
 
-        if success:
-            return jsonify({
-                "message": "User status updated successfully",
-                "username": username,
-                "updated_fields": list(updates.keys())
-            })
-        else:
+        if not success:
             return jsonify({"error": "Failed to update user status"}), 500
+
+        # Log the status change
+        admin_user = get_current_user()
+        status_log = {
+            "username": username,
+            "old_status": user.get("status"),
+            "new_status": status,
+            "reason": reason,
+            "notes": notes,
+            "updated_by": admin_user,
+            "updated_at": datetime.now().isoformat()
+        }
+
+        insert_row("user_status_log", status_log)
+
+        return jsonify({
+            "message": f"User status updated to {status}",
+            "user": {
+                "username": username,
+                "status": status,
+                "updated_at": datetime.now().isoformat(),
+                "updated_by": admin_user
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error updating user status for {username}: {e}")

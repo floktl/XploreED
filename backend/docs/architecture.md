@@ -38,10 +38,12 @@ api/routes/
 │   ├── lesson.py         # Lesson generation
 │   ├── reading.py        # Reading comprehension
 │   ├── training.py       # Training exercises
-│   └── tts.py           # Text-to-speech
+│   ├── tts.py           # Text-to-speech
+│   └── misc.py          # Miscellaneous AI features
 ├── auth.py              # Authentication & authorization
 ├── user.py              # User management
 ├── lessons.py           # Lesson content
+├── lesson_progress.py   # Lesson progress tracking
 ├── exercise.py          # Exercise handling
 ├── game.py              # Interactive games
 ├── profile.py           # User profiles
@@ -50,6 +52,16 @@ api/routes/
 ├── translate.py         # Translation services
 ├── admin.py             # Admin functionality
 └── debug.py             # Debug endpoints
+```
+
+#### **API Structure**
+```
+api/
+├── routes/              # Route handlers
+├── schemas/             # Request/response schemas
+├── middleware/          # Request middleware
+├── templates/           # HTML templates
+└── __init__.py         # API initialization
 ```
 
 #### **Middleware**
@@ -67,25 +79,43 @@ The features layer contains business logic organized by domain.
 ```
 ai/
 ├── generation/           # Content generation
-│   ├── exercise_generator.py
-│   ├── lesson_generator.py
-│   └── helpers.py
+│   ├── exercise_creation.py
+│   ├── exercise_processing.py
+│   ├── lesson_creation.py
+│   ├── lesson_processing.py
+│   ├── reading_creation.py
+│   ├── reading_processing.py
+│   ├── training_creation.py
+│   └── training_processing.py
 ├── evaluation/           # AI evaluation
-│   ├── exercise_evaluator.py
-│   └── translation_evaluator.py
+│   ├── exercise_evaluation.py
+│   ├── exercise_helpers.py
+│   ├── feedback_evaluation.py
+│   ├── feedback_helpers.py
+│   ├── reading_evaluation.py
+│   ├── reading_helpers.py
+│   ├── training_evaluation.py
+│   └── training_helpers.py
+├── feedback/             # Feedback processing
+│   ├── feedback_generation.py
+│   └── feedback_processing.py
 ├── memory/              # Spaced repetition
-│   ├── algorithm.py
-│   ├── vocabulary_memory.py
-│   └── spaced_repetition.py
-└── prompts/             # AI prompt templates
-    ├── exercise_prompts.py
-    └── utils.py
+│   ├── level_manager.py
+│   └── logger.py
+├── prompts/             # AI prompt templates
+│   ├── ai_assistance_prompts.py
+│   ├── evaluation_prompts.py
+│   ├── exercise_prompts.py
+│   ├── feedback_prompts.py
+│   └── lesson_prompts.py
+└── feedback_generation.py # Main feedback generation
 ```
 
 #### **Domain Modules**
 - **`auth/`**: Authentication & authorization logic
 - **`user/`**: User management & analytics
-- **`lessons/`**: Lesson content & progress tracking
+- **`lessons/`**: Lesson content & management
+- **`lesson_progress/`**: Progress tracking
 - **`vocabulary/`**: Vocabulary management
 - **`grammar/`**: Grammar detection & analysis
 - **`game/`**: Interactive learning games
@@ -95,6 +125,9 @@ ai/
 - **`support/`**: Help & support features
 - **`admin/`**: Administrative functions
 - **`debug/`**: Debugging utilities
+- **`exercise/`**: Exercise management
+- **`progress/`**: Progress analytics
+- **`spaced_repetition/`**: Spaced repetition algorithm
 
 ### **3. Core Layer (`src/core/`)**
 
@@ -107,14 +140,25 @@ The core layer provides foundational services and utilities.
 - **ORM-like Interface**: Simplified data access
 
 #### **Services (`core/services/`)**
-- **Import Service**: Data import utilities
-- **Core Business Logic**: Shared business operations
+- **Exercise Service**: Exercise-related operations
+- **Game Service**: Game logic and management
+- **Lesson Service**: Lesson content operations
+- **Profile Service**: User profile operations
+- **User Service**: User management operations
 
-#### **Utils (`core/utils/`)**
-- **Database Helpers**: Database utility functions
-- **HTML Helpers**: HTML processing utilities
-- **JSON Helpers**: JSON manipulation utilities
-- **General Helpers**: Common utility functions
+#### **Authentication (`core/authentication/`)**
+- **User Management**: User authentication and authorization
+- **Session Management**: Session handling and validation
+
+#### **Processing (`core/processing/`)**
+- **Background Processing**: Asynchronous task handling
+- **HTML Processing**: HTML content processing
+
+#### **Session (`core/session/`)**
+- **Session Manager**: Session state management
+
+#### **Validation (`core/validation/`)**
+- **JSON Validator**: Request data validation
 
 ### **4. External Layer (`src/external/`)**
 
@@ -152,6 +196,14 @@ The configuration layer manages application settings.
 - **`app.py`**: Flask application configuration
 - **`blueprint.py`**: Blueprint registration
 - **`extensions.py`**: Flask extension setup
+- **`logging_config.py`**: Logging configuration
+
+### **7. Infrastructure (`src/infrastructure/`)**
+
+The infrastructure layer handles system-level concerns.
+
+#### **Components**
+- **`imports/`**: Route imports and initialization
 
 ## **Data Flow Architecture**
 

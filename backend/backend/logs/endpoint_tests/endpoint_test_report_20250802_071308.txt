@@ -1,0 +1,113 @@
+XplorED Backend Endpoint Test Report
+Generated: Sat Aug  2 07:13:08 UTC 2025
+Backend URL: http://localhost:5050
+==========================================
+[GET] / - CLIENT_ERROR - Root endpoint (should return 404)
+[GET] /api - CLIENT_ERROR - API prefix endpoint
+[POST] /api/register - CLIENT_ERROR - User registration
+[POST] /api/login - CLIENT_ERROR - User login
+[POST] /api/login - SUCCESS - Admin login
+[POST] /api/logout - SUCCESS - User logout
+[GET] /api/session - CLIENT_ERROR - Session validation
+[POST] /api/password/reset - CLIENT_ERROR - Password reset request
+[POST] /api/2fa/enable - ERROR - 2FA enable
+[GET] /api/profile - SUCCESS - Get user profile
+[GET] /api/me - SUCCESS - Get current user info
+[GET] /api/role - SUCCESS - Get user role
+[GET] /api/vocabulary - ERROR - Get user vocabulary
+[GET] /api/vocab-train - ERROR - Get vocabulary training
+[POST] /api/save-vocab - CLIENT_ERROR - Save vocabulary
+[GET] /api/topic-memory - SUCCESS - Get topic memory
+[GET] /api/topic-weaknesses - SUCCESS - Get topic weaknesses
+[GET] /api/user-level - SUCCESS - Get user level
+[GET] /api/info - CLIENT_ERROR - Get profile info
+[GET] /api/statistics - ERROR - Get profile statistics
+[GET] /api/statistics/detailed - ERROR - Get detailed statistics
+[GET] /api/achievements - ERROR - Get achievements
+[GET] /api/analytics - SUCCESS - Get profile analytics
+[GET] /api/analytics/strengths - ERROR - Get strengths analytics
+[GET] /api/analytics/weaknesses - ERROR - Get weaknesses analytics
+[GET] /api/settings/preferences - SUCCESS - Get user preferences
+[GET] /api/settings/learning - ERROR - Get learning settings
+[GET] /api/settings/notifications - ERROR - Get notification settings
+[GET] /api/settings/privacy - ERROR - Get privacy settings
+[GET] /api/settings/account - ERROR - Get account settings
+[GET] /api/settings/export - ERROR - Export user data
+[GET] /api/lessons - SUCCESS - Get lessons list
+[GET] /api/lessons/1 - CLIENT_ERROR - Get specific lesson
+[GET] /api/lessons/1/progress - CLIENT_ERROR - Get lesson progress
+[GET] /api/lessons/1/analytics - CLIENT_ERROR - Get lesson analytics
+[GET] /api/progress - SUCCESS - Get progress summary
+[GET] /api/progress/summary - SUCCESS - Get progress summary
+[POST] /api/track/exercise - CLIENT_ERROR - Track exercise progress
+[POST] /api/track/vocabulary - ERROR - Track vocabulary progress
+[POST] /api/track/game - CLIENT_ERROR - Track game progress
+[POST] /api/reset - ERROR - Reset progress
+[GET] /api/analytics - SUCCESS - Get progress analytics
+[GET] /api/analytics/trends - SUCCESS - Get progress trends
+[POST] /api/sync - CLIENT_ERROR - Sync progress
+[GET] /api/sync/status - SUCCESS - Get sync status
+[GET] /api/export - SUCCESS - Export progress data
+[GET] /api/games - SUCCESS - Get games list
+[GET] /api/games/1 - CLIENT_ERROR - Get specific game
+[POST] /api/games/1/start - CLIENT_ERROR - Start game session
+[GET] /api/results - SUCCESS - Get game results
+[GET] /api/results/1 - CLIENT_ERROR - Get specific result
+[GET] /api/analytics - SUCCESS - Get game analytics
+[GET] /api/analytics/performance - ERROR - Get performance analytics
+[POST] /api/ai-exercise/1/submit - SUCCESS - Submit AI exercise
+[GET] /api/ai-exercise/1/results - CLIENT_ERROR - Get AI exercise results
+[POST] /api/ai-exercise/1/argue - CLIENT_ERROR - Argue AI exercise
+[GET] /api/ai-exercise/1/topic-memory-status - SUCCESS - Get topic memory status
+[GET] /api/ai-feedback/progress/1 - CLIENT_ERROR - Get AI feedback progress
+[POST] /api/ai-feedback/generate-with-progress - CLIENT_ERROR - Generate feedback with progress
+[GET] /api/ai-feedback/result/1 - CLIENT_ERROR - Get AI feedback result
+[GET] /api/ai-feedback - ERROR - Get AI feedback list
+[GET] /api/ai-feedback/1 - ERROR - Get specific AI feedback
+[POST] /api/ai-feedback - CLIENT_ERROR - Create AI feedback
+[POST] /api/reading-exercise - SUCCESS - Create reading exercise
+[POST] /api/reading-exercise/submit - CLIENT_ERROR - Submit reading exercise
+[GET] /api/weakness-lesson - ERROR - Get weakness lesson
+[POST] /api/training-exercises - SUCCESS - Generate training exercises
+[POST] /api/ai-exercise/training/submit - CLIENT_ERROR - Submit training exercise
+[POST] /api/tts - SUCCESS - Text-to-speech
+[POST] /api/translate - SUCCESS - Translate text
+[GET] /api/translate/status/1 - SUCCESS - Get translation status
+[POST] /api/translate/stream - SUCCESS - Stream translation
+[POST] /api/support/feedback - ERROR - Submit support feedback
+[GET] /api/support/feedback - SUCCESS - Get support feedback
+[POST] /api/support/support-request - SUCCESS - Create support request
+[GET] /api/support/support-request/1 - SUCCESS - Get specific support request
+[GET] /api/support/status - SUCCESS - Get support status
+[GET] /api/support/help - SUCCESS - Get support help
+[GET] /api/support/help/topics - SUCCESS - Get help topics
+[GET] /api/admin/users - SUCCESS - Get admin users list
+[GET] /api/admin/users/testuser - SUCCESS - Get specific admin user
+[PUT] /api/admin/users/testuser/status - CLIENT_ERROR - Update user status
+[DELETE] /api/admin/users/testuser/delete - CLIENT_ERROR - Delete user
+[GET] /api/admin/system/analytics - SUCCESS - Get system analytics
+[GET] /api/admin/system/settings - SUCCESS - Get system settings
+[PUT] /api/admin/system/settings - CLIENT_ERROR - Update system settings
+[GET] /api/admin/content/lessons - SUCCESS - Get content lessons
+[PUT] /api/admin/content/lessons/1 - CLIENT_ERROR - Update content lesson
+[GET] /api/admin/reports/user-activity - SUCCESS - Get user activity reports
+[GET] /api/admin/reports/performance - SUCCESS - Get performance reports
+[GET] /api/admin/security/reports - SUCCESS - Get security reports
+[GET] /api/admin/security/settings - SUCCESS - Get security settings
+[PUT] /api/admin/security/settings - CLIENT_ERROR - Update security settings
+[GET] /api/debug/health - SUCCESS - Health check
+[GET] /api/debug/test-db - SUCCESS - Database test
+[GET] /api/debug/status - SUCCESS - System status
+[GET] /api/debug/info - SUCCESS - System info
+[GET] /api/debug/config - SUCCESS - Configuration info
+[GET] /api/debug/performance - SUCCESS - Performance metrics
+[GET] /api/debug/performance/slow-queries - SUCCESS - Slow queries
+[GET] /api/debug/errors - SUCCESS - Error logs
+[POST] /api/debug/clear-cache - SUCCESS - Clear cache
+[POST] /api/debug/errors/clear - SUCCESS - Clear error logs
+[POST] /api/debug/test/exception - ERROR - Test exception handling
+[POST] /api/debug/test/performance - SUCCESS - Test performance
+[GET] /api/debug/health - CLIENT_ERROR - Unauthorized admin access (should fail)
+[POST] /api/login - CLIENT_ERROR - Invalid login attempt
+[POST] /api/register - ERROR - Malformed JSON (should fail)
+[GET] /api/nonexistent - CLIENT_ERROR - Non-existent endpoint (should fail)

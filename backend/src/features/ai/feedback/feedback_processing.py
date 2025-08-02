@@ -16,7 +16,6 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any, List
 
-from core.services.import_service import *
 from core.database.connection import select_rows
 
 logger = logging.getLogger(__name__)
@@ -155,48 +154,3 @@ def _fetch_user_topic_memory(username: str) -> List[Dict[str, Any]]:
         logger.error(f"Error fetching user topic memory: {e}")
         return []
 
-
-def _strip_final_punct(text: str) -> str:
-    """
-    Strip final punctuation from text.
-
-    Args:
-        text: Text to process
-
-    Returns:
-        Text with final punctuation removed
-    """
-    if not text:
-        return text
-
-    # Remove trailing punctuation
-    while text and text[-1] in ".,!?;:":
-        text = text[:-1]
-
-    return text
-
-
-def _normalize_umlauts(text: str) -> str:
-    """
-    Normalize umlauts in text.
-
-    Args:
-        text: Text to normalize
-
-    Returns:
-        Text with normalized umlauts
-    """
-    if not text:
-        return text
-
-    # Normalize umlauts
-    umlaut_map = {
-        'ä': 'ae', 'ö': 'oe', 'ü': 'ue',
-        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
-        'ß': 'ss'
-    }
-
-    for umlaut, replacement in umlaut_map.items():
-        text = text.replace(umlaut, replacement)
-
-    return text

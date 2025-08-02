@@ -9,20 +9,41 @@ Schema Components:
 - Serialization schemas for API responses
 - Type definitions for API data structures
 
-Note: This module is currently empty but provides the structure for future
-schema implementations using libraries like Pydantic or Marshmallow.
+Implemented Schemas:
+- UserRegistrationSchema: User registration data validation
+- UserLoginSchema: User login data validation
+- ProfileUpdateSchema: Profile update data validation
+- SupportRequestSchema: Support request data validation
+
+All schemas use Pydantic for automatic validation, type checking, and error handling.
 
 For detailed architecture information, see: docs/backend_structure.md
 """
 
 # === Schema Components ===
-# Future schema implementations will be added here
-# Examples:
-# - UserSchema: User data validation and serialization
+# Authentication and User Management Schemas
+# - UserRegistrationSchema: Validates user registration data
+# - UserLoginSchema: Validates user login credentials
+# - ProfileUpdateSchema: Validates profile update requests
+# - SupportRequestSchema: Validates support request creation
+
+# Future schema implementations:
 # - ExerciseSchema: Exercise data validation and serialization
 # - LessonSchema: Lesson data validation and serialization
+# - FeedbackSchema: Feedback submission validation
+# - GameSchema: Game-related data validation
 
 # === Export Configuration ===
+from .auth import (
+    UserRegistrationSchema,
+    UserLoginSchema,
+    ProfileUpdateSchema,
+    SupportRequestSchema
+)
+
 __all__: list[str] = [
-    # Schema classes will be added here as they are implemented
+    "UserRegistrationSchema",
+    "UserLoginSchema",
+    "ProfileUpdateSchema",
+    "SupportRequestSchema"
 ]

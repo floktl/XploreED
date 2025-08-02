@@ -22,6 +22,7 @@ from core.database.connection import update_row, select_one, fetch_one, insert_r
 from features.spaced_repetition import sm2
 from external.mistral.client import send_prompt
 from features.ai.memory.logger import topic_memory_logger
+from shared.text_utils import _extract_json
 
 
 ARTICLES = {
@@ -38,20 +39,6 @@ ARTICLES = {
     "einer",
     "eines",
 }
-
-
-def _extract_json(text: str):
-    """Return parsed JSON object from Mistral output."""
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(0))
-            except json.JSONDecodeError:
-                pass
-    return None
 
 
 def analyze_word_ai(word: str) -> Optional[dict]:
