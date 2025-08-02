@@ -20,6 +20,7 @@ from core.database.connection import insert_row, update_row, select_one
 from features.ai.memory.level_manager import check_auto_level_up
 from features.spaced_repetition import sm2
 from features.ai.memory.logger import topic_memory_logger
+from shared.exceptions import TopicMemoryError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -144,6 +145,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
 
     except Exception as e:
         logger.error(f"Error updating topic memory for user {username}, grammar {grammar}: {e}")
+        raise TopicMemoryError(f"Error updating topic memory: {str(e)}")
 
 
 def update_topic_memory_translation(username: str, german: str, qualities: Optional[Dict[str, int]] = None) -> None:
@@ -186,8 +188,11 @@ def update_topic_memory_translation(username: str, german: str, qualities: Optio
                         topic="translation"
                     )
 
+    except TopicMemoryError:
+        raise
     except Exception as e:
         logger.error(f"Error updating topic memory for translation: {e}")
+        raise TopicMemoryError(f"Error updating topic memory for translation: {str(e)}")
 
 
 def update_topic_memory_reading(username: str, text: str, qualities: Optional[Dict[str, int]] = None) -> None:
@@ -230,8 +235,11 @@ def update_topic_memory_reading(username: str, text: str, qualities: Optional[Di
                         topic="reading"
                     )
 
+    except TopicMemoryError:
+        raise
     except Exception as e:
         logger.error(f"Error updating topic memory for reading: {e}")
+        raise TopicMemoryError(f"Error updating topic memory for reading: {str(e)}")
 
 
 def get_topic_memory_summary(username: str) -> Dict:
@@ -284,10 +292,4 @@ def get_topic_memory_summary(username: str) -> Dict:
 
     except Exception as e:
         logger.error(f"Error getting topic memory summary for user {username}: {e}")
-        return {
-            "total_topics": 0,
-            "average_ease_factor": 0,
-            "total_repetitions": 0,
-            "strong_topics": [],
-            "weak_topics": []
-        }
+        raise TopicMemoryError(f"Error getting topic memory summary: {str(e)}")

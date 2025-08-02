@@ -26,7 +26,7 @@ from .exercise_processing import (
 )
 
 # Import exercise helper functions
-from .exercise_helpers import (
+from .gap_fill_check import (
     check_gap_fill_correctness
 )
 

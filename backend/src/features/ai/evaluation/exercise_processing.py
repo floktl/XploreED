@@ -79,7 +79,7 @@ def process_ai_answers(
             # For gap-fill exercises, check if the answer makes grammatical sense
             exercise_type = ex.get("type", "")
             if exercise_type == "gap-fill":
-                from features.ai.evaluation.exercise_helpers import check_gap_fill_correctness
+                from features.ai.evaluation.gap_fill_check import check_gap_fill_correctness
                 is_correct = check_gap_fill_correctness(ex, user_ans, correct_ans_norm)
             else:
                 # For other exercise types, use exact match

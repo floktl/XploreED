@@ -35,6 +35,7 @@ from features.ai.prompts.utils import make_prompt, SYSTEM_PROMPT
 from features.ai.prompts import exercise_generation_prompt
 from external.mistral.client import send_request, send_prompt
 from features.ai.memory.logger import topic_memory_logger
+from shared.exceptions import ExerciseGenerationError, DatabaseError
 
 from .. import (
     EXERCISE_TEMPLATE,
@@ -145,15 +146,17 @@ def generate_new_exercises(
                 return parsed
             else:
                 logger.warning(f"Failed to parse AI response for user: {username}")
-                return None
+                raise ExerciseGenerationError("Failed to parse AI response")
         else:
             logger.error(f"AI request failed with status {resp.status_code} for user: {username}")
-            return None
+            raise ExerciseGenerationError(f"AI request failed with status {resp.status_code}")
 
+    except ExerciseGenerationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating exercises for user {username}: {e}")
         logger.error(traceback.format_exc())
-        return None
+        raise ExerciseGenerationError(f"Unexpected error generating exercises: {str(e)}")
 
 
 def _create_ai_block_with_variation(username: str, exclude_questions: list) -> dict | None:
@@ -220,9 +223,11 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
             logger.warning(f"Failed to generate exercise block for user: {username}")
             return None
 
+    except ExerciseGenerationError:
+        raise
     except Exception as e:
         logger.error(f"Error creating AI block for user {username}: {e}")
-        return None
+        raise ExerciseGenerationError(f"Error creating AI block: {str(e)}")
 
 
 def _generate_blocks_for_new_user(username: str) -> dict | None:
@@ -251,9 +256,11 @@ def _generate_blocks_for_new_user(username: str) -> dict | None:
             logger.warning(f"Failed to generate initial blocks for new user: {username}")
             return None
 
+    except ExerciseGenerationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating blocks for new user {username}: {e}")
-        return None
+        raise ExerciseGenerationError(f"Error generating blocks for new user: {str(e)}")
 
 
 def _generate_blocks_for_existing_user(username: str) -> dict | None:
@@ -285,9 +292,11 @@ def _generate_blocks_for_existing_user(username: str) -> dict | None:
             logger.warning(f"Failed to generate blocks for existing user: {username}")
             return None
 
+    except ExerciseGenerationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating blocks for existing user {username}: {e}")
-        return None
+        raise ExerciseGenerationError(f"Error generating blocks for existing user: {str(e)}")
 
 
 def generate_training_exercises(username: str) -> dict | None:
@@ -313,9 +322,11 @@ def generate_training_exercises(username: str) -> dict | None:
             # New user
             return _generate_blocks_for_new_user(username)
 
+    except ExerciseGenerationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating training exercises for user {username}: {e}")
-        return None
+        raise ExerciseGenerationError(f"Error generating training exercises: {str(e)}")
 
 
 def get_next_block_id() -> str:
@@ -338,9 +349,11 @@ def get_next_block_id() -> str:
 
         return f"blk{next_id:04d}"
 
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting next block ID: {e}")
-        return f"blk{random.randint(1000, 9999)}"
+        raise DatabaseError(f"Error getting next block ID: {str(e)}")
 
 
 def ensure_unique_block_title(block):
@@ -376,9 +389,11 @@ def ensure_unique_block_title(block):
 
         return block
 
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error ensuring unique block title: {e}")
-        return block
+        raise DatabaseError(f"Error ensuring unique block title: {str(e)}")
 
 
 def get_recent_exercise_questions(username, limit=20):
@@ -408,9 +423,11 @@ def get_recent_exercise_questions(username, limit=20):
         else:
             return []
 
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting recent exercise questions for user {username}: {e}")
-        return []
+        raise DatabaseError(f"Error getting recent exercise questions: {str(e)}")
 
 
 def update_exercise_history(username, new_questions, limit=20):
@@ -452,8 +469,11 @@ def update_exercise_history(username, new_questions, limit=20):
                 (username,) + tuple(keep_ids)
             )
 
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error updating exercise history for user {username}: {e}")
+        raise DatabaseError(f"Error updating exercise history: {str(e)}")
 
 
 def prefetch_next_exercises(username: str) -> None:
@@ -474,6 +494,7 @@ def prefetch_next_exercises(username: str) -> None:
 
         except Exception as e:
             logger.error(f"Error prefetching exercises for user {username}: {e}")
+            # Don't raise here as this runs in background thread
 
     # Run in background thread
     thread = Thread(target=run, daemon=True)
@@ -499,6 +520,7 @@ def log_generated_sentences(block, parent_function=None):
 
     except Exception as e:
         logger.error(f"Error logging generated sentences: {e}")
+        # Don't raise here as this is just logging
 
 
 def print_exercise_block_sentences(block, context, color="\033[94m"):
@@ -521,3 +543,4 @@ def print_exercise_block_sentences(block, context, color="\033[94m"):
 
     except Exception as e:
         logger.error(f"Error printing exercise block sentences: {e}")
+        # Don't raise here as this is just debugging output
