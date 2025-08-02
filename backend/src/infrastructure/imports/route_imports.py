@@ -1,8 +1,11 @@
 """
-XplorED - Import Service Management
+XplorED - Route Import Management
 
 This module provides centralized import management for route modules,
 following clean architecture principles as outlined in the documentation.
+
+Note: This is an infrastructure utility for organizing imports.
+Consider refactoring to use direct imports in each module for better maintainability.
 
 Import Categories:
 - Flask Framework: Web framework imports and utilities
@@ -32,8 +35,7 @@ from bs4 import BeautifulSoup  # type: ignore
 
 # === Core Layer Imports ===
 # Note: session_manager is imported in route files to avoid circular imports
-from core.utils.html_helpers import (
-    update_lesson_blocks_from_html,
+from core.processing import (
     inject_block_ids,
     strip_ai_data,
 )
@@ -50,12 +52,9 @@ from core.database.connection import (
     select_rows,
     select_one,
 )
-from core.utils.helpers import (
-    is_admin,
-    get_current_user,
+from core.authentication import (
+    is_user_admin,
     user_exists,
-    require_user,
-    run_in_background,
 )
 
 # === Configuration Imports ===
@@ -108,7 +107,7 @@ from features.ai.generation.exercise_processing import (
     compile_score_summary,
     save_exercise_submission_async,
     evaluate_exercises,
-    parse_submission_data,
+    parse_ai_submission_data,
 )
 from features.ai.generation.exercise_creation import (
     generate_new_exercises,
@@ -147,8 +146,8 @@ class Imports:
     admin = [
         "admin_bp", "request", "jsonify", "require_user", "BeautifulSoup",
         "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
-        "update_lesson_blocks_from_html", "inject_block_ids", "strip_ai_data",
-        "is_admin", "OrderedDict"
+        "inject_block_ids", "strip_ai_data",
+        "is_user_admin", "OrderedDict"
     ]
 
     # === Authentication Routes ===
@@ -214,7 +213,7 @@ class Imports:
 
     # === Support Routes ===
     support = [
-        "support_bp", "request", "jsonify", "insert_row", "fetch_custom", "is_admin"
+        "support_bp", "request", "jsonify", "insert_row", "fetch_custom", "is_user_admin"
     ]
 
     # === Settings Routes ===
@@ -226,7 +225,7 @@ class Imports:
 
     # === Progress Test Routes ===
     progress_test = [
-        "progress_test_bp", "request", "jsonify", "session_manager", "require_user",
+        "progress_test_bp", "request", "jsonify", "require_user",
         "fetch_all", "fetch_one", "insert_row", "update_row", "delete_rows",
         "execute_query", "fetch_custom", "fetch_one_custom"
     ]

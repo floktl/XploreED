@@ -30,24 +30,18 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import get_current_user, require_user
+from infrastructure.imports import Imports
+from api.middleware.auth import get_current_user, require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import lessons_bp
+from core.services import LessonService
 from features.lessons import (
-    get_lesson_content,
-    get_user_lessons_summary,
-    get_lesson_progress,
-    update_lesson_progress,
-    get_lesson_statistics,
-    validate_lesson_access,
     validate_block_completion,
-    get_lesson_blocks,
     update_lesson_content,
     publish_lesson,
     get_lesson_analytics,
 )
-from core.utils.helpers import is_admin
+from api.middleware.auth import is_admin
 
 
 # === Logging Configuration ===
@@ -55,6 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 # === Lesson Content Routes ===
+
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons_route():
     """
@@ -64,13 +59,33 @@ def get_lessons_route():
     based on their skill level and access permissions.
 
     Query Parameters:
-        - skill_level: Filter by skill level
-        - published: Filter by publication status
-        - limit: Maximum number of lessons to return
-        - offset: Pagination offset
+        - skill_level (str, optional): Filter by skill level
+        - published (bool, optional): Filter by publication status (default: true)
+        - limit (int, optional): Maximum number of lessons to return (default: 20)
+        - offset (int, optional): Pagination offset (default: 0)
 
-    Returns:
-        JSON response with lesson list or unauthorized error
+    JSON Response Structure:
+        {
+            "lessons": [                        # Array of lessons
+                {
+                    "id": int,                  # Lesson identifier
+                    "lesson_id": int,           # Lesson ID
+                    "title": str,               # Lesson title
+                    "skill_level": str,         # Skill level
+                    "num_blocks": int,          # Number of blocks
+                    "published": bool,          # Publication status
+                    "created_at": str           # Creation timestamp
+                }
+            ],
+            "total": int,                       # Total number of lessons
+            "limit": int,                       # Requested limit
+            "offset": int                       # Requested offset
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = get_current_user()
@@ -103,12 +118,21 @@ def get_lessons_route():
             where=where_clause,
             params=tuple(params),
             order_by="created_at DESC",
-            limit=limit
+            limit=limit,
+            offset=offset
+        )
+
+        # Get total count
+        total_lessons = select_one(
+            "lesson_content",
+            columns="COUNT(*) as total",
+            where=where_clause,
+            params=tuple(params)
         )
 
         return jsonify({
             "lessons": lessons,
-            "total": len(lessons),
+            "total": total_lessons.get("total", 0) if total_lessons else 0,
             "limit": limit,
             "offset": offset
         })
@@ -124,20 +148,47 @@ def get_lesson_route(lesson_id: int):
     Get detailed lesson content by ID.
 
     This endpoint retrieves the complete lesson content including
-    all interactive blocks and metadata.
+    all blocks and interactive elements.
 
-    Args:
-        lesson_id: Unique identifier of the lesson
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
-    Returns:
-        JSON response with lesson content or not found error
+    JSON Response Structure:
+        {
+            "lesson": {
+                "id": int,                      # Lesson identifier
+                "lesson_id": int,               # Lesson ID
+                "title": str,                   # Lesson title
+                "description": str,             # Lesson description
+                "skill_level": str,             # Skill level
+                "num_blocks": int,              # Number of blocks
+                "published": bool,              # Publication status
+                "created_at": str,              # Creation timestamp
+                "updated_at": str               # Last update timestamp
+            },
+            "blocks": [                         # Lesson blocks
+                {
+                    "id": str,                  # Block identifier
+                    "block_type": str,          # Type of block
+                    "content": str,             # Block content
+                    "order": int,               # Block order
+                    "metadata": {}              # Block metadata
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
         user = get_current_user()
         if not user:
             return jsonify({"error": "Unauthorized"}), 401
 
-        # Get lesson content
+        # Get lesson details
         lesson = select_one(
             "lesson_content",
             columns="*",
@@ -149,22 +200,17 @@ def get_lesson_route(lesson_id: int):
             return jsonify({"error": "Lesson not found"}), 404
 
         # Get lesson blocks
-        blocks = get_lesson_blocks(lesson_id)
-
-        # Get user progress for this lesson
-        progress = select_rows(
-            "lesson_progress",
-            columns="block_id, completed, updated_at",
-            where="user_id = ? AND lesson_id = ?",
-            params=(user, lesson_id)
+        blocks = select_rows(
+            "lesson_blocks",
+            columns="*",
+            where="lesson_id = ?",
+            params=(lesson_id,),
+            order_by="block_order ASC"
         )
 
         return jsonify({
             "lesson": lesson,
-            "blocks": blocks,
-            "user_progress": progress,
-            "total_blocks": len(blocks),
-            "completed_blocks": len([p for p in progress if p.get("completed")])
+            "blocks": blocks
         })
 
     except Exception as e:
@@ -175,25 +221,49 @@ def get_lesson_route(lesson_id: int):
 @lessons_bp.route("/lessons", methods=["POST"])
 def create_lesson_route():
     """
-    Create a new lesson (admin only).
+    Create a new lesson.
 
-    This endpoint allows administrators to create new lesson content
-    with interactive blocks and metadata.
+    This endpoint creates a new lesson with the provided content
+    and metadata. Admin access required.
 
     Request Body:
-        - title: Lesson title
-        - content: Lesson content (HTML)
-        - skill_level: Target skill level
-        - num_blocks: Number of interactive blocks
-        - ai_enabled: Enable AI features for this lesson
+        - title (str, required): Lesson title
+        - description (str, optional): Lesson description
+        - skill_level (str, required): Target skill level
+        - blocks (array, optional): Array of lesson blocks
+        - published (bool, optional): Publication status (default: false)
 
-    Returns:
-        JSON response with created lesson or unauthorized error
+    Block Structure:
+        [
+            {
+                "block_type": str,              # Type of block
+                "content": str,                 # Block content
+                "order": int,                   # Block order
+                "metadata": {}                  # Block metadata
+            }
+        ]
+
+    JSON Response Structure:
+        {
+            "message": str,                     # Success message
+            "lesson": {
+                "id": int,                      # Created lesson ID
+                "lesson_id": int,               # Lesson identifier
+                "title": str,                   # Lesson title
+                "created_at": str               # Creation timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 500: Internal server error
     """
     try:
-        # Check admin privileges
         if not is_admin():
-            return jsonify({"error": "Unauthorized - Admin access required"}), 401
+            return jsonify({"error": "Admin access required"}), 403
 
         data = request.get_json()
 
@@ -201,41 +271,54 @@ def create_lesson_route():
             return jsonify({"error": "No data provided"}), 400
 
         title = data.get("title", "").strip()
-        content = data.get("content", "").strip()
-        skill_level = data.get("skill_level", 1)
-        num_blocks = data.get("num_blocks", 0)
-        ai_enabled = data.get("ai_enabled", False)
+        description = data.get("description", "").strip()
+        skill_level = data.get("skill_level", "").strip()
+        blocks = data.get("blocks", [])
+        published = data.get("published", False)
 
         if not title:
-            return jsonify({"error": "Lesson title is required"}), 400
+            return jsonify({"error": "Title is required"}), 400
 
-        if not content:
-            return jsonify({"error": "Lesson content is required"}), 400
+        if not skill_level:
+            return jsonify({"error": "Skill level is required"}), 400
 
-        # Validate skill level
-        if not isinstance(skill_level, int) or skill_level < 1 or skill_level > 10:
-            return jsonify({"error": "Skill level must be between 1 and 10"}), 400
-
-        # Create lesson content
+        # Create lesson
         lesson_data = {
             "title": title,
-            "content": content,
+            "description": description,
             "skill_level": skill_level,
-            "num_blocks": num_blocks,
-            "ai_enabled": ai_enabled,
-            "published": False,
-            "created_at": datetime.now().isoformat()
+            "num_blocks": len(blocks),
+            "published": published,
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat()
         }
 
         lesson_id = insert_row("lesson_content", lesson_data)
 
-        if lesson_id:
-            return jsonify({
-                "message": "Lesson created successfully",
-                "lesson_id": lesson_id
-            })
-        else:
+        if not lesson_id:
             return jsonify({"error": "Failed to create lesson"}), 500
+
+        # Create blocks if provided
+        if blocks:
+            for block in blocks:
+                block_data = {
+                    "lesson_id": lesson_id,
+                    "block_type": block.get("block_type", "text"),
+                    "content": block.get("content", ""),
+                    "block_order": block.get("order", 0),
+                    "metadata": str(block.get("metadata", {}))
+                }
+                insert_row("lesson_blocks", block_data)
+
+        return jsonify({
+            "message": "Lesson created successfully",
+            "lesson": {
+                "id": lesson_id,
+                "lesson_id": lesson_id,
+                "title": title,
+                "created_at": lesson_data["created_at"]
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error creating lesson: {e}")
@@ -245,28 +328,42 @@ def create_lesson_route():
 @lessons_bp.route("/lessons/<int:lesson_id>", methods=["PUT"])
 def update_lesson_route(lesson_id: int):
     """
-    Update an existing lesson (admin only).
+    Update an existing lesson.
 
-    This endpoint allows administrators to update lesson content
-    and metadata.
+    This endpoint updates lesson content and metadata.
+    Admin access required.
 
-    Args:
-        lesson_id: Unique identifier of the lesson to update
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
     Request Body:
-        - title: Updated lesson title
-        - content: Updated lesson content
-        - skill_level: Updated skill level
-        - num_blocks: Updated number of blocks
-        - ai_enabled: Updated AI feature flag
+        - title (str, optional): Lesson title
+        - description (str, optional): Lesson description
+        - skill_level (str, optional): Target skill level
+        - blocks (array, optional): Array of lesson blocks
+        - published (bool, optional): Publication status
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                     # Success message
+            "lesson": {
+                "id": int,                      # Lesson ID
+                "title": str,                   # Updated title
+                "updated_at": str               # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
-        # Check admin privileges
         if not is_admin():
-            return jsonify({"error": "Unauthorized - Admin access required"}), 401
+            return jsonify({"error": "Admin access required"}), 403
 
         data = request.get_json()
 
@@ -284,73 +381,116 @@ def update_lesson_route(lesson_id: int):
         if not existing_lesson:
             return jsonify({"error": "Lesson not found"}), 404
 
-        # Prepare updates
-        updates = {}
+        # Prepare update data
+        update_data = {"updated_at": datetime.now().isoformat()}
 
         if "title" in data:
-            title = data["title"].strip()
-            if title:
-                updates["title"] = title
-            else:
-                return jsonify({"error": "Title cannot be empty"}), 400
+            update_data["title"] = data["title"].strip()
 
-        if "content" in data:
-            content = data["content"].strip()
-            if content:
-                updates["content"] = content
-            else:
-                return jsonify({"error": "Content cannot be empty"}), 400
+        if "description" in data:
+            update_data["description"] = data["description"].strip()
 
         if "skill_level" in data:
-            skill_level = data["skill_level"]
-            if isinstance(skill_level, int) and 1 <= skill_level <= 10:
-                updates["skill_level"] = skill_level
-            else:
-                return jsonify({"error": "Skill level must be between 1 and 10"}), 400
+            update_data["skill_level"] = data["skill_level"].strip()
 
-        if "num_blocks" in data:
-            num_blocks = data["num_blocks"]
-            if isinstance(num_blocks, int) and num_blocks >= 0:
-                updates["num_blocks"] = num_blocks
-            else:
-                return jsonify({"error": "Number of blocks must be non-negative"}), 400
-
-        if "ai_enabled" in data:
-            updates["ai_enabled"] = bool(data["ai_enabled"])
-
-        if not updates:
-            return jsonify({"error": "No valid updates provided"}), 400
+        if "published" in data:
+            update_data["published"] = data["published"]
 
         # Update lesson
-        success = update_lesson_content(lesson_id, updates)
+        success = update_row(
+            "lesson_content",
+            update_data,
+            "WHERE lesson_id = ?",
+            (lesson_id,)
+        )
 
-        if success:
-            return jsonify({
-                "message": "Lesson updated successfully",
-                "updated_fields": list(updates.keys())
-            })
-        else:
+        if not success:
             return jsonify({"error": "Failed to update lesson"}), 500
+
+        # Update blocks if provided
+        if "blocks" in data:
+            blocks = data["blocks"]
+            update_data["num_blocks"] = len(blocks)
+
+            # Delete existing blocks
+            update_row(
+                "lesson_blocks",
+                {"deleted": True},
+                "WHERE lesson_id = ?",
+                (lesson_id,)
+            )
+
+            # Create new blocks
+            for block in blocks:
+                block_data = {
+                    "lesson_id": lesson_id,
+                    "block_type": block.get("block_type", "text"),
+                    "content": block.get("content", ""),
+                    "block_order": block.get("order", 0),
+                    "metadata": str(block.get("metadata", {}))
+                }
+                insert_row("lesson_blocks", block_data)
+
+            # Update block count
+            update_row(
+                "lesson_content",
+                {"num_blocks": len(blocks)},
+                "WHERE lesson_id = ?",
+                (lesson_id,)
+            )
+
+        return jsonify({
+            "message": "Lesson updated successfully",
+            "lesson": {
+                "id": lesson_id,
+                "title": update_data.get("title", "Updated"),
+                "updated_at": update_data["updated_at"]
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error updating lesson {lesson_id}: {e}")
         return jsonify({"error": "Failed to update lesson"}), 500
 
 
-# === Lesson Progress Routes ===
 @lessons_bp.route("/lessons/<int:lesson_id>/progress", methods=["GET"])
 def get_lesson_progress_route(lesson_id: int):
     """
     Get user progress for a specific lesson.
 
-    This endpoint retrieves the user's progress through a lesson
-    including completed blocks and overall completion status.
+    This endpoint retrieves the current user's progress
+    through a specific lesson.
 
-    Args:
-        lesson_id: Unique identifier of the lesson
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
-    Returns:
-        JSON response with progress data or unauthorized error
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "user": str,                        # User identifier
+            "progress": {
+                "completed_blocks": int,        # Number of completed blocks
+                "total_blocks": int,            # Total number of blocks
+                "completion_percentage": float, # Completion percentage
+                "last_activity": str,           # Last activity timestamp
+                "is_completed": bool            # Overall completion status
+            },
+            "block_progress": [                 # Individual block progress
+                {
+                    "block_id": str,            # Block identifier
+                    "completed": bool,          # Completion status
+                    "completed_at": str,        # Completion timestamp
+                    "time_spent": int,          # Time spent in seconds
+                    "score": float              # Performance score
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -358,7 +498,7 @@ def get_lesson_progress_route(lesson_id: int):
         # Check if lesson exists
         lesson = select_one(
             "lesson_content",
-            columns="id, title, num_blocks",
+            columns="id, num_blocks",
             where="lesson_id = ?",
             params=(lesson_id,)
         )
@@ -367,37 +507,38 @@ def get_lesson_progress_route(lesson_id: int):
             return jsonify({"error": "Lesson not found"}), 404
 
         # Get user progress
-        progress = select_rows(
+        progress = select_one(
             "lesson_progress",
-            columns="block_id, completed, updated_at",
-            where="user_id = ? AND lesson_id = ?",
+            columns="*",
+            where="user = ? AND lesson_id = ?",
             params=(user, lesson_id)
         )
 
-        # Calculate completion statistics
-        total_blocks = lesson.get("num_blocks", 0)
-        completed_blocks = len([p for p in progress if p.get("completed")])
-        completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
+        # Get block progress
+        block_progress = select_rows(
+            "block_progress",
+            columns="*",
+            where="user = ? AND lesson_id = ?",
+            params=(user, lesson_id),
+            order_by="block_id ASC"
+        )
 
-        # Get last updated timestamp
-        last_updated = None
-        if progress:
-            valid_dates = []
-            for p in progress:
-                date = p.get("updated_at")
-                if date is not None:
-                    valid_dates.append(date)
-            if valid_dates:
-                last_updated = max(valid_dates)
+        # Calculate completion
+        completed_blocks = len([b for b in block_progress if b.get("completed")])
+        total_blocks = lesson.get("num_blocks", 0)
+        completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
 
         return jsonify({
             "lesson_id": lesson_id,
-            "lesson_title": lesson.get("title"),
-            "total_blocks": total_blocks,
-            "completed_blocks": completed_blocks,
-            "completion_percentage": round(completion_percentage, 2),
-            "progress": progress,
-            "last_updated": last_updated
+            "user": user,
+            "progress": {
+                "completed_blocks": completed_blocks,
+                "total_blocks": total_blocks,
+                "completion_percentage": round(completion_percentage, 2),
+                "last_activity": progress.get("updated_at") if progress else None,
+                "is_completed": completed_blocks >= total_blocks
+            },
+            "block_progress": block_progress
         })
 
     except Exception as e:
@@ -408,20 +549,35 @@ def get_lesson_progress_route(lesson_id: int):
 @lessons_bp.route("/lessons/<int:lesson_id>/progress", methods=["POST"])
 def update_lesson_progress_route(lesson_id: int):
     """
-    Update user progress for a lesson block.
+    Update user progress for a specific lesson.
 
-    This endpoint allows users to mark lesson blocks as completed
-    and track their progress through the lesson.
+    This endpoint updates the user's progress through a lesson,
+    typically when completing blocks or activities.
 
-    Args:
-        lesson_id: Unique identifier of the lesson
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
     Request Body:
-        - block_id: Identifier of the completed block
-        - completed: Completion status (true/false)
+        - block_id (str, required): Block identifier
+        - completed (bool, optional): Completion status (default: true)
+        - time_spent (int, optional): Time spent in seconds
+        - score (float, optional): Performance score
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                     # Success message
+            "lesson_id": int,                   # Lesson identifier
+            "block_id": str,                    # Block identifier
+            "completed": bool,                  # Completion status
+            "updated_at": str                   # Update timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -432,6 +588,8 @@ def update_lesson_progress_route(lesson_id: int):
 
         block_id = data.get("block_id")
         completed = data.get("completed", True)
+        time_spent = data.get("time_spent")
+        score = data.get("score")
 
         if not block_id:
             return jsonify({"error": "Block ID is required"}), 400
@@ -447,80 +605,106 @@ def update_lesson_progress_route(lesson_id: int):
         if not lesson:
             return jsonify({"error": "Lesson not found"}), 404
 
-        # Update or insert progress
+        # Update block progress
+        progress_data = {
+            "user": user,
+            "lesson_id": lesson_id,
+            "block_id": block_id,
+            "completed": completed,
+            "updated_at": datetime.now().isoformat()
+        }
+
+        if time_spent is not None:
+            progress_data["time_spent"] = time_spent
+
+        if score is not None:
+            progress_data["score"] = score
+
+        # Check if progress record exists
         existing_progress = select_one(
-            "lesson_progress",
+            "block_progress",
             columns="id",
-            where="user_id = ? AND lesson_id = ? AND block_id = ?",
+            where="user = ? AND lesson_id = ? AND block_id = ?",
             params=(user, lesson_id, block_id)
         )
 
         if existing_progress:
             # Update existing progress
             success = update_row(
-                "lesson_progress",
-                {"completed": completed, "updated_at": datetime.now().isoformat()},
-                "WHERE user_id = ? AND lesson_id = ? AND block_id = ?",
+                "block_progress",
+                progress_data,
+                "WHERE user = ? AND lesson_id = ? AND block_id = ?",
                 (user, lesson_id, block_id)
             )
         else:
-            # Insert new progress
-            success = insert_row("lesson_progress", {
-                "user_id": user,
-                "lesson_id": lesson_id,
-                "block_id": block_id,
-                "completed": completed,
-                "updated_at": datetime.now().isoformat()
-            })
+            # Create new progress record
+            success = insert_row("block_progress", progress_data)
 
-        if success:
-            return jsonify({
-                "message": "Progress updated successfully",
-                "block_id": block_id,
-                "completed": completed
-            })
-        else:
+        if not success:
             return jsonify({"error": "Failed to update progress"}), 500
+
+        return jsonify({
+            "message": "Progress updated successfully",
+            "lesson_id": lesson_id,
+            "block_id": block_id,
+            "completed": completed,
+            "updated_at": progress_data["updated_at"]
+        })
 
     except Exception as e:
         logger.error(f"Error updating lesson progress for lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to update lesson progress"}), 500
+        return jsonify({"error": "Failed to update progress"}), 500
 
 
-# === Lesson Publishing Routes ===
 @lessons_bp.route("/lessons/<int:lesson_id>/publish", methods=["POST"])
 def publish_lesson_route(lesson_id: int):
     """
-    Publish or unpublish a lesson (admin only).
+    Publish or unpublish a lesson.
 
-    This endpoint allows administrators to control lesson availability
-    by publishing or unpublishing lessons.
+    This endpoint controls the publication status of a lesson,
+    making it available or unavailable to users.
+    Admin access required.
 
-    Args:
-        lesson_id: Unique identifier of the lesson
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
     Request Body:
-        - published: Publication status (true/false)
+        - published (bool, required): Publication status
 
-    Returns:
-        JSON response with publication status or error details
+    JSON Response Structure:
+        {
+            "message": str,                     # Success message
+            "lesson_id": int,                   # Lesson identifier
+            "published": bool,                  # Publication status
+            "updated_at": str                   # Update timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
-        # Check admin privileges
         if not is_admin():
-            return jsonify({"error": "Unauthorized - Admin access required"}), 401
+            return jsonify({"error": "Admin access required"}), 403
 
         data = request.get_json()
 
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        published = data.get("published", True)
+        published = data.get("published")
+
+        if published is None:
+            return jsonify({"error": "Published status is required"}), 400
 
         # Check if lesson exists
         lesson = select_one(
             "lesson_content",
-            columns="id, title",
+            columns="id",
             where="lesson_id = ?",
             params=(lesson_id,)
         )
@@ -529,56 +713,87 @@ def publish_lesson_route(lesson_id: int):
             return jsonify({"error": "Lesson not found"}), 404
 
         # Update publication status
-        success = publish_lesson(lesson_id, published)
+        success = update_row(
+            "lesson_content",
+            {
+                "published": published,
+                "updated_at": datetime.now().isoformat()
+            },
+            "WHERE lesson_id = ?",
+            (lesson_id,)
+        )
 
-        if success:
-            status = "published" if published else "unpublished"
-            return jsonify({
-                "message": f"Lesson {status} successfully",
-                "lesson_id": lesson_id,
-                "lesson_title": lesson.get("title"),
-                "published": published
-            })
-        else:
-            return jsonify({"error": "Failed to update publication status"}), 500
+        if not success:
+            return jsonify({"error": "Failed to update lesson"}), 500
+
+        return jsonify({
+            "message": f"Lesson {'published' if published else 'unpublished'} successfully",
+            "lesson_id": lesson_id,
+            "published": published,
+            "updated_at": datetime.now().isoformat()
+        })
 
     except Exception as e:
         logger.error(f"Error publishing lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to update publication status"}), 500
+        return jsonify({"error": "Failed to update lesson publication status"}), 500
 
 
-# === Lesson Analytics Routes ===
 @lessons_bp.route("/lessons/<int:lesson_id>/analytics", methods=["GET"])
 def get_lesson_analytics_route(lesson_id: int):
     """
-    Get analytics for a specific lesson (admin only).
+    Get analytics for a specific lesson.
 
-    This endpoint provides detailed analytics about lesson usage
-    including completion rates, user engagement, and performance metrics.
+    This endpoint retrieves usage statistics and performance
+    metrics for a specific lesson.
+    Admin access required.
 
-    Args:
-        lesson_id: Unique identifier of the lesson
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
 
     Query Parameters:
-        - timeframe: Analytics timeframe (week, month, year)
-        - include_details: Include detailed user data
+        - timeframe (str, optional): Analytics timeframe (week, month, all)
 
-    Returns:
-        JSON response with lesson analytics or unauthorized error
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "analytics": {
+                "total_users": int,             # Total users who accessed lesson
+                "completion_rate": float,       # Overall completion rate
+                "average_time": float,          # Average completion time
+                "average_score": float,         # Average performance score
+                "user_engagement": {            # User engagement metrics
+                    "daily_active": int,       # Daily active users
+                    "weekly_active": int,      # Weekly active users
+                    "monthly_active": int      # Monthly active users
+                },
+                "block_performance": [          # Block-level performance
+                    {
+                        "block_id": str,       # Block identifier
+                        "completion_rate": float, # Block completion rate
+                        "average_time": float, # Average time spent
+                        "average_score": float # Average score
+                    }
+                ]
+            },
+            "timeframe": str,                   # Requested timeframe
+            "generated_at": str                 # Analytics generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 403: Admin access required
+        - 404: Lesson not found
+        - 500: Internal server error
     """
     try:
-        # Check admin privileges
         if not is_admin():
-            return jsonify({"error": "Unauthorized - Admin access required"}), 401
-
-        # Get query parameters
-        timeframe = request.args.get("timeframe", "month")
-        include_details = request.args.get("include_details", "false").lower() == "true"
+            return jsonify({"error": "Admin access required"}), 403
 
         # Check if lesson exists
         lesson = select_one(
             "lesson_content",
-            columns="id, title, skill_level, num_blocks",
+            columns="id",
             where="lesson_id = ?",
             params=(lesson_id,)
         )
@@ -586,34 +801,19 @@ def get_lesson_analytics_route(lesson_id: int):
         if not lesson:
             return jsonify({"error": "Lesson not found"}), 404
 
+        # Get query parameters
+        timeframe = request.args.get("timeframe", "all")
+
         # Get lesson analytics
         analytics = get_lesson_analytics(lesson_id, timeframe)
 
-        # Add lesson metadata
-        analytics["lesson"] = {
-            "id": lesson_id,
-            "title": lesson.get("title"),
-            "skill_level": lesson.get("skill_level"),
-            "total_blocks": lesson.get("num_blocks", 0)
-        }
-
-        # Add detailed user data if requested
-        if include_details:
-            user_progress = select_rows(
-                "lesson_progress",
-                columns="user_id, block_id, completed, updated_at",
-                where="lesson_id = ?",
-                params=(lesson_id,)
-            )
-            analytics["user_details"] = user_progress
-
         return jsonify({
             "lesson_id": lesson_id,
-            "timeframe": timeframe,
             "analytics": analytics,
+            "timeframe": timeframe,
             "generated_at": datetime.now().isoformat()
         })
 
     except Exception as e:
-        logger.error(f"Error getting analytics for lesson {lesson_id}: {e}")
+        logger.error(f"Error getting lesson analytics for lesson {lesson_id}: {e}")
         return jsonify({"error": "Failed to retrieve lesson analytics"}), 500

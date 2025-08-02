@@ -16,21 +16,31 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any, List, Optional
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_achievements(username: str) -> List[Dict[str, Any]]:
+def get_user_achievements(
+    username: str,
+    category: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 20,
+    offset: int = 0
+) -> Dict[str, Any]:
     """
-    Get achievements for a user.
+    Get achievements for a user with filtering and pagination.
 
     Args:
         username: The username to get achievements for
+        category: Filter by achievement category
+        status: Filter by status (earned, in_progress)
+        limit: Maximum number of achievements to return
+        offset: Number of achievements to skip for pagination
 
     Returns:
-        List of achievements with details
+        Dictionary containing achievements data with metadata
 
     Raises:
         ValueError: If username is invalid
@@ -149,18 +159,77 @@ def get_user_achievements(username: str) -> List[Dict[str, Any]]:
                 "category": "consistency"
             })
 
+        # Apply category filter if provided
+        if category:
+            achievements = [a for a in achievements if a.get("category") == category]
+
+        # Apply status filter if provided
+        if status:
+            if status == "earned":
+                achievements = [a for a in achievements if a.get("unlocked_at")]
+            elif status == "in_progress":
+                # For now, all achievements are considered earned if they exist
+                # This could be enhanced to check progress towards achievements
+                achievements = []
+
+        # Calculate total before pagination
+        total = len(achievements)
+
         # Sort achievements by unlock date (newest first)
         achievements.sort(key=lambda x: x.get("unlocked_at", ""), reverse=True)
 
-        logger.info(f"Retrieved {len(achievements)} achievements for user {username}")
-        return achievements
+        # Apply pagination
+        paginated_achievements = achievements[offset:offset + limit]
+
+        # Calculate summary statistics
+        earned_count = len([a for a in achievements if a.get("unlocked_at")])
+        in_progress_count = total - earned_count
+
+        # Get recent achievements (last 5)
+        recent_achievements = achievements[:5]
+
+        # Get next achievements (achievements not yet earned)
+        next_achievements = [a for a in achievements if not a.get("unlocked_at")][:5]
+
+        result = {
+            "achievements": paginated_achievements,
+            "summary": {
+                "total_achievements": total,
+                "earned_count": earned_count,
+                "in_progress_count": in_progress_count,
+                "total_points": sum(a.get("points", 0) for a in achievements),
+                "completion_percentage": (earned_count / total * 100) if total > 0 else 0.0
+            },
+            "recent_achievements": recent_achievements,
+            "next_achievements": next_achievements,
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        }
+
+        logger.info(f"Retrieved {len(paginated_achievements)} achievements for user {username}")
+        return result
 
     except ValueError as e:
         logger.error(f"Validation error getting user achievements: {e}")
         raise
     except Exception as e:
         logger.error(f"Error getting achievements for user {username}: {e}")
-        return []
+        return {
+            "achievements": [],
+            "summary": {
+                "total_achievements": 0,
+                "earned_count": 0,
+                "in_progress_count": 0,
+                "total_points": 0,
+                "completion_percentage": 0.0
+            },
+            "recent_achievements": [],
+            "next_achievements": [],
+            "total": 0,
+            "limit": limit,
+            "offset": offset
+        }
 
 
 def get_user_activity_timeline(username: str, limit: int = 20) -> List[Dict[str, Any]]:

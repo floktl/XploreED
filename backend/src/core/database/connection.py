@@ -18,6 +18,7 @@ import os
 import sqlite3
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Union, Tuple
+from shared.exceptions import ConfigurationError
 
 # === Environment Configuration ===
 try:
@@ -40,7 +41,7 @@ load_dotenv(dotenv_path=env_path)
 # === Database Configuration ===
 DB = os.getenv("DB_FILE")
 if not DB:
-    raise RuntimeError("❌ DB_FILE is not set in .env or environment variables.")
+    raise ConfigurationError("❌ DB_FILE is not set in .env or environment variables.")
 
 # Ensure the directory for the database exists
 db_path = Path(DB)
@@ -61,7 +62,7 @@ def get_connection():
         RuntimeError: If database file path is not configured
     """
     if not DB:
-        raise RuntimeError("Database file path is not configured")
+        raise ConfigurationError("Database file path is not configured")
     return sqlite3.connect(DB)
 
 
@@ -122,6 +123,7 @@ def fetch_all(
     columns: Union[str, List[str]] = "*",
     order_by: Optional[str] = None,
     limit: Optional[int] = None,
+    offset: Optional[int] = None,
     group_by: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """
@@ -148,6 +150,8 @@ def fetch_all(
         query += f" ORDER BY {order_by}"
     if limit is not None:
         query += f" LIMIT {limit}"
+    if offset is not None:
+        query += f" OFFSET {offset}"
 
     result = execute_query(query, params, fetch=True)
     return result if isinstance(result, list) else []
@@ -294,6 +298,7 @@ def select_rows(
     params: Tuple = (),
     order_by: Optional[str] = None,
     limit: Optional[int] = None,
+    offset: Optional[int] = None,
     group_by: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """
@@ -312,7 +317,7 @@ def select_rows(
         List[Dict[str, Any]]: List of row dictionaries
     """
     where_clause = f"WHERE {where}" if where else ""
-    return fetch_all(table, where_clause, params, columns, order_by, limit, group_by)
+    return fetch_all(table, where_clause, params, columns, order_by, limit, offset, group_by)
 
 
 def select_one(

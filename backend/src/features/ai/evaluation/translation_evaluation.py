@@ -17,43 +17,12 @@ import json
 import re
 from typing import Tuple, Optional
 
-from features.ai.memory.vocabulary_memory import _extract_json
+from shared.text_utils import _extract_json, _normalize_umlauts, _strip_final_punct
 from features.ai.prompts import evaluate_translation_prompt
 from external.mistral.client import send_prompt
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-def _normalize_umlauts(s: str) -> str:
-    """
-    Normalize German umlauts for comparison.
-
-    Args:
-        s: Text to normalize
-
-    Returns:
-        Text with normalized umlauts
-    """
-    s = s.replace('ä', 'ae').replace('ö', 'oe').replace('ü', 'ue')
-    s = s.replace('Ä', 'Ae').replace('Ö', 'Oe').replace('Ü', 'Ue')
-    return s
-
-
-def _strip_final_punct(s: str) -> str:
-    """
-    Strip final punctuation from text.
-
-    Args:
-        s: Text to process
-
-    Returns:
-        Text with final punctuation removed
-    """
-    s = s.strip()
-    if s and s[-1] in ".?":
-        return s[:-1].strip()
-    return s
 
 
 def evaluate_translation_ai(english: str, reference: str, student: str) -> Tuple[bool, str]:

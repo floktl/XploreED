@@ -7,27 +7,33 @@ following clean architecture principles as outlined in the documentation.
 Components:
 - database: Database connection and management
 - services: Core business logic services
-- utils: General utilities and helpers
+- authentication: Authentication and session management utilities
+- processing: Content processing and manipulation utilities
+- validation: Data validation and parsing utilities
 - imports: Centralized import management
+
+Note: Database migrations are now in scripts/migrations/ for better separation.
+Import management has been moved to infrastructure/imports/ for better separation.
 
 For detailed architecture information, see: docs/backend_structure.md
 """
 
 from . import database
 from . import services
-from . import utils
+from . import authentication
+from . import processing
+# Removed validation import - validation folder was removed
 from . import imports
 
-# Re-export commonly used items for convenience
-from .imports import *
+# Note: Some functionality has been moved to core.services
+# Import specific items that are still available in core.imports
 
 __all__ = [
     # Module imports
     "database",
     "services",
-    "utils",
+    "authentication",
+    "processing",
+    # "validation",  # Removed - validation folder was removed
     "imports",
-
-    # Import all items from imports module
-    # (This will include all the imports defined in core/imports.py)
 ]

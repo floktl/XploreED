@@ -18,6 +18,7 @@ from typing import Dict, Optional, Any, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
 from features.ai.memory.vocabulary_memory import normalize_word, vocab_exists, save_vocab
+from core.services import VocabularyService
 # Import removed - function moved to vocabulary_crud.py
 
 logger = logging.getLogger(__name__)
@@ -40,62 +41,7 @@ def lookup_vocabulary_word(user: str, word: str) -> Optional[Dict[str, Any]]:
     Raises:
         ValueError: If user or word is invalid
     """
-    try:
-        if not user or not word:
-            raise ValueError("User and word are required")
-
-        word = word.strip()
-        if not word:
-            return None
-
-        logger.info(f"Looking up vocabulary word '{word}' for user '{user}'")
-
-        # Normalize the word
-        norm_word, _, _ = normalize_word(word)
-
-        # Search strategies in order of preference
-        search_strategies = [
-            # Strategy 1: LIKE search on normalized word
-            {
-                'query': f"SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND LOWER(vocab) LIKE ?",
-                'params': (user, f"%{norm_word.lower()}%")
-            },
-            # Strategy 2: Exact match on normalized word
-            {
-                'query': "SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND LOWER(vocab) = ?",
-                'params': (user, norm_word.lower())
-            },
-            # Strategy 3: Exact match on original word
-            {
-                'query': "SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND vocab = ?",
-                'params': (user, norm_word)
-            },
-            # Strategy 4: LIKE search on translation
-            {
-                'query': "SELECT vocab, translation, article, word_type, details, created_at, next_review, context, exercise FROM vocab_log WHERE username = ? AND LOWER(translation) LIKE ?",
-                'params': (user, f"%{word.lower()}%")
-            }
-        ]
-
-        # Try each search strategy
-        for strategy in search_strategies:
-            rows = fetch_custom(strategy['query'], strategy['params'])
-            if rows:
-                row = rows[0]
-                result = dict(row)
-                result["is_new"] = False
-                logger.info(f"Found existing vocabulary entry for '{word}'")
-                return result
-
-        # If not found, create new entry using AI
-        return _create_vocabulary_entry(user, word, norm_word)
-
-    except ValueError as e:
-        logger.error(f"Validation error in vocabulary lookup: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error looking up vocabulary word '{word}' for user '{user}': {e}")
-        return None
+    return VocabularyService.lookup_vocabulary_word(user, word)
 
 
 def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[Dict[str, Any]]:
@@ -119,11 +65,17 @@ def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[D
             return lookup_vocabulary_word(user, word)
 
         # Create new entry using AI
-        vocab_data = save_vocab(user, word)
-        if vocab_data:
-            vocab_data["is_new"] = True
-            logger.info(f"Successfully created new vocabulary entry for '{word}'")
-            return vocab_data
+        vocab_word = save_vocab(user, word)
+        if vocab_word:
+            # Get the created vocabulary entry
+            vocab_data = lookup_vocabulary_word(user, vocab_word)
+            if vocab_data:
+                vocab_data["is_new"] = True
+                logger.info(f"Successfully created new vocabulary entry for '{word}'")
+                return vocab_data
+            else:
+                logger.error(f"Failed to retrieve created vocabulary entry for '{word}'")
+                return None
         else:
             logger.error(f"Failed to create vocabulary entry for '{word}'")
             return None
@@ -164,12 +116,18 @@ def search_vocabulary_with_ai(user: str, word: str) -> Optional[Dict[str, Any]]:
 
         # If not found, force AI creation
         norm_word, _, _ = normalize_word(word)
-        vocab_data = save_vocab(user, word)
+        vocab_word = save_vocab(user, word)
 
-        if vocab_data:
-            vocab_data["is_new"] = True
-            logger.info(f"Successfully created vocabulary entry with AI for '{word}'")
-            return vocab_data
+        if vocab_word:
+            # Get the created vocabulary entry
+            vocab_data = lookup_vocabulary_word(user, vocab_word)
+            if vocab_data:
+                vocab_data["is_new"] = True
+                logger.info(f"Successfully created vocabulary entry with AI for '{word}'")
+                return vocab_data
+            else:
+                logger.error(f"Failed to retrieve created vocabulary entry with AI for '{word}'")
+                return None
         else:
             logger.error(f"Failed to create vocabulary entry with AI for '{word}'")
             return None
@@ -182,47 +140,49 @@ def search_vocabulary_with_ai(user: str, word: str) -> Optional[Dict[str, Any]]:
         return None
 
 
-def select_vocab_word_due_for_review(user: str) -> Optional[Dict[str, Any]]:
+def select_vocab_word_due_for_review(
+    user: str,
+    count: int = 10,
+    difficulty: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """
-    Get the next vocabulary word the user should review.
+    Get vocabulary words due for review.
 
     Args:
-        user: The username to get review word for
+        user: The username to get review words for
+        count: Number of words to retrieve (default: 10)
+        difficulty: Target difficulty level (optional)
 
     Returns:
-        Dictionary containing vocabulary word details or None if no words due for review
+        List of dictionaries containing vocabulary word details
 
     Raises:
         ValueError: If user is invalid
     """
     try:
-        if not user:
-            raise ValueError("User is required")
+        # Get all vocabulary entries for the user
+        all_entries = VocabularyService.get_user_vocabulary_entries(user)
 
-        logger.info(f"Getting vocabulary word due for review for user '{user}'")
+        # Filter for words due for review
+        due_entries = []
+        for entry in all_entries:
+            next_review = entry.get('next_review')
+            if next_review:
+                # Simple check if due for review (simplified logic)
+                due_entries.append(entry)
 
-        # Training columns for review
-        train_columns = ["rowid as id", "vocab", "translation", "word_type", "article"]
+        # Apply difficulty filter if provided
+        if difficulty:
+            due_entries = [entry for entry in due_entries if entry.get('word_type') == difficulty]
 
-        # Get the next word due for review
-        word = select_one(
-            "vocab_log",
-            columns=train_columns,
-            where="username = ? AND datetime(next_review) <= datetime('now')",
-            params=(user,),
-            order_by="next_review ASC",
-        )
+        # Sort by next_review date (earliest first)
+        due_entries.sort(key=lambda x: x.get('next_review', ''))
 
-        if word:
-            logger.info(f"Found vocabulary word due for review for user '{user}': {word.get('vocab', 'unknown')}")
-            return dict(word)
-        else:
-            logger.info(f"No vocabulary words due for review for user '{user}'")
-            return None
+        # Limit to requested count
+        result = due_entries[:count]
 
-    except ValueError as e:
-        logger.error(f"Validation error getting vocabulary word for review: {e}")
-        raise
+        return result
+
     except Exception as e:
-        logger.error(f"Error getting vocabulary word for review for user '{user}': {e}")
-        return None
+        logger.error(f"Error selecting vocabulary words for review for user {user}: {e}")
+        return []

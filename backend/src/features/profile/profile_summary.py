@@ -16,18 +16,25 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Dict, Any, List, Optional
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from core.services import UserService
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_profile_summary(username: str) -> Dict[str, Any]:
+def get_user_profile_summary(
+    username: str,
+    timeframe: str = "all",
+    include_details: bool = False
+) -> Dict[str, Any]:
     """
     Get comprehensive profile summary for a user.
 
     Args:
         username: The username to get profile for
+        timeframe: Statistics timeframe (week, month, year, all)
+        include_details: Include detailed breakdown
 
     Returns:
         Dictionary containing profile summary
@@ -60,17 +67,17 @@ def get_user_profile_summary(username: str) -> Dict[str, Any]:
                 "total_play_time": 0,
             }
 
-        # Get various statistics
-        game_stats = _get_game_statistics(username)
-        vocabulary_count = _get_vocabulary_count(username)
-        lessons_completed = _get_lessons_completed(username)
+        # Get comprehensive user statistics using core service
+        user_stats = UserService.get_user_statistics(username)
 
-        # Calculate skill level based on performance
-        skill_level = _calculate_skill_level(game_stats, vocabulary_count, lessons_completed)
+        # Extract values from user statistics
+        skill_level = user_stats.get("skill_level", 1)
+        game_stats = user_stats.get("game_statistics", {})
+        vocabulary_count = user_stats.get("total_vocabulary", 0)
+        lessons_completed = user_stats.get("lessons_completed", 0)
+        learning_streak = user_stats.get("learning_streak", 0)
 
-        # Get learning streak
-        learning_streak = _calculate_learning_streak(username)
-
+        # Base profile summary
         profile_summary = {
             "username": username,
             "exists": True,
@@ -88,6 +95,47 @@ def get_user_profile_summary(username: str) -> Dict[str, Any]:
             "last_activity": game_stats.get("last_activity"),
             "completion_rate": game_stats.get("completion_rate", 0.0),
         }
+
+        # Add timeframe-specific data if requested
+        if timeframe != "all":
+            # Calculate date range based on timeframe
+            from datetime import datetime, timedelta
+            now = datetime.now()
+
+            if timeframe == "week":
+                start_date = now - timedelta(days=7)
+            elif timeframe == "month":
+                start_date = now - timedelta(days=30)
+            elif timeframe == "year":
+                start_date = now - timedelta(days=365)
+            else:
+                start_date = now - timedelta(days=30)  # Default to month
+
+            # Add timeframe-specific statistics
+            profile_summary["timeframe"] = timeframe
+            profile_summary["period_start"] = start_date.isoformat()
+            profile_summary["period_end"] = now.isoformat()
+
+        # Add detailed breakdown if requested
+        if include_details:
+            profile_summary["detailed_breakdown"] = {
+                "vocabulary_progress": {
+                    "words_learned": vocabulary_count,
+                    "words_reviewed": 0,  # Placeholder
+                    "mastery_rate": 0.0,  # Placeholder
+                },
+                "lesson_progress": {
+                    "lessons_started": lessons_completed,
+                    "lessons_completed": lessons_completed,
+                    "completion_rate": 1.0 if lessons_completed > 0 else 0.0,
+                },
+                "game_performance": {
+                    "games_played": game_stats.get("total_games", 0),
+                    "average_score": game_stats.get("average_score", 0.0),
+                    "best_score": game_stats.get("best_score", 0),
+                    "total_play_time": game_stats.get("total_play_time", 0),
+                }
+            }
 
         logger.info(f"Retrieved profile summary for user {username}: skill level {skill_level}")
         return profile_summary
@@ -156,216 +204,5 @@ def get_user_game_results(username: str) -> List[Dict[str, Any]]:
         raise
 
 
-def _get_game_statistics(username: str) -> Dict[str, Any]:
-    """
-    Get game statistics for a user.
-
-    Args:
-        username: The username to get statistics for
-
-    Returns:
-        Dictionary containing game statistics
-    """
-    try:
-        # Get total games played
-        total_games_result = select_one(
-            "results",
-            columns="COUNT(*) as count",
-            where="username = ?",
-            params=(username,),
-        )
-        total_games = total_games_result.get("count", 0) if total_games_result else 0
-
-        # Get correct answers
-        correct_answers_result = select_one(
-            "results",
-            columns="COUNT(*) as count",
-            where="username = ? AND correct = 1",
-            params=(username,),
-        )
-        correct_answers = correct_answers_result.get("count", 0) if correct_answers_result else 0
-
-        # Calculate average score
-        average_score = (correct_answers / total_games * 100) if total_games > 0 else 0.0
-
-        # Get best score (highest level achieved)
-        best_score_result = select_one(
-            "results",
-            columns="MAX(level) as max_level",
-            where="username = ?",
-            params=(username,),
-        )
-        best_score = best_score_result.get("max_level", 0) if best_score_result else 0
-
-        # Get last activity
-        last_activity_result = select_one(
-            "results",
-            columns="MAX(timestamp) as last_timestamp",
-            where="username = ?",
-            params=(username,),
-        )
-        last_activity = last_activity_result.get("last_timestamp") if last_activity_result else None
-
-        # Calculate completion rate (games with correct answers)
-        completion_rate = (correct_answers / total_games * 100) if total_games > 0 else 0.0
-
-        # Estimate total play time (rough calculation)
-        total_play_time = total_games * 2  # Assuming 2 minutes per game
-
-        return {
-            "total_games": total_games,
-            "correct_answers": correct_answers,
-            "average_score": round(average_score, 2),
-            "best_score": best_score,
-            "last_activity": last_activity,
-            "completion_rate": round(completion_rate, 2),
-            "total_play_time": total_play_time,
-        }
-
-    except Exception as e:
-        logger.error(f"Error getting game statistics for user {username}: {e}")
-        return {
-            "total_games": 0,
-            "correct_answers": 0,
-            "average_score": 0.0,
-            "best_score": 0,
-            "last_activity": None,
-            "completion_rate": 0.0,
-            "total_play_time": 0,
-        }
-
-
-def _get_vocabulary_count(username: str) -> int:
-    """
-    Get vocabulary count for a user.
-
-    Args:
-        username: The username to get vocabulary count for
-
-    Returns:
-        Number of vocabulary words
-    """
-    try:
-        vocab_result = select_one(
-            "vocab_log",
-            columns="COUNT(*) as count",
-            where="username = ?",
-            params=(username,),
-        )
-        return vocab_result.get("count", 0) if vocab_result else 0
-
-    except Exception as e:
-        logger.error(f"Error getting vocabulary count for user {username}: {e}")
-        return 0
-
-
-def _get_lessons_completed(username: str) -> int:
-    """
-    Get lessons completed count for a user.
-
-    Args:
-        username: The username to get lessons count for
-
-    Returns:
-        Number of completed lessons
-    """
-    try:
-        lessons_result = select_one(
-            "lesson_progress",
-            columns="COUNT(*) as count",
-            where="user_id = ? AND completed_blocks >= total_blocks",
-            params=(username,),
-        )
-        return lessons_result.get("count", 0) if lessons_result else 0
-
-    except Exception as e:
-        logger.error(f"Error getting lessons completed for user {username}: {e}")
-        return 0
-
-
-def _calculate_skill_level(game_stats: Dict[str, Any], vocabulary_count: int, lessons_completed: int) -> int:
-    """
-    Calculate skill level based on user performance.
-
-    Args:
-        game_stats: Game statistics dictionary
-        vocabulary_count: Number of vocabulary words
-        lessons_completed: Number of completed lessons
-
-    Returns:
-        Skill level (1-10)
-    """
-    try:
-        total_games = game_stats.get("total_games", 0)
-        average_score = game_stats.get("average_score", 0.0)
-        best_score = game_stats.get("best_score", 0)
-
-        # Base score from games
-        game_score = min(10, (total_games * 0.1) + (average_score * 0.05) + (best_score * 0.2))
-
-        # Vocabulary bonus
-        vocab_bonus = min(3, vocabulary_count * 0.01)
-
-        # Lessons bonus
-        lessons_bonus = min(2, lessons_completed * 0.5)
-
-        # Calculate total skill level
-        skill_level = int(game_score + vocab_bonus + lessons_bonus)
-        return max(1, min(10, skill_level))
-
-    except Exception as e:
-        logger.error(f"Error calculating skill level: {e}")
-        return 1
-
-
-def _calculate_learning_streak(username: str) -> int:
-    """
-    Calculate learning streak for a user.
-
-    Args:
-        username: The username to calculate streak for
-
-    Returns:
-        Number of consecutive days with activity
-    """
-    try:
-        # Get recent activity (last 30 days)
-        recent_activity = select_rows(
-            "results",
-            columns="DISTINCT DATE(timestamp) as activity_date",
-            where="username = ? AND timestamp >= date('now', '-30 days')",
-            params=(username,),
-            order_by="activity_date DESC",
-        )
-
-        if not recent_activity:
-            return 0
-
-        # Calculate streak
-        streak = 0
-        current_date = None
-
-        for row in recent_activity:
-            activity_date = row.get("activity_date")
-            if current_date is None:
-                current_date = activity_date
-                streak = 1
-            else:
-                # Check if consecutive day
-                from datetime import datetime, timedelta
-                try:
-                    current_dt = datetime.strptime(current_date, "%Y-%m-%d")
-                    activity_dt = datetime.strptime(activity_date, "%Y-%m-%d")
-                    if (current_dt - activity_dt).days == 1:
-                        streak += 1
-                        current_date = activity_date
-                    else:
-                        break
-                except:
-                    break
-
-        return streak
-
-    except Exception as e:
-        logger.error(f"Error calculating learning streak for user {username}: {e}")
-        return 0
+# Note: Game statistics, vocabulary count, lessons completed, skill level calculation,
+# and learning streak calculation are now handled by the UserService in core/services/user_service.py

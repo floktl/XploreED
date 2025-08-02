@@ -18,6 +18,7 @@ import datetime
 from typing import Dict, Any, List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, fetch_custom, execute_query
+from core.services import VocabularyService
 
 logger = logging.getLogger(__name__)
 
@@ -36,66 +37,7 @@ def get_vocabulary_learning_progress(user: str, days: int = 30) -> Dict[str, Any
     Raises:
         ValueError: If user is invalid
     """
-    try:
-        if not user:
-            raise ValueError("User is required")
-
-        if days <= 0:
-            days = 30
-
-        logger.info(f"Getting vocabulary learning progress for user '{user}' over {days} days")
-
-        # Get vocabulary added per day
-        daily_additions = fetch_custom("""
-            SELECT
-                DATE(created_at) as date,
-                COUNT(*) as new_words
-            FROM vocab_log
-            WHERE username = ?
-                AND created_at >= date('now', '-{} days')
-            GROUP BY DATE(created_at)
-            ORDER BY date
-        """.format(days), (user,))
-
-        # Get vocabulary reviewed per day
-        daily_reviews = fetch_custom("""
-            SELECT
-                DATE(created_at) as date,
-                COUNT(*) as reviews
-            FROM vocab_log
-            WHERE username = ?
-                AND repetitions > 0
-                AND created_at >= date('now', '-{} days')
-            GROUP BY DATE(created_at)
-            ORDER BY date
-        """.format(days), (user,))
-
-        # Calculate total progress
-        total_words = select_one("vocab_log", columns="COUNT(*) as count", where="username = ?", params=(user,))
-        total = total_words.get("count", 0) if total_words else 0
-
-        # Calculate retention rate (words with repetitions > 0)
-        retention_data = select_one("vocab_log", columns="COUNT(*) as count", where="username = ? AND repetitions > 0", params=(user,))
-        retention_count = retention_data.get("count", 0) if retention_data else 0
-        retention_rate = (retention_count / total * 100) if total > 0 else 0
-
-        progress = {
-            "total_vocabulary": total,
-            "retention_rate": round(retention_rate, 2),
-            "daily_additions": {row["date"]: row["new_words"] for row in daily_additions},
-            "daily_reviews": {row["date"]: row["reviews"] for row in daily_reviews},
-            "period_days": days
-        }
-
-        logger.info(f"Retrieved vocabulary progress for user '{user}': {total} total words, {retention_rate:.1f}% retention")
-        return progress
-
-    except ValueError as e:
-        logger.error(f"Validation error getting vocabulary progress: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting vocabulary progress for user '{user}': {e}")
-        return {"total_vocabulary": 0, "retention_rate": 0, "daily_additions": {}, "daily_reviews": {}, "period_days": days}
+    return VocabularyService.get_vocabulary_learning_progress(user, days)
 
 
 def get_vocabulary_difficulty_analysis(user: str) -> Dict[str, Any]:

@@ -16,7 +16,7 @@ import logging
 from typing import Dict, Any, Optional, Tuple
 
 from core.database.connection import insert_row, execute_query, fetch_one
-from core.utils.helpers import user_exists
+from core.authentication import user_exists
 from werkzeug.security import generate_password_hash  # type: ignore
 from features.ai.memory.level_manager import initialize_topic_memory_for_level
 
@@ -124,7 +124,7 @@ def _ensure_users_table() -> bool:
         return False
 
 
-def get_user_statistics(username: str) -> Dict[str, Any]:
+def get_auth_user_statistics(username: str) -> Dict[str, Any]:
     """
     Get authentication-related statistics for a user.
 

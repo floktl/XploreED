@@ -70,6 +70,7 @@ def get_system_status() -> Dict[str, Any]:
             process_cpu = 0
 
         # Get system uptime
+        uptime = None
         if PSUTIL_AVAILABLE:
             uptime = datetime.fromtimestamp(psutil.boot_time())
             current_time = datetime.now()
@@ -112,7 +113,7 @@ def get_system_status() -> Dict[str, Any]:
                 "disk_usage": round(disk.percent, 2),
                 "disk_free": round(disk.free / (1024**3), 2),  # GB
                 "uptime": str(uptime_duration).split('.')[0],  # Remove microseconds
-                "boot_time": uptime.isoformat()
+                "boot_time": uptime.isoformat() if uptime else None
             },
             "services": {
                 "database": db_status,

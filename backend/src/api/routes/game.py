@@ -30,8 +30,8 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import get_current_user, require_user
+from infrastructure.imports import Imports
+from api.middleware.auth import get_current_user, require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import game_bp
 from features.game import (
@@ -51,6 +51,7 @@ logger = logging.getLogger(__name__)
 
 
 # === Game Management Routes ===
+
 @game_bp.route("/games", methods=["GET"])
 def get_available_games_route():
     """
@@ -60,12 +61,41 @@ def get_available_games_route():
     skill level and learning preferences.
 
     Query Parameters:
-        - skill_level: Filter by skill level
-        - game_type: Filter by game type
-        - limit: Maximum number of games to return
+        - skill_level (str, optional): Filter by skill level
+        - game_type (str, optional): Filter by game type
+        - limit (int, optional): Maximum number of games to return (default: 20)
 
-    Returns:
-        JSON response with available games or unauthorized error
+    Valid Game Types:
+        - vocabulary: Vocabulary building games
+        - grammar: Grammar practice games
+        - comprehension: Reading comprehension games
+        - pronunciation: Pronunciation practice games
+        - listening: Listening comprehension games
+
+    JSON Response Structure:
+        {
+            "games": [                             # Array of available games
+                {
+                    "id": int,                     # Game identifier
+                    "title": str,                  # Game title
+                    "description": str,            # Game description
+                    "game_type": str,              # Type of game
+                    "skill_level": str,            # Required skill level
+                    "duration": int,               # Estimated duration in minutes
+                    "difficulty": str,             # Game difficulty
+                    "prerequisites": [str],        # Required prerequisites
+                    "learning_objectives": [str]   # Learning objectives
+                }
+            ],
+            "total": int,                          # Total number of games
+            "user_level": str,                     # User's current skill level
+            "recommended_games": [int]             # Recommended game IDs
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = get_current_user()
@@ -101,15 +131,28 @@ def get_available_games_route():
             limit=limit
         )
 
+        # Get user's current level
+        user_level = get_user_game_level(user)
+
+        # Get recommended games based on user level
+        recommended_games = select_rows(
+            "educational_games",
+            columns="id",
+            where="skill_level = ?",
+            params=(user_level,),
+            limit=5
+        )
+
         return jsonify({
             "games": games,
             "total": len(games),
-            "limit": limit
+            "user_level": user_level,
+            "recommended_games": [g["id"] for g in recommended_games]
         })
 
     except Exception as e:
         logger.error(f"Error getting available games: {e}")
-        return jsonify({"error": "Failed to retrieve available games"}), 500
+        return jsonify({"error": "Failed to retrieve games"}), 500
 
 
 @game_bp.route("/games/<int:game_id>", methods=["GET"])
@@ -118,18 +161,51 @@ def get_game_details_route(game_id: int):
     Get detailed information about a specific game.
 
     This endpoint retrieves comprehensive information about a game
-    including rules, objectives, and configuration.
+    including rules, objectives, and user progress.
 
-    Args:
-        game_id: Unique identifier of the game
+    Path Parameters:
+        - game_id (int, required): Unique identifier of the game
 
-    Returns:
-        JSON response with game details or not found error
+    JSON Response Structure:
+        {
+            "game": {                              # Game information
+                "id": int,                         # Game identifier
+                "title": str,                      # Game title
+                "description": str,                # Detailed description
+                "game_type": str,                  # Type of game
+                "skill_level": str,                # Required skill level
+                "duration": int,                   # Estimated duration in minutes
+                "difficulty": str,                 # Game difficulty
+                "rules": [str],                    # Game rules
+                "objectives": [str],               # Learning objectives
+                "prerequisites": [str],            # Required prerequisites
+                "features": [str]                  # Game features
+            },
+            "user_progress": {                     # User's progress in this game
+                "best_score": float,               # Best score achieved
+                "total_plays": int,                # Total number of plays
+                "average_score": float,            # Average score
+                "last_played": str,                # Last play timestamp
+                "completion_rate": float           # Completion rate percentage
+            },
+            "leaderboard": [                       # Top players for this game
+                {
+                    "username": str,               # Player username
+                    "score": float,                # Player score
+                    "rank": int,                   # Player rank
+                    "played_at": str               # Play timestamp
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Game not found
+        - 500: Internal server error
     """
     try:
-        user = get_current_user()
-        if not user:
-            return jsonify({"error": "Unauthorized"}), 401
+        user = require_user()
 
         # Get game details
         game = select_one(
@@ -142,21 +218,32 @@ def get_game_details_route(game_id: int):
         if not game:
             return jsonify({"error": "Game not found"}), 404
 
-        # Get user's previous performance for this game
-        previous_results = select_rows(
+        # Get user's progress for this game
+        user_progress = select_one(
             "game_results",
-            columns="score, completed_at, time_spent",
-            where="user_id = ? AND game_id = ?",
-            params=(user, game_id),
-            order_by="completed_at DESC",
-            limit=5
+            columns="MAX(score) as best_score, COUNT(*) as total_plays, AVG(score) as average_score, MAX(created_at) as last_played",
+            where="game_id = ? AND username = ?",
+            params=(game_id, user)
         )
+
+        # Get leaderboard for this game
+        leaderboard = select_rows(
+            "game_results",
+            columns="username, score, created_at",
+            where="game_id = ?",
+            params=(game_id,),
+            order_by="score DESC",
+            limit=10
+        )
+
+        # Add ranks to leaderboard
+        for i, entry in enumerate(leaderboard):
+            entry["rank"] = i + 1
 
         return jsonify({
             "game": game,
-            "previous_performance": previous_results,
-            "best_score": max([r.get("score", 0) for r in previous_results]) if previous_results else 0,
-            "total_plays": len(previous_results)
+            "user_progress": user_progress or {},
+            "leaderboard": leaderboard
         })
 
     except Exception as e:
@@ -164,24 +251,51 @@ def get_game_details_route(game_id: int):
         return jsonify({"error": "Failed to retrieve game details"}), 500
 
 
-# === Game Sessions Routes ===
 @game_bp.route("/games/<int:game_id>/start", methods=["POST"])
 def start_game_session_route(game_id: int):
     """
     Start a new game session.
 
-    This endpoint creates a new game session and initializes the game state
-    for the user to begin playing.
+    This endpoint creates a new game session and initializes
+    the game state for the user.
 
-    Args:
-        game_id: Unique identifier of the game to start
+    Path Parameters:
+        - game_id (int, required): Unique identifier of the game
 
     Request Body:
-        - difficulty: Game difficulty level (optional)
-        - custom_settings: Custom game settings (optional)
+        - difficulty (str, optional): Game difficulty level
+        - settings (object, optional): Game-specific settings
 
-    Returns:
-        JSON response with session information or error details
+    JSON Response Structure:
+        {
+            "session_id": str,                     # Game session identifier
+            "game": {                              # Game information
+                "id": int,                         # Game identifier
+                "title": str,                      # Game title
+                "game_type": str,                  # Type of game
+                "difficulty": str                  # Selected difficulty
+            },
+            "initial_state": {                     # Initial game state
+                "level": int,                      # Current level
+                "score": int,                      # Current score
+                "lives": int,                      # Remaining lives
+                "time_limit": int,                 # Time limit in seconds
+                "rounds": int                      # Total rounds
+            },
+            "first_round": {                       # First round data
+                "question": str,                   # Question or prompt
+                "options": [str],                  # Answer options (if applicable)
+                "hint": str                        # Hint for the question
+            },
+            "started_at": str                      # Session start timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid game or settings
+        - 401: Unauthorized
+        - 404: Game not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -190,7 +304,7 @@ def start_game_session_route(game_id: int):
         # Check if game exists
         game = select_one(
             "educational_games",
-            columns="id, title, game_type, skill_level",
+            columns="*",
             where="id = ?",
             params=(game_id,)
         )
@@ -200,37 +314,44 @@ def start_game_session_route(game_id: int):
 
         # Get game settings
         difficulty = data.get("difficulty", "medium")
-        custom_settings = data.get("custom_settings", {})
+        settings = data.get("settings", {})
 
         # Create game session
         session_data = {
-            "user_id": user,
+            "username": user,
             "game_id": game_id,
             "difficulty": difficulty,
-            "custom_settings": custom_settings,
+            "settings": str(settings),
             "started_at": datetime.now().isoformat(),
             "status": "active"
         }
 
         session_id = create_game_session(session_data)
 
-        if session_id:
-            return jsonify({
-                "message": "Game session started successfully",
-                "session_id": session_id,
-                "game": {
-                    "id": game_id,
-                    "title": game.get("title"),
-                    "type": game.get("game_type"),
-                    "skill_level": game.get("skill_level")
-                },
-                "settings": {
-                    "difficulty": difficulty,
-                    "custom_settings": custom_settings
-                }
-            })
-        else:
-            return jsonify({"error": "Failed to start game session"}), 500
+        if not session_id:
+            return jsonify({"error": "Failed to create game session"}), 500
+
+        # Generate first round
+        first_round = create_game_round(session_id, game_id, difficulty)
+
+        return jsonify({
+            "session_id": session_id,
+            "game": {
+                "id": game_id,
+                "title": game["title"],
+                "game_type": game["game_type"],
+                "difficulty": difficulty
+            },
+            "initial_state": {
+                "level": 1,
+                "score": 0,
+                "lives": 3,
+                "time_limit": game.get("duration", 300) * 60,
+                "rounds": 10
+            },
+            "first_round": first_round,
+            "started_at": session_data["started_at"]
+        })
 
     except Exception as e:
         logger.error(f"Error starting game session for game {game_id}: {e}")
@@ -242,20 +363,48 @@ def update_game_progress_route(session_id: str):
     """
     Update game session progress.
 
-    This endpoint allows the game to update the current session progress
-    including score, level, and game state.
+    This endpoint processes user answers and updates the game
+    session progress with new rounds and scores.
 
-    Args:
-        session_id: Unique identifier of the game session
+    Path Parameters:
+        - session_id (str, required): Game session identifier
 
     Request Body:
-        - score: Current game score
-        - level: Current game level
-        - progress: Progress percentage (0-100)
-        - game_state: Current game state data
+        - answer (str, required): User's answer
+        - round_number (int, required): Current round number
+        - time_spent (int, optional): Time spent on this round
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "session_id": str,                     # Game session identifier
+            "round_result": {                      # Round result
+                "correct": bool,                   # Whether answer is correct
+                "score": int,                      # Points earned
+                "feedback": str,                   # Feedback message
+                "explanation": str                 # Answer explanation
+            },
+            "game_state": {                        # Updated game state
+                "level": int,                      # Current level
+                "score": int,                      # Total score
+                "lives": int,                      # Remaining lives
+                "rounds_completed": int,           # Rounds completed
+                "accuracy": float                  # Current accuracy percentage
+            },
+            "next_round": {                        # Next round data
+                "question": str,                   # Question or prompt
+                "options": [str],                  # Answer options (if applicable)
+                "hint": str,                       # Hint for the question
+                "time_limit": int                  # Time limit for this round
+            },
+            "session_complete": bool               # Whether session is complete
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or session
+        - 401: Unauthorized
+        - 404: Session not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -264,42 +413,48 @@ def update_game_progress_route(session_id: str):
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
+        answer = data.get("answer", "").strip()
+        round_number = data.get("round_number")
+        time_spent = data.get("time_spent", 0)
+
+        if not answer:
+            return jsonify({"error": "Answer is required"}), 400
+
+        if round_number is None:
+            return jsonify({"error": "Round number is required"}), 400
+
         # Check if session exists and belongs to user
         session = select_one(
             "game_sessions",
-            columns="id, game_id, status",
-            where="session_id = ? AND user_id = ?",
+            columns="*",
+            where="session_id = ? AND username = ?",
             params=(session_id, user)
         )
 
         if not session:
             return jsonify({"error": "Game session not found"}), 404
 
-        if session.get("status") != "active":
-            return jsonify({"error": "Game session is not active"}), 400
-
-        # Prepare progress update
-        progress_data = {
-            "score": data.get("score", 0),
-            "level": data.get("level", 1),
-            "progress": data.get("progress", 0),
-            "game_state": data.get("game_state", {}),
-            "updated_at": datetime.now().isoformat()
-        }
+        # Evaluate the answer
+        round_result = evaluate_game_answer(session_id, answer, round_number, time_spent)
 
         # Update game progress
-        success = update_game_progress(session_id, progress_data)
+        game_state = update_game_progress(session_id, round_result)
 
-        if success:
-            return jsonify({
-                "message": "Game progress updated successfully",
-                "session_id": session_id,
-                "current_score": progress_data["score"],
-                "current_level": progress_data["level"],
-                "progress": progress_data["progress"]
-            })
-        else:
-            return jsonify({"error": "Failed to update game progress"}), 500
+        # Check if session is complete
+        session_complete = game_state.get("lives", 0) <= 0 or game_state.get("rounds_completed", 0) >= 10
+
+        # Generate next round if session is not complete
+        next_round = None
+        if not session_complete:
+            next_round = create_game_round(session_id, session["game_id"], session["difficulty"])
+
+        return jsonify({
+            "session_id": session_id,
+            "round_result": round_result,
+            "game_state": game_state,
+            "next_round": next_round,
+            "session_complete": session_complete
+        })
 
     except Exception as e:
         logger.error(f"Error updating game progress for session {session_id}: {e}")
@@ -309,35 +464,63 @@ def update_game_progress_route(session_id: str):
 @game_bp.route("/sessions/<session_id>/end", methods=["POST"])
 def end_game_session_route(session_id: str):
     """
-    End a game session and record final results.
+    End a game session and save results.
 
-    This endpoint finalizes a game session and records the complete
-    results for analytics and progress tracking.
+    This endpoint finalizes a game session, calculates final scores,
+    and saves the results to the user's profile.
 
-    Args:
-        session_id: Unique identifier of the game session
+    Path Parameters:
+        - session_id (str, required): Game session identifier
 
     Request Body:
-        - final_score: Final game score
-        - time_spent: Total time spent playing (seconds)
-        - completed: Whether the game was completed
-        - achievements: List of achievements earned
+        - reason (str, optional): Reason for ending session (completed, abandoned, error)
 
-    Returns:
-        JSON response with final results or error details
+    JSON Response Structure:
+        {
+            "session_id": str,                     # Game session identifier
+            "final_results": {                     # Final session results
+                "total_score": int,                # Final total score
+                "rounds_completed": int,           # Total rounds completed
+                "accuracy": float,                 # Overall accuracy percentage
+                "time_spent": int,                 # Total time spent in seconds
+                "lives_remaining": int,            # Lives remaining at end
+                "performance_rating": str          # Performance rating (excellent, good, fair, poor)
+            },
+            "achievements": [                      # Achievements earned
+                {
+                    "id": str,                     # Achievement identifier
+                    "title": str,                  # Achievement title
+                    "description": str,            # Achievement description
+                    "earned_at": str               # Achievement timestamp
+                }
+            ],
+            "improvements": [str],                 # Areas for improvement
+            "next_recommendations": [              # Recommended next steps
+                {
+                    "game_id": int,                # Recommended game ID
+                    "reason": str                  # Reason for recommendation
+                }
+            ],
+            "completed_at": str                    # Session completion timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Session not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
-        data = request.get_json()
+        data = request.get_json() or {}
 
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        reason = data.get("reason", "completed")
 
         # Check if session exists and belongs to user
         session = select_one(
             "game_sessions",
-            columns="id, game_id, started_at",
-            where="session_id = ? AND user_id = ?",
+            columns="*",
+            where="session_id = ? AND username = ?",
             params=(session_id, user)
         )
 
@@ -345,119 +528,153 @@ def end_game_session_route(session_id: str):
             return jsonify({"error": "Game session not found"}), 404
 
         # Calculate final results
-        final_score = data.get("final_score", 0)
-        time_spent = data.get("time_spent", 0)
-        completed = data.get("completed", False)
-        achievements = data.get("achievements", [])
-
-        # Calculate performance metrics
-        performance_metrics = calculate_game_score(
-            final_score, time_spent, completed, achievements
-        )
-
-        # Record game results
-        result_data = {
-            "user_id": user,
-            "game_id": session.get("game_id"),
-            "session_id": session_id,
-            "score": final_score,
-            "time_spent": time_spent,
-            "completed": completed,
-            "performance_rating": performance_metrics.get("rating", "average"),
-            "achievements": achievements,
-            "completed_at": datetime.now().isoformat()
-        }
-
-        result_id = insert_row("game_results", result_data)
+        final_results = calculate_game_score(session_id)
 
         # Update session status
         update_row(
             "game_sessions",
-            {"status": "completed", "ended_at": datetime.now().isoformat()},
+            {
+                "status": "completed",
+                "ended_at": datetime.now().isoformat(),
+                "final_score": final_results["total_score"],
+                "completion_reason": reason
+            },
             "WHERE session_id = ?",
             (session_id,)
         )
 
-        if result_id:
-            return jsonify({
-                "message": "Game session ended successfully",
-                "session_id": session_id,
-                "final_score": final_score,
-                "performance_rating": performance_metrics.get("rating"),
-                "achievements": achievements,
-                "result_id": result_id
-            })
-        else:
-            return jsonify({"error": "Failed to record game results"}), 500
+        # Save results to user's profile
+        result_data = {
+            "username": user,
+            "game_id": session["game_id"],
+            "session_id": session_id,
+            "score": final_results["total_score"],
+            "accuracy": final_results["accuracy"],
+            "time_spent": final_results["time_spent"],
+            "completed_at": datetime.now().isoformat()
+        }
+
+        insert_row("game_results", result_data)
+
+        # Get achievements and recommendations
+        achievements = get_game_achievements(user, session["game_id"], final_results)
+        recommendations = get_game_recommendations(user, final_results)
+
+        return jsonify({
+            "session_id": session_id,
+            "final_results": final_results,
+            "achievements": achievements,
+            "improvements": get_improvement_areas(final_results),
+            "next_recommendations": recommendations,
+            "completed_at": datetime.now().isoformat()
+        })
 
     except Exception as e:
         logger.error(f"Error ending game session {session_id}: {e}")
         return jsonify({"error": "Failed to end game session"}), 500
 
 
-# === Game Results Routes ===
 @game_bp.route("/results", methods=["GET"])
 def get_game_results_route():
     """
-    Get user's game results and performance history.
+    Get user's game results and history.
 
-    This endpoint retrieves the user's game performance history
-    including scores, completion times, and achievements.
+    This endpoint retrieves the user's game playing history
+    including scores, achievements, and performance trends.
 
     Query Parameters:
-        - game_id: Filter by specific game
-        - limit: Maximum number of results to return
-        - offset: Pagination offset
+        - game_type (str, optional): Filter by game type
+        - limit (int, optional): Maximum number of results (default: 20)
+        - offset (int, optional): Pagination offset (default: 0)
+        - sort_by (str, optional): Sort field (score, date, accuracy)
 
-    Returns:
-        JSON response with game results or unauthorized error
+    JSON Response Structure:
+        {
+            "results": [                           # Array of game results
+                {
+                    "id": int,                     # Result identifier
+                    "game_id": int,                # Game identifier
+                    "game_title": str,             # Game title
+                    "game_type": str,              # Game type
+                    "score": int,                  # Achieved score
+                    "accuracy": float,             # Accuracy percentage
+                    "time_spent": int,             # Time spent in seconds
+                    "completed_at": str,           # Completion timestamp
+                    "performance_rating": str      # Performance rating
+                }
+            ],
+            "summary": {                           # Results summary
+                "total_games": int,                # Total games played
+                "average_score": float,            # Average score
+                "best_score": int,                 # Best score achieved
+                "total_time": int,                 # Total time spent
+                "favorite_game": str               # Most played game
+            },
+            "achievements": [                      # User achievements
+                {
+                    "id": str,                     # Achievement identifier
+                    "title": str,                  # Achievement title
+                    "description": str,            # Achievement description
+                    "earned_at": str,              # Achievement timestamp
+                    "icon": str                    # Achievement icon
+                }
+            ],
+            "total": int,                          # Total number of results
+            "limit": int,                          # Requested limit
+            "offset": int                          # Requested offset
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get query parameters
-        game_id = request.args.get("game_id")
+        game_type = request.args.get("game_type")
         limit = int(request.args.get("limit", 20))
         offset = int(request.args.get("offset", 0))
+        sort_by = request.args.get("sort_by", "date")
 
         # Build query conditions
-        where_conditions = ["user_id = ?"]
+        where_conditions = ["username = ?"]
         params = [user]
 
-        if game_id:
-            where_conditions.append("game_id = ?")
-            params.append(game_id)
+        if game_type:
+            where_conditions.append("game_type = ?")
+            params.append(game_type)
 
         where_clause = " AND ".join(where_conditions)
 
-        # Get game results
+        # Get user's game results
         results = select_rows(
             "game_results",
-            columns="id, game_id, score, time_spent, completed, performance_rating, achievements, completed_at",
+            columns="*",
             where=where_clause,
             params=tuple(params),
-            order_by="completed_at DESC",
-            limit=limit
+            order_by=f"{sort_by} DESC",
+            limit=limit,
+            offset=offset
         )
 
-        # Get game titles for results
-        game_titles = {}
-        if results:
-            game_ids = list(set(r.get("game_id") for r in results))
-            games = select_rows(
-                "educational_games",
-                columns="id, title",
-                where=f"id IN ({','.join(['?'] * len(game_ids))})",
-                params=tuple(game_ids)
-            )
-            game_titles = {g.get("id"): g.get("title") for g in games}
+        # Get results summary
+        summary = get_game_statistics(user)
 
-        # Add game titles to results
-        for result in results:
-            result["game_title"] = game_titles.get(result.get("game_id"), "Unknown Game")
+        # Get user achievements
+        achievements = select_rows(
+            "user_achievements",
+            columns="*",
+            where="username = ?",
+            params=(user,),
+            order_by="earned_at DESC"
+        )
 
         return jsonify({
             "results": results,
+            "summary": summary,
+            "achievements": achievements,
             "total": len(results),
             "limit": limit,
             "offset": offset
@@ -474,53 +691,85 @@ def get_game_result_details_route(result_id: int):
     Get detailed information about a specific game result.
 
     This endpoint retrieves comprehensive details about a specific
-    game result including performance metrics and achievements.
+    game session including round-by-round performance.
 
-    Args:
-        result_id: Unique identifier of the game result
+    Path Parameters:
+        - result_id (int, required): Game result identifier
 
-    Returns:
-        JSON response with result details or not found error
+    JSON Response Structure:
+        {
+            "result": {                            # Game result information
+                "id": int,                         # Result identifier
+                "game_id": int,                    # Game identifier
+                "game_title": str,                 # Game title
+                "game_type": str,                  # Game type
+                "score": int,                      # Final score
+                "accuracy": float,                 # Overall accuracy
+                "time_spent": int,                 # Total time spent
+                "completed_at": str,               # Completion timestamp
+                "difficulty": str,                 # Game difficulty
+                "session_duration": int            # Session duration in seconds
+            },
+            "rounds": [                            # Round-by-round details
+                {
+                    "round_number": int,           # Round number
+                    "question": str,               # Question asked
+                    "user_answer": str,            # User's answer
+                    "correct_answer": str,         # Correct answer
+                    "correct": bool,               # Whether answer was correct
+                    "score": int,                  # Points earned
+                    "time_spent": int,             # Time spent on round
+                    "feedback": str                # Round feedback
+                }
+            ],
+            "performance_analysis": {              # Performance analysis
+                "strengths": [str],                # Identified strengths
+                "weaknesses": [str],               # Areas for improvement
+                "recommendations": [str],          # Learning recommendations
+                "skill_progress": {                # Skill progress
+                    "vocabulary": float,           # Vocabulary improvement
+                    "grammar": float,              # Grammar improvement
+                    "comprehension": float         # Comprehension improvement
+                }
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Result not found
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Get result details
+        # Get game result
         result = select_one(
             "game_results",
             columns="*",
-            where="id = ? AND user_id = ?",
+            where="id = ? AND username = ?",
             params=(result_id, user)
         )
 
         if not result:
             return jsonify({"error": "Game result not found"}), 404
 
-        # Get game details
-        game = select_one(
-            "educational_games",
-            columns="title, description, game_type, skill_level",
-            where="id = ?",
-            params=(result.get("game_id"),)
+        # Get round-by-round details
+        rounds = select_rows(
+            "game_rounds",
+            columns="*",
+            where="session_id = ?",
+            params=(result["session_id"],),
+            order_by="round_number ASC"
         )
 
-        # Get session details
-        session = select_one(
-            "game_sessions",
-            columns="started_at, difficulty, custom_settings",
-            where="session_id = ?",
-            params=(result.get("session_id"),)
-        )
+        # Get performance analysis
+        performance_analysis = analyze_game_performance(result, rounds)
 
         return jsonify({
             "result": result,
-            "game": game,
-            "session": session,
-            "performance_analysis": {
-                "score_percentage": (result.get("score", 0) / 100) * 100,
-                "time_efficiency": result.get("time_spent", 0) / max(result.get("score", 1), 1),
-                "completion_rate": 100 if result.get("completed") else 0
-            }
+            "rounds": rounds,
+            "performance_analysis": performance_analysis
         })
 
     except Exception as e:
@@ -528,21 +777,64 @@ def get_game_result_details_route(result_id: int):
         return jsonify({"error": "Failed to retrieve game result details"}), 500
 
 
-# === Game Analytics Routes ===
 @game_bp.route("/analytics", methods=["GET"])
 def get_game_analytics_route():
     """
     Get comprehensive game analytics for the user.
 
     This endpoint provides detailed analytics about the user's
-    gaming performance and learning effectiveness.
+    game playing patterns, performance trends, and learning progress.
 
     Query Parameters:
-        - timeframe: Analytics timeframe (week, month, year)
-        - game_type: Filter by game type
+        - timeframe (str, optional): Analytics timeframe (week, month, year)
+        - game_type (str, optional): Filter by game type
 
-    Returns:
-        JSON response with game analytics or unauthorized error
+    JSON Response Structure:
+        {
+            "overview": {                          # Overview statistics
+                "total_games_played": int,         # Total games played
+                "total_time_spent": int,           # Total time spent in minutes
+                "average_score": float,            # Average score
+                "improvement_rate": float,         # Score improvement rate
+                "favorite_game_type": str          # Most played game type
+            },
+            "performance_trends": {                # Performance trends
+                "daily_scores": [                  # Daily score progression
+                    {
+                        "date": str,               # Date
+                        "average_score": float,    # Average score for day
+                        "games_played": int        # Number of games played
+                    }
+                ],
+                "weekly_progress": [               # Weekly progress
+                    {
+                        "week": str,               # Week identifier
+                        "total_score": int,        # Total score for week
+                        "accuracy": float          # Weekly accuracy
+                    }
+                ]
+            },
+            "game_type_breakdown": [               # Performance by game type
+                {
+                    "game_type": str,              # Game type
+                    "games_played": int,           # Number of games played
+                    "average_score": float,        # Average score
+                    "best_score": int,             # Best score
+                    "total_time": int              # Total time spent
+                }
+            ],
+            "learning_insights": {                 # Learning insights
+                "strengths": [str],                # User strengths
+                "weaknesses": [str],               # Areas for improvement
+                "recommendations": [str],          # Learning recommendations
+                "next_goals": [str]                # Suggested next goals
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -551,21 +843,10 @@ def get_game_analytics_route():
         timeframe = request.args.get("timeframe", "month")
         game_type = request.args.get("game_type")
 
-        # Validate timeframe
-        valid_timeframes = ["week", "month", "year"]
-        if timeframe not in valid_timeframes:
-            return jsonify({"error": f"Invalid timeframe: {timeframe}"}), 400
-
-        # Get game analytics
+        # Get analytics data
         analytics = get_game_analytics(user, timeframe, game_type)
 
-        return jsonify({
-            "user": user,
-            "timeframe": timeframe,
-            "game_type": game_type,
-            "analytics": analytics,
-            "generated_at": datetime.now().isoformat()
-        })
+        return jsonify(analytics)
 
     except Exception as e:
         logger.error(f"Error getting game analytics for user {user}: {e}")
@@ -575,121 +856,84 @@ def get_game_analytics_route():
 @game_bp.route("/analytics/performance", methods=["GET"])
 def get_performance_analytics_route():
     """
-    Get detailed performance analytics across all games.
+    Get detailed performance analytics and insights.
 
-    This endpoint provides performance analysis including
-    improvement trends, skill development, and learning patterns.
+    This endpoint provides in-depth performance analysis including
+    skill development, learning patterns, and personalized insights.
 
     Query Parameters:
-        - period: Analysis period (week, month, quarter)
-        - metric: Performance metric (score, time, accuracy)
+        - skill_area (str, optional): Focus on specific skill area
+        - comparison_period (str, optional): Period for comparison
 
-    Returns:
-        JSON response with performance analytics or unauthorized error
+    JSON Response Structure:
+        {
+            "skill_development": {                 # Skill development tracking
+                "vocabulary": {                    # Vocabulary skills
+                    "current_level": str,          # Current level
+                    "progress_percentage": float,  # Progress percentage
+                    "words_learned": int,          # Words learned
+                    "retention_rate": float        # Retention rate
+                },
+                "grammar": {                       # Grammar skills
+                    "current_level": str,          # Current level
+                    "progress_percentage": float,  # Progress percentage
+                    "concepts_mastered": int,      # Concepts mastered
+                    "accuracy_rate": float         # Accuracy rate
+                },
+                "comprehension": {                 # Comprehension skills
+                    "current_level": str,          # Current level
+                    "progress_percentage": float,  # Progress percentage
+                    "texts_completed": int,        # Texts completed
+                    "understanding_rate": float    # Understanding rate
+                }
+            },
+            "learning_patterns": {                 # Learning pattern analysis
+                "preferred_times": [str],          # Preferred learning times
+                "session_duration": {              # Session duration patterns
+                    "average": int,                # Average session length
+                    "optimal": int,                # Optimal session length
+                    "distribution": [int]          # Duration distribution
+                },
+                "difficulty_preference": str,      # Preferred difficulty level
+                "game_type_preference": str        # Preferred game type
+            },
+            "improvement_areas": [                 # Areas needing improvement
+                {
+                    "skill": str,                  # Skill area
+                    "current_performance": float,  # Current performance
+                    "target_performance": float,   # Target performance
+                    "recommended_actions": [str]   # Recommended actions
+                }
+            ],
+            "achievement_progress": {              # Achievement progress
+                "total_achievements": int,         # Total achievements
+                "recent_achievements": [str],      # Recently earned achievements
+                "next_achievements": [             # Upcoming achievements
+                    {
+                        "title": str,              # Achievement title
+                        "progress": float,         # Progress percentage
+                        "remaining": str           # What's remaining
+                    }
+                ]
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get query parameters
-        period = request.args.get("period", "month")
-        metric = request.args.get("metric", "score")
+        skill_area = request.args.get("skill_area")
+        comparison_period = request.args.get("comparison_period", "month")
 
-        # Validate parameters
-        valid_periods = ["week", "month", "quarter"]
-        valid_metrics = ["score", "time", "accuracy"]
+        # Get performance analytics
+        performance_analytics = get_performance_analytics(user, skill_area, comparison_period)
 
-        if period not in valid_periods:
-            return jsonify({"error": f"Invalid period: {period}"}), 400
-
-        if metric not in valid_metrics:
-            return jsonify({"error": f"Invalid metric: {metric}"}), 400
-
-        # Get performance data
-        performance_data = select_rows(
-            "game_results",
-            columns="score, time_spent, completed, completed_at, game_id",
-            where="user_id = ?",
-            params=(user,),
-            order_by="completed_at DESC"
-        )
-
-        # Analyze performance trends
-        trends = {
-            "period": period,
-            "metric": metric,
-            "data_points": [],
-            "overall_trend": "stable",
-            "improvement_rate": 0
-        }
-
-        # Group data by time periods and calculate metrics
-        if metric == "score":
-            # Calculate average scores over time
-            daily_scores = {}
-            for result in performance_data:
-                date = result.get("completed_at", "")[:10]
-                score = result.get("score", 0)
-                if date not in daily_scores:
-                    daily_scores[date] = {"total_score": 0, "count": 0}
-                daily_scores[date]["total_score"] += score
-                daily_scores[date]["count"] += 1
-
-            for date, data in sorted(daily_scores.items()):
-                avg_score = data["total_score"] / data["count"] if data["count"] > 0 else 0
-                trends["data_points"].append({
-                    "date": date,
-                    "value": round(avg_score, 2)
-                })
-
-        elif metric == "time":
-            # Calculate average completion times
-            daily_times = {}
-            for result in performance_data:
-                date = result.get("completed_at", "")[:10]
-                time_spent = result.get("time_spent", 0)
-                if date not in daily_times:
-                    daily_times[date] = {"total_time": 0, "count": 0}
-                daily_times[date]["total_time"] += time_spent
-                daily_times[date]["count"] += 1
-
-            for date, data in sorted(daily_times.items()):
-                avg_time = data["total_time"] / data["count"] if data["count"] > 0 else 0
-                trends["data_points"].append({
-                    "date": date,
-                    "value": round(avg_time, 2)
-                })
-
-        elif metric == "accuracy":
-            # Calculate completion rates
-            daily_completions = {}
-            for result in performance_data:
-                date = result.get("completed_at", "")[:10]
-                completed = result.get("completed", False)
-                if date not in daily_completions:
-                    daily_completions[date] = {"total": 0, "completed": 0}
-                daily_completions[date]["total"] += 1
-                if completed:
-                    daily_completions[date]["completed"] += 1
-
-            for date, data in sorted(daily_completions.items()):
-                accuracy = (data["completed"] / data["total"] * 100) if data["total"] > 0 else 0
-                trends["data_points"].append({
-                    "date": date,
-                    "value": round(accuracy, 2)
-                })
-
-        # Calculate improvement rate
-        if len(trends["data_points"]) >= 2:
-            first_value = trends["data_points"][0]["value"]
-            last_value = trends["data_points"][-1]["value"]
-            if first_value > 0:
-                trends["improvement_rate"] = round(((last_value - first_value) / first_value) * 100, 2)
-
-        return jsonify({
-            "user": user,
-            "performance_trends": trends,
-            "generated_at": datetime.now().isoformat()
-        })
+        return jsonify(performance_analytics)
 
     except Exception as e:
         logger.error(f"Error getting performance analytics for user {user}: {e}")

@@ -9,7 +9,7 @@ from features.ai.prompts import (
     feedback_generation_prompt,
     exercise_generation_prompt,
 )
-from features.ai.evaluation.translation_evaluation import _normalize_umlauts, _strip_final_punct
+from shared.text_utils import _normalize_umlauts, _strip_final_punct
 from external.mistral.client import send_request
 from .. import (
     EXERCISE_TEMPLATE,
@@ -59,39 +59,6 @@ def _ensure_schema(exercise_block: dict) -> dict:
         ]
 
     return exercise_block
-
-
-# generate_feedback_prompt moved to feedback_helpers.py
-
-
-def print_db_exercise_blocks(username, context, parent_function=None):
-    # Debug print removed to avoid DB lock issues
-    from core.database.connection import fetch_one
-    row = fetch_one("ai_user_data", "WHERE username = ?", (username,))
-    parent_str = f"[{parent_function}] " if parent_function else ""
-    if not row:
-        print(f"\033[91m{parent_str}[{context}] No ai_user_data row for user {username}\033[0m", flush=True)
-        return
-    try:
-        exercises = row.get("exercises")
-        next_exercises = row.get("next_exercises")
-        print(f"\033[95m{parent_str}[{context}] DB: Current block id:\033[0m", flush=True)
-        if exercises:
-            import json as _json
-            block = _json.loads(exercises) if isinstance(exercises, str) else exercises
-            block_id = block.get("block_id") if isinstance(block, dict) else None
-            print(f"{block_id if block_id else '(none)'}", flush=True)
-        else:
-            print("(none)", flush=True)
-        print(f"\033[95m{parent_str}[{context}] DB: Next block id:\033[0m", flush=True)
-        if next_exercises:
-            block = _json.loads(next_exercises) if isinstance(next_exercises, str) else next_exercises
-            block_id = block.get("block_id") if isinstance(block, dict) else None
-            print(f"{block_id if block_id else '(none)'}", flush=True)
-        else:
-            print("(none)", flush=True)
-    except Exception as e:
-        print(f"\033[91m{parent_str}[{context}] Error printing DB blocks: {e}\033[0m", flush=True)
 
 
 def store_user_ai_data(username: str, data: dict, parent_function=None):

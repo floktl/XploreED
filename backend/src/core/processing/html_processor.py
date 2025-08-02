@@ -45,18 +45,16 @@ def clean_html(raw_html: str) -> str:
     return raw_html.strip()
 
 
-# === Lesson Block Management ===
-def update_lesson_blocks_from_html(lesson_id: int, html: str) -> None:
+# === HTML Content Processing ===
+def extract_block_ids_from_html(html: str) -> Set[str]:
     """
-    Store all data-block-id values for lesson_id in the database.
-
-    This function parses HTML content to extract block IDs and updates
-    the lesson_blocks table to maintain the relationship between
-    lessons and their interactive blocks.
+    Extract all data-block-id values from HTML content.
 
     Args:
-        lesson_id: ID of the lesson to update blocks for
         html: HTML content containing data-block-id attributes
+
+    Returns:
+        Set[str]: Set of block IDs found in the HTML
     """
     soup = BeautifulSoup(html, "html.parser")
     block_ids: Set[str] = set()
@@ -67,21 +65,7 @@ def update_lesson_blocks_from_html(lesson_id: int, html: str) -> None:
         if block_id:
             block_ids.add(str(block_id))
 
-    # Update database with block IDs
-    with get_connection() as conn:
-        cursor = conn.cursor()
-
-        # Remove existing blocks for this lesson
-        cursor.execute("DELETE FROM lesson_blocks WHERE lesson_id = ?", (lesson_id,))
-
-        # Insert new block IDs
-        for block_id in block_ids:
-            cursor.execute(
-                "INSERT OR IGNORE INTO lesson_blocks (lesson_id, block_id) VALUES (?, ?)",
-                (lesson_id, block_id)
-            )
-
-        conn.commit()
+    return block_ids
 
 
 def inject_block_ids(html: str) -> str:
@@ -155,8 +139,8 @@ __all__ = [
     # HTML content cleaning
     "clean_html",
 
-    # Lesson block management
-    "update_lesson_blocks_from_html",
+    # HTML content processing
+    "extract_block_ids_from_html",
     "inject_block_ids",
 
     # AI data processing

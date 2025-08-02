@@ -26,8 +26,9 @@ from pathlib import Path
 from core.database.connection import (
     select_rows, insert_row, update_row, delete_rows, fetch_one, select_one
 )
-from core.utils.helpers import is_admin, require_user, run_in_background, get_current_user, user_exists
-from core.utils.html_helpers import strip_ai_data
+from core.authentication import user_exists, get_user_by_username, is_user_admin, validate_user_credentials
+from core.processing import strip_ai_data, run_in_background, run_with_timeout, extract_block_ids_from_html
+from core.services import UserService, GameService, ExerciseService, VocabularyService
 
 # === Configuration Imports ===
 from config.extensions import limiter
@@ -37,8 +38,8 @@ from config.blueprint import (
 )
 
 # === Features Layer Imports ===
-# Import all features for easy access
-from features import *
+# Note: Some functionality has been moved to core.services
+# Import specific functions that are still available in features
 
 # Individual feature imports for specific functions
 from features.ai.generation.exercise_creation import generate_training_exercises
@@ -78,19 +79,14 @@ from features.exercise import (
 
 
 # === Progress Feature Imports ===
-from features.progress import (
-    track_lesson_progress, get_lesson_progress, track_exercise_progress,
-    track_vocabulary_progress, track_game_progress, get_user_progress_summary,
-    reset_user_progress, get_progress_trends, get_user_lesson_progress,
-    update_block_progress, mark_lesson_complete, check_lesson_completion_status,
-    mark_lesson_as_completed, get_lesson_progress_summary, reset_lesson_progress
-)
+# Note: Progress functionality has been moved to ProgressService in core.services
+# These imports are kept for backward compatibility but should be replaced with ProgressService calls
 
 # === Lesson Feature Imports ===
+# Note: Most lesson functionality has been moved to LessonService in core.services
+# These imports are kept for backward compatibility but should be replaced with LessonService calls
 from features.lessons import (
-    get_lesson_content, get_user_lessons_summary, get_lesson_progress,
-    update_lesson_progress, get_lesson_statistics, validate_lesson_access,
-    validate_block_completion, get_lesson_blocks, update_lesson_content,
+    validate_block_completion, update_lesson_content,
     publish_lesson, get_lesson_analytics
 )
 
@@ -125,11 +121,11 @@ from features.support import (
 # === Admin Feature Imports ===
 from features.admin import (
     get_all_game_results,
-    get_user_game_results,
+    get_admin_user_game_results,
     create_lesson_content,
     get_all_lessons,
     get_lesson_by_id,
-    update_lesson_content,
+    update_admin_lesson_content,
     delete_lesson_content,
     get_lesson_progress_summary,
     get_individual_lesson_progress,
@@ -180,7 +176,7 @@ from features.auth import (
     destroy_user_session,
     get_user_session_info,
     validate_session,
-    get_user_statistics,
+    get_auth_user_statistics,
 )
 
 # === External Layer Imports ===
@@ -188,7 +184,11 @@ from external.mistral.client import send_prompt, send_request
 
 # === Shared Layer Imports ===
 from shared.constants import CEFR_LEVELS
-from shared.exceptions import AIEvaluationError, DatabaseError, ValidationError
+from shared.exceptions import (
+    AIEvaluationError, DatabaseError, ValidationError, AuthenticationError,
+    ExerciseGenerationError, TopicMemoryError, XplorEDException,
+    ConfigurationError, ProcessingError, TimeoutError
+)
 from shared.types import Exercise, ExerciseBlock, QualityScore, UserLevel
 
 # === AI Feature Constants ===
@@ -206,8 +206,9 @@ __all__ = [
 
     # Core imports
     "select_rows", "insert_row", "update_row", "delete_rows", "fetch_one", "select_one",
-    "is_admin", "require_user", "run_in_background", "get_current_user", "user_exists",
-    "strip_ai_data", "limiter",
+    "user_exists", "get_user_by_username", "is_user_admin", "validate_user_credentials",
+    "strip_ai_data", "run_in_background", "run_with_timeout", "extract_block_ids_from_html", "limiter",
+    "UserService", "GameService", "ExerciseService", "VocabularyService",
 
     # Blueprint imports
     "admin_bp", "auth_bp", "debug_bp", "game_bp", "lesson_progress_bp", "lessons_bp",
@@ -262,7 +263,7 @@ __all__ = [
     "get_user_feedback", "create_support_ticket",
 
     # Admin feature imports
-    "get_all_users", "get_all_game_results", "get_user_game_results", "create_lesson_content",
+    "get_all_users", "get_all_game_results", "get_admin_user_game_results", "create_lesson_content",
     "get_all_lessons", "get_lesson_progress_summary",
     "get_individual_lesson_progress", "get_lesson_by_id",
     "update_lesson_content",
@@ -288,13 +289,15 @@ __all__ = [
     # Auth feature imports
     "authenticate_user", "authenticate_admin", "create_user_account",
     "destroy_user_session", "get_user_session_info", "validate_session",
-    "get_user_statistics",
+    "get_auth_user_statistics",
 
     # External imports
     "send_prompt", "send_request",
 
     # Shared imports
     "CEFR_LEVELS", "AIEvaluationError", "DatabaseError", "ValidationError",
+    "AuthenticationError", "ExerciseGenerationError", "TopicMemoryError",
+    "XplorEDException", "ConfigurationError", "ProcessingError", "TimeoutError",
     "Exercise", "ExerciseBlock", "QualityScore", "UserLevel",
 
     # Constants

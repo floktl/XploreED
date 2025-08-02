@@ -18,9 +18,10 @@ from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from core.database.connection import select_rows, select_one, insert_row
 from features.ai.memory.vocabulary_memory import get_user_vocab_stats
+from core.services import UserService
 
 logger = logging.getLogger(__name__)
 
@@ -73,26 +74,20 @@ class UserAnalyticsManager:
 
             self.logger.info(f"Calculating learning progress for user: {self.user_id}")
 
-            # Fetch user exercise data
-            exercise_data = self._get_exercise_statistics()
+            # Get comprehensive user statistics using core service
+            user_stats = UserService.get_user_statistics(self.user_id)
 
-            # Calculate vocabulary mastery
+            # Get vocabulary mastery
             vocab_stats = get_user_vocab_stats(self.user_id)
-
-            # Get learning streak
-            streak_days = self._calculate_learning_streak()
-
-            # Fetch user profile
-            user_profile = self._get_user_profile()
 
             analytics_data = UserAnalyticsData(
                 user_id=self.user_id,
-                total_exercises_completed=exercise_data['total_exercises'],
-                average_score=exercise_data['average_score'],
+                total_exercises_completed=user_stats.get('total_games', 0),
+                average_score=user_stats.get('average_score', 0.0),
                 vocabulary_mastered=vocab_stats.get('mastered_count', 0),
-                learning_streak_days=streak_days,
-                last_activity_date=exercise_data['last_activity'],
-                skill_level=user_profile.get('skill_level', 0)
+                learning_streak_days=user_stats.get('learning_streak', 0),
+                last_activity_date=user_stats.get('last_activity'),
+                skill_level=user_stats.get('skill_level', 0)
             )
 
             self.logger.info(f"Successfully calculated analytics for user {self.user_id}")

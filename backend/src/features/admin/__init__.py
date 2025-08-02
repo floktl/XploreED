@@ -14,14 +14,14 @@ For detailed architecture information, see: docs/backend_structure.md
 
 from .game_management import (
     get_all_game_results,
-    get_user_game_results,
+    get_admin_user_game_results,
 )
 
 from .lesson_management import (
     create_lesson_content,
     get_all_lessons,
     get_lesson_by_id,
-    update_lesson_content,
+    update_admin_lesson_content,
     delete_lesson_content,
     get_lesson_progress_summary,
     get_individual_lesson_progress,
@@ -37,13 +37,13 @@ from .user_management import (
 __all__ = [
     # Game management
     "get_all_game_results",
-    "get_user_game_results",
+    "get_admin_user_game_results",
 
     # Lesson management
     "create_lesson_content",
     "get_all_lessons",
     "get_lesson_by_id",
-    "update_lesson_content",
+    "update_admin_lesson_content",
     "delete_lesson_content",
     "get_lesson_progress_summary",
     "get_individual_lesson_progress",

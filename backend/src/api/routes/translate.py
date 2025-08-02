@@ -27,8 +27,8 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 
 from flask import request, jsonify, Response, stream_with_context # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import require_user
+from infrastructure.imports import Imports
+from api.middleware.auth import require_user
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from config.blueprint import translate_bp
 from features.translation import (
@@ -46,6 +46,7 @@ logger = logging.getLogger(__name__)
 
 
 # === Text Translation Routes ===
+
 @translate_bp.route("/translate", methods=["POST"])
 def translate_text_route():
     """
@@ -56,13 +57,34 @@ def translate_text_route():
     asynchronously for better performance.
 
     Request Body:
-        - text: Source text to translate
-        - source_lang: Source language code (optional, auto-detected)
-        - target_lang: Target language code (required)
-        - context: Translation context for better accuracy (optional)
+        - text (str, required): Source text to translate
+        - source_lang (str, optional): Source language code (default: auto-detected)
+        - target_lang (str, required): Target language code
+        - context (str, optional): Translation context for better accuracy
 
-    Returns:
-        JSON response with translation job ID or error details
+    Supported Languages:
+        - en: English
+        - de: German
+        - es: Spanish
+        - fr: French
+        - it: Italian
+        - pt: Portuguese
+        - ru: Russian
+        - ja: Japanese
+        - ko: Korean
+        - zh: Chinese
+
+    JSON Response Structure:
+        {
+            "job_id": str,                       # Translation job identifier
+            "status": str,                       # Job status (processing, completed, failed)
+            "message": str                       # Status message
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or unsupported language
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -108,6 +130,7 @@ def translate_text_route():
 
 
 # === Translation Status Routes ===
+
 @translate_bp.route("/translate/status/<job_id>", methods=["GET"])
 def get_translation_status_route(job_id: str):
     """
@@ -116,11 +139,29 @@ def get_translation_status_route(job_id: str):
     This endpoint allows clients to poll for translation job completion
     and retrieve results when the translation is finished.
 
-    Args:
-        job_id: Unique identifier of the translation job
+    Path Parameters:
+        - job_id (str, required): Unique identifier of the translation job
 
-    Returns:
-        JSON response with job status and results if completed
+    JSON Response Structure:
+        {
+            "job_id": str,                       # Translation job identifier
+            "status": str,                       # Job status (processing, completed, failed)
+            "progress": int,                     # Progress percentage (0-100)
+            "result": {                          # Translation result (if completed)
+                "translated_text": str,          # Translated text
+                "confidence": float,             # Translation confidence score
+                "source_lang": str,              # Detected source language
+                "target_lang": str,              # Target language
+                "processing_time": float         # Processing time in seconds
+            },
+            "error": str                         # Error message (if failed)
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid job ID
+        - 404: Translation job not found
+        - 500: Internal server error
     """
     try:
         if not job_id:
@@ -146,6 +187,7 @@ def get_translation_status_route(job_id: str):
 
 
 # === Stream Translation Routes ===
+
 @translate_bp.route("/translate/stream", methods=["POST"])
 def stream_translation_route():
     """
@@ -155,13 +197,29 @@ def stream_translation_route():
     feedback during text input or conversation scenarios.
 
     Request Body:
-        - text: Text to translate
-        - source_lang: Source language code (optional)
-        - target_lang: Target language code (required)
-        - stream_type: Type of streaming ("word", "sentence", "paragraph")
+        - text (str, required): Text to translate
+        - source_lang (str, optional): Source language code (default: auto)
+        - target_lang (str, required): Target language code
+        - stream_type (str, optional): Type of streaming (word, sentence, paragraph)
 
-    Returns:
-        Server-sent events stream with translation results
+    Stream Types:
+        - word: Stream individual words as they're translated
+        - sentence: Stream complete sentences
+        - paragraph: Stream complete paragraphs
+
+    JSON Response Structure:
+        {
+            "message": str,                      # Status message
+            "text": str,                         # Original text
+            "source_lang": str,                  # Source language
+            "target_lang": str,                  # Target language
+            "stream_type": str                   # Stream type
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or stream type
+        - 500: Internal server error
     """
     try:
         data = request.get_json()

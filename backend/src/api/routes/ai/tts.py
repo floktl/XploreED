@@ -13,8 +13,7 @@ import logging
 from typing import Dict, Any
 
 from flask import request, jsonify, Response  # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import require_user
+from api.middleware.auth import require_user
 from config.blueprint import ai_bp
 from external.tts import convert_text_to_speech_service
 
@@ -24,13 +23,85 @@ logger = logging.getLogger(__name__)
 @ai_bp.route("/tts", methods=["POST"])
 def tts():
     """
-    Convert text to speech using the ElevenLabs API.
+    Convert text to speech using AI-powered TTS service.
 
-    This endpoint provides text-to-speech functionality for German language
-    learning, allowing users to hear proper pronunciation of words and phrases.
+    This endpoint provides text-to-speech functionality for language learning,
+    allowing users to hear proper pronunciation of words, phrases, and sentences.
+    The service supports multiple voices and languages for enhanced learning experience.
 
-    Returns:
-        Audio response with synthesized speech or error details
+    Request Body:
+        - text (str, required): Text to convert to speech
+        - voice_id (str, optional): Specific voice identifier
+        - model_id (str, optional): TTS model identifier
+        - language (str, optional): Target language code (default: de)
+        - speed (float, optional): Speech speed (0.5-2.0, default: 1.0)
+        - pitch (float, optional): Speech pitch adjustment (-20 to 20, default: 0)
+
+    Supported Languages:
+        - de: German (default)
+        - en: English
+        - es: Spanish
+        - fr: French
+        - it: Italian
+        - pt: Portuguese
+        - ru: Russian
+        - ja: Japanese
+        - ko: Korean
+        - zh: Chinese
+
+    Available Voices:
+        - german_male: German male voice
+        - german_female: German female voice
+        - english_male: English male voice
+        - english_female: English female voice
+        - custom: Custom voice (requires voice_id)
+
+    JSON Response Structure (Success):
+        Audio file (MP3 format) with synthesized speech
+
+    JSON Response Structure (Error):
+        {
+            "error": str,                             # Error message
+            "error_code": str,                        # Error code
+            "details": str                            # Additional error details
+        }
+
+    Error Codes:
+        - MISSING_TEXT: No text provided
+        - INVALID_TEXT: Text contains invalid characters or is too long
+        - INVALID_VOICE: Specified voice is not available
+        - INVALID_LANGUAGE: Language is not supported
+        - SERVICE_UNAVAILABLE: TTS service is temporarily unavailable
+        - RATE_LIMIT_EXCEEDED: Too many requests
+        - UNKNOWN_ERROR: Unexpected error occurred
+
+    Status Codes:
+        - 200: Success (returns audio file)
+        - 400: Bad request (missing/invalid text, invalid parameters)
+        - 401: Unauthorized
+        - 429: Rate limit exceeded
+        - 503: Service unavailable
+        - 500: Internal server error
+
+    Usage Examples:
+        Basic text-to-speech:
+        {
+            "text": "Hallo, wie geht es dir?"
+        }
+
+        With specific voice and speed:
+        {
+            "text": "Das ist ein Beispielsatz.",
+            "voice_id": "german_female",
+            "speed": 0.8
+        }
+
+        Multi-language support:
+        {
+            "text": "Hello, how are you?",
+            "language": "en",
+            "voice_id": "english_male"
+        }
     """
     try:
         username = require_user()

@@ -2,8 +2,8 @@
 
 from flask import request, jsonify, current_app  # type: ignore
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection, fetch_topic_memory
-from core.utils.helpers import require_user
-from core.utils.json_helpers import extract_json
+from api.middleware.auth import require_user
+from shared.text_utils import _extract_json as extract_json
 from features.ai.prompts import reading_exercise_prompt
 from external.mistral.client import send_prompt
 import uuid

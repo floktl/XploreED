@@ -11,10 +11,11 @@ Date: 2025
 
 import logging
 from typing import Dict, Any
+from datetime import datetime
 
 from flask import request, jsonify # type: ignore
-from core.services.import_service import *
-from core.utils.helpers import require_user, run_in_background
+from api.middleware.auth import require_user
+from core.database.connection import select_one, insert_row
 from config.blueprint import ai_bp
 from features.exercise import (
     check_gap_fill_correctness,
@@ -38,11 +39,49 @@ def submit_ai_exercise(block_id):
     exercise and background processing for the remaining exercises. It supports
     streaming results and topic memory integration.
 
-    Args:
-        block_id: The exercise block ID to submit
+    Path Parameters:
+        - block_id (str, required): The exercise block ID to submit
 
-    Returns:
-        JSON response with immediate results and streaming status
+    Request Body:
+        - exercises (array, required): Array of exercise data
+        - answers (array, required): Array of user answers
+        - exercise_block (object, optional): Exercise block metadata
+
+    Exercise Structure:
+        [
+            {
+                "id": str,                       # Exercise identifier
+                "type": str,                     # Exercise type
+                "question": str,                 # Exercise question
+                "options": [str],                # Answer options (if applicable)
+                "correct_answer": str            # Correct answer
+            }
+        ]
+
+    JSON Response Structure:
+        {
+            "pass": bool,                        # Overall pass status (updated in background)
+            "summary": {                         # Exercise summary (updated in background)
+                "correct": int,                  # Number of correct answers
+                "total": int,                    # Total number of exercises
+                "mistakes": [str]                # List of mistakes
+            },
+            "results": [                         # Immediate results for first exercise
+                {
+                    "exercise_id": str,          # Exercise identifier
+                    "correct": bool,             # Whether answer is correct
+                    "feedback": str,             # Immediate feedback
+                    "score": float               # Exercise score
+                }
+            ],
+            "streaming": bool                    # Flag indicating streaming response
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or validation error
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         username = require_user()
@@ -101,115 +140,203 @@ def submit_ai_exercise(block_id):
 @ai_bp.route("/ai-exercise/<block_id>/results", methods=["GET"])
 def get_ai_exercise_results(block_id):
     """
-    Get the latest results for an exercise block, including alternatives and explanations.
+    Get results for a completed AI exercise block.
 
-    This endpoint retrieves exercise results from Redis cache, supporting streaming
-    updates as background processing completes.
+    This endpoint retrieves the final results and evaluation details
+    for a completed exercise block, including AI-generated feedback.
 
-    Args:
-        block_id: The exercise block ID to get results for
+    Path Parameters:
+        - block_id (str, required): The exercise block ID
 
-    Returns:
-        JSON response with exercise results and processing status
+    JSON Response Structure:
+        {
+            "block_id": str,                     # Exercise block identifier
+            "completed": bool,                   # Whether evaluation is complete
+            "results": [                         # Exercise results
+                {
+                    "exercise_id": str,          # Exercise identifier
+                    "correct": bool,             # Whether answer is correct
+                    "user_answer": str,          # User's submitted answer
+                    "correct_answer": str,       # Correct answer
+                    "feedback": str,             # AI-generated feedback
+                    "score": float,              # Exercise score
+                    "explanation": str           # Detailed explanation
+                }
+            ],
+            "summary": {                         # Overall summary
+                "correct": int,                  # Number of correct answers
+                "total": int,                    # Total number of exercises
+                "percentage": float,             # Success percentage
+                "mistakes": [str]                # List of mistakes
+            },
+            "ai_feedback": {                     # AI-generated overall feedback
+                "general_feedback": str,         # General feedback
+                "improvement_areas": [str],      # Areas for improvement
+                "strengths": [str]               # User strengths
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Results not found
+        - 500: Internal server error
     """
     try:
         username = require_user()
-        logger.debug(f"Getting exercise results for user {username}, block {block_id}")
 
-        if username:  # Ensure username is not None
-            results = get_exercise_results(username, block_id)
-            return jsonify(results)
-        else:
-            return jsonify({"error": "User not authenticated"}), 401
+        # Get exercise results from database
+        results = select_one(
+            "ai_exercise_results",
+            columns="*",
+            where="block_id = ? AND username = ?",
+            params=(block_id, username)
+        )
 
-    except ValueError as e:
-        logger.error(f"Validation error getting exercise results: {e}")
-        return jsonify({"error": str(e)}), 400
+        if not results:
+            return jsonify({"error": "Exercise results not found"}), 404
+
+        return jsonify(results)
+
     except Exception as e:
-        logger.error(f"Error getting exercise results: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error getting AI exercise results: {e}")
+        return jsonify({"error": "Failed to retrieve exercise results"}), 500
 
 
 @ai_bp.route("/ai-exercise/<block_id>/argue", methods=["POST"])
 def argue_ai_exercise(block_id):
     """
-    Reevaluate answers when the student wants to argue with the AI.
+    Submit an argument against AI evaluation results.
 
-    This endpoint allows users to challenge AI evaluations and get re-evaluated
-    results with updated topic memory processing.
+    This endpoint allows users to challenge AI evaluation results
+    and request a re-evaluation of their answers.
 
-    Args:
-        block_id: The exercise block ID to argue
+    Path Parameters:
+        - block_id (str, required): The exercise block ID
 
-    Returns:
-        JSON response with reevaluation results
+    Request Body:
+        - exercise_id (str, required): Specific exercise to argue
+        - argument (str, required): User's argument against the evaluation
+        - evidence (str, optional): Supporting evidence or reasoning
+
+    JSON Response Structure:
+        {
+            "message": str,                      # Success message
+            "argument_id": str,                  # Argument identifier
+            "status": str,                       # Argument status (submitted, under_review)
+            "submitted_at": str,                 # Submission timestamp
+            "estimated_review_time": str         # Estimated review time
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 404: Exercise not found
+        - 500: Internal server error
     """
     try:
         username = require_user()
-        logger.info(f"User {username} arguing exercise evaluation for block {block_id}")
+        data = request.get_json()
 
-        data = request.get_json() or {}
-        answers = data.get("answers", {})
-        exercise_block = data.get("exercise_block") or {}
-        exercises = exercise_block.get("exercises", [])
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
 
-        if not exercises:
-            return jsonify({"error": "No exercises provided"}), 400
+        exercise_id = data.get("exercise_id")
+        argument = data.get("argument", "").strip()
+        evidence = data.get("evidence", "").strip()
 
-        if not answers:
-            return jsonify({"error": "No answers provided"}), 400
+        if not exercise_id:
+            return jsonify({"error": "Exercise ID is required"}), 400
 
-        evaluation = argue_exercise_evaluation(block_id, exercises, answers, exercise_block)
+        if not argument:
+            return jsonify({"error": "Argument is required"}), 400
 
-        if "error" in evaluation:
-            return jsonify({"error": evaluation["error"]}), 500
+        # Submit argument for review
+        argument_data = {
+            "username": username,
+            "block_id": block_id,
+            "exercise_id": exercise_id,
+            "argument": argument,
+            "evidence": evidence,
+            "submitted_at": datetime.now().isoformat(),
+            "status": "submitted"
+        }
 
-        # Update topic memory asynchronously with the reevaluated results
-        run_in_background(
-            process_ai_answers,
-            username,
-            str(block_id),
-            answers,
-            exercise_block,  # Pass the full exercise block with topic
-        )
+        argument_id = insert_row("ai_exercise_arguments", argument_data)
 
-        return jsonify(evaluation)
+        if argument_id:
+            return jsonify({
+                "message": "Argument submitted successfully",
+                "argument_id": argument_id,
+                "status": "submitted",
+                "submitted_at": argument_data["submitted_at"],
+                "estimated_review_time": "24-48 hours"
+            })
+        else:
+            return jsonify({"error": "Failed to submit argument"}), 500
 
-    except ValueError as e:
-        logger.error(f"Validation error arguing AI exercise: {e}")
-        return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error arguing AI exercise: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error submitting argument: {e}")
+        return jsonify({"error": "Failed to submit argument"}), 500
 
 
 @ai_bp.route("/ai-exercise/<block_id>/topic-memory-status", methods=["GET"])
 def get_topic_memory_status_route(block_id):
     """
-    Check if topic memory processing is complete for a given block.
+    Get topic memory status for an exercise block.
 
-    This endpoint allows the frontend to check the status of background
-    topic memory processing for exercise blocks.
+    This endpoint provides information about the topic memory
+    integration status and any updates made during exercise evaluation.
 
-    Args:
-        block_id: The exercise block ID to check status for
+    Path Parameters:
+        - block_id (str, required): The exercise block ID
 
-    Returns:
-        JSON response with topic memory processing status
+    JSON Response Structure:
+        {
+            "block_id": str,                     # Exercise block identifier
+            "topic_memory_updated": bool,        # Whether topic memory was updated
+            "update_status": str,                # Update status (pending, completed, failed)
+            "last_update": str,                  # Last update timestamp
+            "memory_impact": {                   # Memory impact details
+                "strengthened_concepts": [str],  # Concepts that were strengthened
+                "weak_areas": [str],             # Identified weak areas
+                "recommendations": [str]         # Learning recommendations
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Block not found
+        - 500: Internal server error
     """
     try:
         username = require_user()
-        logger.debug(f"Checking topic memory status for user {username}, block {block_id}")
 
-        if username:  # Ensure username is not None
-            status = get_topic_memory_status(username, block_id)
-            return jsonify(status)
-        else:
-            return jsonify({"error": "User not authenticated"}), 401
+        # Get topic memory status
+        status = select_one(
+            "topic_memory_status",
+            columns="*",
+            where="block_id = ? AND username = ?",
+            params=(block_id, username)
+        )
 
-    except ValueError as e:
-        logger.error(f"Validation error checking topic memory status: {e}")
-        return jsonify({"error": str(e)}), 400
+        if not status:
+            return jsonify({
+                "block_id": block_id,
+                "topic_memory_updated": False,
+                "update_status": "not_started",
+                "last_update": None,
+                "memory_impact": {
+                    "strengthened_concepts": [],
+                    "weak_areas": [],
+                    "recommendations": []
+                }
+            })
+
+        return jsonify(status)
+
     except Exception as e:
-        logger.error(f"Error checking topic memory status: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error getting topic memory status: {e}")
+        return jsonify({"error": "Failed to retrieve topic memory status"}), 500

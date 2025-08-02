@@ -35,7 +35,7 @@ from .exercise_creation import (
 from .exercise_processing import (
     save_exercise_submission_async,
     evaluate_exercises,
-    parse_submission_data,
+    parse_ai_submission_data,
     compile_score_summary,
     log_exercise_event,
     log_ai_user_data,
@@ -47,9 +47,6 @@ from .exercise_processing import (
 
 # Import exercise utilities
 from .exercise_utilities import (
-    _normalize_umlauts,
-    _strip_final_punct,
-    check_gap_fill_correctness,
     format_exercise_block,
     validate_exercise_data,
     sanitize_exercise_text,
@@ -114,7 +111,7 @@ __all__ = [
     # Exercise Processing
     'save_exercise_submission_async',
     'evaluate_exercises',
-    'parse_submission_data',
+    'parse_ai_submission_data',
     'compile_score_summary',
     'log_exercise_event',
     'log_ai_user_data',
@@ -124,9 +121,6 @@ __all__ = [
     'print_db_exercise_blocks',
 
     # Exercise Utilities
-    '_normalize_umlauts',
-    '_strip_final_punct',
-    'check_gap_fill_correctness',
     'format_exercise_block',
     'validate_exercise_data',
     'sanitize_exercise_text',

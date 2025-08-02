@@ -21,6 +21,7 @@ import datetime
 from core.database.connection import fetch_one
 from features.game.sentence_order import generate_ai_sentence, LEVELS
 from features.ai.memory.vocabulary_memory import save_vocab, extract_words
+from core.services import GameService
 
 logger = logging.getLogger(__name__)
 
@@ -39,26 +40,7 @@ def get_user_game_level(username: str, requested_level: Optional[int] = None) ->
     Raises:
         ValueError: If username is invalid
     """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        if requested_level is not None:
-            return int(requested_level)
-
-        # Get user's skill level from database
-        row = fetch_one("users", "WHERE username = ?", (username,))
-        level = row.get("skill_level", 0) if row else 0
-
-        logger.info(f"Using game level {level} for user {username}")
-        return int(level)
-
-    except ValueError as e:
-        logger.error(f"Validation error getting game level: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting game level for user {username}: {e}")
-        return 0
+    return GameService.get_user_game_level(username, requested_level)
 
 
 def generate_game_sentence(username: str, level: int) -> str:
@@ -115,42 +97,7 @@ def create_game_round(username: str, level: Optional[int] = None) -> Dict[str, A
     Raises:
         ValueError: If username is invalid
     """
-    try:
-        if not username:
-            raise ValueError("Username is required")
-
-        # Get appropriate level
-        game_level = get_user_game_level(username, level)
-
-        # Generate sentence for the round
-        sentence = generate_game_sentence(username, game_level)
-
-        # Create round data
-        round_data = {
-            "username": username,
-            "level": game_level,
-            "sentence": sentence,
-            "created_at": datetime.datetime.now().isoformat(),
-            "status": "active"
-        }
-
-        # Save vocabulary from sentence
-        _save_game_vocabulary(username, sentence, game_level)
-
-        logger.info(f"Created game round for user {username} at level {game_level}")
-        return round_data
-
-    except ValueError as e:
-        logger.error(f"Validation error creating game round: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error creating game round for user {username}: {e}")
-        return {
-            "username": username,
-            "level": 0,
-            "sentence": LEVELS[0],
-            "error": str(e)
-        }
+    return GameService.create_game_round(username, level)
 
 
 def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: str) -> Dict[str, Any]:
@@ -169,48 +116,7 @@ def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: 
     Raises:
         ValueError: If parameters are invalid
     """
-    try:
-        if not username or not sentence or not user_answer:
-            raise ValueError("Username, sentence, and user_answer are required")
-
-        # Normalize answers for comparison
-        correct_sentence = sentence.strip().lower()
-        user_sentence = user_answer.strip().lower()
-
-        # Check if answer is correct
-        is_correct = correct_sentence == user_sentence
-
-        # Generate feedback
-        if is_correct:
-            feedback = "Excellent! Your answer is correct."
-        else:
-            feedback = f"Not quite right. The correct answer is: {sentence}"
-
-        # Create evaluation result
-        result = {
-            "username": username,
-            "level": level,
-            "correct_sentence": sentence,
-            "user_answer": user_answer,
-            "is_correct": is_correct,
-            "feedback": feedback,
-            "evaluated_at": datetime.datetime.now().isoformat()
-        }
-
-        logger.info(f"Evaluated game answer for user {username}: {'correct' if is_correct else 'incorrect'}")
-        return result
-
-    except ValueError as e:
-        logger.error(f"Validation error evaluating game answer: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error evaluating game answer for user {username}: {e}")
-        return {
-            "username": username,
-            "level": level,
-            "error": str(e),
-            "is_correct": False
-        }
+    return GameService.evaluate_game_answer(username, level, sentence, user_answer)
 
 
 def _save_game_vocabulary(username: str, sentence: str, level: int) -> None:

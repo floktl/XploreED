@@ -25,7 +25,7 @@ from .session_management import (
 
 from .user_accounts import (
     create_user_account,
-    get_user_statistics,
+    get_auth_user_statistics,
 )
 
 # Re-export all auth functions for backward compatibility
@@ -41,5 +41,5 @@ __all__ = [
 
     # User accounts
     "create_user_account",
-    "get_user_statistics",
+    "get_auth_user_statistics",
 ]

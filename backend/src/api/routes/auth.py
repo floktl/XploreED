@@ -30,10 +30,12 @@ from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
 from flask import request, jsonify, make_response # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
+from pydantic import ValidationError
+import os
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from core.database.connection import select_one, update_row, insert_row
-from core.utils.helpers import get_current_user, require_user, is_admin
+from api.middleware.auth import get_current_user, require_user, is_admin
 from features.auth import (
     authenticate_user,
     authenticate_admin,
@@ -41,9 +43,10 @@ from features.auth import (
     destroy_user_session,
     get_user_session_info,
     validate_session,
-    get_user_statistics,
+    get_auth_user_statistics,
 )
 from config.blueprint import auth_bp
+from api.schemas import UserRegistrationSchema
 
 
 # === Logging Configuration ===
@@ -51,6 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 # === User Authentication Routes ===
+
 @auth_bp.route("/login", methods=["POST"])
 def login_route():
     """
@@ -60,12 +64,26 @@ def login_route():
     creates a new session with appropriate security tokens.
 
     Request Body:
-        - username: User's username or email
-        - password: User's password
-        - remember_me: Whether to create a long-term session
+        - username (str, required): User's username or email
+        - password (str, required): User's password
+        - remember_me (bool, optional): Whether to create a long-term session
 
-    Returns:
-        JSON response with authentication status and session tokens
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "user": {
+                "username": str,               # User's username
+                "skill_level": str,            # User's skill level
+                "is_admin": bool               # Admin status
+            },
+            "session_id": str                  # Session identifier
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Missing required fields
+        - 401: Invalid credentials
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -119,12 +137,14 @@ def login_route():
 
         # Set secure cookie
         max_age = 30 * 24 * 60 * 60 if remember_me else 24 * 60 * 60  # 30 days or 1 day
+        # In development, don't require secure cookies
+        is_development = os.getenv("FLASK_ENV", "development") == "development"
         response.set_cookie(
             "session_id",
             session_result.get("session_id"),
             max_age=max_age,
             httponly=True,
-            secure=request.is_secure,
+            secure=request.is_secure and not is_development,
             samesite="Lax"
         )
 
@@ -143,8 +163,15 @@ def logout_route():
     This endpoint logs out the current user and invalidates
     their session token.
 
-    Returns:
-        JSON response with logout status or unauthorized error
+    JSON Response Structure:
+        {
+            "message": str                     # Success message
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: No active session
+        - 500: Internal server error
     """
     try:
         user = get_current_user()
@@ -165,7 +192,8 @@ def logout_route():
 
         # Clear session cookie
         response = jsonify({"message": "Logout successful"})
-        response.set_cookie("session_id", "", max_age=0, httponly=True, secure=request.is_secure)
+        is_development = os.getenv("FLASK_ENV", "development") == "development"
+        response.set_cookie("session_id", "", max_age=0, httponly=True, secure=request.is_secure and not is_development)
 
         return response
 
@@ -182,8 +210,20 @@ def get_session_route():
     This endpoint retrieves information about the current
     user session and validates its status.
 
-    Returns:
-        JSON response with session information or unauthorized error
+    JSON Response Structure:
+        {
+            "user": str,                        # User identifier
+            "session_id": str,                  # Session identifier
+            "created_at": str,                  # Session creation timestamp
+            "expires_at": str,                  # Session expiration timestamp
+            "is_active": bool,                  # Session active status
+            "last_activity": str                # Last activity timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: No active session
+        - 500: Internal server error
     """
     try:
         user = get_current_user()
@@ -197,43 +237,59 @@ def get_session_route():
         if session_id:
             session_info = select_one(
                 "sessions",
-                columns="session_id, created_at, last_activity, ip_address, user_agent",
+                columns="session_id, created_at, expires_at, active, last_activity",
                 where="session_id = ? AND active = 1",
                 params=(session_id,)
             )
 
+        if not session_info:
+            return jsonify({"error": "Invalid session"}), 401
+
         return jsonify({
-            "authenticated": True,
-            "user": {
-                "username": user,
-                "is_admin": is_admin()
-            },
-            "session": session_info,
-            "timestamp": datetime.now().isoformat()
+            "user": user,
+            "session_id": session_info.get("session_id"),
+            "created_at": session_info.get("created_at"),
+            "expires_at": session_info.get("expires_at"),
+            "is_active": session_info.get("active", False),
+            "last_activity": session_info.get("last_activity")
         })
 
     except Exception as e:
         logger.error(f"Error getting session: {e}")
-        return jsonify({"error": "Failed to retrieve session information"}), 500
+        return jsonify({"error": "Failed to get session information"}), 500
 
 
-# === User Registration Routes ===
 @auth_bp.route("/register", methods=["POST"])
 def register_route():
     """
     Register a new user account.
 
     This endpoint creates a new user account with the provided
-    credentials and initializes their profile.
+    registration information.
 
     Request Body:
-        - username: Desired username
-        - password: User password
-        - email: User email address (optional)
-        - skill_level: Initial skill level (optional)
+        - username (str, required): Unique username
+        - email (str, required): Valid email address
+        - password (str, required): Secure password
+        - confirm_password (str, required): Password confirmation
+        - skill_level (str, optional): Initial skill level
 
-    Returns:
-        JSON response with registration status or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "user": {
+                "username": str,               # Created username
+                "email": str,                  # User email
+                "skill_level": str,            # Skill level
+                "created_at": str              # Account creation timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or validation error
+        - 409: Username or email already exists
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -241,58 +297,49 @@ def register_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        username = data.get("username", "").strip()
-        password = data.get("password", "")
-        email = data.get("email", "").strip()
-        skill_level = data.get("skill_level", 1)
-
-        # Validate input
-        if not username:
-            return jsonify({"error": "Username is required"}), 400
-
-        if len(username) < 3 or len(username) > 20:
-            return jsonify({"error": "Username must be between 3 and 20 characters"}), 400
-
-        if not password:
-            return jsonify({"error": "Password is required"}), 400
-
-        if len(password) < 6:
-            return jsonify({"error": "Password must be at least 6 characters"}), 400
-
-        # Validate skill level
-        if not isinstance(skill_level, int) or skill_level < 1 or skill_level > 10:
-            return jsonify({"error": "Skill level must be between 1 and 10"}), 400
+        # Validate registration data
+        try:
+            registration_data = UserRegistrationSchema(**data)
+        except ValidationError as e:
+            return jsonify({"error": "Validation error", "details": e.errors()}), 400
 
         # Check if username already exists
         existing_user = select_one(
             "users",
             columns="username",
             where="username = ?",
-            params=(username,)
+            params=(registration_data.username,)
         )
 
         if existing_user:
             return jsonify({"error": "Username already exists"}), 409
 
+        # Check if email already exists
+        existing_email = select_one(
+            "users",
+            columns="email",
+            where="email = ?",
+            params=(registration_data.email,)
+        )
+
+        if existing_email:
+            return jsonify({"error": "Email already exists"}), 409
+
         # Create user account
-        user_data = {
-            "username": username,
-            "password": generate_password_hash(password),  # Hash the password
-            "email": email if email else None,
-            "skill_level": skill_level,
-            "created_at": datetime.now().isoformat(),
-            "is_admin": False
-        }
+        success, error_message = create_user_account(registration_data.username, registration_data.password)
 
-        success = insert_row("users", user_data)
+        if not success:
+            return jsonify({"error": "Failed to create account", "message": error_message}), 500
 
-        if success:
-            return jsonify({
-                "message": "Registration successful",
-                "username": username
-            })
-        else:
-            return jsonify({"error": "Failed to create user account"}), 500
+        return jsonify({
+            "message": "Account created successfully",
+            "user": {
+                "username": registration_data.username,
+                "email": registration_data.email,
+                "skill_level": registration_data.skill_level,
+                "created_at": datetime.now().isoformat()
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error in registration: {e}")
@@ -302,17 +349,40 @@ def register_route():
 @auth_bp.route("/register/validate", methods=["POST"])
 def validate_registration_route():
     """
-    Validate registration data before creating account.
+    Validate registration data before account creation.
 
-    This endpoint validates registration data to ensure it meets
-    requirements before creating the actual account.
+    This endpoint validates registration information without
+    creating an account, useful for real-time validation.
 
     Request Body:
-        - username: Desired username
-        - email: User email address (optional)
+        - username (str, required): Username to validate
+        - email (str, required): Email to validate
+        - password (str, required): Password to validate
 
-    Returns:
-        JSON response with validation results
+    JSON Response Structure:
+        {
+            "valid": bool,                     # Overall validation status
+            "username": {
+                "valid": bool,                 # Username validity
+                "available": bool,             # Username availability
+                "errors": [str]                # Username errors
+            },
+            "email": {
+                "valid": bool,                 # Email validity
+                "available": bool,             # Email availability
+                "errors": [str]                # Email errors
+            },
+            "password": {
+                "valid": bool,                 # Password validity
+                "strength": str,               # Password strength level
+                "errors": [str]                # Password errors
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -322,83 +392,118 @@ def validate_registration_route():
 
         username = data.get("username", "").strip()
         email = data.get("email", "").strip()
+        password = data.get("password", "")
 
-        validation_results = {
-            "username_valid": False,
-            "email_valid": False,
-            "username_available": False,
-            "email_available": False,
-            "errors": []
+        validation_result = {
+            "valid": True,
+            "username": {"valid": True, "available": True, "errors": []},
+            "email": {"valid": True, "available": True, "errors": []},
+            "password": {"valid": True, "strength": "weak", "errors": []}
         }
 
         # Validate username
+        if not username:
+            validation_result["username"]["valid"] = False
+            validation_result["username"]["errors"].append("Username is required")
+        elif len(username) < 3:
+            validation_result["username"]["valid"] = False
+            validation_result["username"]["errors"].append("Username must be at least 3 characters")
+        elif len(username) > 20:
+            validation_result["username"]["valid"] = False
+            validation_result["username"]["errors"].append("Username must be less than 20 characters")
+
+        # Check username availability
         if username:
-            if len(username) >= 3 and len(username) <= 20:
-                validation_results["username_valid"] = True
+            existing_user = select_one(
+                "users",
+                columns="username",
+                where="username = ?",
+                params=(username,)
+            )
+            if existing_user:
+                validation_result["username"]["available"] = False
+                validation_result["username"]["errors"].append("Username already exists")
 
-                # Check username availability
-                existing_user = select_one(
-                    "users",
-                    columns="username",
-                    where="username = ?",
-                    params=(username,)
-                )
+        # Validate email
+        if not email:
+            validation_result["email"]["valid"] = False
+            validation_result["email"]["errors"].append("Email is required")
+        elif "@" not in email or "." not in email:
+            validation_result["email"]["valid"] = False
+            validation_result["email"]["errors"].append("Invalid email format")
 
-                if not existing_user:
-                    validation_results["username_available"] = True
-                else:
-                    validation_results["errors"].append("Username already exists")
-            else:
-                validation_results["errors"].append("Username must be between 3 and 20 characters")
-        else:
-            validation_results["errors"].append("Username is required")
-
-        # Validate email (if provided)
+        # Check email availability
         if email:
-            import re
-            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            if re.match(email_pattern, email):
-                validation_results["email_valid"] = True
+            existing_email = select_one(
+                "users",
+                columns="email",
+                where="email = ?",
+                params=(email,)
+            )
+            if existing_email:
+                validation_result["email"]["available"] = False
+                validation_result["email"]["errors"].append("Email already exists")
 
-                # Check email availability
-                existing_email = select_one(
-                    "users",
-                    columns="email",
-                    where="email = ?",
-                    params=(email,)
-                )
+        # Validate password
+        if not password:
+            validation_result["password"]["valid"] = False
+            validation_result["password"]["errors"].append("Password is required")
+        elif len(password) < 8:
+            validation_result["password"]["valid"] = False
+            validation_result["password"]["errors"].append("Password must be at least 8 characters")
+        else:
+            # Check password strength
+            has_upper = any(c.isupper() for c in password)
+            has_lower = any(c.islower() for c in password)
+            has_digit = any(c.isdigit() for c in password)
+            has_special = any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in password)
 
-                if not existing_email:
-                    validation_results["email_available"] = True
-                else:
-                    validation_results["errors"].append("Email already registered")
+            if has_upper and has_lower and has_digit and has_special:
+                validation_result["password"]["strength"] = "strong"
+            elif (has_upper and has_lower and has_digit) or (has_upper and has_lower and has_special):
+                validation_result["password"]["strength"] = "medium"
             else:
-                validation_results["errors"].append("Invalid email format")
+                validation_result["password"]["strength"] = "weak"
+                validation_result["password"]["errors"].append("Password should include uppercase, lowercase, numbers, and special characters")
 
-        return jsonify({
-            "validation_results": validation_results,
-            "is_valid": len(validation_results["errors"]) == 0
-        })
+        # Set overall validity
+        validation_result["valid"] = (
+            validation_result["username"]["valid"] and
+            validation_result["email"]["valid"] and
+            validation_result["password"]["valid"] and
+            validation_result["username"]["available"] and
+            validation_result["email"]["available"]
+        )
+
+        return jsonify(validation_result)
 
     except Exception as e:
         logger.error(f"Error in registration validation: {e}")
         return jsonify({"error": "Validation failed"}), 500
 
 
-# === Password Management Routes ===
 @auth_bp.route("/password/reset", methods=["POST"])
 def reset_password_route():
     """
     Request password reset for user account.
 
-    This endpoint initiates a password reset process for the
-    specified user account.
+    This endpoint initiates a password reset process by
+    sending a reset token to the user's email.
 
     Request Body:
-        - username: Username or email of the account
+        - email (str, required): User's email address
 
-    Returns:
-        JSON response with reset status or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "reset_sent": bool                 # Whether reset was sent
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid email
+        - 404: Email not found
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -406,46 +511,45 @@ def reset_password_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
 
-        if not username:
-            return jsonify({"error": "Username is required"}), 400
+        if not email:
+            return jsonify({"error": "Email is required"}), 400
+
+        if "@" not in email or "." not in email:
+            return jsonify({"error": "Invalid email format"}), 400
 
         # Check if user exists
         user = select_one(
             "users",
-            columns="username, email",
-            where="username = ? OR email = ?",
-            params=(username, username)
+            columns="id, username",
+            where="email = ?",
+            params=(email,)
         )
 
         if not user:
-            # Don't reveal if user exists or not for security
-            return jsonify({
-                "message": "If the account exists, a password reset email has been sent"
-            })
+            return jsonify({"error": "Email not found"}), 404
 
         # Generate reset token
-        import secrets
-        reset_token = secrets.token_urlsafe(32)
-        reset_expires = (datetime.now() + timedelta(hours=24)).isoformat()
+        reset_token = f"reset_{user.get('id')}_{datetime.now().timestamp()}"
+        expires_at = datetime.now() + timedelta(hours=24)
 
         # Store reset token
-        reset_data = {
-            "username": user.get("username"),
-            "reset_token": reset_token,
-            "expires_at": reset_expires,
-            "created_at": datetime.now().isoformat()
-        }
+        insert_row(
+            "password_resets",
+            {
+                "user_id": user.get("id"),
+                "reset_token": reset_token,
+                "expires_at": expires_at.isoformat(),
+                "used": False
+            }
+        )
 
-        insert_row("password_resets", reset_data)
-
-        # In a real application, send email with reset link
-        # For now, just return the token (in production, this would be sent via email)
+        # TODO: Send email with reset link
+        # For now, just return success
         return jsonify({
-            "message": "Password reset initiated",
-            "reset_token": reset_token,  # Remove this in production
-            "expires_at": reset_expires
+            "message": "Password reset email sent",
+            "reset_sent": True
         })
 
     except Exception as e:
@@ -458,15 +562,25 @@ def confirm_password_reset_route():
     """
     Confirm password reset with token and new password.
 
-    This endpoint confirms a password reset using the provided
-    token and sets the new password.
+    This endpoint completes the password reset process by
+    validating the reset token and setting a new password.
 
     Request Body:
-        - reset_token: Password reset token
-        - new_password: New password
+        - reset_token (str, required): Password reset token
+        - new_password (str, required): New password
+        - confirm_password (str, required): Password confirmation
 
-    Returns:
-        JSON response with reset confirmation status
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "password_changed": bool           # Whether password was changed
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or token expired
+        - 404: Reset token not found
+        - 500: Internal server error
     """
     try:
         data = request.get_json()
@@ -476,6 +590,7 @@ def confirm_password_reset_route():
 
         reset_token = data.get("reset_token", "").strip()
         new_password = data.get("new_password", "")
+        confirm_password = data.get("confirm_password", "")
 
         if not reset_token:
             return jsonify({"error": "Reset token is required"}), 400
@@ -483,52 +598,52 @@ def confirm_password_reset_route():
         if not new_password:
             return jsonify({"error": "New password is required"}), 400
 
-        if len(new_password) < 6:
-            return jsonify({"error": "Password must be at least 6 characters"}), 400
+        if new_password != confirm_password:
+            return jsonify({"error": "Passwords do not match"}), 400
 
-        # Validate reset token
+        if len(new_password) < 8:
+            return jsonify({"error": "Password must be at least 8 characters"}), 400
+
+        # Find reset token
         reset_record = select_one(
             "password_resets",
-            columns="username, expires_at",
-            where="reset_token = ? AND used = 0",
+            columns="id, user_id, expires_at, used",
+            where="reset_token = ?",
             params=(reset_token,)
         )
 
         if not reset_record:
-            return jsonify({"error": "Invalid or expired reset token"}), 400
+            return jsonify({"error": "Invalid reset token"}), 404
 
-        # Check if token has expired
-        expires_at_str = reset_record.get("expires_at")
-        if not expires_at_str:
-            return jsonify({"error": "Invalid reset token"}), 400
-        expires_at = datetime.fromisoformat(expires_at_str)
+        if reset_record.get("used"):
+            return jsonify({"error": "Reset token already used"}), 400
+
+        # Check if token expired
+        expires_at = datetime.fromisoformat(reset_record.get("expires_at"))
         if datetime.now() > expires_at:
-            return jsonify({"error": "Reset token has expired"}), 400
+            return jsonify({"error": "Reset token expired"}), 400
 
-        # Hash the new password
+        # Update password
         hashed_password = generate_password_hash(new_password)
-
-        # Update user password
-        success = update_row(
+        update_row(
             "users",
-            {"password": hashed_password},
-            "WHERE username = ?",
-            (reset_record.get("username"),)
+            {"password_hash": hashed_password},
+            "WHERE id = ?",
+            (reset_record.get("user_id"),)
         )
 
         # Mark reset token as used
-        if success:
-            update_row(
-                "password_resets",
-                {"used": True, "used_at": datetime.now().isoformat()},
-                "WHERE reset_token = ?",
-                (reset_token,)
-            )
+        update_row(
+            "password_resets",
+            {"used": True, "used_at": datetime.now().isoformat()},
+            "WHERE id = ?",
+            (reset_record.get("id"),)
+        )
 
-        if success:
-            return jsonify({"message": "Password reset successful"})
-        else:
-            return jsonify({"error": "Failed to reset password"}), 500
+        return jsonify({
+            "message": "Password changed successfully",
+            "password_changed": True
+        })
 
     except Exception as e:
         logger.error(f"Error in password reset confirmation: {e}")
@@ -538,17 +653,27 @@ def confirm_password_reset_route():
 @auth_bp.route("/password/change", methods=["POST"])
 def change_password_route():
     """
-    Change user password (requires current password).
+    Change user password with current password verification.
 
     This endpoint allows authenticated users to change their
     password by providing their current password.
 
     Request Body:
-        - current_password: Current password
-        - new_password: New password
+        - current_password (str, required): Current password
+        - new_password (str, required): New password
+        - confirm_password (str, required): Password confirmation
 
-    Returns:
-        JSON response with password change status or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "password_changed": bool           # Whether password was changed
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data or passwords don't match
+        - 401: Unauthorized or invalid current password
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -559,6 +684,7 @@ def change_password_route():
 
         current_password = data.get("current_password", "")
         new_password = data.get("new_password", "")
+        confirm_password = data.get("confirm_password", "")
 
         if not current_password:
             return jsonify({"error": "Current password is required"}), 400
@@ -566,97 +692,114 @@ def change_password_route():
         if not new_password:
             return jsonify({"error": "New password is required"}), 400
 
-        if len(new_password) < 6:
-            return jsonify({"error": "New password must be at least 6 characters"}), 400
+        if new_password != confirm_password:
+            return jsonify({"error": "Passwords do not match"}), 400
 
-        # Change password
-        # Verify current password first
-        user_data = select_one("users", columns="password", where="username = ?", params=(user,))
-        if not user_data or not check_password_hash(user_data.get("password", ""), current_password):
-            return jsonify({"error": "Current password is incorrect"}), 401
+        if len(new_password) < 8:
+            return jsonify({"error": "Password must be at least 8 characters"}), 400
 
-        # Hash and update new password
+        # Get current password hash
+        user_data = select_one(
+            "users",
+            columns="password_hash",
+            where="username = ?",
+            params=(user,)
+        )
+
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+
+        # Verify current password
+        if not check_password_hash(user_data.get("password_hash"), current_password):
+            return jsonify({"error": "Invalid current password"}), 401
+
+        # Update password
         hashed_password = generate_password_hash(new_password)
-        success = update_row("users", {"password": hashed_password}, "WHERE username = ?", (user,))
+        update_row(
+            "users",
+            {"password_hash": hashed_password},
+            "WHERE username = ?",
+            (user,)
+        )
 
-        if success:
-            return jsonify({"message": "Password changed successfully"})
-        else:
-            return jsonify({"error": "Failed to change password"}), 500
+        return jsonify({
+            "message": "Password changed successfully",
+            "password_changed": True
+        })
 
     except Exception as e:
         logger.error(f"Error in password change: {e}")
         return jsonify({"error": "Password change failed"}), 500
 
 
-# === Security Features Routes ===
 @auth_bp.route("/2fa/enable", methods=["POST"])
 def enable_2fa_route():
     """
     Enable two-factor authentication for user account.
 
-    This endpoint enables 2FA for the current user account
-    and generates the necessary setup information.
+    This endpoint enables 2FA by generating a secret key
+    and QR code for the user to set up their authenticator app.
 
-    Returns:
-        JSON response with 2FA setup information or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "secret_key": str,                 # 2FA secret key
+            "qr_code_url": str,                # QR code URL for authenticator
+            "backup_codes": [str]              # Backup codes for account recovery
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
-        data = request.get_json() or {}
-        method = data.get("method", "totp")  # Time-based One-Time Password
 
-        # Validate method
-        valid_methods = ["totp", "sms", "email"]
-        if method not in valid_methods:
-            return jsonify({"error": f"Invalid 2FA method: {method}"}), 400
-
-        # Generate 2FA setup data
+        # Generate 2FA secret
         import secrets
         import base64
+        import qrcode
+        from io import BytesIO
 
-        # Generate secret key for TOTP
         secret_key = base64.b32encode(secrets.token_bytes(20)).decode('utf-8')
+
+        # Generate QR code URL
+        qr_data = f"otpauth://totp/XplorED:{user}?secret={secret_key}&issuer=XplorED"
+
+        # Create QR code
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Convert to base64
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode()
+        qr_code_url = f"data:image/png;base64,{qr_code_base64}"
 
         # Generate backup codes
         backup_codes = [secrets.token_hex(4).upper() for _ in range(8)]
 
-        # Store 2FA setup data
-        twofa_data = {
-            "username": user,
-            "method": method,
-            "secret_key": secret_key,
-            "backup_codes": ",".join(backup_codes),
-            "enabled": False,  # Will be enabled after verification
-            "created_at": datetime.now().isoformat()
-        }
-
-        # Check if 2FA already exists
-        existing_2fa = select_one(
-            "two_factor_auth",
-            columns="id",
-            where="username = ?",
-            params=(user,)
+        # Store 2FA data
+        update_row(
+            "users",
+            {
+                "two_factor_secret": secret_key,
+                "two_factor_enabled": True,
+                "backup_codes": ",".join(backup_codes)
+            },
+            "WHERE username = ?",
+            (user,)
         )
 
-        if existing_2fa:
-            # Update existing 2FA
-            update_row(
-                "two_factor_auth",
-                twofa_data,
-                "WHERE username = ?",
-                (user,)
-            )
-        else:
-            # Create new 2FA
-            insert_row("two_factor_auth", twofa_data)
-
         return jsonify({
-            "message": "2FA setup initiated",
-            "method": method,
+            "message": "Two-factor authentication enabled",
             "secret_key": secret_key,
-            "backup_codes": backup_codes,
-            "qr_code_url": f"otpauth://totp/GermanClassTool:{user}?secret={secret_key}&issuer=GermanClassTool"
+            "qr_code_url": qr_code_url,
+            "backup_codes": backup_codes
         })
 
     except Exception as e:
@@ -667,17 +810,27 @@ def enable_2fa_route():
 @auth_bp.route("/2fa/verify", methods=["POST"])
 def verify_2fa_route():
     """
-    Verify two-factor authentication setup.
+    Verify two-factor authentication code.
 
-    This endpoint verifies the 2FA setup by validating the
-    provided code and enabling 2FA for the account.
+    This endpoint verifies the 2FA code provided by the user
+    during login or account access.
 
     Request Body:
-        - code: 2FA verification code
-        - backup_code: Backup code (alternative to regular code)
+        - code (str, required): 2FA verification code
+        - backup_code (str, optional): Backup code (alternative to 2FA code)
 
-    Returns:
-        JSON response with verification status or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "verified": bool,                  # Whether verification succeeded
+            "backup_code_used": bool           # Whether backup code was used
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid code
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -690,56 +843,57 @@ def verify_2fa_route():
         backup_code = data.get("backup_code", "").strip()
 
         if not code and not backup_code:
-            return jsonify({"error": "Verification code is required"}), 400
+            return jsonify({"error": "Verification code or backup code required"}), 400
 
-        # Get 2FA setup data
-        twofa_data = select_one(
-            "two_factor_auth",
-            columns="*",
-            where="username = ? AND enabled = 0",
+        # Get user's 2FA data
+        user_data = select_one(
+            "users",
+            columns="two_factor_secret, backup_codes, two_factor_enabled",
+            where="username = ?",
             params=(user,)
         )
 
-        if not twofa_data:
-            return jsonify({"error": "No pending 2FA setup found"}), 400
+        if not user_data or not user_data.get("two_factor_enabled"):
+            return jsonify({"error": "2FA not enabled"}), 400
 
-        # Verify code
+        verified = False
+        backup_code_used = False
+
         if backup_code:
             # Verify backup code
-            backup_codes = twofa_data.get("backup_codes", "").split(",")
-            if backup_code in backup_codes:
+            stored_backup_codes = user_data.get("backup_codes", "").split(",")
+            if backup_code in stored_backup_codes:
+                verified = True
+                backup_code_used = True
+
                 # Remove used backup code
-                backup_codes.remove(backup_code)
+                stored_backup_codes.remove(backup_code)
                 update_row(
-                    "two_factor_auth",
-                    {"backup_codes": ",".join(backup_codes)},
+                    "users",
+                    {"backup_codes": ",".join(stored_backup_codes)},
                     "WHERE username = ?",
                     (user,)
                 )
-                verification_success = True
-            else:
-                verification_success = False
         else:
-            # Verify TOTP code
-            import pyotp # type: ignore
-            totp = pyotp.TOTP(twofa_data.get("secret_key"))
-            verification_success = totp.verify(code)
+            # Verify 2FA code
+            import pyotp
+            totp = pyotp.TOTP(user_data.get("two_factor_secret"))
+            verified = totp.verify(code)
 
-        if verification_success:
-            # Enable 2FA
-            update_row(
-                "two_factor_auth",
-                {"enabled": True, "verified_at": datetime.now().isoformat()},
-                "WHERE username = ?",
-                (user,)
-            )
-
-            return jsonify({"message": "2FA enabled successfully"})
+        if verified:
+            return jsonify({
+                "message": "2FA verification successful",
+                "verified": True,
+                "backup_code_used": backup_code_used
+            })
         else:
-            return jsonify({"error": "Invalid verification code"}), 400
+            return jsonify({
+                "error": "Invalid verification code",
+                "verified": False
+            }), 400
 
     except Exception as e:
-        logger.error(f"Error verifying 2FA: {e}")
+        logger.error(f"Error in 2FA verification: {e}")
         return jsonify({"error": "2FA verification failed"}), 500
 
 
@@ -748,14 +902,23 @@ def disable_2fa_route():
     """
     Disable two-factor authentication for user account.
 
-    This endpoint disables 2FA for the current user account
-    after verifying their identity.
+    This endpoint disables 2FA for the user account,
+    removing the security layer.
 
     Request Body:
-        - password: Current password for verification
+        - password (str, required): User's password for confirmation
 
-    Returns:
-        JSON response with disable status or error details
+    JSON Response Structure:
+        {
+            "message": str,                    # Success message
+            "disabled": bool                   # Whether 2FA was disabled
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid password
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -767,22 +930,41 @@ def disable_2fa_route():
         password = data.get("password", "")
 
         if not password:
-            return jsonify({"error": "Password is required for verification"}), 400
+            return jsonify({"error": "Password is required"}), 400
 
         # Verify password
-        success, session_id, error_message = authenticate_user(user, password)
-        if not success:
-            return jsonify({"error": "Invalid password"}), 401
+        user_data = select_one(
+            "users",
+            columns="password_hash, two_factor_enabled",
+            where="username = ?",
+            params=(user,)
+        )
+
+        if not user_data:
+            return jsonify({"error": "User not found"}), 404
+
+        if not check_password_hash(user_data.get("password_hash"), password):
+            return jsonify({"error": "Invalid password"}), 400
+
+        if not user_data.get("two_factor_enabled"):
+            return jsonify({"error": "2FA not enabled"}), 400
 
         # Disable 2FA
         update_row(
-            "two_factor_auth",
-            {"enabled": False, "disabled_at": datetime.now().isoformat()},
+            "users",
+            {
+                "two_factor_secret": None,
+                "two_factor_enabled": False,
+                "backup_codes": None
+            },
             "WHERE username = ?",
             (user,)
         )
 
-        return jsonify({"message": "2FA disabled successfully"})
+        return jsonify({
+            "message": "Two-factor authentication disabled",
+            "disabled": True
+        })
 
     except Exception as e:
         logger.error(f"Error disabling 2FA: {e}")

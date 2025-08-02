@@ -117,7 +117,7 @@ def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dic
         return None, {}
 
 
-def parse_submission_data(data: dict) -> tuple[list, dict, str | None]:
+def parse_ai_submission_data(data: dict) -> tuple[list, dict, str | None]:
     """
     Parse exercise submission data.
 

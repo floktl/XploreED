@@ -17,6 +17,7 @@ import logging
 from typing import Dict, Optional, Any, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
+from core.services import VocabularyService
 # Vocabulary helper constants
 VOCAB_COLUMNS = [
     "rowid as id",
@@ -34,48 +35,104 @@ VOCAB_COLUMNS = [
 logger = logging.getLogger(__name__)
 
 
-def get_user_vocabulary_entries(user: str) -> List[Dict[str, Any]]:
+def get_user_vocabulary_entries(
+    user: str,
+    limit: int = 50,
+    offset: int = 0,
+    status: Optional[str] = None,
+    search: Optional[str] = None
+) -> Dict[str, Any]:
     """
-    Get all vocabulary entries for a user.
+    Get vocabulary entries for a user with filtering and pagination.
 
     Args:
         user: The username to get vocabulary for
+        limit: Maximum number of entries to return
+        offset: Number of entries to skip for pagination
+        status: Filter by status (learning, reviewing, mastered)
+        search: Search term for filtering words
 
     Returns:
-        List of vocabulary entries
+        Dictionary containing vocabulary entries and metadata
 
     Raises:
         ValueError: If user is invalid
     """
     try:
-        if not user:
-            raise ValueError("User is required")
+        # Get all vocabulary entries first
+        all_entries = VocabularyService.get_user_vocabulary_entries(user)
 
-        logger.info(f"Getting vocabulary entries for user '{user}'")
+        # Apply search filter if provided
+        if search:
+            search_lower = search.lower()
+            all_entries = [
+                entry for entry in all_entries
+                if search_lower in entry.get('vocab', '').lower()
+                or search_lower in entry.get('translation', '').lower()
+            ]
 
-        # Get vocabulary entries
-        rows = select_rows(
-            "vocab_log",
-            columns=VOCAB_COLUMNS,
-            where="username = ?",
-            params=(user,),
-            order_by="datetime(next_review) ASC",
-        )
-        entries = [dict(row) for row in rows] if rows else []
+        # Apply status filter if provided
+        if status:
+            # Simple status filtering based on review count and next_review
+            if status == 'learning':
+                all_entries = [entry for entry in all_entries if entry.get('repetitions', 0) < 3]
+            elif status == 'reviewing':
+                all_entries = [entry for entry in all_entries if 3 <= entry.get('repetitions', 0) < 10]
+            elif status == 'mastered':
+                all_entries = [entry for entry in all_entries if entry.get('repetitions', 0) >= 10]
 
-        if entries:
-            logger.info(f"Retrieved {len(entries)} vocabulary entries for user '{user}'")
+        # Calculate total before pagination
+        total = len(all_entries)
+
+        # Apply pagination
+        paginated_entries = all_entries[offset:offset + limit]
+
+        # Calculate statistics
+        total_words = len(all_entries)
+        learning_words = len([e for e in all_entries if e.get('repetitions', 0) < 3])
+        reviewing_words = len([e for e in all_entries if 3 <= e.get('repetitions', 0) < 10])
+        mastered_words = len([e for e in all_entries if e.get('repetitions', 0) >= 10])
+
+        # Calculate average mastery (simplified)
+        if total_words > 0:
+            avg_mastery = sum(min(e.get('repetitions', 0) / 10.0, 1.0) for e in all_entries) / total_words
         else:
-            logger.info(f"No vocabulary entries found for user '{user}'")
+            avg_mastery = 0.0
 
-        return entries
+        # Count words due for review (simplified)
+        words_due_review = len([e for e in all_entries if e.get('next_review')])
 
-    except ValueError as e:
-        logger.error(f"Validation error getting vocabulary entries: {e}")
-        raise
+        return {
+            "vocabulary": paginated_entries,
+            "statistics": {
+                "total_words": total_words,
+                "learning_words": learning_words,
+                "reviewing_words": reviewing_words,
+                "mastered_words": mastered_words,
+                "average_mastery": round(avg_mastery, 2),
+                "words_due_review": words_due_review
+            },
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        }
+
     except Exception as e:
-        logger.error(f"Error getting vocabulary entries for user '{user}': {e}")
-        return []
+        logger.error(f"Error getting vocabulary entries for user {user}: {e}")
+        return {
+            "vocabulary": [],
+            "statistics": {
+                "total_words": 0,
+                "learning_words": 0,
+                "reviewing_words": 0,
+                "mastered_words": 0,
+                "average_mastery": 0.0,
+                "words_due_review": 0
+            },
+            "total": 0,
+            "limit": limit,
+            "offset": offset
+        }
 
 
 def delete_user_vocabulary(user: str) -> bool:
@@ -242,69 +299,7 @@ def get_vocabulary_statistics(user: str) -> Dict[str, Any]:
     Raises:
         ValueError: If user is invalid
     """
-    try:
-        if not user:
-            raise ValueError("User is required")
-
-        logger.info(f"Getting vocabulary statistics for user '{user}'")
-
-        # Get total vocabulary count
-        total_result = select_one("vocab_log", columns="COUNT(*) as count", where="username = ?", params=(user,))
-        total_vocabulary = total_result.get("count", 0) if total_result else 0
-
-        # Get vocabulary by word type
-        word_types_result = fetch_custom("""
-            SELECT word_type, COUNT(*) as count
-            FROM vocab_log
-            WHERE username = ?
-            GROUP BY word_type
-            ORDER BY count DESC
-        """, (user,))
-
-        word_type_stats = {row["word_type"]: row["count"] for row in word_types_result} if word_types_result else {}
-
-        # Get vocabulary with repetitions (learned words)
-        learned_result = select_one("vocab_log", columns="COUNT(*) as count", where="username = ? AND repetitions > 0", params=(user,))
-        learned_vocabulary = learned_result.get("count", 0) if learned_result else 0
-
-        # Get vocabulary without repetitions (new words)
-        new_vocabulary = total_vocabulary - learned_vocabulary
-
-        # Get average repetitions
-        avg_repetitions_result = select_one("vocab_log", columns="AVG(repetitions) as avg_repetitions", where="username = ?", params=(user,))
-        avg_repetitions = round(avg_repetitions_result.get("avg_repetitions", 0), 2) if avg_repetitions_result else 0
-
-        # Get vocabulary due for review
-        due_review_result = select_one("vocab_log", columns="COUNT(*) as count", where="username = ? AND next_review <= datetime('now')", params=(user,))
-        due_for_review = due_review_result.get("count", 0) if due_review_result else 0
-
-        statistics = {
-            "total_vocabulary": total_vocabulary,
-            "learned_vocabulary": learned_vocabulary,
-            "new_vocabulary": new_vocabulary,
-            "average_repetitions": avg_repetitions,
-            "due_for_review": due_for_review,
-            "word_type_distribution": word_type_stats,
-            "learning_progress": round((learned_vocabulary / total_vocabulary * 100), 2) if total_vocabulary > 0 else 0
-        }
-
-        logger.info(f"Retrieved vocabulary statistics for user '{user}': {total_vocabulary} total words, {learned_vocabulary} learned")
-        return statistics
-
-    except ValueError as e:
-        logger.error(f"Validation error getting vocabulary statistics: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error getting vocabulary statistics for user '{user}': {e}")
-        return {
-            "total_vocabulary": 0,
-            "learned_vocabulary": 0,
-            "new_vocabulary": 0,
-            "average_repetitions": 0,
-            "due_for_review": 0,
-            "word_type_distribution": {},
-            "learning_progress": 0
-        }
+    return VocabularyService.get_vocabulary_statistics(user)
 
 
 def update_vocab_after_review(rowid: int, user: str, quality: int) -> bool:
@@ -322,67 +317,4 @@ def update_vocab_after_review(rowid: int, user: str, quality: int) -> bool:
     Raises:
         ValueError: If required parameters are invalid
     """
-    try:
-        if not rowid or rowid <= 0:
-            raise ValueError("Valid rowid is required")
-
-        if not user:
-            raise ValueError("User is required")
-
-        if quality < 0 or quality > 5:
-            raise ValueError("Quality must be between 0 and 5")
-
-        logger.info(f"Updating vocabulary review for entry {rowid} for user '{user}' with quality {quality}")
-
-        # Get current spaced repetition values
-        row = select_one(
-            "vocab_log",
-            columns=["ef", "repetitions", "interval_days"],
-            where="rowid = ? AND username = ?",
-            params=(rowid, user),
-        )
-
-        if not row:
-            logger.warning(f"Vocabulary entry {rowid} not found for user '{user}'")
-            return False
-
-        # Calculate new spaced repetition values
-        ef = row.get("ef", 2.5)
-        reps = row.get("repetitions", 0)
-        interval = row.get("interval_days", 1)
-
-        from features.spaced_repetition import sm2
-        ef, reps, interval = sm2(quality, ef, reps, interval)
-
-        # Calculate next review date
-        import datetime
-        next_review = (
-            datetime.datetime.now() + datetime.timedelta(days=interval)
-        ).isoformat()
-
-        # Update the vocabulary entry
-        success = update_row(
-            "vocab_log",
-            {
-                "ef": ef,
-                "repetitions": reps,
-                "interval_days": interval,
-                "next_review": next_review,
-            },
-            "rowid = ? AND username = ?",
-            (rowid, user),
-        )
-
-        if success:
-            logger.info(f"Successfully updated vocabulary review for entry {rowid}")
-            return True
-        else:
-            logger.error(f"Failed to update vocabulary review for entry {rowid}")
-            return False
-
-    except ValueError as e:
-        logger.error(f"Validation error updating vocabulary review: {e}")
-        raise
-    except Exception as e:
-        logger.error(f"Error updating vocabulary review for entry {rowid}: {e}")
-        return False
+    return VocabularyService.update_vocab_after_review(rowid, user, quality)

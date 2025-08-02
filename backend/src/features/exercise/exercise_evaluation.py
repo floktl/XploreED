@@ -20,6 +20,7 @@ import time
 from typing import Dict, Any, List, Optional, Tuple
 
 from features.ai.generation.exercise_processing import evaluate_exercises
+from shared.text_utils import _normalize_umlauts, _strip_final_punct
 from features.ai.generation.feedback_helpers import _adjust_gapfill_results
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from external.redis import redis_client
@@ -242,20 +243,3 @@ def _process_evaluation_results(username: str, block_id: str, exercises: List[Di
 
     except Exception as e:
         logger.error(f"Error processing evaluation results for block {block_id}: {e}")
-
-
-def _strip_final_punct(text: str) -> str:
-    """Strip final punctuation from text."""
-    return text.rstrip(".,!?;:")
-
-
-def _normalize_umlauts(text: str) -> str:
-    """Normalize German umlauts for comparison."""
-    umlaut_map = {
-        'ä': 'ae', 'ö': 'oe', 'ü': 'ue',
-        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue',
-        'ß': 'ss'
-    }
-    for umlaut, replacement in umlaut_map.items():
-        text = text.replace(umlaut, replacement)
-    return text

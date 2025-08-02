@@ -19,7 +19,7 @@ import time
 import os
 from typing import Dict, Any, Optional, Tuple
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from features.ai.generation.feedback_helpers import format_feedback_block
 from features.ai.memory.vocabulary_memory import translate_to_german
 from features.ai.evaluation import evaluate_translation_ai

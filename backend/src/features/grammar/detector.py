@@ -17,21 +17,7 @@ import re
 import json
 from features.ai.prompts import detect_topics_prompt
 from external.mistral.client import send_prompt
-
-
-def _extract_json(text: str):
-    """Parse a JSON list from ``text`` if possible."""
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        match = re.search(r"\[.*\]", text, re.DOTALL)
-        if match:
-            try:
-                return json.loads(match.group(0))
-            except json.JSONDecodeError:
-                pass
-    return None
-
+from shared.text_utils import _extract_json
 
 
 def detect_language_topics(text: str) -> list[str]:

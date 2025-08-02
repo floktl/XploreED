@@ -18,7 +18,7 @@ import re
 from typing import Dict, List
 
 from features.grammar import detect_language_topics
-from features.ai.memory.vocabulary_memory import _extract_json
+from shared.text_utils import _extract_json
 from features.ai.prompts import quality_evaluation_prompt
 from external.mistral.client import send_prompt
 

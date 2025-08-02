@@ -30,8 +30,8 @@ from datetime import datetime
 
 from flask import request, jsonify # type: ignore
 from datetime import datetime
-from core.services.import_service import *
-from core.utils.helpers import require_user
+from infrastructure.imports import Imports
+from api.middleware.auth import require_user
 from core.database.connection import insert_row, select_one
 from config.blueprint import settings_bp
 from features.settings import (
@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
 
 
 # === User Preferences Routes ===
+
 @settings_bp.route("/preferences", methods=["GET"])
 def get_user_preferences_route():
     """
@@ -60,8 +61,34 @@ def get_user_preferences_route():
     This endpoint retrieves all user preferences including learning
     settings, notification preferences, and personal customization options.
 
-    Returns:
-        JSON response with user preferences or unauthorized error
+    JSON Response Structure:
+        {
+            "preferences": {                       # User preferences
+                "username": str,                   # Username
+                "language": str,                   # Interface language
+                "difficulty": str,                 # Learning difficulty level
+                "notifications": bool,             # Notification preferences
+                "theme": str,                      # UI theme preference
+                "sound_enabled": bool,             # Sound effects setting
+                "auto_save": bool,                 # Auto-save preference
+                "timezone": str,                   # User timezone
+                "date_format": str,                # Date format preference
+                "time_format": str,                # Time format preference
+                "accessibility": {                 # Accessibility settings
+                    "high_contrast": bool,         # High contrast mode
+                    "font_size": str,              # Font size preference
+                    "screen_reader": bool          # Screen reader support
+                },
+                "created_at": str,                 # Settings creation timestamp
+                "updated_at": str                  # Last update timestamp
+            },
+            "last_updated": str                    # Last update timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -101,19 +128,48 @@ def update_user_preferences_route():
     """
     Update user preferences and settings.
 
-    This endpoint allows users to modify their preferences including
-    learning settings, notification preferences, and personal customization.
+    This endpoint allows users to update their personal preferences
+    including language, theme, notifications, and accessibility settings.
 
     Request Body:
-        - language: Interface language preference
-        - difficulty: Learning difficulty level
-        - notifications: Notification preferences
-        - theme: UI theme preference
-        - sound_enabled: Sound effects toggle
-        - auto_save: Auto-save functionality toggle
+        - language (str, optional): Interface language code
+        - theme (str, optional): UI theme (light, dark, auto)
+        - sound_enabled (bool, optional): Enable/disable sound effects
+        - auto_save (bool, optional): Enable/disable auto-save
+        - timezone (str, optional): User timezone
+        - date_format (str, optional): Date format preference
+        - time_format (str, optional): Time format preference
+        - accessibility (object, optional): Accessibility settings
 
-    Returns:
-        JSON response with update status or error details
+    Accessibility Settings:
+        {
+            "high_contrast": bool,                 # High contrast mode
+            "font_size": str,                      # Font size (small, medium, large)
+            "screen_reader": bool                  # Screen reader support
+        }
+
+    JSON Response Structure:
+        {
+            "message": str,                        # Success message
+            "preferences": {                       # Updated preferences
+                "username": str,                   # Username
+                "language": str,                   # Updated language
+                "theme": str,                      # Updated theme
+                "sound_enabled": bool,             # Updated sound setting
+                "auto_save": bool,                 # Updated auto-save setting
+                "timezone": str,                   # Updated timezone
+                "date_format": str,                # Updated date format
+                "time_format": str,                # Updated time format
+                "accessibility": object,           # Updated accessibility settings
+                "updated_at": str                  # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -122,105 +178,134 @@ def update_user_preferences_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate and prepare settings update
-        valid_settings = {}
-
-        # Language preference
-        if "language" in data:
-            language = data["language"]
-            valid_languages = ["en", "de", "es", "fr", "it"]
-            if language in valid_languages:
-                valid_settings["language"] = language
-            else:
-                return jsonify({"error": f"Invalid language: {language}"}), 400
-
-        # Difficulty level
-        if "difficulty" in data:
-            difficulty = data["difficulty"]
-            valid_difficulties = ["beginner", "medium", "advanced", "expert"]
-            if difficulty in valid_difficulties:
-                valid_settings["difficulty"] = difficulty
-            else:
-                return jsonify({"error": f"Invalid difficulty: {difficulty}"}), 400
-
-        # Notification settings
-        if "notifications" in data:
-            valid_settings["notifications"] = bool(data["notifications"])
-
-        # Theme preference
+        # Validate theme
         if "theme" in data:
-            theme = data["theme"]
             valid_themes = ["light", "dark", "auto"]
-            if theme in valid_themes:
-                valid_settings["theme"] = theme
-            else:
-                return jsonify({"error": f"Invalid theme: {theme}"}), 400
+            if data["theme"] not in valid_themes:
+                return jsonify({"error": f"Invalid theme: {data['theme']}"}), 400
 
-        # Sound settings
-        if "sound_enabled" in data:
-            valid_settings["sound_enabled"] = bool(data["sound_enabled"])
+        # Validate language
+        if "language" in data:
+            valid_languages = ["en", "de", "es", "fr", "it", "pt", "ru", "ja", "ko", "zh"]
+            if data["language"] not in valid_languages:
+                return jsonify({"error": f"Invalid language: {data['language']}"}), 400
 
-        # Auto-save setting
-        if "auto_save" in data:
-            valid_settings["auto_save"] = bool(data["auto_save"])
+        # Update user settings
+        updated_settings = update_user_settings(user, data)
 
-        if not valid_settings:
-            return jsonify({"error": "No valid settings provided"}), 400
-
-        # Add timestamp
-        valid_settings["updated_at"] = datetime.now().isoformat()
-
-        # Update settings
-        success = update_user_settings(user, valid_settings)
-
-        if success:
-            return jsonify({
-                "message": "Preferences updated successfully",
-                "updated_settings": valid_settings
-            })
-        else:
-            return jsonify({"error": "Failed to update preferences"}), 500
+        return jsonify({
+            "message": "Preferences updated successfully",
+            "preferences": updated_settings
+        })
 
     except Exception as e:
         logger.error(f"Error updating preferences for user {user}: {e}")
         return jsonify({"error": "Failed to update preferences"}), 500
 
 
-# === Learning Settings Routes ===
 @settings_bp.route("/learning", methods=["GET"])
 def get_learning_settings_route():
     """
-    Get user learning preferences and educational settings.
+    Get user learning settings and preferences.
 
-    This endpoint retrieves learning-specific settings including
-    difficulty levels, study preferences, and educational goals.
+    This endpoint retrieves educational preferences including
+    difficulty levels, learning goals, and study preferences.
 
-    Returns:
-        JSON response with learning settings or unauthorized error
+    JSON Response Structure:
+        {
+            "learning_settings": {                 # Learning preferences
+                "difficulty": str,                 # Learning difficulty level
+                "learning_goals": [str],           # User's learning goals
+                "study_preferences": {             # Study preferences
+                    "session_duration": int,       # Preferred session duration (minutes)
+                    "sessions_per_day": int,       # Preferred sessions per day
+                    "break_duration": int,         # Break duration between sessions
+                    "preferred_times": [str]       # Preferred study times
+                },
+                "content_preferences": {           # Content preferences
+                    "vocabulary_focus": bool,      # Focus on vocabulary
+                    "grammar_focus": bool,         # Focus on grammar
+                    "conversation_focus": bool,    # Focus on conversation
+                    "reading_focus": bool,         # Focus on reading
+                    "writing_focus": bool          # Focus on writing
+                },
+                "adaptive_learning": {             # Adaptive learning settings
+                    "enabled": bool,               # Enable adaptive learning
+                    "difficulty_adjustment": str,  # Difficulty adjustment speed
+                    "review_frequency": str        # Review frequency preference
+                },
+                "practice_settings": {             # Practice settings
+                    "spaced_repetition": bool,     # Enable spaced repetition
+                    "mistake_review": bool,        # Review mistakes
+                    "progress_tracking": bool      # Track progress
+                }
+            },
+            "current_level": str,                  # Current skill level
+            "target_level": str,                   # Target skill level
+            "progress_percentage": float           # Progress toward target
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Get learning-specific settings
-        learning_settings = select_one(
-            "user_settings",
-            columns="difficulty, study_duration, daily_goal, review_frequency, grammar_focus, vocab_focus",
+        # Get learning settings
+        learning_settings = get_user_settings(user, "learning")
+
+        if not learning_settings:
+            # Create default learning settings
+            default_learning_settings = {
+                "username": user,
+                "difficulty": "medium",
+                "learning_goals": ["improve_vocabulary", "master_grammar"],
+                "study_preferences": {
+                    "session_duration": 30,
+                    "sessions_per_day": 2,
+                    "break_duration": 5,
+                    "preferred_times": ["morning", "evening"]
+                },
+                "content_preferences": {
+                    "vocabulary_focus": True,
+                    "grammar_focus": True,
+                    "conversation_focus": False,
+                    "reading_focus": True,
+                    "writing_focus": False
+                },
+                "adaptive_learning": {
+                    "enabled": True,
+                    "difficulty_adjustment": "moderate",
+                    "review_frequency": "daily"
+                },
+                "practice_settings": {
+                    "spaced_repetition": True,
+                    "mistake_review": True,
+                    "progress_tracking": True
+                },
+                "created_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat()
+            }
+
+            insert_row("user_learning_settings", default_learning_settings)
+            learning_settings = default_learning_settings
+
+        # Get current and target levels
+        user_progress = select_one(
+            "user_progress",
+            columns="current_level, target_level, progress_percentage",
             where="username = ?",
             params=(user,)
         )
 
-        if not learning_settings:
-            # Return default learning settings
-            return jsonify({
-                "difficulty": "medium",
-                "study_duration": 30,
-                "daily_goal": 10,
-                "review_frequency": "daily",
-                "grammar_focus": True,
-                "vocab_focus": True
-            })
-
-        return jsonify(learning_settings)
+        return jsonify({
+            "learning_settings": learning_settings,
+            "current_level": user_progress.get("current_level", "beginner") if user_progress else "beginner",
+            "target_level": user_progress.get("target_level", "intermediate") if user_progress else "intermediate",
+            "progress_percentage": user_progress.get("progress_percentage", 0.0) if user_progress else 0.0
+        })
 
     except Exception as e:
         logger.error(f"Error getting learning settings for user {user}: {e}")
@@ -230,20 +315,53 @@ def get_learning_settings_route():
 @settings_bp.route("/learning", methods=["PUT"])
 def update_learning_settings_route():
     """
-    Update user learning preferences and educational settings.
+    Update user learning settings and preferences.
 
-    This endpoint allows users to modify their learning preferences
-    including study duration, daily goals, and focus areas.
+    This endpoint allows users to update their educational preferences
+    including difficulty levels, learning goals, and study preferences.
 
     Request Body:
-        - study_duration: Daily study duration in minutes
-        - daily_goal: Daily learning goal (exercises/words)
-        - review_frequency: How often to review learned content
-        - grammar_focus: Focus on grammar exercises
-        - vocab_focus: Focus on vocabulary learning
+        - difficulty (str, optional): Learning difficulty level
+        - learning_goals (array, optional): User's learning goals
+        - study_preferences (object, optional): Study preferences
+        - content_preferences (object, optional): Content preferences
+        - adaptive_learning (object, optional): Adaptive learning settings
+        - practice_settings (object, optional): Practice settings
 
-    Returns:
-        JSON response with update status or error details
+    Valid Difficulty Levels:
+        - beginner: Beginner level
+        - elementary: Elementary level
+        - intermediate: Intermediate level
+        - advanced: Advanced level
+        - expert: Expert level
+
+    Valid Learning Goals:
+        - improve_vocabulary: Improve vocabulary
+        - master_grammar: Master grammar
+        - improve_pronunciation: Improve pronunciation
+        - enhance_conversation: Enhance conversation skills
+        - improve_reading: Improve reading comprehension
+        - improve_writing: Improve writing skills
+
+    JSON Response Structure:
+        {
+            "message": str,                        # Success message
+            "learning_settings": {                 # Updated learning settings
+                "difficulty": str,                 # Updated difficulty level
+                "learning_goals": [str],           # Updated learning goals
+                "study_preferences": object,       # Updated study preferences
+                "content_preferences": object,     # Updated content preferences
+                "adaptive_learning": object,       # Updated adaptive learning settings
+                "practice_settings": object,       # Updated practice settings
+                "updated_at": str                  # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -252,90 +370,138 @@ def update_learning_settings_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate learning settings
-        updates = {}
+        # Validate difficulty level
+        if "difficulty" in data:
+            valid_difficulties = ["beginner", "elementary", "intermediate", "advanced", "expert"]
+            if data["difficulty"] not in valid_difficulties:
+                return jsonify({"error": f"Invalid difficulty: {data['difficulty']}"}), 400
 
-        if "study_duration" in data:
-            duration = int(data["study_duration"])
-            if 5 <= duration <= 180:
-                updates["study_duration"] = duration
-            else:
-                return jsonify({"error": "Study duration must be between 5 and 180 minutes"}), 400
-
-        if "daily_goal" in data:
-            goal = int(data["daily_goal"])
-            if 1 <= goal <= 100:
-                updates["daily_goal"] = goal
-            else:
-                return jsonify({"error": "Daily goal must be between 1 and 100"}), 400
-
-        if "review_frequency" in data:
-            frequency = data["review_frequency"]
-            valid_frequencies = ["daily", "weekly", "biweekly", "monthly"]
-            if frequency in valid_frequencies:
-                updates["review_frequency"] = frequency
-            else:
-                return jsonify({"error": f"Invalid review frequency: {frequency}"}), 400
-
-        if "grammar_focus" in data:
-            updates["grammar_focus"] = bool(data["grammar_focus"])
-
-        if "vocab_focus" in data:
-            updates["vocab_focus"] = bool(data["vocab_focus"])
-
-        if not updates:
-            return jsonify({"error": "No valid learning settings provided"}), 400
+        # Validate learning goals
+        if "learning_goals" in data:
+            valid_goals = [
+                "improve_vocabulary", "master_grammar", "improve_pronunciation",
+                "enhance_conversation", "improve_reading", "improve_writing"
+            ]
+            for goal in data["learning_goals"]:
+                if goal not in valid_goals:
+                    return jsonify({"error": f"Invalid learning goal: {goal}"}), 400
 
         # Update learning settings
-        success = update_user_settings(user, updates)
+        updated_settings = update_user_settings(user, data, "learning")
 
-        if success:
-            return jsonify({
-                "message": "Learning settings updated successfully",
-                "updated_settings": updates
-            })
-        else:
-            return jsonify({"error": "Failed to update learning settings"}), 500
+        return jsonify({
+            "message": "Learning settings updated successfully",
+            "learning_settings": updated_settings
+        })
 
     except Exception as e:
         logger.error(f"Error updating learning settings for user {user}: {e}")
         return jsonify({"error": "Failed to update learning settings"}), 500
 
 
-# === Notification Settings Routes ===
 @settings_bp.route("/notifications", methods=["GET"])
 def get_notification_settings_route():
     """
-    Get user notification preferences.
+    Get user notification settings and preferences.
 
-    This endpoint retrieves notification settings including
-    email preferences, push notifications, and communication frequency.
+    This endpoint retrieves notification preferences including
+    email notifications, push notifications, and communication settings.
 
-    Returns:
-        JSON response with notification settings or unauthorized error
+    JSON Response Structure:
+        {
+            "notification_settings": {             # Notification preferences
+                "email_notifications": {           # Email notification settings
+                    "enabled": bool,               # Enable email notifications
+                    "daily_summary": bool,         # Daily summary emails
+                    "weekly_progress": bool,       # Weekly progress reports
+                    "achievement_alerts": bool,    # Achievement notifications
+                    "reminder_emails": bool        # Reminder emails
+                },
+                "push_notifications": {            # Push notification settings
+                    "enabled": bool,               # Enable push notifications
+                    "lesson_reminders": bool,      # Lesson reminders
+                    "achievement_alerts": bool,    # Achievement alerts
+                    "streak_reminders": bool,      # Streak reminders
+                    "new_content": bool            # New content notifications
+                },
+                "in_app_notifications": {          # In-app notification settings
+                    "enabled": bool,               # Enable in-app notifications
+                    "sound_enabled": bool,         # Sound for notifications
+                    "vibration_enabled": bool,     # Vibration for notifications
+                    "show_badges": bool            # Show notification badges
+                },
+                "communication_preferences": {     # Communication preferences
+                    "marketing_emails": bool,      # Marketing emails
+                    "newsletter": bool,            # Newsletter subscription
+                    "product_updates": bool,       # Product update notifications
+                    "community_updates": bool      # Community update notifications
+                }
+            },
+            "quiet_hours": {                       # Quiet hours settings
+                "enabled": bool,                   # Enable quiet hours
+                "start_time": str,                 # Quiet hours start time
+                "end_time": str,                   # Quiet hours end time
+                "timezone": str                    # Timezone for quiet hours
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get notification settings
-        notification_settings = select_one(
-            "user_settings",
-            columns="notifications, email_notifications, push_notifications, reminder_frequency, study_reminders",
-            where="username = ?",
-            params=(user,)
-        )
+        notification_settings = get_user_settings(user, "notifications")
 
         if not notification_settings:
-            # Return default notification settings
-            return jsonify({
-                "notifications": True,
-                "email_notifications": False,
-                "push_notifications": True,
-                "reminder_frequency": "daily",
-                "study_reminders": True
-            })
+            # Create default notification settings
+            default_notification_settings = {
+                "username": user,
+                "email_notifications": {
+                    "enabled": True,
+                    "daily_summary": True,
+                    "weekly_progress": True,
+                    "achievement_alerts": True,
+                    "reminder_emails": True
+                },
+                "push_notifications": {
+                    "enabled": True,
+                    "lesson_reminders": True,
+                    "achievement_alerts": True,
+                    "streak_reminders": True,
+                    "new_content": True
+                },
+                "in_app_notifications": {
+                    "enabled": True,
+                    "sound_enabled": True,
+                    "vibration_enabled": False,
+                    "show_badges": True
+                },
+                "communication_preferences": {
+                    "marketing_emails": False,
+                    "newsletter": True,
+                    "product_updates": True,
+                    "community_updates": True
+                },
+                "quiet_hours": {
+                    "enabled": False,
+                    "start_time": "22:00",
+                    "end_time": "08:00",
+                    "timezone": "UTC"
+                },
+                "created_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat()
+            }
 
-        return jsonify(notification_settings)
+            insert_row("user_notification_settings", default_notification_settings)
+            notification_settings = default_notification_settings
+
+        return jsonify({
+            "notification_settings": notification_settings
+        })
 
     except Exception as e:
         logger.error(f"Error getting notification settings for user {user}: {e}")
@@ -345,19 +511,36 @@ def get_notification_settings_route():
 @settings_bp.route("/notifications", methods=["PUT"])
 def update_notification_settings_route():
     """
-    Update user notification preferences.
+    Update user notification settings and preferences.
 
-    This endpoint allows users to modify their notification settings
-    including email preferences and reminder frequencies.
+    This endpoint allows users to update their notification preferences
+    including email, push, and in-app notification settings.
 
     Request Body:
-        - email_notifications: Enable email notifications
-        - push_notifications: Enable push notifications
-        - reminder_frequency: How often to send reminders
-        - study_reminders: Enable study reminders
+        - email_notifications (object, optional): Email notification settings
+        - push_notifications (object, optional): Push notification settings
+        - in_app_notifications (object, optional): In-app notification settings
+        - communication_preferences (object, optional): Communication preferences
+        - quiet_hours (object, optional): Quiet hours settings
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                        # Success message
+            "notification_settings": {             # Updated notification settings
+                "email_notifications": object,     # Updated email settings
+                "push_notifications": object,      # Updated push settings
+                "in_app_notifications": object,    # Updated in-app settings
+                "communication_preferences": object, # Updated communication preferences
+                "quiet_hours": object,             # Updated quiet hours
+                "updated_at": str                  # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -366,78 +549,113 @@ def update_notification_settings_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate notification settings
-        updates = {}
-
-        if "email_notifications" in data:
-            updates["email_notifications"] = bool(data["email_notifications"])
-
-        if "push_notifications" in data:
-            updates["push_notifications"] = bool(data["push_notifications"])
-
-        if "reminder_frequency" in data:
-            frequency = data["reminder_frequency"]
-            valid_frequencies = ["never", "daily", "weekly", "monthly"]
-            if frequency in valid_frequencies:
-                updates["reminder_frequency"] = frequency
-            else:
-                return jsonify({"error": f"Invalid reminder frequency: {frequency}"}), 400
-
-        if "study_reminders" in data:
-            updates["study_reminders"] = bool(data["study_reminders"])
-
-        if not updates:
-            return jsonify({"error": "No valid notification settings provided"}), 400
-
         # Update notification settings
-        success = update_user_settings(user, updates)
+        updated_settings = update_user_settings(user, data, "notifications")
 
-        if success:
-            return jsonify({
-                "message": "Notification settings updated successfully",
-                "updated_settings": updates
-            })
-        else:
-            return jsonify({"error": "Failed to update notification settings"}), 500
+        return jsonify({
+            "message": "Notification settings updated successfully",
+            "notification_settings": updated_settings
+        })
 
     except Exception as e:
         logger.error(f"Error updating notification settings for user {user}: {e}")
         return jsonify({"error": "Failed to update notification settings"}), 500
 
 
-# === Privacy Settings Routes ===
 @settings_bp.route("/privacy", methods=["GET"])
 def get_privacy_settings_route():
     """
     Get user privacy settings and data handling preferences.
 
-    This endpoint retrieves privacy-related settings including
-    data sharing preferences and account visibility options.
+    This endpoint retrieves privacy preferences including
+    data sharing, analytics, and personal information handling.
 
-    Returns:
-        JSON response with privacy settings or unauthorized error
+    JSON Response Structure:
+        {
+            "privacy_settings": {                  # Privacy preferences
+                "data_sharing": {                  # Data sharing settings
+                    "analytics": bool,             # Share analytics data
+                    "improvement": bool,           # Share data for improvement
+                    "research": bool,              # Share data for research
+                    "third_party": bool            # Share with third parties
+                },
+                "profile_visibility": {            # Profile visibility settings
+                    "public_profile": bool,        # Public profile visibility
+                    "show_progress": bool,         # Show learning progress
+                    "show_achievements": bool,     # Show achievements
+                    "show_username": bool          # Show username publicly
+                },
+                "data_retention": {                # Data retention settings
+                    "keep_history": bool,          # Keep learning history
+                    "retention_period": str,       # Data retention period
+                    "auto_delete": bool,           # Auto-delete old data
+                    "export_on_delete": bool       # Export data on account deletion
+                },
+                "communication_privacy": {         # Communication privacy
+                    "allow_messages": bool,        # Allow direct messages
+                    "show_online_status": bool,    # Show online status
+                    "allow_friend_requests": bool  # Allow friend requests
+                }
+            },
+            "data_usage": {                        # Data usage information
+                "data_stored": int,                # Amount of data stored (MB)
+                "last_backup": str,                # Last backup timestamp
+                "backup_frequency": str            # Backup frequency
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get privacy settings
-        privacy_settings = select_one(
-            "user_settings",
-            columns="data_sharing, profile_visibility, analytics_consent, third_party_data",
-            where="username = ?",
-            params=(user,)
-        )
+        privacy_settings = get_user_settings(user, "privacy")
 
         if not privacy_settings:
-            # Return default privacy settings
-            return jsonify({
-                "data_sharing": False,
-                "profile_visibility": "private",
-                "analytics_consent": True,
-                "third_party_data": False
-            })
+            # Create default privacy settings
+            default_privacy_settings = {
+                "username": user,
+                "data_sharing": {
+                    "analytics": True,
+                    "improvement": True,
+                    "research": False,
+                    "third_party": False
+                },
+                "profile_visibility": {
+                    "public_profile": False,
+                    "show_progress": True,
+                    "show_achievements": True,
+                    "show_username": False
+                },
+                "data_retention": {
+                    "keep_history": True,
+                    "retention_period": "2_years",
+                    "auto_delete": False,
+                    "export_on_delete": True
+                },
+                "communication_privacy": {
+                    "allow_messages": False,
+                    "show_online_status": False,
+                    "allow_friend_requests": False
+                },
+                "created_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat()
+            }
 
-        return jsonify(privacy_settings)
+            insert_row("user_privacy_settings", default_privacy_settings)
+            privacy_settings = default_privacy_settings
+
+        # Get data usage information
+        data_usage = get_account_statistics(user, "data_usage")
+
+        return jsonify({
+            "privacy_settings": privacy_settings,
+            "data_usage": data_usage
+        })
 
     except Exception as e:
         logger.error(f"Error getting privacy settings for user {user}: {e}")
@@ -449,17 +667,32 @@ def update_privacy_settings_route():
     """
     Update user privacy settings and data handling preferences.
 
-    This endpoint allows users to modify their privacy settings
-    including data sharing and visibility preferences.
+    This endpoint allows users to update their privacy preferences
+    including data sharing, profile visibility, and data retention.
 
     Request Body:
-        - data_sharing: Allow data sharing for research
-        - profile_visibility: Profile visibility setting
-        - analytics_consent: Consent for analytics tracking
-        - third_party_data: Allow third-party data sharing
+        - data_sharing (object, optional): Data sharing settings
+        - profile_visibility (object, optional): Profile visibility settings
+        - data_retention (object, optional): Data retention settings
+        - communication_privacy (object, optional): Communication privacy settings
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                        # Success message
+            "privacy_settings": {                  # Updated privacy settings
+                "data_sharing": object,            # Updated data sharing settings
+                "profile_visibility": object,      # Updated profile visibility
+                "data_retention": object,          # Updated data retention
+                "communication_privacy": object,   # Updated communication privacy
+                "updated_at": str                  # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -468,78 +701,110 @@ def update_privacy_settings_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate privacy settings
-        updates = {}
-
-        if "data_sharing" in data:
-            updates["data_sharing"] = bool(data["data_sharing"])
-
-        if "profile_visibility" in data:
-            visibility = data["profile_visibility"]
-            valid_visibilities = ["private", "friends", "public"]
-            if visibility in valid_visibilities:
-                updates["profile_visibility"] = visibility
-            else:
-                return jsonify({"error": f"Invalid profile visibility: {visibility}"}), 400
-
-        if "analytics_consent" in data:
-            updates["analytics_consent"] = bool(data["analytics_consent"])
-
-        if "third_party_data" in data:
-            updates["third_party_data"] = bool(data["third_party_data"])
-
-        if not updates:
-            return jsonify({"error": "No valid privacy settings provided"}), 400
-
         # Update privacy settings
-        success = update_user_settings(user, updates)
+        updated_settings = update_user_settings(user, data, "privacy")
 
-        if success:
-            return jsonify({
-                "message": "Privacy settings updated successfully",
-                "updated_settings": updates
-            })
-        else:
-            return jsonify({"error": "Failed to update privacy settings"}), 500
+        return jsonify({
+            "message": "Privacy settings updated successfully",
+            "privacy_settings": updated_settings
+        })
 
     except Exception as e:
         logger.error(f"Error updating privacy settings for user {user}: {e}")
         return jsonify({"error": "Failed to update privacy settings"}), 500
 
 
-# === Account Settings Routes ===
 @settings_bp.route("/account", methods=["GET"])
 def get_account_settings_route():
     """
     Get user account settings and security preferences.
 
-    This endpoint retrieves account-related settings including
-    security preferences and account management options.
+    This endpoint retrieves account management settings including
+    security preferences, account information, and access controls.
 
-    Returns:
-        JSON response with account settings or unauthorized error
+    JSON Response Structure:
+        {
+            "account_settings": {                  # Account settings
+                "account_info": {                  # Account information
+                    "username": str,               # Username
+                    "email": str,                  # Email address
+                    "account_created": str,        # Account creation date
+                    "last_login": str,             # Last login timestamp
+                    "account_status": str          # Account status
+                },
+                "security_settings": {             # Security settings
+                    "two_factor_auth": bool,       # 2FA enabled
+                    "password_last_changed": str,  # Password last changed
+                    "login_notifications": bool,   # Login notifications
+                    "session_timeout": int,        # Session timeout (minutes)
+                    "max_sessions": int            # Maximum concurrent sessions
+                },
+                "access_controls": {               # Access controls
+                    "ip_whitelist": [str],         # Allowed IP addresses
+                    "device_management": bool,     # Device management enabled
+                    "trusted_devices": [str],      # Trusted device list
+                    "login_history": [             # Login history
+                        {
+                            "timestamp": str,      # Login timestamp
+                            "ip_address": str,     # IP address
+                            "device": str,         # Device information
+                            "location": str        # Location information
+                        }
+                    ]
+                }
+            },
+            "subscription_info": {                 # Subscription information
+                "plan": str,                       # Current plan
+                "status": str,                     # Subscription status
+                "billing_cycle": str,              # Billing cycle
+                "next_billing": str,               # Next billing date
+                "features": [str]                  # Available features
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
         # Get account settings
-        account_settings = select_one(
-            "user_settings",
-            columns="two_factor_enabled, session_timeout, login_notifications, password_change_required",
+        account_settings = get_user_settings(user, "account")
+
+        # Get user account information
+        user_info = select_one(
+            "users",
+            columns="username, email, created_at, last_login, status",
             where="username = ?",
             params=(user,)
         )
 
-        if not account_settings:
-            # Return default account settings
-            return jsonify({
-                "two_factor_enabled": False,
-                "session_timeout": 24,
-                "login_notifications": True,
-                "password_change_required": False
-            })
+        # Get security settings
+        security_settings = select_one(
+            "user_security",
+            columns="*",
+            where="username = ?",
+            params=(user,)
+        )
 
-        return jsonify(account_settings)
+        # Get subscription information
+        subscription_info = select_one(
+            "user_subscriptions",
+            columns="*",
+            where="username = ?",
+            params=(user,)
+        )
+
+        return jsonify({
+            "account_settings": {
+                "account_info": user_info,
+                "security_settings": security_settings or {},
+                "access_controls": account_settings.get("access_controls", {})
+            },
+            "subscription_info": subscription_info or {}
+        })
 
     except Exception as e:
         logger.error(f"Error getting account settings for user {user}: {e}")
@@ -551,17 +816,33 @@ def update_account_settings_route():
     """
     Update user account settings and security preferences.
 
-    This endpoint allows users to modify their account settings
-    including security features and session management.
+    This endpoint allows users to update their account settings
+    including security preferences, access controls, and account information.
 
     Request Body:
-        - two_factor_enabled: Enable two-factor authentication
-        - session_timeout: Session timeout in hours
-        - login_notifications: Notify on new logins
-        - password_change_required: Require password change
+        - email (str, optional): New email address
+        - security_settings (object, optional): Security settings
+        - access_controls (object, optional): Access control settings
+        - session_timeout (int, optional): Session timeout in minutes
+        - max_sessions (int, optional): Maximum concurrent sessions
 
-    Returns:
-        JSON response with update status or error details
+    JSON Response Structure:
+        {
+            "message": str,                        # Success message
+            "account_settings": {                  # Updated account settings
+                "account_info": object,            # Updated account information
+                "security_settings": object,       # Updated security settings
+                "access_controls": object,         # Updated access controls
+                "updated_at": str                  # Update timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid data
+        - 401: Unauthorized
+        - 409: Email already exists
+        - 500: Internal server error
     """
     try:
         user = require_user()
@@ -570,117 +851,163 @@ def update_account_settings_route():
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
-        # Validate account settings
-        updates = {}
-
-        if "two_factor_enabled" in data:
-            updates["two_factor_enabled"] = bool(data["two_factor_enabled"])
-
-        if "session_timeout" in data:
-            timeout = int(data["session_timeout"])
-            if 1 <= timeout <= 168:  # 1 hour to 1 week
-                updates["session_timeout"] = timeout
-            else:
-                return jsonify({"error": "Session timeout must be between 1 and 168 hours"}), 400
-
-        if "login_notifications" in data:
-            updates["login_notifications"] = bool(data["login_notifications"])
-
-        if "password_change_required" in data:
-            updates["password_change_required"] = bool(data["password_change_required"])
-
-        if not updates:
-            return jsonify({"error": "No valid account settings provided"}), 400
+        # Check if email is being updated and if it already exists
+        if "email" in data:
+            existing_user = select_one(
+                "users",
+                columns="username",
+                where="email = ? AND username != ?",
+                params=(data["email"], user)
+            )
+            if existing_user:
+                return jsonify({"error": "Email address already in use"}), 409
 
         # Update account settings
-        success = update_user_settings(user, updates)
+        updated_settings = update_user_settings(user, data, "account")
 
-        if success:
-            return jsonify({
-                "message": "Account settings updated successfully",
-                "updated_settings": updates
-            })
-        else:
-            return jsonify({"error": "Failed to update account settings"}), 500
+        return jsonify({
+            "message": "Account settings updated successfully",
+            "account_settings": updated_settings
+        })
 
     except Exception as e:
         logger.error(f"Error updating account settings for user {user}: {e}")
         return jsonify({"error": "Failed to update account settings"}), 500
 
 
-# === Data Management Routes ===
-# @settings_bp.route("/reset", methods=["POST"])
-# def reset_user_settings_route():
-#     """
-#     Reset user settings to default values.
-#     """
-#     # TODO: Implement reset functionality
-#     return jsonify({"error": "Not implemented"}), 501
-
-
 @settings_bp.route("/export", methods=["GET"])
 def export_user_data_route():
     """
-    Export user data and settings.
+    Export user data and learning history.
 
-    This endpoint allows users to export their data including
-    settings, progress, and learning history.
+    This endpoint allows users to export their personal data
+    including learning progress, settings, and account information.
 
-    Returns:
-        JSON response with exported data or error details
+    Query Parameters:
+        - format (str, optional): Export format (json, csv, pdf)
+        - include_history (bool, optional): Include learning history
+        - include_settings (bool, optional): Include user settings
+
+    JSON Response Structure:
+        {
+            "export_id": str,                      # Export identifier
+            "status": str,                         # Export status
+            "download_url": str,                   # Download URL (when ready)
+            "estimated_time": int,                 # Estimated completion time (seconds)
+            "data_summary": {                      # Data summary
+                "total_records": int,              # Total records exported
+                "file_size": int,                  # File size in bytes
+                "exported_at": str                 # Export timestamp
+            }
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
 
-        # Export user data
-        exported_data = export_user_data(user)
+        # Get query parameters
+        export_format = request.args.get("format", "json")
+        include_history = request.args.get("include_history", "true").lower() == "true"
+        include_settings = request.args.get("include_settings", "true").lower() == "true"
 
-        if exported_data:
-            return jsonify({
-                "message": "Data exported successfully",
-                "data": exported_data,
-                "exported_at": datetime.now().isoformat()
-            })
-        else:
-            return jsonify({"error": "Failed to export data"}), 500
+        # Validate export format
+        valid_formats = ["json", "csv", "pdf"]
+        if export_format not in valid_formats:
+            return jsonify({"error": f"Invalid export format: {export_format}"}), 400
+
+        # Export user data
+        export_result = export_user_data(
+            user,
+            format=export_format,
+            include_history=include_history,
+            include_settings=include_settings
+        )
+
+        return jsonify(export_result)
 
     except Exception as e:
         logger.error(f"Error exporting data for user {user}: {e}")
-        return jsonify({"error": "Failed to export data"}), 500
+        return jsonify({"error": "Failed to export user data"}), 500
 
 
 @settings_bp.route("/import", methods=["POST"])
 def import_user_data_route():
     """
-    Import user data and settings.
+    Import user data from external source.
 
-    This endpoint allows users to import previously exported
-    data and settings.
+    This endpoint allows users to import their data from
+    external sources or previous exports.
 
     Request Body:
-        - data: Exported user data to import
+        - file (file, required): Data file to import
+        - format (str, required): Import format (json, csv)
+        - overwrite_existing (bool, optional): Overwrite existing data
 
-    Returns:
-        JSON response with import status or error details
+    JSON Response Structure:
+        {
+            "import_id": str,                      # Import identifier
+            "status": str,                         # Import status
+            "progress": int,                       # Import progress percentage
+            "summary": {                           # Import summary
+                "total_records": int,              # Total records imported
+                "successful_imports": int,         # Successfully imported records
+                "failed_imports": int,             # Failed imports
+                "imported_at": str                 # Import timestamp
+            },
+            "errors": [                            # Import errors
+                {
+                    "record_id": str,              # Record identifier
+                    "error": str,                  # Error message
+                    "field": str                   # Field causing error
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid file or format
+        - 401: Unauthorized
+        - 500: Internal server error
     """
     try:
         user = require_user()
-        data = request.get_json()
 
-        if not data or "data" not in data:
-            return jsonify({"error": "No data provided for import"}), 400
+        # Check if file was uploaded
+        if "file" not in request.files:
+            return jsonify({"error": "No file provided"}), 400
+
+        file = request.files["file"]
+        if file.filename == "":
+            return jsonify({"error": "No file selected"}), 400
+
+        # Get import parameters
+        import_format = request.form.get("format", "json")
+        overwrite_existing = request.form.get("overwrite_existing", "false").lower() == "true"
+
+        # Validate import format
+        valid_formats = ["json", "csv"]
+        if import_format not in valid_formats:
+            return jsonify({"error": f"Invalid import format: {import_format}"}), 400
+
+        # Validate file content
+        validation_result = validate_import_data(file, import_format)
+        if not validation_result["valid"]:
+            return jsonify({"error": "Invalid file format", "details": validation_result["errors"]}), 400
 
         # Import user data
-        success = import_user_data(user, data["data"])
+        import_result = import_user_data(
+            user,
+            file,
+            format=import_format,
+            overwrite_existing=overwrite_existing
+        )
 
-        if success:
-            return jsonify({
-                "message": "Data imported successfully",
-                "status": "imported"
-            })
-        else:
-            return jsonify({"error": "Failed to import data"}), 500
+        return jsonify(import_result)
 
     except Exception as e:
         logger.error(f"Error importing data for user {user}: {e}")
-        return jsonify({"error": "Failed to import data"}), 500
+        return jsonify({"error": "Failed to import user data"}), 500

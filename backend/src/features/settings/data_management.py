@@ -19,6 +19,7 @@ from typing import Dict, Any, List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime
+from shared.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def export_user_data(username: str) -> Optional[Dict[str, Any]]:
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         logger.info(f"Exporting data for user {username}")
 
@@ -216,10 +217,10 @@ def import_user_data(username: str, data: Dict[str, Any]) -> bool:
     """
     try:
         if not username:
-            raise ValueError("Username is required")
+            raise ValidationError("Username is required")
 
         if not data:
-            raise ValueError("Import data is required")
+            raise ValidationError("Import data is required")
 
         logger.info(f"Importing data for user {username}")
 
@@ -380,7 +381,7 @@ def import_user_data(username: str, data: Dict[str, Any]) -> bool:
             logger.error(f"Failed to import any data for user {username}")
             return False
 
-    except ValueError as e:
+    except ValidationError as e:
         logger.error(f"Validation error importing user data: {e}")
         raise
     except Exception as e:
@@ -403,7 +404,7 @@ def validate_import_data(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
     """
     try:
         if not data:
-            raise ValueError("Data is required")
+            raise ValidationError("Data is required")
 
         errors = []
 

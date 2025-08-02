@@ -72,16 +72,27 @@ def submit_feedback(message: str, username: Optional[str] = None) -> Tuple[bool,
         return False, "Database error"
 
 
-def get_feedback_list(limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
+def get_feedback_list(
+    limit: int = 50,
+    offset: int = 0,
+    category: Optional[str] = None,
+    priority: Optional[str] = None,
+    status: Optional[str] = None,
+    search: Optional[str] = None
+) -> Dict[str, Any]:
     """
-    Get a list of feedback messages with pagination.
+    Get a list of feedback messages with pagination and filtering.
 
     Args:
         limit: Maximum number of feedback messages to return
         offset: Number of messages to skip for pagination
+        category: Filter by feedback category
+        priority: Filter by priority level
+        status: Filter by feedback status
+        search: Search in feedback messages
 
     Returns:
-        List of feedback messages with details
+        Dictionary containing feedback list and total count
 
     Raises:
         ValueError: If pagination parameters are invalid
@@ -95,9 +106,43 @@ def get_feedback_list(limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
 
         logger.info(f"Getting feedback list with limit {limit}, offset {offset}")
 
+        # Build WHERE clause for filtering
+        where_conditions = []
+        params = []
+
+        if category:
+            where_conditions.append("category = ?")
+            params.append(category)
+
+        if priority:
+            where_conditions.append("priority = ?")
+            params.append(priority)
+
+        if status:
+            where_conditions.append("status = ?")
+            params.append(status)
+
+        if search:
+            where_conditions.append("message LIKE ?")
+            params.append(f"%{search}%")
+
+        where_clause = " AND ".join(where_conditions) if where_conditions else None
+
+        # Get total count
+        count_result = select_one(
+            "support_feedback",
+            columns=["COUNT(*) as total"],
+            where=where_clause,
+            params=tuple(params) if params else None
+        )
+        total = count_result.get("total", 0) if count_result else 0
+
+        # Get filtered rows
         rows = select_rows(
             "support_feedback",
-            columns=["id", "message", "username", "created_at"],
+            columns=["id", "message", "category", "priority", "status", "user_email", "created_at", "username"],
+            where=where_clause,
+            params=tuple(params) if params else None,
             order_by="id DESC",
             limit=limit,
             offset=offset
@@ -108,19 +153,26 @@ def get_feedback_list(limit: int = 50, offset: int = 0) -> List[Dict[str, Any]]:
             feedback_list.append({
                 "id": row.get("id"),
                 "message": row.get("message"),
-                "username": row.get("username"),
-                "created_at": row.get("created_at")
+                "category": row.get("category"),
+                "priority": row.get("priority"),
+                "status": row.get("status"),
+                "user_email": row.get("user_email"),
+                "created_at": row.get("created_at"),
+                "user": row.get("username")
             })
 
-        logger.info(f"Retrieved {len(feedback_list)} feedback messages")
-        return feedback_list
+        logger.info(f"Retrieved {len(feedback_list)} feedback messages out of {total} total")
+        return {
+            "feedback": feedback_list,
+            "total": total
+        }
 
     except ValueError as e:
         logger.error(f"Validation error getting feedback list: {e}")
         raise
     except Exception as e:
         logger.error(f"Error getting feedback list: {e}")
-        return []
+        return {"feedback": [], "total": 0}
 
 
 def get_feedback_by_id(feedback_id: int) -> Optional[Dict[str, Any]]:

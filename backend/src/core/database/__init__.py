@@ -6,14 +6,14 @@ following clean architecture principles as outlined in the documentation.
 
 Database Components:
 - connection: Database connection and query management
-- migrations: Database schema creation and updates
 - db_helpers: Database helper utilities and convenient imports
+
+Note: Database migrations have been moved to scripts/migrations/ for better separation.
 
 For detailed architecture information, see: docs/backend_structure.md
 """
 
 from . import connection
-from . import migrations
 from . import db_helpers
 
 # Re-export commonly used items for convenience
@@ -50,7 +50,6 @@ from .db_helpers import (
 __all__ = [
     # Module imports
     "connection",
-    "migrations",
     "db_helpers",
 
     # Connection management

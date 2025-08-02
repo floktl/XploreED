@@ -18,7 +18,7 @@ import logging
 from typing import Dict, Any
 from datetime import datetime
 
-from core.services.import_service import *
+from infrastructure.imports import Imports
 from .user_analytics import UserAnalyticsManager, UserAnalyticsData
 
 logger = logging.getLogger(__name__)
