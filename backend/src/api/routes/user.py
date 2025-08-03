@@ -20,7 +20,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 from flask import request, jsonify # type: ignore
 from datetime import datetime
 
@@ -38,6 +38,7 @@ from features.vocabulary import (
     get_vocabulary_statistics,
 )
 from features.vocabulary import select_vocab_word_due_for_review, update_vocab_after_review
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===

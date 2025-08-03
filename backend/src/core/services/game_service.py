@@ -15,11 +15,12 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import random
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from core.database.connection import select_one, fetch_one, insert_row
 from core.authentication import user_exists
 from core.services.user_service import UserService
 from shared.exceptions import ValidationError
+from shared.types import GameData, GameList
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,7 @@ class GameService:
             return 1
 
     @staticmethod
-    def create_game_round(username: str, level: Optional[int] = None) -> Dict[str, Any]:
+    def create_game_round(username: str, level: Optional[int] = None) -> GameData:
         """
         Create a new game round for a user.
 
@@ -75,7 +76,7 @@ class GameService:
             level: Optional specific level for the round
 
         Returns:
-            Dict[str, Any]: Dictionary containing game round data
+            GameData: Dictionary containing game round data
 
         Raises:
             ValueError: If username is invalid
@@ -114,7 +115,7 @@ class GameService:
             raise
 
     @staticmethod
-    def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: str) -> Dict[str, Any]:
+    def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: str) -> GameData:
         """
         Evaluate a user's game answer.
 
@@ -125,7 +126,7 @@ class GameService:
             user_answer: The user's answer
 
         Returns:
-            Dict[str, Any]: Evaluation results
+            GameData: Evaluation results
 
         Raises:
             ValueError: If parameters are invalid
@@ -179,7 +180,7 @@ class GameService:
             raise
 
     @staticmethod
-    def calculate_game_score(answers: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def calculate_game_score(answers: GameList) -> GameData:
         """
         Calculate overall game score from multiple answers.
 
@@ -187,7 +188,7 @@ class GameService:
             answers: List of answer evaluation results
 
         Returns:
-            Dict[str, Any]: Overall game score and statistics
+            GameData: Overall game score and statistics
         """
         try:
             if not answers:
@@ -321,7 +322,7 @@ class GameService:
             logger.error(f"Error saving game vocabulary: {e}")
 
     @staticmethod
-    def _save_game_result(result: Dict[str, Any]) -> None:
+    def _save_game_result(result: GameData) -> None:
         """Save game result to database."""
         try:
             insert_row("results", result)

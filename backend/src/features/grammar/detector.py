@@ -18,6 +18,7 @@ import json
 from features.ai.prompts import detect_topics_prompt
 from external.mistral.client import send_prompt
 from shared.text_utils import _extract_json
+from shared.exceptions import DatabaseError
 
 
 def detect_language_topics(text: str) -> list[str]:

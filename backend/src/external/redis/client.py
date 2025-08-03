@@ -16,8 +16,10 @@ For detailed architecture information, see: docs/backend_structure.md
 import os
 import logging
 import redis
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, List
 import json
+from shared.exceptions import DatabaseError
+from shared.types import RedisData
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +55,8 @@ class RedisClient:
                 )
                 logger.info(f"Redis client initialized with host: {redis_host}")
         except Exception as e:
-            logger.error(f"Failed to initialize Redis client: {e}")
-            self._client = None
+            logger.error(f"Error initializing Redis client: {e}")
+            return None
 
     @property
     def client(self) -> Optional[redis.Redis]:
@@ -78,7 +80,7 @@ class RedisClient:
         try:
             return self._client.get(key)
         except Exception as e:
-            logger.error(f"Redis get error for key {key}: {e}")
+            logger.error(f"Error getting Redis key: {e}")
             return None
 
     def set(self, key: str, value: str, ex: Optional[int] = None) -> bool:
@@ -88,7 +90,7 @@ class RedisClient:
         try:
             return self._client.set(key, value, ex=ex)
         except Exception as e:
-            logger.error(f"Redis set error for key {key}: {e}")
+            logger.error(f"Error setting Redis key: {e}")
             return False
 
     def setex(self, key: str, time: int, value: str) -> bool:
@@ -98,7 +100,7 @@ class RedisClient:
         try:
             return self._client.setex(key, time, value)
         except Exception as e:
-            logger.error(f"Redis setex error for key {key}: {e}")
+            logger.error(f"Error setting Redis key with expiry: {e}")
             return False
 
     def delete(self, key: str) -> bool:
@@ -108,7 +110,7 @@ class RedisClient:
         try:
             return bool(self._client.delete(key))
         except Exception as e:
-            logger.error(f"Redis delete error for key {key}: {e}")
+            logger.error(f"Error deleting Redis key: {e}")
             return False
 
     def exists(self, key: str) -> bool:
@@ -118,7 +120,7 @@ class RedisClient:
         try:
             return bool(self._client.exists(key))
         except Exception as e:
-            logger.error(f"Redis exists error for key {key}: {e}")
+            logger.error(f"Error checking Redis key existence: {e}")
             return False
 
     def keys(self, pattern: str) -> List[str]:
@@ -128,10 +130,10 @@ class RedisClient:
         try:
             return self._client.keys(pattern)
         except Exception as e:
-            logger.error(f"Redis keys error for pattern {pattern}: {e}")
+            logger.error(f"Error getting Redis keys: {e}")
             return []
 
-    def get_json(self, key: str) -> Optional[Dict[str, Any]]:
+    def get_json(self, key: str) -> RedisData:
         """Get a JSON value from Redis."""
         value = self.get(key)
         if not value:
@@ -142,22 +144,20 @@ class RedisClient:
             logger.error(f"Redis JSON decode error for key {key}: {e}")
             return None
 
-    def set_json(self, key: str, value: Dict[str, Any], ex: Optional[int] = None) -> bool:
+    def set_json(self, key: str, value: RedisData, ex: Optional[int] = None) -> bool:
         """Set a JSON value in Redis."""
         try:
             json_value = json.dumps(value)
             return self.set(key, json_value, ex=ex)
-        except Exception as e:
-            logger.error(f"Redis JSON set error for key {key}: {e}")
+        except Exception:
             return False
 
-    def setex_json(self, key: str, time: int, value: Dict[str, Any]) -> bool:
+    def setex_json(self, key: str, time: int, value: RedisData) -> bool:
         """Set a JSON value in Redis with expiration."""
         try:
             json_value = json.dumps(value)
             return self.setex(key, time, json_value)
-        except Exception as e:
-            logger.error(f"Redis JSON setex error for key {key}: {e}")
+        except Exception:
             return False
 
 # Global Redis client instance

@@ -16,14 +16,16 @@ import logging
 import json
 import datetime
 import uuid
-from typing import Dict, Optional, Any, List
+from typing import Optional, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows
+from shared.exceptions import DatabaseError
+from shared.types import ExerciseList, BlockResult, ExerciseBlockList
 
 logger = logging.getLogger(__name__)
 
 
-def create_exercise_block(username: str, exercises: List[Dict], block_type: str = "ai_generated") -> Optional[str]:
+def create_exercise_block(username: str, exercises: ExerciseList, block_type: str = "ai_generated") -> Optional[str]:
     """
     Create a new exercise block for a user.
 
@@ -74,11 +76,11 @@ def create_exercise_block(username: str, exercises: List[Dict], block_type: str 
         logger.error(f"Validation error creating exercise block: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error creating exercise block for user '{username}': {e}")
-        return None
+        logger.error(f"Error creating exercise block: {e}")
+        raise DatabaseError(f"Error creating exercise block: {str(e)}")
 
 
-def get_exercise_block(block_id: str) -> Optional[Dict[str, Any]]:
+def get_exercise_block(block_id: str) -> BlockResult:
     """
     Get an exercise block by ID.
 
@@ -118,11 +120,11 @@ def get_exercise_block(block_id: str) -> Optional[Dict[str, Any]]:
         logger.error(f"Validation error getting exercise block: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting exercise block {block_id}: {e}")
-        return None
+        logger.error(f"Error getting exercise by ID {block_id}: {e}")
+        raise DatabaseError(f"Error getting exercise by ID {block_id}: {str(e)}")
 
 
-def get_user_exercise_blocks(username: str, limit: int = 10) -> List[Dict[str, Any]]:
+def get_user_exercise_blocks(username: str, limit: int = 10) -> ExerciseBlockList:
     """
     Get exercise blocks for a specific user.
 
@@ -166,8 +168,8 @@ def get_user_exercise_blocks(username: str, limit: int = 10) -> List[Dict[str, A
         logger.error(f"Validation error getting user exercise blocks: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting exercise blocks for user '{username}': {e}")
-        return []
+        logger.error(f"Error getting user exercise blocks: {e}")
+        raise DatabaseError(f"Error getting user exercise blocks: {str(e)}")
 
 
 def delete_exercise_block(username: str, block_id: str) -> bool:
@@ -207,8 +209,8 @@ def delete_exercise_block(username: str, block_id: str) -> bool:
         logger.error(f"Validation error deleting exercise block: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error deleting exercise block {block_id} for user '{username}': {e}")
-        return False
+        logger.error(f"Error deleting exercise {block_id} for user '{username}': {e}")
+        raise DatabaseError(f"Error deleting exercise {block_id} for user '{username}': {str(e)}")
 
 
 def update_exercise_block_status(username: str, block_id: str, status: str) -> bool:
@@ -257,5 +259,5 @@ def update_exercise_block_status(username: str, block_id: str, status: str) -> b
         logger.error(f"Validation error updating exercise block status: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error updating exercise block {block_id} status for user '{username}': {e}")
-        return False
+        logger.error(f"Error updating exercise {block_id} status for user '{username}': {e}")
+        raise DatabaseError(f"Error updating exercise {block_id} status for user '{username}': {str(e)}")

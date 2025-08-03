@@ -63,7 +63,7 @@ from flask_cors import CORS  # type: ignore
 # === Import Application Configuration ===
 from config.extensions import limiter
 from config.blueprint import registered_blueprints
-from config import create_app_config
+from config.app import create_app_config
 
 # === Import API Routes (Features Layer) ===
 # These imports register the blueprints with the application

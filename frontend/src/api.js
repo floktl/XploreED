@@ -699,6 +699,28 @@ export const submitExerciseAnswers = async (
   return res.json();
 };
 
+export const submitTrainingExercise = async (
+  answers = {},
+  exerciseBlock = null,
+) => {
+  const startTime = Date.now();
+
+  const res = await fetch(`${BASE_URL}/api/ai-exercise/training/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      answers,
+      exercise_block: exerciseBlock || { exercises: [] },
+    }),
+  });
+
+  const endTime = Date.now();
+
+  if (!res.ok) throw new Error("Failed to submit training answers");
+  return res.json();
+};
+
 export const argueExerciseAnswers = async (
   blockId,
   answers = {},

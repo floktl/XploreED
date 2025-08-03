@@ -15,16 +15,17 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import json
 import os
-from typing import Dict, Any
 
 from core.database.connection import select_one
 from features.ai.generation.helpers import print_ai_user_data_titles
 from external.redis import redis_client
+from shared.exceptions import DatabaseError
+from shared.types import AIData
 
 logger = logging.getLogger(__name__)
 
 
-def debug_user_ai_data(username: str) -> Dict[str, Any]:
+def debug_user_ai_data(username: str) -> AIData:
     """
     Debug AI user data for a specific user.
 
@@ -94,11 +95,11 @@ def debug_user_ai_data(username: str) -> Dict[str, Any]:
         logger.error(f"Validation error debugging AI user data: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error debugging AI user data for user {username}: {e}")
-        raise
+        logger.error(f"Error debugging AI user data: {e}")
+        raise DatabaseError(f"Error debugging AI user data: {str(e)}")
 
 
-def _get_evaluation_status(username: str, block_id: str) -> Dict[str, Any]:
+def _get_evaluation_status(username: str, block_id: str) -> AIData:
     """
     Get evaluation status for a specific block ID.
 

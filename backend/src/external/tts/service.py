@@ -14,8 +14,10 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from .client import tts_client
+from shared.exceptions import DatabaseError
+from shared.types import TTSServiceData
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,7 @@ def convert_text_to_speech_service(
     voice_id: Optional[str] = None,
     model_id: Optional[str] = None,
     output_format: Optional[str] = None
-) -> Dict[str, Any]:
+) -> TTSServiceData:
     """
     Convert text to speech with comprehensive error handling and logging.
 
@@ -97,16 +99,11 @@ def convert_text_to_speech_service(
             }
 
     except Exception as e:
-        logger.error(f"TTS service error for user {username}: {e}")
-        return {
-            "success": False,
-            "error": "TTS service error",
-            "error_code": "SERVICE_ERROR",
-            "details": str(e)
-        }
+        logger.error(f"Error converting text to speech: {e}")
+        raise DatabaseError(f"Error converting text to speech: {str(e)}")
 
 
-def get_available_voices_service() -> Dict[str, Any]:
+def get_available_voices_service() -> TTSServiceData:
     """
     Get available voices with error handling.
 
@@ -139,7 +136,7 @@ def get_available_voices_service() -> Dict[str, Any]:
         }
 
 
-def get_voice_details_service(voice_id: str) -> Dict[str, Any]:
+def get_voice_details_service(voice_id: str) -> TTSServiceData:
     """
     Get voice details by ID with error handling.
 
@@ -175,7 +172,7 @@ def get_voice_details_service(voice_id: str) -> Dict[str, Any]:
         }
 
 
-def get_tts_status_service() -> Dict[str, Any]:
+def get_tts_status_service() -> TTSServiceData:
     """
     Get TTS service status and configuration.
 
@@ -198,15 +195,10 @@ def get_tts_status_service() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error getting TTS status: {e}")
-        return {
-            "success": False,
-            "error": "Error retrieving TTS status",
-            "error_code": "SERVICE_ERROR",
-            "details": str(e)
-        }
+        raise DatabaseError(f"Error getting TTS status: {str(e)}")
 
 
-def validate_tts_request_service(text: str, voice_id: Optional[str] = None) -> Dict[str, Any]:
+def validate_tts_request_service(text: str, voice_id: Optional[str] = None) -> TTSServiceData:
     """
     Validate TTS request parameters.
 
@@ -247,10 +239,5 @@ def validate_tts_request_service(text: str, voice_id: Optional[str] = None) -> D
         }
 
     except Exception as e:
-        logger.error(f"Error validating TTS request: {e}")
-        return {
-            "success": False,
-            "error": "Error validating TTS request",
-            "error_code": "VALIDATION_ERROR",
-            "details": str(e)
-        }
+        logger.error(f"Error processing TTS request: {e}")
+        raise DatabaseError(f"Error processing TTS request: {str(e)}")

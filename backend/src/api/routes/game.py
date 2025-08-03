@@ -26,7 +26,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
@@ -44,6 +44,7 @@ from features.game import (
     update_game_progress,
     calculate_game_score,
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 # === Logging Configuration ===

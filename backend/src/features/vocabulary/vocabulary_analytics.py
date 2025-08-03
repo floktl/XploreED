@@ -15,15 +15,17 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, fetch_custom, execute_query
 from core.services import VocabularyService
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import VocabularyData, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def get_vocabulary_learning_progress(user: str, days: int = 30) -> Dict[str, Any]:
+def get_vocabulary_learning_progress(user: str, days: int = 30) -> AnalyticsData:
     """
     Get vocabulary learning progress over time.
 
@@ -40,7 +42,7 @@ def get_vocabulary_learning_progress(user: str, days: int = 30) -> Dict[str, Any
     return VocabularyService.get_vocabulary_learning_progress(user, days)
 
 
-def get_vocabulary_difficulty_analysis(user: str) -> Dict[str, Any]:
+def get_vocabulary_difficulty_analysis(user: str) -> AnalyticsData:
     """
     Analyze vocabulary difficulty and learning patterns.
 
@@ -148,12 +150,14 @@ def get_vocabulary_difficulty_analysis(user: str) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error in vocabulary difficulty analysis: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error analyzing vocabulary difficulty for user '{user}': {e}")
-        return {"difficulty_distribution": {}, "word_type_difficulty": [], "most_difficult_words": [], "easiest_words": []}
+        raise DatabaseError(f"Error analyzing vocabulary difficulty for user '{user}': {str(e)}")
 
 
-def get_vocabulary_study_recommendations(user: str) -> Dict[str, Any]:
+def get_vocabulary_study_recommendations(user: str) -> AnalyticsData:
     """
     Generate study recommendations based on vocabulary analysis.
 
@@ -267,12 +271,14 @@ def get_vocabulary_study_recommendations(user: str) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error generating study recommendations: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error generating study recommendations for user '{user}': {e}")
-        return {"due_for_review": [], "need_practice": [], "word_type_focus": [], "study_session": {"recommended_duration_minutes": 0, "words_to_review": 0, "words_to_practice": 0, "priority": "low"}}
+        raise DatabaseError(f"Error generating study recommendations for user '{user}': {str(e)}")
 
 
-def get_vocabulary_export_data(user: str, format_type: str = "json") -> Dict[str, Any]:
+def get_vocabulary_export_data(user: str, format_type: str = "json") -> AnalyticsData:
     """
     Prepare vocabulary data for export.
 
@@ -347,6 +353,8 @@ def get_vocabulary_export_data(user: str, format_type: str = "json") -> Dict[str
     except ValueError as e:
         logger.error(f"Validation error preparing vocabulary export: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error preparing vocabulary export for user '{user}': {e}")
-        return {"metadata": {"user": user, "error": str(e)}, "vocabulary": []}
+        raise DatabaseError(f"Error preparing vocabulary export for user '{user}': {str(e)}")

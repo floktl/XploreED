@@ -16,6 +16,7 @@ import logging
 from typing import Set
 from bs4 import BeautifulSoup  # type: ignore
 from core.database.connection import get_connection
+from shared.exceptions import DatabaseError
 # Function moved from core.processing to avoid circular import
 
 logger = logging.getLogger(__name__)
@@ -76,9 +77,11 @@ def update_lesson_blocks_from_html(lesson_id: int, html: str) -> None:
 
         logger.info(f"Updated {len(block_ids)} blocks for lesson {lesson_id}")
 
-    except Exception as e:
-        logger.error(f"Error updating lesson blocks for lesson {lesson_id}: {e}")
+    except DatabaseError:
         raise
+    except Exception as e:
+        logger.error(f"Error updating lesson blocks from HTML: {e}")
+        raise DatabaseError(f"Error updating lesson blocks from HTML: {str(e)}")
 
 
 def get_lesson_block_ids(lesson_id: int) -> Set[str]:
@@ -100,9 +103,11 @@ def get_lesson_block_ids(lesson_id: int) -> Set[str]:
             )
             results = cursor.fetchall()
             return {row[0] for row in results}
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting block IDs for lesson {lesson_id}: {e}")
-        return set()
+        logger.error(f"Error getting lesson block IDs: {e}")
+        raise DatabaseError(f"Error getting lesson block IDs: {str(e)}")
 
 
 def delete_lesson_blocks(lesson_id: int) -> None:
@@ -120,9 +125,11 @@ def delete_lesson_blocks(lesson_id: int) -> None:
 
         logger.info(f"Deleted all blocks for lesson {lesson_id}")
 
-    except Exception as e:
-        logger.error(f"Error deleting blocks for lesson {lesson_id}: {e}")
+    except DatabaseError:
         raise
+    except Exception as e:
+        logger.error(f"Error deleting lesson blocks: {e}")
+        raise DatabaseError(f"Error deleting lesson blocks: {str(e)}")
 
 
 __all__ = [

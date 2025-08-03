@@ -26,7 +26,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
@@ -42,6 +42,7 @@ from features.lessons import (
     get_lesson_analytics,
 )
 from api.middleware.auth import is_admin
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -137,9 +138,9 @@ def get_lessons_route():
             "offset": offset
         })
 
-    except Exception as e:
-        logger.error(f"Error getting lessons: {e}")
-        return jsonify({"error": "Failed to retrieve lessons"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user lessons: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>", methods=["GET"])
@@ -213,9 +214,9 @@ def get_lesson_route(lesson_id: int):
             "blocks": blocks
         })
 
-    except Exception as e:
-        logger.error(f"Error getting lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to retrieve lesson"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting lesson content: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons", methods=["POST"])
@@ -320,9 +321,9 @@ def create_lesson_route():
             }
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error creating lesson: {e}")
-        return jsonify({"error": "Failed to create lesson"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>", methods=["PUT"])
@@ -448,9 +449,9 @@ def update_lesson_route(lesson_id: int):
             }
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to update lesson"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>/progress", methods=["GET"])
@@ -541,9 +542,9 @@ def get_lesson_progress_route(lesson_id: int):
             "block_progress": block_progress
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting lesson progress for lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to retrieve lesson progress"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>/progress", methods=["POST"])
@@ -651,9 +652,9 @@ def update_lesson_progress_route(lesson_id: int):
             "updated_at": progress_data["updated_at"]
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating lesson progress for lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to update progress"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>/publish", methods=["POST"])
@@ -733,9 +734,9 @@ def publish_lesson_route(lesson_id: int):
             "updated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error publishing lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to update lesson publication status"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @lessons_bp.route("/lessons/<int:lesson_id>/analytics", methods=["GET"])
@@ -814,6 +815,6 @@ def get_lesson_analytics_route(lesson_id: int):
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting lesson analytics for lesson {lesson_id}: {e}")
-        return jsonify({"error": "Failed to retrieve lesson analytics"}), 500
+        return jsonify({"error": "Internal server error"}), 500

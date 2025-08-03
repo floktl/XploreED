@@ -14,11 +14,11 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import os
-from typing import Dict, Any, Optional, Tuple
+from typing import Optional, Tuple
 
 from core.database.connection import fetch_one
 from werkzeug.security import check_password_hash  # type: ignore
-from shared.exceptions import ValidationError, AuthenticationError
+from shared.exceptions import ValidationError, AuthenticationError, DatabaseError
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[str]
         return False, None, str(e)
     except Exception as e:
         logger.error(f"Error during authentication for user {username}: {e}")
-        return False, None, "Server error"
+        raise DatabaseError(f"Error during authentication for user {username}: {str(e)}")
 
 
 def authenticate_admin(password: str) -> Tuple[bool, Optional[str], Optional[str]]:
@@ -114,4 +114,4 @@ def authenticate_admin(password: str) -> Tuple[bool, Optional[str], Optional[str
         return False, None, str(e)
     except Exception as e:
         logger.error(f"Error during admin authentication: {e}")
-        return False, None, "Server error"
+        raise DatabaseError(f"Error during admin authentication: {str(e)}")

@@ -14,11 +14,13 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from infrastructure.imports import Imports
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from core.services import UserService
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData, GameList
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,7 @@ def get_user_profile_summary(
     username: str,
     timeframe: str = "all",
     include_details: bool = False
-) -> Dict[str, Any]:
+) -> AnalyticsData:
     """
     Get comprehensive profile summary for a user.
 
@@ -144,15 +146,11 @@ def get_user_profile_summary(
         logger.error(f"Validation error getting profile summary: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting profile summary for user {username}: {e}")
-        return {
-            "username": username,
-            "exists": False,
-            "error": str(e),
-        }
+        logger.error(f"Error getting profile summary for {username}: {e}")
+        raise DatabaseError(f"Error getting profile summary for {username}: {str(e)}")
 
 
-def get_user_game_results(username: str) -> List[Dict[str, Any]]:
+def get_user_game_results(username: str) -> GameList:
     """
     Get the current user's past game results.
 

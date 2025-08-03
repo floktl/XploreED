@@ -35,6 +35,7 @@ from features.ai.memory.vocabulary_memory import (
     extract_words,
     save_vocab
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,7 @@ def reading_exercise():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error generating reading exercise: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/reading-exercise/submit", methods=["POST"])
@@ -244,4 +245,4 @@ def submit_reading_exercise():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error submitting reading exercise: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500

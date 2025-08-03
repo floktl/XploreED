@@ -11,7 +11,7 @@ Date: 2025
 
 import logging
 import datetime
-from typing import Dict, Any
+from typing import Any
 
 from flask import request, jsonify, Response # type: ignore
 from api.middleware.auth import require_user
@@ -23,6 +23,7 @@ from features.ai.generation.helpers import (
 )
 from features.ai.prompts import weakness_lesson_prompt
 from core.processing import clean_html
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
@@ -175,5 +176,5 @@ def ai_weakness_lesson():
         logger.error(f"Validation error generating weakness lesson: {e}")
         return jsonify({"error": "Validation error", "details": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error generating weakness lesson: {e}")
-        return jsonify({"error": "Server error", "details": str(e)}), 500
+        logger.error(f"Error generating AI lesson: {e}")
+        return jsonify({"error": "Internal server error"}), 500

@@ -20,6 +20,7 @@ from typing import Tuple, Optional
 from shared.text_utils import _extract_json, _normalize_umlauts, _strip_final_punct
 from features.ai.prompts import evaluate_translation_prompt
 from external.mistral.client import send_prompt
+from shared.exceptions import AIEvaluationError, ValidationError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -65,8 +66,11 @@ def evaluate_translation_ai(english: str, reference: str, student: str) -> Tuple
             data = _extract_json(content)
             if isinstance(data, dict):
                 return bool(data.get("correct")), str(data.get("reason", ""))
+    except AIEvaluationError:
+        raise
     except Exception as e:
-        logger.error(f"AI translation evaluation failed: {e}")
+        logger.error(f"Error evaluating translation with AI: {e}")
+        raise AIEvaluationError(f"Error evaluating translation with AI: {str(e)}")
 
     return False, "Could not evaluate translation."
 
@@ -119,11 +123,8 @@ def compare_translations(reference: str, student: str) -> dict:
             "suggestions": []
         }
 
+    except ValidationError:
+        raise
     except Exception as e:
         logger.error(f"Error comparing translations: {e}")
-        return {
-            "exact_match": False,
-            "similarity": 0.0,
-            "differences": [],
-            "suggestions": ["Error occurred during comparison"]
-        }
+        raise AIEvaluationError(f"Error comparing translations: {str(e)}")

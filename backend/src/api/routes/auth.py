@@ -26,7 +26,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from datetime import datetime, timedelta
 from flask import request, jsonify, make_response # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
@@ -47,6 +47,7 @@ from features.auth import (
 )
 from config.blueprint import auth_bp
 from api.schemas import UserRegistrationSchema
+from shared.exceptions import DatabaseError, AuthenticationError
 
 
 # === Logging Configuration ===
@@ -151,8 +152,8 @@ def login_route():
         return response
 
     except Exception as e:
-        logger.error(f"Error in login: {e}")
-        return jsonify({"error": "Authentication failed"}), 500
+        logger.error(f"Error logging in user: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/logout", methods=["POST"])
@@ -198,8 +199,8 @@ def logout_route():
         return response
 
     except Exception as e:
-        logger.error(f"Error in logout: {e}")
-        return jsonify({"error": "Logout failed"}), 500
+        logger.error(f"Error logging out user: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/session", methods=["GET"])
@@ -342,8 +343,8 @@ def register_route():
         })
 
     except Exception as e:
-        logger.error(f"Error in registration: {e}")
-        return jsonify({"error": "Registration failed"}), 500
+        logger.error(f"Error registering user: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/register/validate", methods=["POST"])
@@ -553,8 +554,8 @@ def reset_password_route():
         })
 
     except Exception as e:
-        logger.error(f"Error in password reset: {e}")
-        return jsonify({"error": "Password reset failed"}), 500
+        logger.error(f"Error requesting password reset: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/password/reset/confirm", methods=["POST"])
@@ -646,8 +647,8 @@ def confirm_password_reset_route():
         })
 
     except Exception as e:
-        logger.error(f"Error in password reset confirmation: {e}")
-        return jsonify({"error": "Password reset confirmation failed"}), 500
+        logger.error(f"Error resetting password: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/password/change", methods=["POST"])

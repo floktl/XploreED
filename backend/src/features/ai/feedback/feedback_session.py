@@ -17,9 +17,11 @@ import logging
 import os
 import json
 import uuid
-from typing import Dict, Any, Optional
+from typing import Optional
 
 from external.redis import redis_client
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import FeedbackData
 
 logger = logging.getLogger(__name__)
 
@@ -45,10 +47,10 @@ def create_feedback_session() -> str:
 
     except Exception as e:
         logger.error(f"Error creating feedback session: {e}")
-        raise
+        raise DatabaseError(f"Error creating feedback session: {str(e)}")
 
 
-def get_feedback_progress(session_id: str) -> Dict[str, Any]:
+def get_feedback_progress(session_id: str) -> FeedbackData:
     """
     Get the current progress of AI feedback generation.
 
@@ -68,7 +70,7 @@ def get_feedback_progress(session_id: str) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error getting feedback progress: {e}")
-        return {"error": "Failed to get progress"}
+        raise DatabaseError(f"Error getting feedback progress: {str(e)}")
 
 
 def update_feedback_progress(session_id: str, percentage: int, status: str, step: str) -> bool:
@@ -97,10 +99,10 @@ def update_feedback_progress(session_id: str, percentage: int, status: str, step
 
     except Exception as e:
         logger.error(f"Error updating feedback progress: {e}")
-        return False
+        raise DatabaseError(f"Error updating feedback progress: {str(e)}")
 
 
-def get_feedback_result(session_id: str) -> Dict[str, Any]:
+def get_feedback_result(session_id: str) -> FeedbackData:
     """
     Get the final result of a feedback generation session.
 
@@ -120,10 +122,10 @@ def get_feedback_result(session_id: str) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error getting feedback result: {e}")
-        return {"error": "Failed to get result"}
+        raise DatabaseError(f"Error getting feedback result: {str(e)}")
 
 
-def _store_feedback_result(session_id: str, result: Dict[str, Any]) -> None:
+def _store_feedback_result(session_id: str, result: FeedbackData) -> None:
     """
     Store the final result of a feedback generation session.
 
@@ -137,9 +139,10 @@ def _store_feedback_result(session_id: str, result: Dict[str, Any]) -> None:
 
     except Exception as e:
         logger.error(f"Error storing feedback result: {e}")
+        raise DatabaseError(f"Error storing feedback result: {str(e)}")
 
 
-def _mark_feedback_complete(session_id: str, result: Dict[str, Any]) -> None:
+def _mark_feedback_complete(session_id: str, result: FeedbackData) -> None:
     """
     Mark a feedback session as complete and store the result.
 
@@ -158,6 +161,7 @@ def _mark_feedback_complete(session_id: str, result: Dict[str, Any]) -> None:
 
     except Exception as e:
         logger.error(f"Error marking feedback complete: {e}")
+        raise DatabaseError(f"Error marking feedback complete: {str(e)}")
 
 
 def _ensure_feedback_completion(session_id: str) -> None:
@@ -175,3 +179,4 @@ def _ensure_feedback_completion(session_id: str) -> None:
 
     except Exception as e:
         logger.error(f"Error ensuring feedback completion: {e}")
+        raise DatabaseError(f"Error ensuring feedback completion: {str(e)}")

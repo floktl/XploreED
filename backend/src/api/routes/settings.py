@@ -25,7 +25,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
@@ -45,6 +45,7 @@ from features.settings import (
     import_user_data,
     validate_import_data,
 )
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -119,8 +120,8 @@ def get_user_preferences_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting preferences for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve preferences"}), 500
+        logger.error(f"Error getting user preferences: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/preferences", methods=["PUT"])
@@ -199,8 +200,8 @@ def update_user_preferences_route():
         })
 
     except Exception as e:
-        logger.error(f"Error updating preferences for user {user}: {e}")
-        return jsonify({"error": "Failed to update preferences"}), 500
+        logger.error(f"Error updating user preferences: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/learning", methods=["GET"])
@@ -308,8 +309,8 @@ def get_learning_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting learning settings for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve learning settings"}), 500
+        logger.error(f"Error getting learning settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/learning", methods=["PUT"])
@@ -395,8 +396,8 @@ def update_learning_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error updating learning settings for user {user}: {e}")
-        return jsonify({"error": "Failed to update learning settings"}), 500
+        logger.error(f"Error updating learning settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/notifications", methods=["GET"])
@@ -504,8 +505,8 @@ def get_notification_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting notification settings for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve notification settings"}), 500
+        logger.error(f"Error getting notification settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/notifications", methods=["PUT"])
@@ -558,8 +559,8 @@ def update_notification_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error updating notification settings for user {user}: {e}")
-        return jsonify({"error": "Failed to update notification settings"}), 500
+        logger.error(f"Error updating notification settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/privacy", methods=["GET"])
@@ -658,8 +659,8 @@ def get_privacy_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting privacy settings for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve privacy settings"}), 500
+        logger.error(f"Error getting privacy settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/privacy", methods=["PUT"])
@@ -710,8 +711,8 @@ def update_privacy_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error updating privacy settings for user {user}: {e}")
-        return jsonify({"error": "Failed to update privacy settings"}), 500
+        logger.error(f"Error updating privacy settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/account", methods=["GET"])
@@ -807,8 +808,8 @@ def get_account_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting account settings for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve account settings"}), 500
+        logger.error(f"Error getting account settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/account", methods=["PUT"])
@@ -871,8 +872,8 @@ def update_account_settings_route():
         })
 
     except Exception as e:
-        logger.error(f"Error updating account settings for user {user}: {e}")
-        return jsonify({"error": "Failed to update account settings"}), 500
+        logger.error(f"Error updating account settings: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/export", methods=["GET"])
@@ -930,8 +931,8 @@ def export_user_data_route():
         return jsonify(export_result)
 
     except Exception as e:
-        logger.error(f"Error exporting data for user {user}: {e}")
-        return jsonify({"error": "Failed to export user data"}), 500
+        logger.error(f"Error exporting user data: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @settings_bp.route("/import", methods=["POST"])
@@ -1009,5 +1010,5 @@ def import_user_data_route():
         return jsonify(import_result)
 
     except Exception as e:
-        logger.error(f"Error importing data for user {user}: {e}")
-        return jsonify({"error": "Failed to import user data"}), 500
+        logger.error(f"Error importing user data: {e}")
+        return jsonify({"error": "Internal server error"}), 500

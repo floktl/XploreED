@@ -15,13 +15,15 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import random
-from typing import Dict, Any, Optional
+from typing import Optional
 import datetime
 
 from core.database.connection import fetch_one
 from features.game.sentence_order import generate_ai_sentence, LEVELS
 from features.ai.memory.vocabulary_memory import save_vocab, extract_words
 from core.services import GameService
+from shared.exceptions import DatabaseError, AIEvaluationError, ValidationError
+from shared.types import GameData
 
 logger = logging.getLogger(__name__)
 
@@ -78,12 +80,14 @@ def generate_game_sentence(username: str, level: int) -> str:
     except ValueError as e:
         logger.error(f"Validation error generating game sentence: {e}")
         raise
+    except AIEvaluationError:
+        raise
     except Exception as e:
         logger.error(f"Error generating game sentence for user {username}: {e}")
-        return LEVELS[level % len(LEVELS)] if level is not None else LEVELS[0]
+        raise AIEvaluationError(f"Error generating game sentence for user {username}: {str(e)}")
 
 
-def create_game_round(username: str, level: Optional[int] = None) -> Dict[str, Any]:
+def create_game_round(username: str, level: Optional[int] = None) -> GameData:
     """
     Create a new game round for a user.
 
@@ -100,7 +104,7 @@ def create_game_round(username: str, level: Optional[int] = None) -> Dict[str, A
     return GameService.create_game_round(username, level)
 
 
-def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: str) -> Dict[str, Any]:
+def evaluate_game_answer(username: str, level: int, sentence: str, user_answer: str) -> GameData:
     """
     Evaluate a game answer and provide feedback.
 
@@ -145,8 +149,13 @@ def _save_game_vocabulary(username: str, sentence: str, level: int) -> None:
 
         logger.debug(f"Saved vocabulary from game sentence for user {username}")
 
+    except DatabaseError:
+        raise
+    except AIEvaluationError:
+        raise
     except Exception as e:
         logger.error(f"Error saving game vocabulary for user {username}: {e}")
+        raise DatabaseError(f"Error saving game vocabulary for user {username}: {str(e)}")
 
 
 def _get_correct_sentence_display(sentence: str) -> Optional[str]:
@@ -173,6 +182,8 @@ def _get_correct_sentence_display(sentence: str) -> Optional[str]:
 
         return formatted
 
+    except ValidationError:
+        raise
     except Exception as e:
         logger.error(f"Error formatting sentence display: {e}")
-        return sentence
+        raise ValidationError(f"Error formatting sentence display: {str(e)}")

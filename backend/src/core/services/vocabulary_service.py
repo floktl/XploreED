@@ -15,12 +15,13 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from core.database.connection import select_one, select_rows, fetch_custom, insert_row, update_row, delete_rows
 from core.authentication import user_exists
 from shared.text_utils import _extract_json as extract_json
 from external.mistral.client import send_prompt
 from shared.exceptions import ValidationError
+from shared.types import VocabularyData, VocabularyList, LookupResult, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class VocabularyService:
     VOCAB_COLUMNS = "vocab, translation, article, word_type, details, created_at, next_review, context, exercise, repetitions, quality, last_review"
 
     @staticmethod
-    def lookup_vocabulary_word(user: str, word: str) -> Optional[Dict[str, Any]]:
+    def lookup_vocabulary_word(user: str, word: str) -> LookupResult:
         """
         Lookup a vocabulary word for a user and return details if found.
 
@@ -107,7 +108,7 @@ class VocabularyService:
             return None
 
     @staticmethod
-    def get_user_vocabulary_entries(user: str) -> List[Dict[str, Any]]:
+    def get_user_vocabulary_entries(user: str) -> VocabularyList:
         """
         Get all vocabulary entries for a user.
 
@@ -154,7 +155,7 @@ class VocabularyService:
             return []
 
     @staticmethod
-    def get_vocabulary_statistics(user: str) -> Dict[str, Any]:
+    def get_vocabulary_statistics(user: str) -> AnalyticsData:
         """
         Get comprehensive vocabulary statistics for a user.
 
@@ -222,7 +223,7 @@ class VocabularyService:
             }
 
     @staticmethod
-    def get_vocabulary_learning_progress(user: str, days: int = 30) -> Dict[str, Any]:
+    def get_vocabulary_learning_progress(user: str, days: int = 30) -> AnalyticsData:
         """
         Get vocabulary learning progress over time.
 
@@ -295,7 +296,7 @@ class VocabularyService:
             return {"total_vocabulary": 0, "retention_rate": 0, "daily_additions": {}, "daily_reviews": {}, "period_days": days}
 
     @staticmethod
-    def select_vocab_word_due_for_review(user: str) -> Optional[Dict[str, Any]]:
+    def select_vocab_word_due_for_review(user: str) -> Optional[VocabularyData]:
         """
         Select a vocabulary word due for review.
 
@@ -419,7 +420,7 @@ class VocabularyService:
             return word.strip() if word else ""
 
     @staticmethod
-    def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[Dict[str, Any]]:
+    def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> LookupResult:
         """Create a new vocabulary entry using AI."""
         try:
             # TODO: Implement AI vocabulary creation

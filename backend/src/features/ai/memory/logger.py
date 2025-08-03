@@ -17,8 +17,11 @@ For detailed architecture information, see: docs/backend_structure.md
 import os
 import json
 import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
+from shared.types import AnalyticsData
 from pathlib import Path
+
+from shared.exceptions import ProcessingError
 
 class TopicMemoryLogger:
     """Logs topic memory updates to a structured text file"""
@@ -58,8 +61,8 @@ class TopicMemoryLogger:
                         skill: str,
                         quality: int,
                         is_new: bool,
-                        old_values: Optional[Dict] = None,
-                        new_values: Optional[Dict] = None,
+                        old_values: Optional[AnalyticsData] = None,
+                        new_values: Optional[AnalyticsData] = None,
                         row_id: Optional[int] = None) -> None:
         """Log a topic memory update"""
 
@@ -107,8 +110,8 @@ class TopicMemoryLogger:
                              word: str,
                              quality: int,
                              is_new: bool,
-                             old_values: Optional[Dict] = None,
-                             new_values: Optional[Dict] = None) -> None:
+                             old_values: Optional[AnalyticsData] = None,
+                             new_values: Optional[AnalyticsData] = None) -> None:
         """Log a vocabulary update"""
         # print(f"🔧 [LOGGER DEBUG] 🔧 log_vocabulary_update called with: username={username}, word={word}, quality={quality}, is_new={is_new}", flush=True)
 
@@ -248,9 +251,11 @@ class TopicMemoryLogger:
 
             print(f"📄 [TOPIC MEMORY LOGGER] Report saved to: {filepath}", flush=True)
             return str(filepath)
+        except ProcessingError:
+            raise
         except Exception as e:
             # print(f"🔧 [LOGGER DEBUG] Error saving file: {e}", flush=True)
-            return ""
+            raise ProcessingError(f"Error saving file: {str(e)}")
 
     def end_session(self) -> str:
         """End the current session and save the report"""

@@ -17,7 +17,7 @@ import logging
 import json
 import time
 import os
-from typing import Dict, Any, Optional, Tuple
+from typing import Optional, Tuple
 
 from infrastructure.imports import Imports
 from features.ai.generation.feedback_helpers import format_feedback_block
@@ -25,6 +25,7 @@ from features.ai.memory.vocabulary_memory import translate_to_german
 from features.ai.evaluation import evaluate_translation_ai
 from features.ai.generation.translate_helpers import update_memory_async
 from external.redis import redis_client
+from shared.exceptions import DatabaseError
 
 logger = logging.getLogger(__name__)
 

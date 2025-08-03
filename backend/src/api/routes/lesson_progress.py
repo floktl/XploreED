@@ -26,7 +26,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from datetime import datetime, timedelta
 
 from flask import request, jsonify # type: ignore
@@ -36,6 +36,7 @@ from core.database.connection import select_one, select_rows, insert_row, update
 from config.blueprint import lesson_progress_bp
 from core.services import ProgressService, LessonService
 from features.lessons import validate_block_completion
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===

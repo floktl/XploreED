@@ -15,9 +15,10 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Optional, Any, List, Tuple
+from typing import Optional, List, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
+from shared.exceptions import DatabaseError, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -68,9 +69,11 @@ def track_lesson_progress(username: str, lesson_id: int, block_id: str, complete
     except ValueError as e:
         logger.error(f"Validation error tracking lesson progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error tracking lesson progress for user {username}, lesson {lesson_id}, block {block_id}: {e}")
-        return False
+        logger.error(f"Error tracking lesson progress: {e}")
+        raise DatabaseError(f"Error tracking lesson progress: {str(e)}")
 
 
 def track_exercise_progress(username: str, block_id: str, score: float, total_questions: int) -> bool:
@@ -127,9 +130,11 @@ def track_exercise_progress(username: str, block_id: str, score: float, total_qu
     except ValueError as e:
         logger.error(f"Validation error tracking exercise progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error tracking exercise progress for user {username}, block {block_id}: {e}")
-        return False
+        logger.error(f"Error tracking exercise progress: {e}")
+        raise DatabaseError(f"Error tracking exercise progress: {str(e)}")
 
 
 def track_vocabulary_progress(username: str, word: str, correct: bool, repetitions: int) -> bool:
@@ -182,9 +187,11 @@ def track_vocabulary_progress(username: str, word: str, correct: bool, repetitio
     except ValueError as e:
         logger.error(f"Validation error tracking vocabulary progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error tracking vocabulary progress for user {username}, word {word}: {e}")
-        return False
+        logger.error(f"Error tracking vocabulary progress: {e}")
+        raise DatabaseError(f"Error tracking vocabulary progress: {str(e)}")
 
 
 def track_game_progress(username: str, game_type: str, score: float, level: int) -> bool:
@@ -237,9 +244,11 @@ def track_game_progress(username: str, game_type: str, score: float, level: int)
     except ValueError as e:
         logger.error(f"Validation error tracking game progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error tracking game progress for user {username}, game {game_type}, level {level}: {e}")
-        return False
+        logger.error(f"Error tracking game progress: {e}")
+        raise DatabaseError(f"Error tracking game progress: {str(e)}")
 
 
 def reset_user_progress(username: str, activity_type: Optional[str] = None) -> bool:
@@ -290,6 +299,8 @@ def reset_user_progress(username: str, activity_type: Optional[str] = None) -> b
     except ValueError as e:
         logger.error(f"Validation error resetting user progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error resetting progress for user {username}: {e}")
-        return False
+        logger.error(f"Error resetting user progress: {e}")
+        raise DatabaseError(f"Error resetting user progress: {str(e)}")

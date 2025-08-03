@@ -14,16 +14,17 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime
-from shared.exceptions import ValidationError
+from shared.exceptions import ValidationError, DatabaseError
+from shared.types import UserData, AnalyticsData, ValidationResult
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_settings(username: str) -> Dict[str, Any]:
+def get_user_settings(username: str) -> UserData:
     """
     Get all settings and preferences for a user.
 
@@ -80,16 +81,10 @@ def get_user_settings(username: str) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error(f"Error getting user settings for {username}: {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "preferences": {},
-            "account_info": {},
-            "statistics": {}
-        }
+        raise DatabaseError(f"Error getting user settings for {username}: {str(e)}")
 
 
-def update_user_settings(username: str, settings_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+def update_user_settings(username: str, settings_data: UserData) -> ValidationResult:
     """
     Update user settings and preferences.
 
@@ -159,10 +154,10 @@ def update_user_settings(username: str, settings_data: Dict[str, Any]) -> Tuple[
         return False, str(e)
     except Exception as e:
         logger.error(f"Error updating user settings for {username}: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error updating user settings for {username}: {str(e)}")
 
 
-def get_account_statistics(username: str) -> Dict[str, Any]:
+def get_account_statistics(username: str) -> AnalyticsData:
     """
     Get comprehensive account statistics for a user.
 
@@ -312,7 +307,7 @@ def get_account_statistics(username: str) -> Dict[str, Any]:
         }
 
 
-def _get_user_preferences(username: str) -> Dict[str, Any]:
+def _get_user_preferences(username: str) -> UserData:
     """
     Get user preferences from the database.
 
@@ -366,7 +361,7 @@ def _get_user_preferences(username: str) -> Dict[str, Any]:
         }
 
 
-def _update_user_preferences(username: str, preferences: Dict[str, Any]) -> bool:
+def _update_user_preferences(username: str, preferences: UserData) -> bool:
     """
     Update user preferences in the database.
 

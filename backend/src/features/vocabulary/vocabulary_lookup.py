@@ -14,17 +14,18 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Optional, Any, List
+from typing import Optional, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
 from features.ai.memory.vocabulary_memory import normalize_word, vocab_exists, save_vocab
 from core.services import VocabularyService
-# Import removed - function moved to vocabulary_crud.py
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import VocabularyData, VocabularyList, LookupResult
 
 logger = logging.getLogger(__name__)
 
 
-def lookup_vocabulary_word(user: str, word: str) -> Optional[Dict[str, Any]]:
+def lookup_vocabulary_word(user: str, word: str) -> LookupResult:
     """
     Lookup a vocabulary word for a user and return details if found.
 
@@ -44,7 +45,7 @@ def lookup_vocabulary_word(user: str, word: str) -> Optional[Dict[str, Any]]:
     return VocabularyService.lookup_vocabulary_word(user, word)
 
 
-def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[Dict[str, Any]]:
+def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> LookupResult:
     """
     Create a new vocabulary entry using AI.
 
@@ -80,12 +81,16 @@ def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> Optional[D
             logger.error(f"Failed to create vocabulary entry for '{word}'")
             return None
 
+    except DatabaseError:
+        raise
+    except AIEvaluationError:
+        raise
     except Exception as e:
-        logger.error(f"Error creating vocabulary entry for '{word}': {e}")
-        return None
+        logger.error(f"Error creating vocabulary entry: {e}")
+        raise DatabaseError(f"Error creating vocabulary entry: {str(e)}")
 
 
-def search_vocabulary_with_ai(user: str, word: str) -> Optional[Dict[str, Any]]:
+def search_vocabulary_with_ai(user: str, word: str) -> LookupResult:
     """
     Search for vocabulary using AI assistance.
 
@@ -135,16 +140,20 @@ def search_vocabulary_with_ai(user: str, word: str) -> Optional[Dict[str, Any]]:
     except ValueError as e:
         logger.error(f"Validation error in AI vocabulary search: {e}")
         raise
+    except DatabaseError:
+        raise
+    except AIEvaluationError:
+        raise
     except Exception as e:
-        logger.error(f"Error searching vocabulary with AI for '{word}' for user '{user}': {e}")
-        return None
+        logger.error(f"Error searching vocabulary with AI: {e}")
+        raise AIEvaluationError(f"Error searching vocabulary with AI: {str(e)}")
 
 
 def select_vocab_word_due_for_review(
     user: str,
     count: int = 10,
     difficulty: Optional[str] = None
-) -> List[Dict[str, Any]]:
+) -> VocabularyList:
     """
     Get vocabulary words due for review.
 
@@ -183,6 +192,8 @@ def select_vocab_word_due_for_review(
 
         return result
 
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error selecting vocabulary words for review for user {user}: {e}")
-        return []
+        logger.error(f"Error selecting vocab word due for review: {e}")
+        raise DatabaseError(f"Error selecting vocab word due for review: {str(e)}")

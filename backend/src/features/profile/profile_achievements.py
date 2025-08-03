@@ -14,10 +14,12 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from infrastructure.imports import Imports
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData, AnalyticsList
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ def get_user_achievements(
     status: Optional[str] = None,
     limit: int = 20,
     offset: int = 0
-) -> Dict[str, Any]:
+) -> AnalyticsData:
     """
     Get achievements for a user with filtering and pagination.
 
@@ -214,25 +216,11 @@ def get_user_achievements(
         logger.error(f"Validation error getting user achievements: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting achievements for user {username}: {e}")
-        return {
-            "achievements": [],
-            "summary": {
-                "total_achievements": 0,
-                "earned_count": 0,
-                "in_progress_count": 0,
-                "total_points": 0,
-                "completion_percentage": 0.0
-            },
-            "recent_achievements": [],
-            "next_achievements": [],
-            "total": 0,
-            "limit": limit,
-            "offset": offset
-        }
+        logger.error(f"Error getting achievements for {username}: {e}")
+        raise DatabaseError(f"Error getting achievements for {username}: {str(e)}")
 
 
-def get_user_activity_timeline(username: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_user_activity_timeline(username: str, limit: int = 20) -> AnalyticsList:
     """
     Get user activity timeline.
 

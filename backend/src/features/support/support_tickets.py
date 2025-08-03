@@ -15,10 +15,12 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import uuid
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime
+from shared.exceptions import DatabaseError
+from shared.types import SupportData, SupportList, ProcessingResult
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +102,7 @@ def create_support_ticket(username: str, subject: str, message: str, priority: s
         return False, str(e), None
     except Exception as e:
         logger.error(f"Error creating support ticket: {e}")
-        return False, "Database error", None
+        raise DatabaseError(f"Error creating support ticket: {str(e)}")
 
 
 def create_support_request(username: str, subject: str, description: str, urgency: str = "medium", contact_method: str = "email", attachments: Optional[List[Any]] = None) -> int:
@@ -197,10 +199,10 @@ def create_support_request(username: str, subject: str, description: str, urgenc
         raise
     except Exception as e:
         logger.error(f"Error creating support request: {e}")
-        return -1
+        raise DatabaseError(f"Error creating support request: {str(e)}")
 
 
-def get_support_request(request_id: int) -> Optional[Dict[str, Any]]:
+def get_support_request(request_id: int) -> Optional[SupportData]:
     """
     Get a support request by ID.
 
@@ -250,7 +252,7 @@ def get_support_request(request_id: int) -> Optional[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting support request {request_id}: {e}")
-        return None
+        raise DatabaseError(f"Error getting support request: {str(e)}")
 
 
 def update_support_request_status(request_id: int, status: str, admin_notes: Optional[str] = None) -> bool:
@@ -311,10 +313,10 @@ def update_support_request_status(request_id: int, status: str, admin_notes: Opt
         raise
     except Exception as e:
         logger.error(f"Error updating support request {request_id} status: {e}")
-        return False
+        raise DatabaseError(f"Error updating support request status: {str(e)}")
 
 
-def get_user_support_requests(username: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_user_support_requests(username: str, limit: int = 20) -> SupportList:
     """
     Get support requests for a specific user.
 
@@ -365,10 +367,10 @@ def get_user_support_requests(username: str, limit: int = 20) -> List[Dict[str, 
         raise
     except Exception as e:
         logger.error(f"Error getting user support requests for {username}: {e}")
-        return []
+        raise DatabaseError(f"Error getting user support requests: {str(e)}")
 
 
-def get_pending_support_requests(limit: int = 50) -> List[Dict[str, Any]]:
+def get_pending_support_requests(limit: int = 50) -> SupportList:
     """
     Get pending support requests for admin review.
 
@@ -414,4 +416,4 @@ def get_pending_support_requests(limit: int = 50) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting pending support requests: {e}")
-        return []
+        raise DatabaseError(f"Error getting pending support requests: {str(e)}")

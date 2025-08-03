@@ -10,11 +10,12 @@ Date: 2025
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from flask import request, jsonify # type: ignore
 from api.middleware.auth import require_user
 from config.blueprint import ai_bp
+from external.redis.client import redis_client
 from features.ai.feedback import (
     generate_feedback_with_progress,
     get_feedback_progress,
@@ -23,6 +24,7 @@ from features.ai.feedback import (
     get_cached_feedback_list,
     get_cached_feedback_item,
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
@@ -72,7 +74,7 @@ def get_feedback_progress_route(session_id):
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error getting feedback progress: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/ai-feedback/generate-with-progress", methods=["POST"])
@@ -122,7 +124,7 @@ def generate_ai_feedback_with_progress_route():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error generating feedback with progress: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/ai-feedback/result/<session_id>", methods=["GET"])
@@ -179,7 +181,7 @@ def get_feedback_result_route(session_id):
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error getting feedback result: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/ai-feedback", methods=["GET"])
@@ -225,7 +227,7 @@ def get_ai_feedback_route():
         offset = int(request.args.get("offset", 0))
         status = request.args.get("status")
 
-        feedback_list = get_cached_feedback_list(username, limit, offset, status)
+        feedback_list = get_cached_feedback_list()
 
         return jsonify(feedback_list)
 
@@ -234,7 +236,7 @@ def get_ai_feedback_route():
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error getting AI feedback list: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/ai-feedback/<feedback_id>", methods=["GET"])
@@ -295,10 +297,13 @@ def get_ai_feedback_item_route(feedback_id):
         username = require_user()
         logger.debug(f"Getting AI feedback item {feedback_id} for user {username}")
 
-        feedback_item = get_cached_feedback_item(feedback_id, username)
+        feedback_item = get_cached_feedback_item(feedback_id)
+
+        if not feedback_item:
+            return jsonify({"error": "Feedback not found"}), 404
 
         if "error" in feedback_item:
-            return jsonify(feedback_item), 404
+            return jsonify({"error": feedback_item["error"]}), 500
 
         return jsonify(feedback_item)
 
@@ -307,75 +312,118 @@ def get_ai_feedback_item_route(feedback_id):
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error getting AI feedback item: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/ai-feedback", methods=["POST"])
 def generate_ai_feedback_route():
     """
-    Generate AI feedback for exercise answers.
+    Generate AI feedback for exercise submission.
 
-    This endpoint generates immediate AI feedback for user exercise answers
-    without progress tracking. Suitable for quick feedback generation.
+    This endpoint generates AI-powered feedback for exercise submissions
+    without progress tracking for immediate response.
 
     Request Body:
-        - answers (object, required): User's exercise answers
-        - exercise_block (object, optional): Exercise block metadata
-        - feedback_type (str, optional): Type of feedback to generate
+        - answers (object, required): User's answers to exercises
+        - exercise_block (object, optional): Exercise block data
+        - block_id (str, optional): Exercise block ID
 
     JSON Response Structure:
         {
-            "feedback": {                        # Generated feedback
-                "overall_assessment": str,       # Overall performance assessment
-                "strengths": [str],              # Identified strengths
-                "weaknesses": [str],             # Areas for improvement
-                "recommendations": [str],        # Learning recommendations
-                "detailed_feedback": [           # Detailed feedback per exercise
-                    {
-                        "exercise_id": str,      # Exercise identifier
-                        "feedback": str,         # Exercise-specific feedback
-                        "score": float,          # Exercise score
-                        "suggestions": [str]     # Improvement suggestions
-                    }
-                ]
+            "username": str,                     # User identifier
+            "summary": {                         # Exercise summary
+                "correct": int,                  # Number of correct answers
+                "total": int,                    # Total number of exercises
+                "mistakes": [str]                # List of mistakes
             },
-            "performance_summary": {             # Performance summary
-                "total_exercises": int,          # Total number of exercises
-                "correct_answers": int,          # Number of correct answers
-                "accuracy_percentage": float,    # Accuracy percentage
-                "overall_score": float           # Overall performance score
-            },
+            "ai_feedback": str,                  # AI-generated feedback
+            "vocabulary_count": int,             # Number of vocabulary items used
+            "topic_memory_count": int,           # Number of topic memory items
             "generated_at": str                  # Generation timestamp
         }
 
     Status Codes:
         - 200: Success
-        - 400: Invalid data
+        - 400: Bad request (missing answers)
         - 401: Unauthorized
         - 500: Internal server error
     """
     try:
         username = require_user()
-        logger.info(f"User {username} requesting immediate AI feedback generation")
+        logger.info(f"Generating AI feedback for user {username}")
 
         data = request.get_json() or {}
         answers = data.get("answers", {})
         exercise_block = data.get("exercise_block")
-        feedback_type = data.get("feedback_type", "comprehensive")
 
         if not answers:
             return jsonify({"error": "No answers provided"}), 400
 
-        feedback = generate_ai_feedback_simple(username, answers, exercise_block, feedback_type)
+        # Generate AI feedback
+        from features.ai.feedback.feedback_generation import generate_ai_feedback_simple
+        result = generate_ai_feedback_simple(username, answers, exercise_block)
 
-        if "error" in feedback:
-            return jsonify(feedback), 500
+        if "error" in result:
+            return jsonify({"error": result["error"]}), 500
 
-        return jsonify(feedback)
+        logger.info(f"Successfully generated AI feedback for user {username}")
+        return jsonify(result)
 
     except ValueError as e:
         logger.error(f"Validation error generating AI feedback: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         logger.error(f"Error generating AI feedback: {e}")
-        return jsonify({"error": "Server error"}), 500
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@ai_bp.route("/ai-feedback/block/<block_id>", methods=["GET"])
+def get_block_feedback_route(block_id):
+    """
+    Get AI feedback for a specific exercise block.
+
+    This endpoint retrieves AI-generated feedback for a specific exercise block.
+
+    Path Parameters:
+        - block_id (str, required): The exercise block ID
+
+    JSON Response Structure:
+        {
+            "block_id": str,                     # Exercise block identifier
+            "username": str,                     # User identifier
+            "summary": {                         # Exercise summary
+                "correct": int,                  # Number of correct answers
+                "total": int,                    # Total number of exercises
+                "mistakes": [str]                # List of mistakes
+            },
+            "ai_feedback": str,                  # AI-generated feedback
+            "vocabulary_count": int,             # Number of vocabulary items used
+            "topic_memory_count": int,           # Number of topic memory items
+            "generated_at": str                  # Generation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Feedback not found
+        - 500: Internal server error
+    """
+    try:
+        username = require_user()
+        logger.info(f"Getting AI feedback for block {block_id} for user {username}")
+
+        # Get feedback from Redis
+        feedback_key = f"exercise_feedback:{username}:{block_id}"
+        feedback_result = redis_client.get_json(feedback_key)
+
+        if not feedback_result:
+            return jsonify({"error": "Feedback not found"}), 404
+
+        logger.info(f"Successfully retrieved AI feedback for block {block_id}")
+        return jsonify(feedback_result)
+
+    except Exception as e:
+        logger.error(f"Error getting block feedback: {e}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
+        return jsonify({"error": "Internal server error"}), 500

@@ -10,12 +10,13 @@ Date: 2025
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from flask import request, jsonify, Response  # type: ignore
 from api.middleware.auth import require_user
 from config.blueprint import ai_bp
 from external.tts import convert_text_to_speech_service
+from shared.exceptions import DatabaseError
 
 logger = logging.getLogger(__name__)
 
@@ -144,8 +145,8 @@ def tts():
         logger.error(f"Validation error in TTS request: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error in TTS request: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error generating TTS: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 

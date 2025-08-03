@@ -15,8 +15,10 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import os
-from typing import Optional, Any, Dict
+from typing import Optional, Any
 from io import BytesIO
+from shared.exceptions import DatabaseError
+from shared.types import TTSServiceData
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +64,8 @@ class TTSClient:
             self._client = ElevenLabs(api_key=api_key)
             logger.info("TTS client initialized with ElevenLabs")
         except Exception as e:
-            logger.error(f"Failed to initialize TTS client: {e}")
-            self._client = None
+            logger.error(f"Error initializing TTS client: {e}")
+            raise DatabaseError(f"Error initializing TTS client: {str(e)}")
 
     @property
     def client(self) -> Optional[Any]:
@@ -111,10 +113,10 @@ class TTSClient:
             logger.info(f"Successfully converted text to speech: {len(text)} characters")
             return audio
         except Exception as e:
-            logger.error(f"TTS conversion error: {e}")
-            return None
+            logger.error(f"Error converting text to speech: {e}")
+            raise DatabaseError(f"Error converting text to speech: {str(e)}")
 
-    def get_available_voices(self) -> Optional[Dict[str, Any]]:
+    def get_available_voices(self) -> Optional[TTSServiceData]:
         """
         Get available voices from ElevenLabs.
 
@@ -133,7 +135,7 @@ class TTSClient:
             logger.error(f"Error getting available voices: {e}")
             return None
 
-    def get_voice_by_id(self, voice_id: str) -> Optional[Dict[str, Any]]:
+    def get_voice_by_id(self, voice_id: str) -> Optional[TTSServiceData]:
         """
         Get voice details by ID.
 

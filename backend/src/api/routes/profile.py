@@ -25,7 +25,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from datetime import datetime, timedelta
 
 from flask import request, jsonify # type: ignore
@@ -42,6 +42,7 @@ from features.profile import (
 )
 from features.debug import get_user_statistics
 from api.schemas import ProfileUpdateSchema
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -112,9 +113,9 @@ def get_profile_info_route():
             "last_updated": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting profile info for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve profile information"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user profile: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/info", methods=["PUT"])
@@ -195,9 +196,9 @@ def update_profile_info_route():
             }
         })
 
-    except Exception as e:
-        logger.error(f"Error updating profile for user {user}: {e}")
-        return jsonify({"error": "Failed to update profile"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error updating user profile: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/statistics", methods=["GET"])
@@ -273,9 +274,9 @@ def get_learning_statistics_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting learning statistics for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve learning statistics"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user statistics: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/statistics/detailed", methods=["GET"])
@@ -402,9 +403,9 @@ def get_detailed_statistics_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting detailed statistics for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve detailed statistics"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user statistics: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/achievements", methods=["GET"])
@@ -483,9 +484,9 @@ def get_user_achievements_route():
 
         return jsonify(achievements_data)
 
-    except Exception as e:
-        logger.error(f"Error getting achievements for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve achievements"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user achievements: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/achievements/<achievement_id>", methods=["GET"])
@@ -594,9 +595,9 @@ def get_achievement_details_route(achievement_id: str):
             "related_achievements": []  # TODO: Implement related achievements
         })
 
-    except Exception as e:
-        logger.error(f"Error getting achievement details for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve achievement details"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user statistics: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/analytics", methods=["GET"])
@@ -723,9 +724,9 @@ def get_progress_analytics_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting progress analytics for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve progress analytics"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user activity timeline: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/analytics/strengths", methods=["GET"])
@@ -845,9 +846,9 @@ def get_learning_strengths_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting learning strengths for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve learning strengths"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user learning progress: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @profile_bp.route("/analytics/weaknesses", methods=["GET"])
@@ -987,6 +988,6 @@ def get_learning_weaknesses_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
-        logger.error(f"Error getting learning weaknesses for user {user}: {e}")
-        return jsonify({"error": "Failed to retrieve learning weaknesses"}), 500
+    except DatabaseError as e:
+        logger.error(f"Error getting user learning weaknesses: {e}")
+        return jsonify({"error": "Internal server error"}), 500

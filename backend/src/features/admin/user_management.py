@@ -14,16 +14,18 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_rows, update_row, delete_rows
 from core.authentication import user_exists
 from werkzeug.security import generate_password_hash  # type: ignore
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData, UserData, ValidationResult
 
 logger = logging.getLogger(__name__)
 
 
-def get_all_users() -> List[Dict[str, Any]]:
+def get_all_users() -> AnalyticsData:
     """
     Get a list of all registered users.
 
@@ -47,10 +49,10 @@ def get_all_users() -> List[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Error retrieving users: {e}")
-        raise
+        raise DatabaseError(f"Error retrieving users: {str(e)}")
 
 
-def update_user_data(username: str, user_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+def update_user_data(username: str, user_data: UserData) -> ValidationResult:
     """
     Update user information including username, password, and skill level.
 

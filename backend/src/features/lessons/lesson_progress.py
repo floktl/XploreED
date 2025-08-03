@@ -14,15 +14,17 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from infrastructure.imports import Imports
 from core.database.connection import select_rows, select_one, update_row, insert_row
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import ProgressData, StatisticsResult
 
 logger = logging.getLogger(__name__)
 
 
-def get_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
+def get_lesson_progress(username: str, lesson_id: int) -> ProgressData:
     """
     Get progress information for a specific lesson.
 
@@ -69,9 +71,11 @@ def get_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
     except ValueError as e:
         logger.error(f"Validation error getting lesson progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting lesson progress for user {username}, lesson {lesson_id}: {e}")
-        return {}
+        logger.error(f"Error getting user lesson progress: {e}")
+        raise DatabaseError(f"Error getting user lesson progress: {str(e)}")
 
 
 def update_lesson_progress(username: str, lesson_id: int, block_id: str, completed: bool) -> bool:
@@ -174,12 +178,14 @@ def update_lesson_progress(username: str, lesson_id: int, block_id: str, complet
     except ValueError as e:
         logger.error(f"Validation error updating lesson progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating lesson progress for user {username}, lesson {lesson_id}, block {block_id}: {e}")
-        return False
+        logger.error(f"Error updating block progress: {e}")
+        raise DatabaseError(f"Error updating block progress: {str(e)}")
 
 
-def get_lesson_statistics(username: str, lesson_id: int) -> Dict[str, Any]:
+def get_lesson_statistics(username: str, lesson_id: int) -> StatisticsResult:
     """
     Get detailed statistics for a specific lesson.
 
@@ -255,12 +261,14 @@ def get_lesson_statistics(username: str, lesson_id: int) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting lesson statistics: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting lesson statistics for user {username}, lesson {lesson_id}: {e}")
-        return {}
+        raise DatabaseError(f"Error getting lesson statistics for user {username}, lesson {lesson_id}: {str(e)}")
 
 
-def validate_block_completion(user: str, lesson_id: int, block_id: str) -> Dict[str, Any]:
+def validate_block_completion(user: str, lesson_id: int, block_id: str) -> StatisticsResult:
     """
     Validate if a user can complete a specific block.
 
@@ -356,10 +364,8 @@ def validate_block_completion(user: str, lesson_id: int, block_id: str) -> Dict[
     except ValueError as e:
         logger.error(f"Validation error checking block completion: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error validating block completion for user {user}, lesson {lesson_id}, block {block_id}: {e}")
-        return {
-            "valid": False,
-            "error": "Validation error",
-            "block_id": block_id,
-        }
+        raise DatabaseError(f"Error validating block completion for user {user}, lesson {lesson_id}, block {block_id}: {str(e)}")

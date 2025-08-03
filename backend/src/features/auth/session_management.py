@@ -13,9 +13,11 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 
 from core.database.connection import fetch_one
+from shared.exceptions import DatabaseError
+from shared.types import UserData
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,7 @@ def destroy_user_session(session_id: str) -> bool:
         return False
 
 
-def get_user_session_info(session_id: str) -> Optional[Dict[str, Any]]:
+def get_user_session_info(session_id: str) -> Optional[UserData]:
     """
     Get information about a user session.
 

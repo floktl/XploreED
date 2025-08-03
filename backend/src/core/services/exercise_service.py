@@ -15,8 +15,9 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import re
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 from shared.text_utils import _extract_json as extract_json
+from shared.types import ExerciseList, ExerciseAnswers, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +27,8 @@ class ExerciseService:
 
     @staticmethod
     def evaluate_answers_with_ai(
-        exercises: List[Dict], answers: Dict[str, str], mode: str = "strict"
-    ) -> Optional[Dict]:
+        exercises: ExerciseList, answers: ExerciseAnswers, mode: str = "strict"
+    ) -> Optional[AnalyticsData]:
         """
         Evaluate exercise answers using AI and return comprehensive results.
 
@@ -37,7 +38,7 @@ class ExerciseService:
             mode: Evaluation mode ("strict" or "lenient")
 
         Returns:
-            Optional[Dict]: Dictionary containing evaluation results for each exercise
+            Optional[AnalyticsData]: Dictionary containing evaluation results for each exercise
         """
         try:
             logger.info(f"Starting AI evaluation of {len(exercises)} exercises in {mode} mode")
@@ -103,12 +104,12 @@ class ExerciseService:
             return None
 
     @staticmethod
-    def check_gap_fill_correctness(exercise: Dict, user_answer: str, correct_answer: str) -> bool:
+    def check_gap_fill_correctness(exercise: AnalyticsData, user_answer: str, correct_answer: str) -> bool:
         """
         Check if a gap-fill answer is correct.
 
         Args:
-            exercise: Exercise dictionary containing gap-fill data
+            exercise: Exercise data containing gap-fill data
             user_answer: User's answer
             correct_answer: Correct answer
 
@@ -210,7 +211,7 @@ class ExerciseService:
 
     @staticmethod
     def _check_answer_correctness(
-        exercise: Dict, user_answer: str, correct_answer: str, exercise_type: str
+        exercise: AnalyticsData, user_answer: str, correct_answer: str, exercise_type: str
     ) -> bool:
         """Check if an answer is correct based on exercise type."""
         try:

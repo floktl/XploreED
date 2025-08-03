@@ -13,12 +13,14 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, Tuple
+from typing import Optional, Tuple
 
 from core.database.connection import insert_row, execute_query, fetch_one
 from core.authentication import user_exists
 from werkzeug.security import generate_password_hash  # type: ignore
 from features.ai.memory.level_manager import initialize_topic_memory_for_level
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +95,7 @@ def create_user_account(username: str, password: str) -> Tuple[bool, Optional[st
         return False, str(e)
     except Exception as e:
         logger.error(f"Error creating user account for {username}: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error creating user account for {username}: {str(e)}")
 
 
 def _ensure_users_table() -> bool:
@@ -120,11 +122,11 @@ def _ensure_users_table() -> bool:
         return True
 
     except Exception as e:
-        logger.error(f"Error ensuring users table: {e}")
-        return False
+        logger.error(f"Error creating users table: {e}")
+        raise DatabaseError(f"Error creating users table: {str(e)}")
 
 
-def get_auth_user_statistics(username: str) -> Dict[str, Any]:
+def get_auth_user_statistics(username: str) -> AnalyticsData:
     """
     Get authentication-related statistics for a user.
 
@@ -174,5 +176,5 @@ def get_auth_user_statistics(username: str) -> Dict[str, Any]:
         logger.error(f"Validation error getting user statistics: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting authentication statistics for user {username}: {e}")
-        raise
+        logger.error(f"Error getting user statistics for {username}: {e}")
+        raise DatabaseError(f"Error getting user statistics for {username}: {str(e)}")

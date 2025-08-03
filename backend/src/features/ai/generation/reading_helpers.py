@@ -7,6 +7,7 @@ from shared.text_utils import _extract_json as extract_json
 from features.ai.prompts import reading_exercise_prompt
 from external.mistral.client import send_prompt
 import uuid
+from shared.exceptions import DatabaseError
 
 from .. import (
     READING_TEMPLATE,
@@ -61,6 +62,7 @@ def generate_reading_exercise(
                 return parsed
     except Exception as e:
         current_app.logger.error("Failed to generate reading exercise: %s", e)
+        raise DatabaseError(f"Failed to generate reading exercise: {str(e)}")
 
     return example
 

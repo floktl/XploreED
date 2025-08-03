@@ -4,6 +4,7 @@ import json
 from flask import Response, current_app # type: ignore
 from external.mistral.client import send_prompt
 from features.ai.prompts import streaming_prompt
+from shared.exceptions import DatabaseError
 
 
 def stream_ai_answer(context: str) -> Response:
@@ -45,6 +46,7 @@ def stream_ai_answer(context: str) -> Response:
                     yield f"data: {json.dumps({'type': 'paragraph', 'text': buffer.strip()}, ensure_ascii=False)}\n\n"
         except Exception as e:
             current_app.logger.error("Streaming error: %s", e)
+            raise DatabaseError(f"Error streaming AI answer: {str(e)}")
         yield "data: [DONE]\n\n"
 
     return Response(generate(), mimetype="text/event-stream")

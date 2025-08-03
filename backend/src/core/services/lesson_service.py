@@ -14,10 +14,11 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from core.database.connection import select_rows, select_one, update_row, insert_row
 from core.authentication import user_exists
 from shared.exceptions import ValidationError
+from shared.types import LessonList, LessonData, ProgressData, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class LessonService:
     """Core lesson business logic service."""
 
     @staticmethod
-    def get_user_lessons_summary(username: str) -> List[Dict[str, Any]]:
+    def get_user_lessons_summary(username: str) -> LessonList:
         """
         Get summary information for all published lessons for a user.
 
@@ -82,7 +83,7 @@ class LessonService:
             return []
 
     @staticmethod
-    def get_lesson_content(username: str, lesson_id: int) -> Optional[Dict[str, Any]]:
+    def get_lesson_content(username: str, lesson_id: int) -> Optional[LessonData]:
         """
         Get HTML content and metadata for a specific lesson.
 
@@ -141,7 +142,7 @@ class LessonService:
             return None
 
     @staticmethod
-    def get_lesson_progress(username: str, lesson_id: int) -> Dict[str, Any]:
+    def get_lesson_progress(username: str, lesson_id: int) -> ProgressData:
         """
         Get lesson progress for a user.
 
@@ -288,7 +289,7 @@ class LessonService:
             return False
 
     @staticmethod
-    def get_lesson_statistics(username: str) -> Dict[str, Any]:
+    def get_lesson_statistics(username: str) -> AnalyticsData:
         """
         Get comprehensive lesson statistics for a user.
 
@@ -423,7 +424,7 @@ class LessonService:
             return False
 
     @staticmethod
-    def get_lesson_blocks(lesson_id: int) -> List[Dict[str, Any]]:
+    def get_lesson_blocks(lesson_id: int) -> LessonList:
         """
         Get lesson blocks for a lesson.
 
@@ -463,7 +464,7 @@ class LessonService:
             return []
 
     @staticmethod
-    def _build_lesson_summary(username: str, lesson_id: int, lesson_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _build_lesson_summary(username: str, lesson_id: int, lesson_data: LessonData) -> LessonData:
         """Build a lesson summary with progress information."""
         try:
             # Get user progress for this lesson

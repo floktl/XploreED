@@ -17,13 +17,15 @@ import re
 import os
 import json
 import time
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from features.ai.generation.exercise_processing import evaluate_exercises
 from shared.text_utils import _normalize_umlauts, _strip_final_punct
 from features.ai.generation.feedback_helpers import _adjust_gapfill_results
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from external.redis import redis_client
+from shared.exceptions import DatabaseError
+from shared.types import ExerciseList, ExerciseAnswers, EvaluationResult, AnalyticsData, BlockResult
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ logger = logging.getLogger(__name__)
 from features.ai.evaluation import check_gap_fill_correctness
 
 
-def parse_submission_data(data: Dict[str, Any]) -> Tuple[List[Dict], Dict[str, str], Optional[str]]:
+def parse_submission_data(data: AnalyticsData) -> Tuple[ExerciseList, ExerciseAnswers, Optional[str]]:
     """
     Parse submission data to extract exercises, answers, and block ID.
 
@@ -51,10 +53,10 @@ def parse_submission_data(data: Dict[str, Any]) -> Tuple[List[Dict], Dict[str, s
 
     except Exception as e:
         logger.error(f"Error parsing submission data: {e}")
-        return [], {}, None
+        raise DatabaseError(f"Error parsing submission data: {str(e)}")
 
 
-def evaluate_first_exercise(exercises: List[Dict], answers: Dict[str, str]) -> Optional[Dict[str, Any]]:
+def evaluate_first_exercise(exercises: ExerciseList, answers: ExerciseAnswers) -> EvaluationResult:
     """
     Evaluate the first exercise immediately for quick feedback.
 
@@ -110,10 +112,10 @@ def evaluate_first_exercise(exercises: List[Dict], answers: Dict[str, str]) -> O
 
     except Exception as e:
         logger.error(f"Error evaluating first exercise: {e}")
-        return None
+        raise DatabaseError(f"Error evaluating first exercise: {str(e)}")
 
 
-def create_immediate_results(exercises: List[Dict], first_result: Optional[Dict]) -> List[Dict[str, Any]]:
+def create_immediate_results(exercises: ExerciseList, first_result: Optional[AnalyticsData]) -> ExerciseList:
     """
     Create immediate results list with first exercise result and placeholders.
 
@@ -147,12 +149,12 @@ def create_immediate_results(exercises: List[Dict], first_result: Optional[Dict]
 
     except Exception as e:
         logger.error(f"Error creating immediate results: {e}")
-        return []
+        raise DatabaseError(f"Error creating immediate results: {str(e)}")
 
 
-def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: List[Dict],
-                                     answers: Dict[str, str], first_result: Optional[Dict],
-                                     exercise_block: Optional[Dict] = None) -> None:
+def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: ExerciseList,
+                                     answers: ExerciseAnswers, first_result: Optional[AnalyticsData],
+                                     exercise_block: Optional[BlockResult] = None) -> None:
     """
     Start asynchronous evaluation of remaining exercises.
 
@@ -179,11 +181,12 @@ def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: 
 
     except Exception as e:
         logger.error(f"Error starting async evaluation for block {block_id}: {e}")
+        raise DatabaseError(f"Error starting async evaluation for block {block_id}: {str(e)}")
 
 
-def _evaluate_all_exercises(username: str, block_id: str, exercises: List[Dict],
-                           answers: Dict[str, str], initial_results: List[Dict],
-                           exercise_block: Optional[Dict]) -> None:
+def _evaluate_all_exercises(username: str, block_id: str, exercises: ExerciseList,
+                           answers: ExerciseAnswers, initial_results: ExerciseList,
+                           exercise_block: Optional[BlockResult]) -> None:
     """
     Evaluate all exercises and update results.
 
@@ -199,18 +202,21 @@ def _evaluate_all_exercises(username: str, block_id: str, exercises: List[Dict],
         logger.info(f"Evaluating all exercises for block {block_id}")
 
         # Use AI to evaluate all exercises
+        logger.info(f"Calling evaluate_exercises with {len(exercises)} exercises and {len(answers)} answers")
         evaluation = evaluate_exercises(exercises, answers)
+        logger.info(f"Evaluation result: {evaluation}")
 
         # Process the evaluation results
         _process_evaluation_results(username, block_id, exercises, answers, evaluation, exercise_block)
 
     except Exception as e:
         logger.error(f"Error evaluating exercises for block {block_id}: {e}")
+        raise DatabaseError(f"Error evaluating exercises for block {block_id}: {str(e)}")
 
 
-def _process_evaluation_results(username: str, block_id: str, exercises: List[Dict],
-                               answers: Dict[str, str], evaluation: Dict,
-                               exercise_block: Optional[Dict]) -> None:
+def _process_evaluation_results(username: str, block_id: str, exercises: ExerciseList,
+                               answers: ExerciseAnswers, evaluation: AnalyticsData,
+                               exercise_block: Optional[BlockResult]) -> None:
     """
     Process evaluation results and update storage.
 
@@ -239,7 +245,29 @@ def _process_evaluation_results(username: str, block_id: str, exercises: List[Di
                 (block_id,)
             )
 
+                # Generate AI feedback
+        try:
+            logger.info(f"Starting AI feedback generation for block {block_id}")
+            from features.ai.feedback.feedback_generation import generate_ai_feedback_simple
+            feedback_result = generate_ai_feedback_simple(username, answers, exercise_block)
+
+            logger.info(f"Feedback generation result for block {block_id}: {feedback_result}")
+
+            if feedback_result and "error" not in feedback_result:
+                # Store feedback in Redis
+                feedback_key = f"exercise_feedback:{username}:{block_id}"
+                redis_client.setex_json(feedback_key, 3600, feedback_result)  # 1 hour TTL
+
+                logger.info(f"Successfully generated and stored AI feedback for block {block_id}")
+            else:
+                logger.warning(f"Failed to generate AI feedback for block {block_id}: {feedback_result.get('error', 'Unknown error')}")
+        except Exception as e:
+            logger.error(f"Error generating AI feedback for block {block_id}: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+
         logger.info(f"Successfully processed evaluation results for block {block_id}")
 
     except Exception as e:
         logger.error(f"Error processing evaluation results for block {block_id}: {e}")
+        raise DatabaseError(f"Error processing evaluation results for block {block_id}: {str(e)}")

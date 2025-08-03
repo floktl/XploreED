@@ -14,15 +14,17 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from infrastructure.imports import Imports
 from core.database.connection import select_rows, select_one, update_row, insert_row
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import LessonData, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def update_lesson_content(lesson_id: int, updates: Dict[str, Any]) -> bool:
+def update_lesson_content(lesson_id: int, updates: LessonData) -> bool:
     """
     Update lesson content and metadata.
 
@@ -75,9 +77,11 @@ def update_lesson_content(lesson_id: int, updates: Dict[str, Any]) -> bool:
     except ValueError as e:
         logger.error(f"Validation error updating lesson content: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating lesson content for lesson {lesson_id}: {e}")
-        return False
+        logger.error(f"Error updating lesson content: {e}")
+        raise DatabaseError(f"Error updating lesson content: {str(e)}")
 
 
 def publish_lesson(lesson_id: int, published: bool) -> bool:
@@ -120,12 +124,14 @@ def publish_lesson(lesson_id: int, published: bool) -> bool:
     except ValueError as e:
         logger.error(f"Validation error publishing lesson: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error publishing lesson {lesson_id}: {e}")
-        return False
+        logger.error(f"Error publishing lesson: {e}")
+        raise DatabaseError(f"Error publishing lesson: {str(e)}")
 
 
-def get_lesson_analytics(lesson_id: int, timeframe: str = "all") -> Dict[str, Any]:
+def get_lesson_analytics(lesson_id: int, timeframe: str = "all") -> AnalyticsData:
     """
     Get analytics data for a specific lesson.
 
@@ -225,6 +231,8 @@ def get_lesson_analytics(lesson_id: int, timeframe: str = "all") -> Dict[str, An
     except ValueError as e:
         logger.error(f"Validation error getting lesson analytics: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting lesson analytics for lesson {lesson_id}: {e}")
-        return {}
+        logger.error(f"Error getting lesson analytics: {e}")
+        raise DatabaseError(f"Error getting lesson analytics: {str(e)}")
