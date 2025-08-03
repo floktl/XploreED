@@ -15,13 +15,14 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from collections import Counter
 
 from core.database.connection import select_rows, select_one, update_row, insert_row, delete_rows
 from core.authentication import user_exists
 from core.services import LessonService, VocabularyService, UserService
 from shared.exceptions import ValidationError
+from shared.types import ProgressData, AnalyticsData, AnalyticsList
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ class ProgressService:
     """Core progress business logic service."""
 
     @staticmethod
-    def get_user_progress_summary(username: str, days: int = 30) -> Dict[str, Any]:
+    def get_user_progress_summary(username: str, days: int = 30) -> AnalyticsData:
         """
         Get a comprehensive progress summary for a user across all activity types.
 
@@ -88,7 +89,7 @@ class ProgressService:
             return ProgressService._build_error_summary(username, str(e))
 
     @staticmethod
-    def get_progress_trends(username: str, days: int = 7) -> Dict[str, Any]:
+    def get_progress_trends(username: str, days: int = 7) -> AnalyticsData:
         """
         Get progress trends for a user over a specified period.
 
@@ -379,7 +380,7 @@ class ProgressService:
     # Private helper methods
 
     @staticmethod
-    def _build_base_summary(username: str, days: int, start_date: datetime.datetime, end_date: datetime.datetime) -> Dict[str, Any]:
+    def _build_base_summary(username: str, days: int, start_date: datetime.datetime, end_date: datetime.datetime) -> AnalyticsData:
         """Build base summary structure."""
         return {
             "username": username,
@@ -402,7 +403,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _build_error_summary(username: str, error_message: str) -> Dict[str, Any]:
+    def _build_error_summary(username: str, error_message: str) -> AnalyticsData:
         """Build error summary structure."""
         return {
             "username": username,
@@ -422,7 +423,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _build_base_trends(username: str, days: int, start_date: datetime.datetime, end_date: datetime.datetime) -> Dict[str, Any]:
+    def _build_base_trends(username: str, days: int, start_date: datetime.datetime, end_date: datetime.datetime) -> AnalyticsData:
         """Build base trends structure."""
         return {
             "username": username,
@@ -437,7 +438,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _build_error_trends(username: str, days: int, error_message: str) -> Dict[str, Any]:
+    def _build_error_trends(username: str, days: int, error_message: str) -> AnalyticsData:
         """Build error trends structure."""
         return {
             "username": username,
@@ -451,7 +452,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _get_lesson_activity_data(username: str, start_date: datetime.datetime) -> List[Dict[str, Any]]:
+    def _get_lesson_activity_data(username: str, start_date: datetime.datetime) -> AnalyticsList:
         """Get lesson activity data for the period."""
         return select_rows(
                 "lesson_progress",
@@ -461,7 +462,7 @@ class ProgressService:
         ) or []
 
     @staticmethod
-    def _get_exercise_activity_data(username: str, start_date: datetime.datetime) -> List[Dict[str, Any]]:
+    def _get_exercise_activity_data(username: str, start_date: datetime.datetime) -> AnalyticsList:
         """Get exercise activity data for the period."""
         return select_rows(
             "activity_progress",
@@ -471,7 +472,7 @@ class ProgressService:
         ) or []
 
     @staticmethod
-    def _get_vocabulary_activity_data(username: str, start_date: datetime.datetime) -> List[Dict[str, Any]]:
+    def _get_vocabulary_activity_data(username: str, start_date: datetime.datetime) -> AnalyticsList:
         """Get vocabulary activity data for the period."""
         return select_rows(
             "vocabulary_progress",
@@ -481,7 +482,7 @@ class ProgressService:
         ) or []
 
     @staticmethod
-    def _get_game_activity_data(username: str, start_date: datetime.datetime) -> List[Dict[str, Any]]:
+    def _get_game_activity_data(username: str, start_date: datetime.datetime) -> AnalyticsList:
         """Get game activity data for the period."""
         return select_rows(
             "game_progress",
@@ -491,7 +492,7 @@ class ProgressService:
         ) or []
 
     @staticmethod
-    def _process_lesson_activity(lesson_data: List[Dict[str, Any]], summary: Dict[str, Any]) -> Dict[str, Any]:
+    def _process_lesson_activity(lesson_data: AnalyticsList, summary: AnalyticsData) -> AnalyticsData:
         """Process lesson activity data and update summary."""
         if not lesson_data:
             return {"lessons_completed": 0, "activity_breakdown": {"lessons": {}}}
@@ -510,7 +511,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _process_exercise_activity(exercise_data: List[Dict[str, Any]], summary: Dict[str, Any]) -> Dict[str, Any]:
+    def _process_exercise_activity(exercise_data: AnalyticsList, summary: AnalyticsData) -> AnalyticsData:
         """Process exercise activity data and update summary."""
         if not exercise_data:
             return {"exercises_completed": 0, "average_score": 0.0, "activity_breakdown": {"exercises": {}}}
@@ -532,7 +533,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _process_vocabulary_activity(vocab_data: List[Dict[str, Any]], summary: Dict[str, Any]) -> Dict[str, Any]:
+    def _process_vocabulary_activity(vocab_data: AnalyticsList, summary: AnalyticsData) -> AnalyticsData:
         """Process vocabulary activity data and update summary."""
         if not vocab_data:
             return {"vocabulary_reviews": 0, "activity_breakdown": {"vocabulary": {}}}
@@ -552,7 +553,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _process_game_activity(game_data: List[Dict[str, Any]], summary: Dict[str, Any]) -> Dict[str, Any]:
+    def _process_game_activity(game_data: AnalyticsList, summary: AnalyticsData) -> AnalyticsData:
         """Process game activity data and update summary."""
         if not game_data:
             return {"games_played": 0, "activity_breakdown": {"games": {}}}
@@ -572,9 +573,9 @@ class ProgressService:
         }
 
     @staticmethod
-    def _calculate_derived_metrics(summary: Dict[str, Any], lesson_data: List[Dict[str, Any]],
-                                 exercise_data: List[Dict[str, Any]], vocab_data: List[Dict[str, Any]],
-                                 game_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def _calculate_derived_metrics(summary: AnalyticsData, lesson_data: AnalyticsList,
+                                 exercise_data: AnalyticsList, vocab_data: AnalyticsList,
+                                 game_data: AnalyticsList) -> AnalyticsData:
         """Calculate derived metrics from activity data."""
         # Calculate total activities
         total_activities = (
@@ -598,7 +599,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _calculate_streak_days(all_activities: List[Dict[str, Any]]) -> int:
+    def _calculate_streak_days(all_activities: AnalyticsList) -> int:
         """Calculate consecutive days with activity."""
         if not all_activities:
             return 0
@@ -631,7 +632,7 @@ class ProgressService:
         return current_streak
 
     @staticmethod
-    def _get_recent_activity(all_activities: List[Dict[str, Any]], limit: int = 10) -> List[Dict[str, Any]]:
+    def _get_recent_activity(all_activities: AnalyticsList, limit: int = 10) -> AnalyticsList:
         """Get recent activity from all activities."""
         recent_activities = []
         for activity in all_activities:
@@ -652,7 +653,7 @@ class ProgressService:
         return recent_activities[:limit]
 
     @staticmethod
-    def _get_daily_activity_breakdown(username: str, start_date: datetime.datetime, days: int) -> Dict[str, Any]:
+    def _get_daily_activity_breakdown(username: str, start_date: datetime.datetime, days: int) -> AnalyticsData:
         """Get daily activity breakdown for the period."""
         daily_activity = {}
         end_date = datetime.datetime.utcnow()
@@ -701,7 +702,7 @@ class ProgressService:
             return daily_activity
 
     @staticmethod
-    def _calculate_activity_trends(daily_activity: Dict[str, Any], days: int) -> Dict[str, Any]:
+    def _calculate_activity_trends(daily_activity: AnalyticsData, days: int) -> AnalyticsData:
         """Calculate activity trends from daily activity data."""
         total_activities = sum(day["total"] for day in daily_activity.values())
         avg_daily_activities = total_activities / days if days > 0 else 0
@@ -715,7 +716,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _calculate_performance_trends(username: str, start_date: datetime.datetime, days: int) -> Dict[str, Any]:
+    def _calculate_performance_trends(username: str, start_date: datetime.datetime, days: int) -> AnalyticsData:
         """Calculate performance trends for the period."""
         exercise_scores = []
         end_date = datetime.datetime.utcnow()
@@ -764,7 +765,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _analyze_learning_patterns(username: str, start_date: datetime.datetime, days: int) -> Dict[str, Any]:
+    def _analyze_learning_patterns(username: str, start_date: datetime.datetime, days: int) -> AnalyticsData:
         """Analyze learning patterns for the period."""
         activity_times = []
         end_date = datetime.datetime.utcnow()
@@ -805,7 +806,7 @@ class ProgressService:
         }
 
     @staticmethod
-    def _generate_recommendations(trends: Dict[str, Any]) -> List[str]:
+    def _generate_recommendations(trends: AnalyticsData) -> List[str]:
         """Generate recommendations based on trends."""
         recommendations = []
         activity_trends = trends.get("activity_trends", {})

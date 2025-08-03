@@ -19,7 +19,7 @@ import logging
 import traceback
 from threading import Thread
 from datetime import datetime, date
-from typing import Optional, Dict, Any
+from typing import Optional
 
 from flask import current_app, jsonify  # type: ignore
 
@@ -35,7 +35,7 @@ from features.ai.prompts.utils import make_prompt, SYSTEM_PROMPT
 from features.ai.prompts import exercise_generation_prompt
 from external.mistral.client import send_request, send_prompt
 from features.ai.memory.logger import topic_memory_logger
-from shared.exceptions import ExerciseGenerationError, DatabaseError
+from shared.exceptions import DatabaseError, ExerciseGenerationError
 
 from .. import (
     EXERCISE_TEMPLATE,
@@ -154,9 +154,9 @@ def generate_new_exercises(
     except ExerciseGenerationError:
         raise
     except Exception as e:
-        logger.error(f"Error generating exercises for user {username}: {e}")
+        logger.error(f"Error generating new exercises for user {username}: {e}")
         logger.error(traceback.format_exc())
-        raise ExerciseGenerationError(f"Unexpected error generating exercises: {str(e)}")
+        raise ExerciseGenerationError(f"Error generating new exercises: {str(e)}")
 
 
 def _create_ai_block_with_variation(username: str, exclude_questions: list) -> dict | None:
@@ -227,7 +227,7 @@ def _create_ai_block_with_variation(username: str, exclude_questions: list) -> d
         raise
     except Exception as e:
         logger.error(f"Error creating AI block for user {username}: {e}")
-        raise ExerciseGenerationError(f"Error creating AI block: {str(e)}")
+        raise ExerciseGenerationError(f"Error creating AI block with variation: {str(e)}")
 
 
 def _generate_blocks_for_new_user(username: str) -> dict | None:
@@ -501,46 +501,40 @@ def prefetch_next_exercises(username: str) -> None:
     thread.start()
 
 
-def log_generated_sentences(block, parent_function=None):
-    """
-    Log generated sentences for debugging.
-
-    Args:
-        block: The exercise block
-        parent_function: Parent function name for logging
-    """
-    try:
-        if not block or "exercises" not in block:
-            return
-
-        logger.debug(f"Generated sentences from {parent_function}:")
-        for i, ex in enumerate(block["exercises"]):
-            question = ex.get("question", "No question")
-            logger.debug(f"  Exercise {i+1}: {question}")
-
-    except Exception as e:
-        logger.error(f"Error logging generated sentences: {e}")
-        # Don't raise here as this is just logging
-
-
 def print_exercise_block_sentences(block, context, color="\033[94m"):
     """
     Print exercise block sentences for debugging.
 
     Args:
-        block: The exercise block
-        context: Context for logging
+        block: Exercise block to print
+        context: Context string for logging
         color: Color code for output
     """
     try:
-        if not block or "exercises" not in block:
+        if not block or not isinstance(block, dict):
+            print(f"{color}[{context}] No valid block to print.\033[0m", flush=True)
             return
 
-        print(f"{color}[{context}] Exercise Block Sentences:{color}", flush=True)
-        for i, ex in enumerate(block["exercises"]):
-            question = ex.get("question", "No question")
-            print(f"{color}  {i+1}. {question}{color}", flush=True)
-
+        title = block.get("title", "(no title)") if isinstance(block, dict) else "(no title)"
+        print(f"{color}[{context}] Exercise block title: {title}\033[0m", flush=True)
     except Exception as e:
-        logger.error(f"Error printing exercise block sentences: {e}")
-        # Don't raise here as this is just debugging output
+        print(f"\033[91m[{context}] Error printing exercise block: {e}\033[0m", flush=True)
+
+
+def log_generated_sentences(block, parent_function=None):
+    """
+    Log generated sentences for debugging.
+
+    Args:
+        block: Exercise block to log
+        parent_function: Parent function name for context
+    """
+    parent_str = f"[{parent_function}] " if parent_function else ""
+    if not block or not isinstance(block, dict):
+        print(f"{parent_str}No valid block to log generated title.", flush=True)
+        return
+    title = block.get("title", "(no title)")
+    print(f"{parent_str}Generated block title: {title}", flush=True)
+
+
+

@@ -14,15 +14,16 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List
 
 from core.database.connection import select_rows
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import ExerciseList, ExerciseAnswers, VocabularyList, TopicMemoryList, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def _process_evaluation_summary(exercises: List[Dict], answers: Dict[str, str],
-                            evaluation: Dict) -> Dict[str, Any]:
+def _process_evaluation_summary(exercises: ExerciseList, answers: ExerciseAnswers,
+                            evaluation: AnalyticsData) -> AnalyticsData:
     """
     Process evaluation results into a summary.
 
@@ -82,18 +83,10 @@ def _process_evaluation_summary(exercises: List[Dict], answers: Dict[str, str],
 
     except Exception as e:
         logger.error(f"Error processing evaluation summary: {e}")
-        return {
-            "total_exercises": 0,
-            "correct_answers": 0,
-            "incorrect_answers": 0,
-            "skipped_answers": 0,
-            "accuracy_percentage": 0,
-            "exercise_details": [],
-            "overall_feedback": "Error processing evaluation"
-        }
+        raise AIEvaluationError(f"Error processing evaluation summary: {str(e)}")
 
 
-def _fetch_user_vocabulary(username: str) -> List[Dict[str, Any]]:
+def _fetch_user_vocabulary(username: str) -> VocabularyList:
     """
     Fetch user vocabulary data.
 
@@ -121,10 +114,10 @@ def _fetch_user_vocabulary(username: str) -> List[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Error fetching user vocabulary: {e}")
-        return []
+        raise DatabaseError(f"Error fetching user vocabulary: {str(e)}")
 
 
-def _fetch_user_topic_memory(username: str) -> List[Dict[str, Any]]:
+def _fetch_user_topic_memory(username: str) -> TopicMemoryList:
     """
     Fetch user topic memory data.
 
@@ -152,5 +145,5 @@ def _fetch_user_topic_memory(username: str) -> List[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Error fetching user topic memory: {e}")
-        return []
+        raise DatabaseError(f"Error fetching user topic memory: {str(e)}")
 

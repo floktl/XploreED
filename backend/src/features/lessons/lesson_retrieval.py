@@ -14,15 +14,17 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from core.database.connection import select_rows, select_one, update_row, insert_row
 from core.services import LessonService
+from shared.exceptions import DatabaseError
+from shared.types import LessonList, LessonData
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_lessons_summary(username: str) -> List[Dict[str, Any]]:
+def get_user_lessons_summary(username: str) -> LessonList:
     """
     Get summary information for all published lessons for a user.
 
@@ -38,7 +40,7 @@ def get_user_lessons_summary(username: str) -> List[Dict[str, Any]]:
     return LessonService.get_user_lessons_summary(username)
 
 
-def get_lesson_content(username: str, lesson_id: int) -> Optional[Dict[str, Any]]:
+def get_lesson_content(username: str, lesson_id: int) -> Optional[LessonData]:
     """
     Get HTML content and metadata for a specific lesson.
 
@@ -55,7 +57,7 @@ def get_lesson_content(username: str, lesson_id: int) -> Optional[Dict[str, Any]
     return LessonService.get_lesson_content(username, lesson_id)
 
 
-def get_lesson_blocks(lesson_id: int) -> List[Dict[str, Any]]:
+def get_lesson_blocks(lesson_id: int) -> LessonList:
     """
     Get all blocks for a specific lesson.
 
@@ -88,7 +90,7 @@ def validate_lesson_access(username: str, lesson_id: int) -> bool:
     return LessonService.validate_lesson_access(username, lesson_id)
 
 
-def _build_lesson_summary(username: str, lesson_id: int, lesson_data: Dict[str, Any]) -> Dict[str, Any]:
+def _build_lesson_summary(username: str, lesson_id: int, lesson_data: LessonData) -> LessonData:
     """
     Build a lesson summary with progress information.
 
@@ -128,16 +130,8 @@ def _build_lesson_summary(username: str, lesson_id: int, lesson_data: Dict[str, 
 
         return summary
 
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error building lesson summary for user {username}, lesson {lesson_id}: {e}")
-        return {
-            "lesson_id": lesson_id,
-            "title": lesson_data.get("title", ""),
-            "created_at": lesson_data.get("created_at"),
-            "num_blocks": lesson_data.get("num_blocks", 0),
-            "completed_blocks": 0,
-            "completion_percentage": 0.0,
-            "ai_enabled": bool(lesson_data.get("ai_enabled", False)),
-            "last_accessed": None,
-            "is_completed": False,
-        }
+        logger.error(f"Error building lesson summary: {e}")
+        raise DatabaseError(f"Error building lesson summary: {str(e)}")

@@ -15,16 +15,18 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import json
 import os
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 import datetime
 
 from core.database.connection import select_one, select_rows, insert_row, update_row
 from external.redis import redis_client
+from shared.exceptions import DatabaseError
+from shared.types import ExerciseAnswers, ExerciseList, AnalyticsData, StatisticsResult
 
 logger = logging.getLogger(__name__)
 
 
-def submit_exercise_answers(username: str, block_id: str, answers: Dict[str, str]) -> bool:
+def submit_exercise_answers(username: str, block_id: str, answers: ExerciseAnswers) -> bool:
     """
     Submit exercise answers for a specific block.
 
@@ -72,11 +74,11 @@ def submit_exercise_answers(username: str, block_id: str, answers: Dict[str, str
         logger.error(f"Validation error submitting exercise answers: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error submitting exercise answers for user '{username}' block {block_id}: {e}")
-        return False
+        logger.error(f"Error submitting exercise answers: {e}")
+        raise DatabaseError(f"Error submitting exercise answers: {str(e)}")
 
 
-def get_exercise_results(username: str, block_id: str) -> Optional[Dict[str, Any]]:
+def get_exercise_results(username: str, block_id: str) -> Optional[AnalyticsData]:
     """
     Get exercise results for a specific block.
 
@@ -125,11 +127,11 @@ def get_exercise_results(username: str, block_id: str) -> Optional[Dict[str, Any
         logger.error(f"Validation error getting exercise results: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting exercise results for user '{username}' block {block_id}: {e}")
-        return None
+        logger.error(f"Error getting exercise results: {e}")
+        raise DatabaseError(f"Error getting exercise results: {str(e)}")
 
 
-def get_exercise_statistics(username: str) -> Dict[str, Any]:
+def get_exercise_statistics(username: str) -> StatisticsResult:
     """
     Get exercise statistics for a user.
 
@@ -208,20 +210,12 @@ def get_exercise_statistics(username: str) -> Dict[str, Any]:
         logger.error(f"Validation error getting exercise statistics: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting exercise statistics for user '{username}': {e}")
-        return {
-            "username": username,
-            "total_blocks": 0,
-            "completed_blocks": 0,
-            "total_exercises": 0,
-            "correct_exercises": 0,
-            "accuracy_rate": 0.0,
-            "average_score": 0.0
-        }
+        logger.error(f"Error getting exercise statistics: {e}")
+        raise DatabaseError(f"Error getting exercise statistics: {str(e)}")
 
 
-def argue_exercise_evaluation(block_id: str, exercises: List[Dict], answers: Dict[str, str],
-                             exercise_block: Optional[Dict] = None) -> Dict[str, Any]:
+def argue_exercise_evaluation(block_id: str, exercises: ExerciseList, answers: ExerciseAnswers,
+                             exercise_block: Optional[AnalyticsData] = None) -> AnalyticsData:
     """
     Allow users to argue against exercise evaluation results.
 
@@ -263,14 +257,11 @@ def argue_exercise_evaluation(block_id: str, exercises: List[Dict], answers: Dic
             }
 
     except Exception as e:
-        logger.error(f"Error processing exercise argument for block {block_id}: {e}")
-        return {
-            "status": "error",
-            "message": "Error processing argument"
-        }
+        logger.error(f"Error arguing exercise evaluation: {e}")
+        raise DatabaseError(f"Error arguing exercise evaluation: {str(e)}")
 
 
-def get_topic_memory_status(username: str, block_id: str) -> Dict[str, Any]:
+def get_topic_memory_status(username: str, block_id: str) -> StatisticsResult:
     """
     Get topic memory status for a user and exercise block.
 
@@ -329,12 +320,5 @@ def get_topic_memory_status(username: str, block_id: str) -> Dict[str, Any]:
         return status
 
     except Exception as e:
-        logger.error(f"Error getting topic memory status for user '{username}' block {block_id}: {e}")
-        return {
-            "username": username,
-            "block_id": block_id,
-            "total_topics": 0,
-            "topics_in_block": [],
-            "topic_details": [],
-            "error": str(e)
-        }
+        logger.error(f"Error getting topic memory status: {e}")
+        raise DatabaseError(f"Error getting topic memory status: {str(e)}")

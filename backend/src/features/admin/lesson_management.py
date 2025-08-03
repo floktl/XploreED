@@ -14,17 +14,19 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 from bs4 import BeautifulSoup  # type: ignore
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows
 from core.processing import strip_ai_data, inject_block_ids
 from features.lessons import update_lesson_blocks_from_html
+from shared.exceptions import DatabaseError
+from shared.types import LessonData, LessonList, ValidationResult, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def create_lesson_content(lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+def create_lesson_content(lesson_data: LessonData) -> ValidationResult:
     """
     Create a new lesson with content and block management.
 
@@ -99,10 +101,10 @@ def create_lesson_content(lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[s
         return False, str(e)
     except Exception as e:
         logger.error(f"Error creating lesson content: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error creating lesson content: {str(e)}")
 
 
-def get_all_lessons() -> List[Dict[str, Any]]:
+def get_all_lessons() -> LessonList:
     """
     Retrieve all lesson content for admin editing.
 
@@ -133,11 +135,11 @@ def get_all_lessons() -> List[Dict[str, Any]]:
         return lessons
 
     except Exception as e:
-        logger.error(f"Error retrieving lessons: {e}")
-        raise
+        logger.error(f"Error getting all lessons: {e}")
+        raise DatabaseError(f"Error getting all lessons: {str(e)}")
 
 
-def get_lesson_by_id(lesson_id: int) -> Optional[Dict[str, Any]]:
+def get_lesson_by_id(lesson_id: int) -> Optional[LessonData]:
     """
     Get a specific lesson by ID.
 
@@ -174,10 +176,10 @@ def get_lesson_by_id(lesson_id: int) -> Optional[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting lesson by ID {lesson_id}: {e}")
-        raise
+        raise DatabaseError(f"Error getting lesson by ID {lesson_id}: {str(e)}")
 
 
-def update_admin_lesson_content(lesson_id: int, lesson_data: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+def update_admin_lesson_content(lesson_id: int, lesson_data: LessonData) -> ValidationResult:
     """
     Update an existing lesson with new content and metadata.
 
@@ -244,7 +246,7 @@ def update_admin_lesson_content(lesson_id: int, lesson_data: Dict[str, Any]) -> 
         return False, str(e)
     except Exception as e:
         logger.error(f"Error updating lesson content for lesson ID {lesson_id}: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error updating lesson content for lesson ID {lesson_id}: {str(e)}")
 
 
 def delete_lesson_content(lesson_id: int) -> Tuple[bool, Optional[str]]:
@@ -279,10 +281,10 @@ def delete_lesson_content(lesson_id: int) -> Tuple[bool, Optional[str]]:
         return False, str(e)
     except Exception as e:
         logger.error(f"Error deleting lesson content for lesson ID {lesson_id}: {e}")
-        return False, "Deletion failed"
+        raise DatabaseError(f"Error deleting lesson content for lesson ID {lesson_id}: {str(e)}")
 
 
-def get_lesson_progress_summary() -> Dict[int, Dict[str, Any]]:
+def get_lesson_progress_summary() -> AnalyticsData:
     """
     Get percentage completion summary for all lessons.
 
@@ -348,11 +350,11 @@ def get_lesson_progress_summary() -> Dict[int, Dict[str, Any]]:
         return summary
 
     except Exception as e:
-        logger.error(f"Error retrieving lesson progress summary: {e}")
-        raise
+        logger.error(f"Error getting lesson statistics: {e}")
+        raise DatabaseError(f"Error getting lesson statistics: {str(e)}")
 
 
-def get_individual_lesson_progress(lesson_id: int) -> List[Dict[str, Any]]:
+def get_individual_lesson_progress(lesson_id: int) -> LessonList:
     """
     Get per-user completion stats for a specific lesson.
 
@@ -409,4 +411,4 @@ def get_individual_lesson_progress(lesson_id: int) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting individual lesson progress for lesson ID {lesson_id}: {e}")
-        raise
+        raise DatabaseError(f"Error getting individual lesson progress for lesson ID {lesson_id}: {str(e)}")

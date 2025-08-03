@@ -14,7 +14,9 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict
+
+
+from shared.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +124,8 @@ def check_gap_fill_correctness(exercise: dict, user_answer: str, correct_answer:
         logger.debug("No match found, answer is incorrect")
         return False
 
+    except ValidationError:
+        raise
     except Exception as e:
-        logger.error(f"Error checking gap-fill correctness: {e}")
-        return False
+        logger.error(f"Error checking gap fill correctness: {e}")
+        raise ValidationError(f"Error checking gap fill correctness: {str(e)}")

@@ -18,7 +18,7 @@ import logging
 import traceback
 from threading import Thread
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 
 from flask import current_app  # type: ignore
 
@@ -30,8 +30,9 @@ from core.database.connection import (
 from features.ai.memory.level_manager import check_auto_level_up
 from features.ai.evaluation import evaluate_answers_with_ai, process_ai_answers
 from features.ai.memory.logger import topic_memory_logger
-from shared.exceptions import ProcessingError, DatabaseError, AIEvaluationError
+from shared.exceptions import DatabaseError, AIEvaluationError, ProcessingError
 from api.middleware.auth import require_user
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ def save_exercise_submission_async(
     block_id: str,
     answers: dict,
     exercises: list,
-    exercise_block: Optional[Dict[Any, Any]] = None,
+    exercise_block: Optional[AnalyticsData] = None,
 ) -> None:
     """
     Save exercise submission asynchronously.
@@ -110,7 +111,9 @@ def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dic
         logger.info(f"Evaluating {len(exercises)} exercises")
 
         # Evaluate with AI
+        logger.info(f"Calling evaluate_answers_with_ai with {len(exercises)} exercises")
         evaluation = evaluate_answers_with_ai(exercises, answers, "strict")
+        logger.info(f"AI evaluation result: {evaluation}")
 
         if not evaluation:
             logger.warning("AI evaluation failed")
@@ -118,6 +121,7 @@ def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dic
 
         # Compile score summary
         summary = compile_score_summary(exercises, answers, {})
+        logger.info(f"Score summary: {summary}")
 
         logger.info(f"Successfully evaluated exercises")
         return evaluation, summary
@@ -126,7 +130,7 @@ def evaluate_exercises(exercises: list, answers: dict) -> tuple[dict | None, dic
         raise
     except Exception as e:
         logger.error(f"Error evaluating exercises: {e}")
-        raise ProcessingError(f"Error evaluating exercises: {str(e)}")
+        raise AIEvaluationError(f"Error evaluating exercises: {str(e)}")
 
 
 def parse_ai_submission_data(data: dict) -> tuple[list, dict, str | None]:
@@ -151,7 +155,7 @@ def parse_ai_submission_data(data: dict) -> tuple[list, dict, str | None]:
         raise
     except Exception as e:
         logger.error(f"Error parsing submission data: {e}")
-        raise ProcessingError(f"Error parsing submission data: {str(e)}")
+        raise DatabaseError(f"Error parsing submission data: {str(e)}")
 
 
 def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
@@ -213,10 +217,10 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         raise
     except Exception as e:
         logger.error(f"Error compiling score summary: {e}")
-        raise ProcessingError(f"Error compiling score summary: {str(e)}")
+        raise DatabaseError(f"Error compiling score summary: {str(e)}")
 
 
-def log_exercise_event(event_type: str, username: str, details: Optional[Dict[Any, Any]] = None):
+def log_exercise_event(event_type: str, username: str, details: Optional[AnalyticsData] = None):
     """
     Log exercise-related events.
 
@@ -238,7 +242,7 @@ def log_exercise_event(event_type: str, username: str, details: Optional[Dict[An
 
     except Exception as e:
         logger.error(f"Error logging exercise event: {e}")
-        # Don't raise here as this is just logging
+        raise DatabaseError(f"Error logging exercise event: {str(e)}")
 
 
 def log_ai_user_data(username: str, context: str):
@@ -261,7 +265,7 @@ def log_ai_user_data(username: str, context: str):
 
     except Exception as e:
         logger.error(f"Error logging AI user data: {e}")
-        # Don't raise here as this is just logging
+        raise DatabaseError(f"Error logging AI user data: {str(e)}")
 
 
 def log_vocab_log(username: str, context: str):
@@ -284,7 +288,7 @@ def log_vocab_log(username: str, context: str):
 
     except Exception as e:
         logger.error(f"Error logging vocabulary event: {e}")
-        # Don't raise here as this is just logging
+        raise DatabaseError(f"Error logging vocab log: {str(e)}")
 
 
 def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
@@ -409,4 +413,4 @@ def print_db_exercise_blocks(username, parent_str, parent_function=None):
 
     except Exception as e:
         logger.error(f"Error printing exercise blocks: {e}")
-        # Don't raise here as this is just debugging output
+        raise DatabaseError(f"Error printing DB exercise blocks: {str(e)}")

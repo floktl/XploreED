@@ -26,7 +26,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from datetime import datetime, timedelta
 
 from flask import request, jsonify # type: ignore
@@ -48,6 +48,7 @@ from features.admin import (
     update_user_data,
     delete_user_data,
 )
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -152,7 +153,7 @@ def get_users_route():
             "offset": offset
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting users: {e}")
         return jsonify({"error": "Failed to retrieve users"}), 500
 
@@ -247,7 +248,7 @@ def get_user_details_route(username: str):
             "progress": progress_data or {}
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting user details for {username}: {e}")
         return jsonify({"error": "Failed to retrieve user details"}), 500
 
@@ -365,7 +366,7 @@ def update_user_status_route(username: str):
             }
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating user status for {username}: {e}")
         return jsonify({"error": "Failed to update user status"}), 500
 
@@ -450,7 +451,7 @@ def delete_user_route(username: str):
             logger.error(f"Error during user deletion: {e}")
             return jsonify({"error": "Failed to delete user data"}), 500
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error deleting user {username}: {e}")
         return jsonify({"error": "Failed to delete user"}), 500
 
@@ -499,7 +500,7 @@ def get_system_analytics_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting system analytics: {e}")
         return jsonify({"error": "Failed to retrieve system analytics"}), 500
 
@@ -533,7 +534,7 @@ def get_system_settings_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting system settings: {e}")
         return jsonify({"error": "Failed to retrieve system settings"}), 500
 
@@ -586,7 +587,7 @@ def update_system_settings_route():
             "total_settings": len(settings)
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating system settings: {e}")
         return jsonify({"error": "Failed to update system settings"}), 500
 
@@ -648,7 +649,7 @@ def get_content_lessons_route():
             "limit": limit
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting content lessons: {e}")
         return jsonify({"error": "Failed to retrieve lesson content"}), 500
 
@@ -740,7 +741,7 @@ def update_content_lesson_route(lesson_id: int):
         else:
             return jsonify({"error": "Failed to update lesson"}), 500
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating lesson {lesson_id}: {e}")
         return jsonify({"error": "Failed to update lesson"}), 500
 
@@ -817,7 +818,7 @@ def get_user_activity_report_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting user activity report: {e}")
         return jsonify({"error": "Failed to retrieve user activity report"}), 500
 
@@ -915,7 +916,7 @@ def get_performance_report_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting performance report: {e}")
         return jsonify({"error": "Failed to retrieve performance report"}), 500
 
@@ -971,7 +972,7 @@ def get_security_reports_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting security reports: {e}")
         return jsonify({"error": "Failed to retrieve security reports"}), 500
 
@@ -1006,7 +1007,7 @@ def get_security_settings_route():
             "generated_at": datetime.now().isoformat()
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error getting security settings: {e}")
         return jsonify({"error": "Failed to retrieve security settings"}), 500
 
@@ -1059,6 +1060,6 @@ def update_security_settings_route():
             "total_settings": len(settings)
         })
 
-    except Exception as e:
+    except DatabaseError as e:
         logger.error(f"Error updating security settings: {e}")
         return jsonify({"error": "Failed to update security settings"}), 500

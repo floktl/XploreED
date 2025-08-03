@@ -14,10 +14,12 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime, timedelta
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import FeedbackData, FeedbackList, ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -67,9 +69,11 @@ def submit_feedback(message: str, username: Optional[str] = None) -> Tuple[bool,
     except ValueError as e:
         logger.error(f"Validation error submitting feedback: {e}")
         return False, str(e)
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error submitting feedback: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error submitting feedback: {str(e)}")
 
 
 def get_feedback_list(
@@ -79,7 +83,7 @@ def get_feedback_list(
     priority: Optional[str] = None,
     status: Optional[str] = None,
     search: Optional[str] = None
-) -> Dict[str, Any]:
+) -> FeedbackData:
     """
     Get a list of feedback messages with pagination and filtering.
 
@@ -170,12 +174,14 @@ def get_feedback_list(
     except ValueError as e:
         logger.error(f"Validation error getting feedback list: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting feedback list: {e}")
-        return {"feedback": [], "total": 0}
+        raise DatabaseError(f"Error getting feedback list: {str(e)}")
 
 
-def get_feedback_by_id(feedback_id: int) -> Optional[Dict[str, Any]]:
+def get_feedback_by_id(feedback_id: int) -> Optional[FeedbackData]:
     """
     Get a specific feedback message by ID.
 
@@ -217,9 +223,11 @@ def get_feedback_by_id(feedback_id: int) -> Optional[Dict[str, Any]]:
     except ValueError as e:
         logger.error(f"Validation error getting feedback by ID: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting feedback by ID {feedback_id}: {e}")
-        return None
+        raise DatabaseError(f"Error getting feedback by ID {feedback_id}: {str(e)}")
 
 
 def delete_feedback(feedback_id: int) -> Tuple[bool, Optional[str]]:
@@ -259,12 +267,14 @@ def delete_feedback(feedback_id: int) -> Tuple[bool, Optional[str]]:
     except ValueError as e:
         logger.error(f"Validation error deleting feedback: {e}")
         return False, str(e)
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error deleting feedback {feedback_id}: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error deleting feedback {feedback_id}: {str(e)}")
 
 
-def get_feedback_statistics() -> Dict[str, Any]:
+def get_feedback_statistics() -> FeedbackData:
     """
     Get feedback statistics and analytics.
 
@@ -331,20 +341,10 @@ def get_feedback_statistics() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error getting feedback statistics: {e}")
-        return {
-            "error": str(e),
-            "total_feedback": 0,
-            "recent_feedback_30_days": 0,
-            "recent_feedback_7_days": 0,
-            "today_feedback": 0,
-            "authenticated_feedback": 0,
-            "anonymous_feedback": 0,
-            "average_per_day": 0.0,
-            "generated_at": datetime.utcnow().isoformat()
-        }
+        raise DatabaseError(f"Error getting feedback statistics: {str(e)}")
 
 
-def search_feedback(query: str, limit: int = 20) -> List[Dict[str, Any]]:
+def search_feedback(query: str, limit: int = 20) -> FeedbackList:
     """
     Search through feedback messages.
 
@@ -399,10 +399,10 @@ def search_feedback(query: str, limit: int = 20) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error searching feedback: {e}")
-        return []
+        raise DatabaseError(f"Error searching feedback: {str(e)}")
 
 
-def get_user_feedback(username: str, limit: int = 20) -> List[Dict[str, Any]]:
+def get_user_feedback(username: str, limit: int = 20) -> FeedbackList:
     """
     Get feedback messages from a specific user.
 
@@ -451,4 +451,4 @@ def get_user_feedback(username: str, limit: int = 20) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting user feedback for {username}: {e}")
-        return []
+        raise DatabaseError(f"Error getting user feedback for {username}: {str(e)}")

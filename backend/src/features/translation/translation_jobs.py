@@ -18,7 +18,7 @@ import json
 import uuid
 import time
 import os
-from typing import Dict, Any, Optional, Tuple
+from typing import Optional, Tuple
 from threading import Thread
 
 from infrastructure.imports import Imports
@@ -27,6 +27,8 @@ from features.ai.memory.vocabulary_memory import translate_to_german
 from features.ai.evaluation import evaluate_translation_ai
 from features.ai.generation.translate_helpers import update_memory_async
 from external.redis import redis_client
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +73,7 @@ def create_translation_job(english: str, student_input: str, username: str) -> s
         raise
     except Exception as e:
         logger.error(f"Error creating translation job: {e}")
-        raise
+        raise DatabaseError(f"Error creating translation job: {str(e)}")
 
 
 def process_translation_job(job_id: str, english: str, student_input: str, username: str) -> None:
@@ -158,7 +160,7 @@ def _process_job_background(job_id: str, english: str, student_input: str, usern
         _update_job_status(job_id, "error", {"error": str(e)})
 
 
-def _update_job_status(job_id: str, status: str, result: Dict[str, Any]) -> None:
+def _update_job_status(job_id: str, status: str, result: AnalyticsData) -> None:
     """
     Update the status of a translation job.
 
@@ -184,9 +186,10 @@ def _update_job_status(job_id: str, status: str, result: Dict[str, Any]) -> None
 
     except Exception as e:
         logger.error(f"Error updating job {job_id} status: {e}")
+        raise DatabaseError(f"Error updating job {job_id} status: {str(e)}")
 
 
-def get_translation_job_status(job_id: str) -> Optional[Dict[str, Any]]:
+def get_translation_job_status(job_id: str) -> Optional[AnalyticsData]:
     """
     Get the status of a translation job.
 
@@ -223,10 +226,10 @@ def get_translation_job_status(job_id: str) -> Optional[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting job status for {job_id}: {e}")
-        return None
+        raise DatabaseError(f"Error getting job status for {job_id}: {str(e)}")
 
 
-def get_translation_status(job_id: str) -> Dict[str, Any]:
+def get_translation_status(job_id: str) -> AnalyticsData:
     """
     Get translation status with error handling.
 

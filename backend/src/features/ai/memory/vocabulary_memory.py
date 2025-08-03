@@ -23,6 +23,7 @@ from features.spaced_repetition import sm2
 from external.mistral.client import send_prompt
 from features.ai.memory.logger import topic_memory_logger
 from shared.text_utils import _extract_json
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 ARTICLES = {
@@ -60,8 +61,11 @@ def analyze_word_ai(word: str) -> Optional[dict]:
             data = _extract_json(content)
             if isinstance(data, dict):
                 return data
+    except AIEvaluationError:
+        raise
     except Exception as e:
         print("Error in analyze_word_ai:", e)
+        raise AIEvaluationError(f"Error in analyze_word_ai: {str(e)}")
 
     # Fallback: try simple translation
     try:
@@ -80,8 +84,11 @@ def analyze_word_ai(word: str) -> Optional[dict]:
                 "translation": translation,
                 "info": "Fallback translation",
             }
+    except AIEvaluationError:
+        raise
     except Exception as e:
         print("Error in fallback translation:", e)
+        raise AIEvaluationError(f"Error in fallback translation: {str(e)}")
 
     return None
 
@@ -265,9 +272,11 @@ def save_vocab(
             },
         )
         # print("\033[92m✅ [TOPIC MEMORY FLOW] ✅ Successfully saved vocab word '{}' to database\033[0m".format(normalized), flush=True)
+    except DatabaseError:
+        raise
     except Exception as e:
         # print("\033[91m❌ [TOPIC MEMORY FLOW] ❌ Failed to save vocab word '{}': {}\033[0m".format(normalized, str(e)), flush=True)
-        return None
+        raise DatabaseError(f"Failed to save vocab word '{normalized}': {str(e)}")
 
     return normalized
 
@@ -295,8 +304,11 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
                         article=art,
                     )
             return german_text
+    except AIEvaluationError:
+        raise
     except Exception as e:
         print("❌ Error calling Mistral:", e)
+        raise AIEvaluationError(f"Error calling Mistral: {str(e)}")
 
     return "❌ API failure"
 
@@ -465,10 +477,8 @@ def get_user_vocab_stats(username: str) -> dict:
             'learning_count': total_count - mastered_count
         }
 
+    except DatabaseError:
+        raise
     except Exception as e:
         print(f"Error getting vocab stats for user {username}: {e}")
-        return {
-            'total_count': 0,
-            'mastered_count': 0,
-            'learning_count': 0
-        }
+        raise DatabaseError(f"Error getting vocab stats for user {username}: {str(e)}")

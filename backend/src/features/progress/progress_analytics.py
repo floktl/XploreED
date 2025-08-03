@@ -15,14 +15,16 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Optional, Any, List, Tuple
+from typing import Optional, List, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_progress_summary(username: str, days: int = 30) -> Dict[str, Any]:
+def get_user_progress_summary(username: str, days: int = 30) -> AnalyticsData:
     """
     Get a comprehensive progress summary for a user.
 
@@ -220,27 +222,14 @@ def get_user_progress_summary(username: str, days: int = 30) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting user progress summary: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting user progress summary for user {username}: {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "total_activities": 0,
-            "lessons_completed": 0,
-            "exercises_completed": 0,
-            "vocabulary_reviews": 0,
-            "games_played": 0,
-            "average_score": 0.0,
-            "improvement_rate": 0.0,
-            "streak_days": 0,
-            "activity_breakdown": {},
-            "recent_activity": [],
-            "top_performing_areas": [],
-            "areas_for_improvement": []
-        }
+        logger.error(f"Error getting user progress summary: {e}")
+        raise DatabaseError(f"Error getting user progress summary: {str(e)}")
 
 
-def get_progress_trends(username: str, days: int = 7) -> Dict[str, Any]:
+def get_progress_trends(username: str, days: int = 7) -> AnalyticsData:
     """
     Get progress trends for a user over a specified period.
 
@@ -423,15 +412,8 @@ def get_progress_trends(username: str, days: int = 7) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting progress trends: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting progress trends for user {username}: {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "period_days": days,
-            "daily_activity": {},
-            "activity_trends": {},
-            "performance_trends": {},
-            "learning_patterns": {},
-            "recommendations": []
-        }
+        logger.error(f"Error getting progress trends: {e}")
+        raise DatabaseError(f"Error getting progress trends: {str(e)}")

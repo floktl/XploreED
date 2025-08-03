@@ -9,6 +9,7 @@ import {
     getAiExercises,
     saveVocabWords,
     submitExerciseAnswers,
+    submitTrainingExercise,
     argueExerciseAnswers,
     sendSupportFeedback,
     getEnhancedResults,
@@ -315,12 +316,22 @@ export default function AIExerciseBlock({
                 const blockToSubmit = currentBlockRef.current || current;
                 // Use the actual block_id from the exercise data, fallback to the prop
                 const actualBlockId = blockToSubmit?.block_id || blockId;
-                const result = await submitExerciseAnswers(actualBlockId, currentAnswers, {
+
+                // Use training-specific submission for training exercises
+                const exerciseBlockData = {
                     instructions: blockToSubmit?.instructions || "",
                     exercises: blockToSubmit?.exercises || [],
                     vocabHelp: blockToSubmit?.vocabHelp || [],
                     topic: blockToSubmit?.topic || "general",
-                });
+                };
+
+                let result;
+                if (actualBlockId === "training") {
+                    result = await submitTrainingExercise(currentAnswers, exerciseBlockData);
+                } else {
+                    result = await submitExerciseAnswers(actualBlockId, currentAnswers, exerciseBlockData);
+                }
+
                 const endTime = Date.now();
                 apiResult = result;
                 apiCompleted = true;
@@ -381,7 +392,9 @@ export default function AIExerciseBlock({
                 setEvaluation(map);
 
                 // Start polling for enhanced results in the background
-                startEnhancedResultsPolling(topicMemoryActivityId);
+                // Use the block_id from the API response if available, otherwise fallback
+                const responseBlockId = apiResult?.block_id || current?.block_id || blockId;
+                startEnhancedResultsPolling(topicMemoryActivityId, responseBlockId);
             }
 
             if (apiResult?.pass) {
@@ -417,13 +430,13 @@ export default function AIExerciseBlock({
             fetchNext({ answers: currentAnswers });
         };
 
-        const startEnhancedResultsPolling = (activityId) => {
+        const startEnhancedResultsPolling = (activityId, blockIdToUse = null) => {
             setEnhancedResultsLoading(true);
             setFeedbackTimeout(false);
             setShowTimeoutError(false);
 
-            // Use the actual block_id from the exercise data, fallback to the prop
-            const actualBlockId = current?.block_id || blockId;
+            // Use the provided block_id, fallback to the exercise data, then to the prop
+            const actualBlockId = blockIdToUse || current?.block_id || blockId;
 
             const pollInterval = setInterval(async () => {
                 try {

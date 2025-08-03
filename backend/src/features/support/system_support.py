@@ -15,7 +15,7 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import os
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 # Optional import for system monitoring
 try:
@@ -26,11 +26,13 @@ except ImportError:
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime, timedelta
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData, AnalyticsList
 
 logger = logging.getLogger(__name__)
 
 
-def get_system_status() -> Dict[str, Any]:
+def get_system_status() -> AnalyticsData:
     """
     Get comprehensive system status and health information.
 
@@ -135,11 +137,7 @@ def get_system_status() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error getting system status: {e}")
-        return {
-            "error": str(e),
-            "status": "error",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        raise DatabaseError(f"Error getting system status: {str(e)}")
 
 
 def get_help_content(topic: str, language: str = "en", format_type: str = "json") -> Optional[str]:
@@ -413,11 +411,11 @@ Jede Lektion enthält mehrere Blöcke:
         logger.error(f"Validation error getting help content: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting help content for topic '{topic}': {e}")
-        return None
+        logger.error(f"Error getting help content for topic {topic}: {e}")
+        raise DatabaseError(f"Error getting help content for topic {topic}: {str(e)}")
 
 
-def get_help_topics(language: str = "en") -> List[Dict[str, Any]]:
+def get_help_topics(language: str = "en") -> AnalyticsList:
     """
     Get list of available help topics.
 
@@ -480,11 +478,11 @@ def get_help_topics(language: str = "en") -> List[Dict[str, Any]]:
         logger.error(f"Validation error getting help topics: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting help topics for language {language}: {e}")
-        return []
+        logger.error(f"Error getting help topics: {e}")
+        raise DatabaseError(f"Error getting help topics: {str(e)}")
 
 
-def search_help_content(query: str, language: str = "en", limit: int = 10) -> List[Dict[str, Any]]:
+def search_help_content(query: str, language: str = "en", limit: int = 10) -> AnalyticsList:
     """
     Search help content for specific terms.
 
@@ -547,7 +545,7 @@ def search_help_content(query: str, language: str = "en", limit: int = 10) -> Li
         raise
     except Exception as e:
         logger.error(f"Error searching help content: {e}")
-        return []
+        raise DatabaseError(f"Error searching help content: {str(e)}")
 
 
 def _extract_snippet(content: str, query: str, max_length: int = 150) -> str:

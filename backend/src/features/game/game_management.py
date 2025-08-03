@@ -15,15 +15,17 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import uuid
 import datetime
-from typing import Dict, Any, List
+from typing import List
 
 from core.database.connection import insert_row, update_row, select_one
 from core.services import GameService
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import GameData, GameList
 
 logger = logging.getLogger(__name__)
 
 
-def create_game_session(session_data: Dict[str, Any]) -> str:
+def create_game_session(session_data: GameData) -> str:
     """
     Create a new game session.
 
@@ -61,12 +63,14 @@ def create_game_session(session_data: Dict[str, Any]) -> str:
     except ValueError as e:
         logger.error(f"Validation error creating game session: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error creating game session: {e}")
-        return ""
+        raise DatabaseError(f"Error creating game session: {str(e)}")
 
 
-def update_game_progress(session_id: str, progress_data: Dict[str, Any]) -> bool:
+def update_game_progress(session_id: str, progress_data: GameData) -> bool:
     """
     Update game progress for a session.
 
@@ -108,13 +112,15 @@ def update_game_progress(session_id: str, progress_data: Dict[str, Any]) -> bool
     except ValueError as e:
         logger.error(f"Validation error updating game progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error updating game progress for session {session_id}: {e}")
-        return False
+        raise DatabaseError(f"Error updating game progress for session {session_id}: {str(e)}")
 
 
-def calculate_game_score(session_id: str, answers: List[Dict[str, Any]],
-                        time_taken: int, difficulty: str) -> Dict[str, Any]:
+def calculate_game_score(session_id: str, answers: GameList,
+                        time_taken: int, difficulty: str) -> GameData:
     """
     Calculate game score based on answers, time, and difficulty.
 

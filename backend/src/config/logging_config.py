@@ -18,6 +18,7 @@ import logging.handlers
 import os
 from pathlib import Path
 from typing import Optional
+from shared.exceptions import ValidationError
 
 
 def setup_logging(

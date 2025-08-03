@@ -14,14 +14,15 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import os
-from typing import Dict, Any
 
 from core.database.connection import get_connection
+from shared.exceptions import DatabaseError
+from shared.types import DatabaseRow, DatabaseList
 
 logger = logging.getLogger(__name__)
 
 
-def get_all_database_data() -> Dict[str, Any]:
+def get_all_database_data() -> DatabaseRow:
     """
     Retrieve all data from all database tables for debugging purposes.
 
@@ -76,10 +77,10 @@ def get_all_database_data() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error retrieving database data: {e}")
-        raise
+        raise DatabaseError(f"Error retrieving database data: {str(e)}")
 
 
-def get_database_schema() -> Dict[str, Any]:
+def get_database_schema() -> DatabaseRow:
     """
     Get database schema information for debugging.
 
@@ -135,4 +136,4 @@ def get_database_schema() -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error retrieving database schema: {e}")
-        return {"error": str(e)}
+        raise DatabaseError(f"Error retrieving database schema: {str(e)}")

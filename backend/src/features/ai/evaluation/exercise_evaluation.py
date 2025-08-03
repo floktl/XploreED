@@ -17,7 +17,8 @@ import logging
 import json
 import re
 import traceback
-from typing import Dict, List, Optional
+from typing import List, Optional
+from shared.types import ExerciseList, ExerciseAnswers, AnalyticsData
 
 from flask import current_app  # type: ignore
 
@@ -35,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 
 def evaluate_answers_with_ai(
-    exercises: List[Dict], answers: Dict[str, str], mode: str = "strict"
-) -> Optional[Dict]:
+    exercises: ExerciseList, answers: ExerciseAnswers, mode: str = "strict"
+) -> Optional[AnalyticsData]:
     """
     Evaluate exercise answers using AI and return comprehensive results.
 

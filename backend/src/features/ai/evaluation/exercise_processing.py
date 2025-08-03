@@ -15,13 +15,15 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from features.ai.memory.vocabulary_memory import review_vocab_word, extract_words
 from core.database.connection import *
 from features.grammar import detect_language_topics
 from features.ai.evaluation.topic_memory import _update_single_topic
 from features.ai.memory.logger import topic_memory_logger
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import ExerciseAnswers, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +31,9 @@ logger = logging.getLogger(__name__)
 def process_ai_answers(
     username: str,
     block_id: str,
-    answers: Dict[str, str],
-    exercise_block: Optional[Dict] = None
-) -> List[Dict]:
+    answers: ExerciseAnswers,
+    exercise_block: Optional[AnalyticsData] = None
+) -> List[AnalyticsData]:
     """
     Process AI answers and update topic memory and vocabulary.
 
@@ -55,7 +57,7 @@ def process_ai_answers(
     exercise_map = {str(ex.get("id")): ex for ex in all_exercises}
     logger.info(f"Created exercise map with {len(exercise_map)} exercises")
 
-    results: List[Dict] = []
+    results: List[AnalyticsData] = []
     reviewed: set = set()
 
     for ex_id, user_answer in answers.items():
@@ -165,6 +167,7 @@ def process_ai_answers(
 
         except Exception as e:
             logger.error(f"Error updating vocabulary memory for exercise {ex_id}: {e}")
+            raise DatabaseError(f"Error updating vocabulary memory for exercise {ex_id}: {str(e)}")
 
         # Store the result
         result = {
@@ -187,6 +190,7 @@ def process_ai_answers(
             logger.info(f"User {username} auto-leveled up!")
     except Exception as e:
         logger.error(f"Error checking auto level up for user {username}: {e}")
+        raise DatabaseError(f"Error checking auto level up for user {username}: {str(e)}")
 
     logger.info(f"Completed processing {len(results)} exercises for user {username}")
     return results

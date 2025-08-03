@@ -15,7 +15,7 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import random
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from features.ai.evaluation import (
     evaluate_answers_with_ai,
@@ -39,12 +39,14 @@ from .feedback_processing import (
     _fetch_user_vocabulary,
     _fetch_user_topic_memory
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import ExerciseAnswers, FeedbackData, FeedbackList, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def generate_feedback_with_progress(username: str, answers: Dict[str, str],
-                                  exercise_block: Optional[Dict] = None) -> str:
+def generate_feedback_with_progress(username: str, answers: ExerciseAnswers,
+                                  exercise_block: Optional[AnalyticsData] = None) -> str:
     """
     Generate AI feedback with progress tracking.
 
@@ -94,7 +96,11 @@ def generate_feedback_with_progress(username: str, answers: Dict[str, str],
                 )
 
                 # Step 5: Generate AI feedback
-                ai_feedback = feedback_prompt
+                from external.mistral.client import send_prompt
+                system_message = "You are a helpful German language teacher providing personalized feedback to students."
+                user_prompt = {"role": "user", "content": feedback_prompt}
+                response = send_prompt(system_message, user_prompt)
+                ai_feedback = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
                 if not ai_feedback:
                     _mark_feedback_complete(session_id, {"error": "Failed to generate AI feedback"})
@@ -127,11 +133,11 @@ def generate_feedback_with_progress(username: str, answers: Dict[str, str],
 
     except Exception as e:
         logger.error(f"Error starting feedback generation: {e}")
-        raise
+        raise AIEvaluationError(f"Error starting feedback generation: {str(e)}")
 
 
-def generate_ai_feedback_simple(username: str, answers: Dict[str, str],
-                            exercise_block: Optional[Dict] = None) -> Dict[str, Any]:
+def generate_ai_feedback_simple(username: str, answers: ExerciseAnswers,
+                            exercise_block: Optional[AnalyticsData] = None) -> FeedbackData:
     """
     Generate AI feedback without progress tracking.
 
@@ -148,7 +154,9 @@ def generate_ai_feedback_simple(username: str, answers: Dict[str, str],
 
         # Step 1: Evaluate answers with AI
         exercises = exercise_block.get("exercises", []) if exercise_block else []
+        logger.info(f"Evaluating {len(exercises)} exercises for feedback generation")
         evaluation = evaluate_answers_with_ai(exercises, answers, "feedback")
+        logger.info(f"Evaluation result: {evaluation}")
 
         if not evaluation:
             return {"error": "Failed to evaluate answers"}
@@ -168,7 +176,11 @@ def generate_ai_feedback_simple(username: str, answers: Dict[str, str],
         )
 
         # Step 5: Generate AI feedback
-        ai_feedback = feedback_prompt
+        from external.mistral.client import send_prompt
+        system_message = "You are a helpful German language teacher providing personalized feedback to students."
+        user_prompt = {"role": "user", "content": feedback_prompt}
+        response = send_prompt(system_message, user_prompt)
+        ai_feedback = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
         if not ai_feedback:
             return {"error": "Failed to generate AI feedback"}
@@ -191,7 +203,7 @@ def generate_ai_feedback_simple(username: str, answers: Dict[str, str],
         return {"error": str(e)}
 
 
-def get_cached_feedback_list() -> List[Dict[str, Any]]:
+def get_cached_feedback_list() -> FeedbackList:
     """
     Get cached feedback list.
 
@@ -227,7 +239,7 @@ def get_cached_feedback_list() -> List[Dict[str, Any]]:
         return []
 
 
-def get_cached_feedback_item(feedback_id: str) -> Optional[Dict[str, Any]]:
+def get_cached_feedback_item(feedback_id: str) -> Optional[FeedbackData]:
     """
     Get a specific cached feedback item.
 

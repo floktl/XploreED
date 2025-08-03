@@ -14,12 +14,13 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from shared.exceptions import ValidationError
+from shared.exceptions import ValidationError, DatabaseError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -80,10 +81,10 @@ def update_user_password(username: str, current_password: str, new_password: str
         return False, str(e)
     except Exception as e:
         logger.error(f"Error updating password for user {username}: {e}")
-        return False, "Database error"
+        raise DatabaseError(f"Error updating password for user {username}: {str(e)}")
 
 
-def deactivate_user_account(username: str) -> Tuple[bool, Optional[str], Dict[str, int]]:
+def deactivate_user_account(username: str) -> Tuple[bool, Optional[str], AnalyticsData]:
     """
     Deactivate a user account by deleting all associated data.
 
@@ -199,7 +200,7 @@ def deactivate_user_account(username: str) -> Tuple[bool, Optional[str], Dict[st
         return False, str(e), {}
     except Exception as e:
         logger.error(f"Error deactivating account for user {username}: {e}")
-        return False, "Database error", {}
+        raise DatabaseError(f"Error deactivating account for user {username}: {str(e)}")
 
 
 def debug_delete_user_data(username: str) -> Tuple[bool, Optional[str], List[str]]:
@@ -261,4 +262,4 @@ def debug_delete_user_data(username: str) -> Tuple[bool, Optional[str], List[str
         return False, str(e), []
     except Exception as e:
         logger.error(f"Error in debug delete for user {username}: {e}")
-        return False, "Database error", []
+        raise DatabaseError(f"Error in debug delete for user {username}: {str(e)}")

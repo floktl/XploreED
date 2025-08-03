@@ -15,16 +15,17 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import json
-from typing import Dict, Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
 from datetime import datetime
-from shared.exceptions import ValidationError
+from shared.exceptions import ValidationError, DatabaseError
+from shared.types import UserData, ValidationResult
 
 logger = logging.getLogger(__name__)
 
 
-def export_user_data(username: str) -> Optional[Dict[str, Any]]:
+def export_user_data(username: str) -> Optional[UserData]:
     """
     Export all user data in a structured format.
 
@@ -198,10 +199,10 @@ def export_user_data(username: str) -> Optional[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error exporting user data for {username}: {e}")
-        return None
+        raise DatabaseError(f"Error exporting user data for {username}: {str(e)}")
 
 
-def import_user_data(username: str, data: Dict[str, Any]) -> bool:
+def import_user_data(username: str, data: UserData) -> bool:
     """
     Import user data from an exported format.
 
@@ -386,10 +387,10 @@ def import_user_data(username: str, data: Dict[str, Any]) -> bool:
         raise
     except Exception as e:
         logger.error(f"Error importing user data for {username}: {e}")
-        return False
+        raise DatabaseError(f"Error importing user data for {username}: {str(e)}")
 
 
-def validate_import_data(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
+def validate_import_data(data: UserData) -> ValidationResult:
     """
     Validate the structure and content of import data.
 

@@ -14,10 +14,12 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Optional, Any, List
+from typing import Optional, List
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
 from core.services import VocabularyService
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import VocabularyData, VocabularyList
 # Vocabulary helper constants
 VOCAB_COLUMNS = [
     "rowid as id",
@@ -41,7 +43,7 @@ def get_user_vocabulary_entries(
     offset: int = 0,
     status: Optional[str] = None,
     search: Optional[str] = None
-) -> Dict[str, Any]:
+) -> VocabularyData:
     """
     Get vocabulary entries for a user with filtering and pagination.
 
@@ -117,22 +119,11 @@ def get_user_vocabulary_entries(
             "offset": offset
         }
 
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting vocabulary entries for user {user}: {e}")
-        return {
-            "vocabulary": [],
-            "statistics": {
-                "total_words": 0,
-                "learning_words": 0,
-                "reviewing_words": 0,
-                "mastered_words": 0,
-                "average_mastery": 0.0,
-                "words_due_review": 0
-            },
-            "total": 0,
-            "limit": limit,
-            "offset": offset
-        }
+        logger.error(f"Error getting user vocabulary entries: {e}")
+        raise DatabaseError(f"Error getting user vocabulary entries: {str(e)}")
 
 
 def delete_user_vocabulary(user: str) -> bool:
@@ -171,9 +162,11 @@ def delete_user_vocabulary(user: str) -> bool:
     except ValueError as e:
         logger.error(f"Validation error deleting vocabulary: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error deleting vocabulary for user '{user}': {e}")
-        return False
+        logger.error(f"Error deleting user vocabulary: {e}")
+        raise DatabaseError(f"Error deleting user vocabulary: {str(e)}")
 
 
 def delete_specific_vocabulary(user: str, vocab_id: int) -> bool:
@@ -219,11 +212,11 @@ def delete_specific_vocabulary(user: str, vocab_id: int) -> bool:
         logger.error(f"Validation error deleting specific vocabulary: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error deleting vocabulary entry {vocab_id} for user '{user}': {e}")
-        return False
+        logger.error(f"Error deleting specific vocabulary: {e}")
+        raise DatabaseError(f"Error deleting specific vocabulary: {str(e)}")
 
 
-def update_vocabulary_entry(user: str, vocab_id: int, updates: Dict[str, Any]) -> bool:
+def update_vocabulary_entry(user: str, vocab_id: int, updates: VocabularyData) -> bool:
     """
     Update a vocabulary entry for a user.
 
@@ -281,12 +274,14 @@ def update_vocabulary_entry(user: str, vocab_id: int, updates: Dict[str, Any]) -
     except ValueError as e:
         logger.error(f"Validation error updating vocabulary: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating vocabulary entry {vocab_id} for user '{user}': {e}")
-        return False
+        logger.error(f"Error updating vocabulary entry: {e}")
+        raise DatabaseError(f"Error updating vocabulary entry: {str(e)}")
 
 
-def get_vocabulary_statistics(user: str) -> Dict[str, Any]:
+def get_vocabulary_statistics(user: str) -> VocabularyData:
     """
     Get vocabulary statistics for a user.
 

@@ -14,7 +14,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+from typing import List, Optional, Tuple
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
@@ -22,6 +22,8 @@ from infrastructure.imports import Imports
 from core.database.connection import select_rows, select_one, insert_row
 from features.ai.memory.vocabulary_memory import get_user_vocab_stats
 from core.services import UserService
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -80,13 +82,19 @@ class UserAnalyticsManager:
             # Get vocabulary mastery
             vocab_stats = get_user_vocab_stats(self.user_id)
 
+            last_activity = user_stats.get('last_activity')
+            if isinstance(last_activity, str):
+                last_activity = datetime.fromisoformat(last_activity)
+            elif last_activity is None:
+                last_activity = datetime.utcnow()
+
             analytics_data = UserAnalyticsData(
                 user_id=self.user_id,
                 total_exercises_completed=user_stats.get('total_games', 0),
                 average_score=user_stats.get('average_score', 0.0),
                 vocabulary_mastered=vocab_stats.get('mastered_count', 0),
                 learning_streak_days=user_stats.get('learning_streak', 0),
-                last_activity_date=user_stats.get('last_activity'),
+                last_activity_date=last_activity,
                 skill_level=user_stats.get('skill_level', 0)
             )
 
@@ -100,7 +108,7 @@ class UserAnalyticsManager:
             self.logger.error(f"Error calculating learning progress for user {self.user_id}: {e}")
             raise
 
-    def _get_exercise_statistics(self) -> Dict[str, Any]:
+    def _get_exercise_statistics(self) -> AnalyticsData:
         """
         Get exercise statistics for the user.
 
@@ -206,7 +214,7 @@ class UserAnalyticsManager:
             self.logger.error(f"Error calculating learning streak for user {self.user_id}: {e}")
             return 0
 
-    def _get_user_profile(self) -> Dict[str, Any]:
+    def _get_user_profile(self) -> AnalyticsData:
         """
         Get user profile information.
 
@@ -227,7 +235,7 @@ class UserAnalyticsManager:
             return {}
 
 
-def create_user_analytics_report(user_id: str) -> Dict[str, Any]:
+def create_user_analytics_report(user_id: str) -> AnalyticsData:
     """
     Create a comprehensive analytics report for a user.
 

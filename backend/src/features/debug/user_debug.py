@@ -13,14 +13,15 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any
 
 from core.database.connection import select_one, select_rows
+from shared.exceptions import DatabaseError
+from shared.types import UserData
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_statistics(username: str) -> Dict[str, Any]:
+def get_user_statistics(username: str) -> UserData:
     """
     Get comprehensive user statistics for debugging.
 
@@ -96,5 +97,5 @@ def get_user_statistics(username: str) -> Dict[str, Any]:
         logger.error(f"Validation error getting user statistics: {e}")
         raise
     except Exception as e:
-        logger.error(f"Error getting statistics for user {username}: {e}")
-        raise
+        logger.error(f"Error getting user debug info: {e}")
+        raise DatabaseError(f"Error getting user debug info: {str(e)}")

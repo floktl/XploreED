@@ -14,13 +14,14 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import datetime
-from typing import Dict, Optional
+from typing import Optional, Dict
+from shared.types import AnalyticsData
 
 from core.database.connection import insert_row, update_row, select_one
 from features.ai.memory.level_manager import check_auto_level_up
 from features.spaced_repetition import sm2
 from features.ai.memory.logger import topic_memory_logger
-from shared.exceptions import TopicMemoryError
+from shared.exceptions import TopicMemoryError, DatabaseError
 
 import logging
 logger = logging.getLogger(__name__)
@@ -143,12 +144,16 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
 
             logger.debug(f"Created new topic: {grammar} - EF: {new_ef:.2f}, Reps: {new_reps}")
 
+    except TopicMemoryError:
+        raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating topic memory for user {username}, grammar {grammar}: {e}")
-        raise TopicMemoryError(f"Error updating topic memory: {str(e)}")
+        logger.error(f"Error updating single topic: {e}")
+        raise DatabaseError(f"Error updating single topic: {str(e)}")
 
 
-def update_topic_memory_translation(username: str, german: str, qualities: Optional[Dict[str, int]] = None) -> None:
+def update_topic_memory_translation(username: str, german: str, qualities: Optional[AnalyticsData] = None) -> None:
     """
     Update topic memory based on translation results.
 
@@ -190,12 +195,14 @@ def update_topic_memory_translation(username: str, german: str, qualities: Optio
 
     except TopicMemoryError:
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating topic memory for translation: {e}")
-        raise TopicMemoryError(f"Error updating topic memory for translation: {str(e)}")
+        logger.error(f"Error updating topic memory translation: {e}")
+        raise DatabaseError(f"Error updating topic memory translation: {str(e)}")
 
 
-def update_topic_memory_reading(username: str, text: str, qualities: Optional[Dict[str, int]] = None) -> None:
+def update_topic_memory_reading(username: str, text: str, qualities: Optional[AnalyticsData] = None) -> None:
     """
     Update topic memory based on reading comprehension results.
 
@@ -237,12 +244,14 @@ def update_topic_memory_reading(username: str, text: str, qualities: Optional[Di
 
     except TopicMemoryError:
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error updating topic memory for reading: {e}")
-        raise TopicMemoryError(f"Error updating topic memory for reading: {str(e)}")
+        logger.error(f"Error updating topic memory reading: {e}")
+        raise DatabaseError(f"Error updating topic memory reading: {str(e)}")
 
 
-def get_topic_memory_summary(username: str) -> Dict:
+def get_topic_memory_summary(username: str) -> AnalyticsData:
     """
     Get a summary of the user's topic memory.
 
@@ -290,6 +299,10 @@ def get_topic_memory_summary(username: str) -> Dict:
             "weak_topics": weak_topics
         }
 
+    except TopicMemoryError:
+        raise
+    except DatabaseError:
+        raise
     except Exception as e:
-        logger.error(f"Error getting topic memory summary for user {username}: {e}")
-        raise TopicMemoryError(f"Error getting topic memory summary: {str(e)}")
+        logger.error(f"Error getting topic memory summary: {e}")
+        raise DatabaseError(f"Error getting topic memory summary: {str(e)}")

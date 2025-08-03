@@ -11,7 +11,7 @@ Date: 2025
 
 import logging
 import json
-from typing import Dict, Any
+from typing import Any
 
 from flask import request, jsonify # type: ignore
 from api.middleware.auth import require_user
@@ -25,6 +25,7 @@ from features.ai.generation.exercise_creation import (
 from features.ai.generation.helpers import (
     store_user_ai_data
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
@@ -167,7 +168,7 @@ def get_training_exercises():
                         store_user_ai_data(
                             username,
                             {
-                                "current_exercises": json.dumps(ai_block),
+                                "exercises": json.dumps(ai_block),
                                 "next_exercises": json.dumps(ai_block),  # For now, store same as next
                             },
                         )
@@ -213,6 +214,16 @@ def get_training_exercises():
                 if username:  # Ensure username is not None
                     ai_block = generate_training_exercises(username)
                     if ai_block and ai_block.get("exercises"):
+                        logger.info(f"Storing exercises for user {username}")
+                        logger.debug(f"Storing exercise block with topic: '{ai_block.get('topic')}'")
+                        logger.debug(f"Exercise block keys: {list(ai_block.keys())}")
+                        store_user_ai_data(
+                            username,
+                            {
+                                "exercises": json.dumps(ai_block),
+                                "next_exercises": json.dumps(ai_block),  # For now, store same as next
+                            },
+                        )
                         logger.info(f"Returning cached exercises for user {username}")
                         return jsonify(ai_block)
                     else:
@@ -343,17 +354,29 @@ def submit_training_exercise():
         # Get the current exercise block from user data
         row = select_one(
             "ai_user_data",
-            columns="exercises",
+            columns="exercises, next_exercises",
             where="username = ?",
             params=(username,),
         )
 
-        if not row or not row.get("exercises"):
+        # Check for exercises first (training), then fallback to next_exercises
+        exercise_data = None
+        if row and row.get("exercises"):
+            exercise_data = row["exercises"]
+            logger.info(f"Found exercises for user {username}")
+        elif row and row.get("next_exercises"):
+            exercise_data = row["next_exercises"]
+            logger.info(f"Found next_exercises for user {username}")
+        else:
+            logger.info(f"No exercise data found for user {username}")
+
+        if not exercise_data:
             return jsonify({"error": "No current exercises found"}), 400
 
         try:
-            exercise_block = json.loads(row["exercises"])
-            block_id = exercise_block.get("block_id", "training")
+            exercise_block = json.loads(exercise_data)
+            # Check for both "block_id" and "id" fields (some exercises use "id")
+            block_id = exercise_block.get("block_id") or exercise_block.get("id") or "training"
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid exercise data"}), 400
 
@@ -363,9 +386,9 @@ def submit_training_exercise():
         # Delegate to the main exercise submission handler
         from .exercise import submit_ai_exercise
 
-        # Simply call the function - the parse_submission_data function now handles both formats
+        # Call the function with the data directly
         try:
-            result = submit_ai_exercise(block_id)
+            result = submit_ai_exercise(block_id, data)
             return result
         except Exception as e:
             logger.error(f"Error in submit_ai_exercise: {e}")

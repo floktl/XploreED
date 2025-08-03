@@ -17,8 +17,9 @@ For detailed architecture information, see: docs/backend_structure.md
 import os
 import sqlite3
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Union, Tuple
-from shared.exceptions import ConfigurationError
+from typing import List, Optional, Union, Tuple
+from shared.exceptions import ConfigurationError, DatabaseError
+from shared.types import DatabaseRow, DatabaseList, DatabaseResult
 
 # === Environment Configuration ===
 try:
@@ -67,7 +68,7 @@ def get_connection():
 
 
 # === Query Execution ===
-def execute_query(query: str, params: Tuple = (), fetch: bool = False, many: bool = False) -> Union[List[Dict], bool, None]:
+def execute_query(query: str, params: Tuple = (), fetch: bool = False, many: bool = False) -> Union[DatabaseList, bool, None]:
     """
     Execute SQL query with optional parameters and return fetch results.
 
@@ -125,7 +126,7 @@ def fetch_all(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     group_by: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+) -> DatabaseList:
     """
     Return multiple rows from table using basic query building.
 
@@ -139,7 +140,7 @@ def fetch_all(
         group_by: GROUP BY clause (default: None)
 
     Returns:
-        List[Dict[str, Any]]: List of row dictionaries
+        DatabaseList: List of row dictionaries
     """
     cols = ", ".join(columns) if isinstance(columns, (list, tuple)) else str(columns)
 
@@ -163,7 +164,7 @@ def fetch_one(
     params: Tuple = (),
     columns: Union[str, List[str]] = "*",
     order_by: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
+) -> DatabaseResult:
     """
     Return a single row from table using basic query building.
 
@@ -175,13 +176,13 @@ def fetch_one(
         order_by: ORDER BY clause (default: None)
 
     Returns:
-        Optional[Dict[str, Any]]: Single row dictionary or None
+        DatabaseResult: Single row dictionary or None
     """
     results = fetch_all(table, where_clause, params, columns, order_by, limit=1)
     return results[0] if results else None
 
 
-def fetch_topic_memory(username: str, include_correct: bool = False) -> Union[List[Dict[str, Any]], bool]:
+def fetch_topic_memory(username: str, include_correct: bool = False) -> Union[DatabaseList, bool]:
     """
     Fetch topic memory entries for a specific user.
 
@@ -190,7 +191,7 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> Union[Li
         include_correct: Whether to include correct answers (default: False)
 
     Returns:
-        Union[List[Dict[str, Any]], bool]: Memory entries or False on error
+        Union[DatabaseList, bool]: Memory entries or False on error
     """
     try:
         where_clause = "WHERE username = ?"
@@ -200,12 +201,12 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> Union[Li
             where_clause += " AND correct = 0"
 
         return fetch_all("topic_memory", where_clause, params)
-    except Exception:
+    except Exception as e:
         return False
 
 
 # === Data Modification Operations ===
-def insert_row(table: str, data: Dict[str, Any]) -> bool:
+def insert_row(table: str, data: DatabaseRow) -> bool:
     """
     Insert a single row into the specified table.
 
@@ -223,7 +224,7 @@ def insert_row(table: str, data: Dict[str, Any]) -> bool:
     return execute_query(query, tuple(data.values())) is True
 
 
-def update_row(table: str, updates: Dict[str, Any], where_clause: str, params: Tuple = ()) -> bool:
+def update_row(table: str, updates: DatabaseRow, where_clause: str, params: Tuple = ()) -> bool:
     """
     Update rows in the specified table.
 
@@ -259,7 +260,7 @@ def delete_rows(table: str, where_clause: str = "", params: Tuple = ()) -> bool:
 
 
 # === Custom Query Operations ===
-def fetch_custom(query: str, params: Tuple = ()) -> List[Dict[str, Any]]:
+def fetch_custom(query: str, params: Tuple = ()) -> DatabaseList:
     """
     Execute a custom query and return all results.
 
@@ -268,13 +269,13 @@ def fetch_custom(query: str, params: Tuple = ()) -> List[Dict[str, Any]]:
         params: Query parameters (default: empty tuple)
 
     Returns:
-        List[Dict[str, Any]]: Query results
+        DatabaseList: Query results
     """
     result = execute_query(query, params, fetch=True)
     return result if isinstance(result, list) else []
 
 
-def fetch_one_custom(query: str, params: Tuple = ()) -> Optional[Dict[str, Any]]:
+def fetch_one_custom(query: str, params: Tuple = ()) -> DatabaseResult:
     """
     Execute a custom query and return a single result.
 
@@ -283,7 +284,7 @@ def fetch_one_custom(query: str, params: Tuple = ()) -> Optional[Dict[str, Any]]
         params: Query parameters (default: empty tuple)
 
     Returns:
-        Optional[Dict[str, Any]]: Single result or None
+        DatabaseResult: Single result or None
     """
     results = fetch_custom(query, params)
     return results[0] if results else None
@@ -300,7 +301,7 @@ def select_rows(
     limit: Optional[int] = None,
     offset: Optional[int] = None,
     group_by: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+) -> DatabaseList:
     """
     Modern interface for selecting multiple rows with keyword arguments.
 
@@ -314,7 +315,7 @@ def select_rows(
         group_by: GROUP BY clause (default: None)
 
     Returns:
-        List[Dict[str, Any]]: List of row dictionaries
+        DatabaseList: List of row dictionaries
     """
     where_clause = f"WHERE {where}" if where else ""
     return fetch_all(table, where_clause, params, columns, order_by, limit, offset, group_by)
@@ -328,7 +329,7 @@ def select_one(
     params: Tuple = (),
     order_by: Optional[str] = None,
     group_by: Optional[str] = None,
-) -> Optional[Dict[str, Any]]:
+) -> DatabaseResult:
     """
     Modern interface for selecting a single row with keyword arguments.
 
@@ -341,7 +342,7 @@ def select_one(
         group_by: GROUP BY clause (default: None)
 
     Returns:
-        Optional[Dict[str, Any]]: Single row dictionary or None
+        DatabaseResult: Single row dictionary or None
     """
     where_clause = f"WHERE {where}" if where else ""
     return fetch_one(table, where_clause, params, columns, order_by)

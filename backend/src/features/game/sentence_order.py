@@ -6,6 +6,7 @@ from features.ai.prompts import game_sentence_prompt
 from external.mistral.client import send_prompt
 from features.ai.generation.feedback_helpers import generate_feedback_prompt
 from shared.text_utils import _normalize_umlauts, _strip_final_punct
+from shared.exceptions import AIEvaluationError
 import random
 from colorama import Fore, Style # type: ignore
 from datetime import datetime
@@ -141,8 +142,11 @@ def generate_ai_sentence(username=None):
         if resp.status_code == 200:
             sentence = resp.json()["choices"][0]["message"]["content"].strip()
             return sentence.strip('"')
+    except AIEvaluationError:
+        raise
     except Exception as e:
         print("AI sentence generation failed:", e)
+        raise AIEvaluationError(f"AI sentence generation failed: {str(e)}")
     return None
 
 

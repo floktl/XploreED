@@ -15,18 +15,20 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import json
 import re
-from typing import Dict, List
+from typing import List
 
 from features.grammar import detect_language_topics
 from shared.text_utils import _extract_json
 from features.ai.prompts import quality_evaluation_prompt
 from external.mistral.client import send_prompt
+from shared.exceptions import AIEvaluationError, ValidationError
+from shared.types import AnalyticsData
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> Dict[str, int]:
+def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> AnalyticsData:
     """
     Evaluate grammar topic quality using AI.
 
@@ -89,12 +91,14 @@ def evaluate_topic_qualities_ai(english: str, reference: str, student: str) -> D
             logger.error(f"API call failed with status code: {resp.status_code}")
             return {}
 
+    except AIEvaluationError:
+        raise
     except Exception as e:
-        logger.error(f"Error in topic quality evaluation: {e}")
-        return {}
+        logger.error(f"Error evaluating topic qualities with AI: {e}")
+        raise AIEvaluationError(f"Error evaluating topic qualities with AI: {str(e)}")
 
 
-def compare_topic_qualities(reference: str, student: str) -> Dict[str, int]:
+def compare_topic_qualities(reference: str, student: str) -> AnalyticsData:
     """
     Compare topic qualities between reference and student text.
 
@@ -134,12 +138,14 @@ def compare_topic_qualities(reference: str, student: str) -> Dict[str, int]:
 
         return qualities
 
+    except ValidationError:
+        raise
     except Exception as e:
         logger.error(f"Error comparing topic qualities: {e}")
-        return {}
+        raise AIEvaluationError(f"Error comparing topic qualities: {str(e)}")
 
 
-def analyze_topic_performance(topics: List[str], qualities: Dict[str, int]) -> Dict:
+def analyze_topic_performance(topics: List[str], qualities: AnalyticsData) -> AnalyticsData:
     """
     Analyze topic performance based on quality scores.
 
@@ -177,11 +183,8 @@ def analyze_topic_performance(topics: List[str], qualities: Dict[str, int]) -> D
             "evaluated_topics": len(qualities)
         }
 
+    except ValidationError:
+        raise
     except Exception as e:
         logger.error(f"Error analyzing topic performance: {e}")
-        return {
-            "average_score": 0,
-            "strong_topics": [],
-            "weak_topics": [],
-            "missing_topics": []
-        }
+        raise AIEvaluationError(f"Error analyzing topic performance: {str(e)}")

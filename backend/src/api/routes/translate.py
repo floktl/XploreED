@@ -23,7 +23,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from datetime import datetime
 
 from flask import request, jsonify, Response, stream_with_context # type: ignore
@@ -39,6 +39,7 @@ from features.translation import (
     stream_translation_feedback,
     cleanup_expired_jobs,
 )
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -125,7 +126,7 @@ def translate_text_route():
         })
 
     except Exception as e:
-        logger.error(f"Error in translate endpoint: {e}")
+        logger.error(f"Error translating text: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 

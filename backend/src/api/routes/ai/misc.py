@@ -11,7 +11,7 @@ Date: 2025
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from flask import request, jsonify # type: ignore
 from api.middleware.auth import require_user
@@ -23,6 +23,7 @@ from features.ai.prompts import (
     ai_context_prompt,
     ai_question_prompt,
 )
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
@@ -181,8 +182,8 @@ def ask_ai_stream():
         logger.error(f"Validation error asking AI stream: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error asking AI stream: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error streaming AI answer: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/mistral-chat-history", methods=["GET"])
@@ -214,8 +215,8 @@ def get_mistral_chat_history():
         logger.error(f"Validation error getting chat history: {e}")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Error getting chat history: {e}")
-        return jsonify({"error": "Server error"}), 500
+        logger.error(f"Error getting AI assistance: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @ai_bp.route("/mistral-chat-history", methods=["POST"])

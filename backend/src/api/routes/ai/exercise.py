@@ -10,7 +10,7 @@ Date: 2025
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
@@ -25,13 +25,14 @@ from features.exercise import (
     evaluate_remaining_exercises_async,
 )
 from features.ai.evaluation import process_ai_answers
+from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
 
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
-def submit_ai_exercise(block_id):
+def submit_ai_exercise(block_id, data=None):
     """
     Evaluate a submitted exercise block and save results.
 
@@ -87,7 +88,8 @@ def submit_ai_exercise(block_id):
         username = require_user()
         logger.info(f"User {username} submitting exercise block {block_id}")
 
-        data = request.get_json() or {}
+        if data is None:
+            data = request.get_json() or {}
         exercises, answers, error = parse_submission_data(data)
 
         if error:
@@ -107,19 +109,30 @@ def submit_ai_exercise(block_id):
         from threading import Thread
         def background_task():
             logger.info("Starting background task for full evaluation and topic memory updates")
-            with app.app_context():
-                exercise_block = data.get("exercise_block")
-                logger.debug(f"Exercise block from data: topic='{exercise_block.get('topic') if exercise_block else 'None'}'")
-                if username:  # Ensure username is not None
-                    evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result_with_details, exercise_block)
+            try:
+                with app.app_context():
+                    exercise_block = data.get("exercise_block")
+                    logger.info(f"Exercise block from data: topic='{exercise_block.get('topic') if exercise_block else 'None'}'")
+                    if username:  # Ensure username is not None
+                        logger.info(f"Calling evaluate_remaining_exercises_async for user {username}, block {block_id}")
+                        evaluate_remaining_exercises_async(username, block_id, exercises, answers, first_result_with_details, exercise_block)
+                    else:
+                        logger.error("Username is None in background task")
+            except Exception as e:
+                logger.error(f"Error in background task: {e}")
+                import traceback
+                logger.error(f"Background task traceback: {traceback.format_exc()}")
 
+        logger.info("Starting background thread")
         Thread(target=background_task, daemon=True).start()
+        logger.info("Background thread started")
 
         # Create immediate results
         immediate_results = create_immediate_results(exercises, first_result_with_details)
 
         logger.info("Returning immediate response, background processing started")
         return jsonify({
+            "block_id": block_id,  # Include the block_id for frontend polling
             "pass": False,  # Will be updated in background
             "summary": {"correct": 0, "total": len(exercises), "mistakes": []},  # Will be updated in background
             "results": immediate_results,
@@ -132,8 +145,6 @@ def submit_ai_exercise(block_id):
     except Exception as e:
         logger.error(f"Error submitting AI exercise: {e}")
         logger.error(f"Exception type: {type(e)}")
-        import traceback
-        logger.error(f"Full traceback: {traceback.format_exc()}")
         return jsonify({"error": "Server error"}), 500
 
 

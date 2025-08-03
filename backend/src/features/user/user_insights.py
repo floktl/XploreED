@@ -15,16 +15,17 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any
 from datetime import datetime
 
 from infrastructure.imports import Imports
 from .user_analytics import UserAnalyticsManager, UserAnalyticsData
+from shared.exceptions import DatabaseError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def generate_learning_insights(user_id: str) -> Dict[str, str]:
+def generate_learning_insights(user_id: str) -> AnalyticsData:
     """
     Generate personalized learning insights based on user analytics.
 
@@ -65,12 +66,7 @@ def generate_learning_insights(user_id: str) -> Dict[str, str]:
         raise
     except Exception as e:
         logger.error(f"Error generating insights for user {user_id}: {e}")
-        return {
-            'strength': 'Consistent learning effort',
-            'weakness': 'Need more practice',
-            'recommendation': 'Continue with daily exercises',
-            'motivation': 'Keep up the great work!'
-        }
+        raise DatabaseError(f"Error generating insights for user {user_id}: {str(e)}")
 
 
 def _identify_strengths(analytics: UserAnalyticsData) -> str:
@@ -97,7 +93,7 @@ def _identify_strengths(analytics: UserAnalyticsData) -> str:
 
     except Exception as e:
         logger.error(f"Error identifying strengths: {e}")
-        return "Consistent learning effort"
+        raise DatabaseError(f"Error identifying strengths: {str(e)}")
 
 
 def _identify_weaknesses(analytics: UserAnalyticsData) -> str:
@@ -124,7 +120,7 @@ def _identify_weaknesses(analytics: UserAnalyticsData) -> str:
 
     except Exception as e:
         logger.error(f"Error identifying weaknesses: {e}")
-        return "Need more practice"
+        raise DatabaseError(f"Error identifying weaknesses: {str(e)}")
 
 
 def _generate_recommendations(analytics: UserAnalyticsData) -> str:
@@ -159,7 +155,7 @@ def _generate_recommendations(analytics: UserAnalyticsData) -> str:
 
     except Exception as e:
         logger.error(f"Error generating recommendations: {e}")
-        return "Continue with daily exercises"
+        raise DatabaseError(f"Error generating recommendations: {str(e)}")
 
 
 def _generate_motivational_message(analytics: UserAnalyticsData) -> str:
@@ -186,10 +182,10 @@ def _generate_motivational_message(analytics: UserAnalyticsData) -> str:
 
     except Exception as e:
         logger.error(f"Error generating motivational message: {e}")
-        return "Keep up the great work!"
+        raise DatabaseError(f"Error generating motivational message: {str(e)}")
 
 
-def create_comprehensive_user_report(user_id: str) -> Dict[str, Any]:
+def create_comprehensive_user_report(user_id: str) -> AnalyticsData:
     """
     Create a comprehensive user report with analytics and insights.
 
@@ -241,11 +237,7 @@ def create_comprehensive_user_report(user_id: str) -> Dict[str, Any]:
         raise
     except Exception as e:
         logger.error(f"Error creating comprehensive report for user {user_id}: {e}")
-        return {
-            'user_id': user_id,
-            'error': str(e),
-            'generated_at': datetime.now().isoformat()
-        }
+        raise DatabaseError(f"Error creating comprehensive report for user {user_id}: {str(e)}")
 
 
 # Constants for analytics thresholds

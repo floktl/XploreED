@@ -25,7 +25,7 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
@@ -54,6 +54,7 @@ from features.support import (
 )
 from config.blueprint import support_bp
 from api.schemas import SupportRequestSchema
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===

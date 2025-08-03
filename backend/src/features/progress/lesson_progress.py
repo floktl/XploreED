@@ -15,14 +15,16 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Optional, Any, List, Tuple
+from typing import Optional, List, Tuple
 
 from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import ProgressData, AnalyticsData, ValidationResult
 
 logger = logging.getLogger(__name__)
 
 
-def get_user_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
+def get_user_lesson_progress(username: str, lesson_id: int) -> ProgressData:
     """
     Get detailed lesson progress for a specific user and lesson.
 
@@ -70,9 +72,11 @@ def get_user_lesson_progress(username: str, lesson_id: int) -> Dict[str, bool]:
     except ValueError as e:
         logger.error(f"Validation error getting user lesson progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting user lesson progress for user {username}, lesson {lesson_id}: {e}")
-        return {}
+        raise DatabaseError(f"Error getting user lesson progress for user {username}, lesson {lesson_id}: {str(e)}")
 
 
 def update_block_progress(username: str, lesson_id: int, block_id: str, completed: bool) -> bool:
@@ -143,9 +147,11 @@ def update_block_progress(username: str, lesson_id: int, block_id: str, complete
     except ValueError as e:
         logger.error(f"Validation error updating block progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error updating block progress for user {username}, lesson {lesson_id}, block {block_id}: {e}")
-        return False
+        raise DatabaseError(f"Error updating block progress for user {username}, lesson {lesson_id}, block {block_id}: {str(e)}")
 
 
 def mark_lesson_complete(username: str, lesson_id: int) -> Tuple[bool, Optional[str]]:
@@ -215,12 +221,14 @@ def mark_lesson_complete(username: str, lesson_id: int) -> Tuple[bool, Optional[
     except ValueError as e:
         logger.error(f"Validation error marking lesson complete: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error marking lesson complete for user {username}, lesson {lesson_id}: {e}")
-        return False, f"Error marking lesson complete: {str(e)}"
+        raise DatabaseError(f"Error marking lesson complete for user {username}, lesson {lesson_id}: {str(e)}")
 
 
-def check_lesson_completion_status(username: str, lesson_id: int) -> Dict[str, Any]:
+def check_lesson_completion_status(username: str, lesson_id: int) -> AnalyticsData:
     """
     Check the completion status of a lesson for a user.
 
@@ -297,17 +305,11 @@ def check_lesson_completion_status(username: str, lesson_id: int) -> Dict[str, A
     except ValueError as e:
         logger.error(f"Validation error checking lesson completion status: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error checking lesson completion status for user {username}, lesson {lesson_id}: {e}")
-        return {
-            "lesson_id": lesson_id,
-            "username": username,
-            "error": str(e),
-            "total_blocks": 0,
-            "completed_blocks": 0,
-            "completion_percentage": 0.0,
-            "is_complete": False
-        }
+        raise DatabaseError(f"Error checking lesson completion status for user {username}, lesson {lesson_id}: {str(e)}")
 
 
 def mark_lesson_as_completed(username: str, lesson_id: int) -> Tuple[bool, Optional[str]]:
@@ -360,9 +362,11 @@ def mark_lesson_as_completed(username: str, lesson_id: int) -> Tuple[bool, Optio
     except ValueError as e:
         logger.error(f"Validation error marking lesson as completed: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error marking lesson as completed for user {username}, lesson {lesson_id}: {e}")
-        return False, f"Error marking lesson as completed: {str(e)}"
+        raise DatabaseError(f"Error marking lesson as completed for user {username}, lesson {lesson_id}: {str(e)}")
 
 
 def reset_lesson_progress(username: str, lesson_id: int) -> bool:
@@ -412,6 +416,8 @@ def reset_lesson_progress(username: str, lesson_id: int) -> bool:
     except ValueError as e:
         logger.error(f"Validation error resetting lesson progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error resetting lesson progress for user {username}, lesson {lesson_id}: {e}")
-        return Falsegit
+        raise DatabaseError(f"Error resetting lesson progress for user {username}, lesson {lesson_id}: {str(e)}")

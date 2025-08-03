@@ -14,14 +14,16 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 import datetime
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 
 from core.database.connection import select_rows, fetch_one, fetch_all
+from shared.exceptions import DatabaseError, ValidationError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
 
-def get_game_statistics(username: str) -> Dict[str, Any]:
+def get_game_statistics(username: str) -> AnalyticsData:
     """
     Get comprehensive game statistics for a user.
 
@@ -176,30 +178,14 @@ def get_game_statistics(username: str) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting game statistics: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting game statistics for user '{username}': {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "total_games": 0,
-            "total_rounds": 0,
-            "correct_answers": 0,
-            "total_answers": 0,
-            "accuracy_rate": 0.0,
-            "average_score": 0.0,
-            "highest_level": 0,
-            "current_streak": 0,
-            "best_streak": 0,
-            "total_play_time": 0,
-            "favorite_level": None,
-            "improvement_rate": 0.0,
-            "last_played": None,
-            "level_progress": {},
-            "recent_performance": []
-        }
+        raise DatabaseError(f"Error getting game statistics for user '{username}': {str(e)}")
 
 
-def get_user_game_level_progress(username: str) -> Dict[str, Any]:
+def get_user_game_level_progress(username: str) -> AnalyticsData:
     """
     Get detailed level progress for a user.
 
@@ -284,18 +270,14 @@ def get_user_game_level_progress(username: str) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting level progress: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting level progress for user '{username}': {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "current_level": 0,
-            "total_levels_attempted": 0,
-            "level_progress": {}
-        }
+        raise DatabaseError(f"Error getting level progress for user '{username}': {str(e)}")
 
 
-def get_game_achievements(username: str) -> Dict[str, Any]:
+def get_game_achievements(username: str) -> AnalyticsData:
     """
     Get game achievements and milestones for a user.
 
@@ -388,13 +370,8 @@ def get_game_achievements(username: str) -> Dict[str, Any]:
     except ValueError as e:
         logger.error(f"Validation error getting game achievements: {e}")
         raise
+    except DatabaseError:
+        raise
     except Exception as e:
         logger.error(f"Error getting game achievements for user '{username}': {e}")
-        return {
-            "username": username,
-            "error": str(e),
-            "total_achievements": 0,
-            "achievements": [],
-            "milestones": [],
-            "next_milestones": []
-        }
+        raise DatabaseError(f"Error getting game achievements for user '{username}': {str(e)}")

@@ -14,12 +14,14 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any
+
+from shared.exceptions import DatabaseError
+from shared.types import ExerciseBlockData, BlockResult
 
 logger = logging.getLogger(__name__)
 
 
-def format_exercise_block(block: Dict[str, Any]) -> Dict[str, Any]:
+def format_exercise_block(block: BlockResult) -> BlockResult:
     """
     Format an exercise block for consistent structure.
 
@@ -61,10 +63,10 @@ def format_exercise_block(block: Dict[str, Any]) -> Dict[str, Any]:
 
     except Exception as e:
         logger.error(f"Error formatting exercise block: {e}")
-        return block
+        raise DatabaseError(f"Error formatting exercise block: {str(e)}")
 
 
-def validate_exercise_data(exercise_data: Dict[str, Any]) -> bool:
+def validate_exercise_data(exercise_data: BlockResult) -> bool:
     """
     Validate exercise data structure.
 
@@ -109,7 +111,7 @@ def validate_exercise_data(exercise_data: Dict[str, Any]) -> bool:
 
     except Exception as e:
         logger.error(f"Error validating exercise data: {e}")
-        return False
+        raise DatabaseError(f"Error validating exercise data: {str(e)}")
 
 
 def sanitize_exercise_text(text: str) -> str:
@@ -142,7 +144,7 @@ def sanitize_exercise_text(text: str) -> str:
 
     except Exception as e:
         logger.error(f"Error sanitizing exercise text: {e}")
-        return text or ""
+        raise DatabaseError(f"Error sanitizing exercise text: {str(e)}")
 
 
 def extract_exercise_keywords(text: str) -> list:
@@ -181,10 +183,10 @@ def extract_exercise_keywords(text: str) -> list:
 
     except Exception as e:
         logger.error(f"Error extracting exercise keywords: {e}")
-        return []
+        raise DatabaseError(f"Error extracting exercise keywords: {str(e)}")
 
 
-def calculate_exercise_difficulty(exercise: Dict[str, Any]) -> str:
+def calculate_exercise_difficulty(exercise: BlockResult) -> str:
     """
     Calculate the difficulty level of an exercise.
 
@@ -222,4 +224,4 @@ def calculate_exercise_difficulty(exercise: Dict[str, Any]) -> str:
 
     except Exception as e:
         logger.error(f"Error calculating exercise difficulty: {e}")
-        return "medium"
+        raise DatabaseError(f"Error calculating exercise difficulty: {str(e)}")

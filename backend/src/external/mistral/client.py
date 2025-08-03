@@ -17,7 +17,7 @@ import os
 import requests  # type: ignore
 import traceback
 import logging
-from typing import List, Dict, Optional
+from typing import List, Optional
 from shared.constants import MISTRAL_API_URL, MISTRAL_MODEL
 from shared.exceptions import AIEvaluationError
 
@@ -103,7 +103,9 @@ def send_request(
     except requests.exceptions.RequestException as e:
         raise AIEvaluationError(f"Mistral API request failed: {str(e)}")
     except Exception as e:
-        raise AIEvaluationError(f"Unexpected error in Mistral API request: {str(e)}")
+        error_msg = f"Mistral API error: {str(e)}"
+        logger.error(error_msg)
+        raise AIEvaluationError(error_msg)
 
 
 # === Convenience Functions ===

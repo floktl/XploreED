@@ -12,8 +12,9 @@ User Management Components:
 For detailed architecture information, see: docs/backend_structure.md
 """
 
-from typing import Optional, Dict, Any
+from typing import Optional
 from core.database.connection import select_one
+from shared.types import UserData
 
 
 def user_exists(username: str) -> bool:
@@ -35,7 +36,7 @@ def user_exists(username: str) -> bool:
     return row is not None
 
 
-def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
+def get_user_by_username(username: str) -> Optional[UserData]:
     """
     Get user data by username.
 
@@ -43,7 +44,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
         username: Username to retrieve data for
 
     Returns:
-        Optional[Dict[str, Any]]: User data if found, None otherwise
+        Optional[UserData]: User data if found, None otherwise
     """
     return select_one(
         "users",

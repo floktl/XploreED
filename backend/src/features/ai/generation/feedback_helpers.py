@@ -14,11 +14,12 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List, Optional
+from typing import List, Optional, Dict
 
 from core.database.connection import fetch_topic_memory
 from features.ai.prompts import feedback_generation_prompt
-from shared.exceptions import AIEvaluationError, DatabaseError
+from shared.exceptions import DatabaseError, AIEvaluationError
+from shared.types import ExerciseList, ExerciseAnswers, FeedbackData, AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ def generate_feedback_prompt(
         examples_text = ", ".join(top_vocab)
 
         # Format topic memory data
-        topic_counts: dict[str, int] = {}
+        topic_counts: AnalyticsData = {}
         for entry in topic_memory or []:
             for topic in str(entry.get("topic", "")).split(","):
                 t = topic.strip()
@@ -254,7 +255,7 @@ def get_recent_exercise_topics(username: str, limit: int = 3) -> list[str]:
         raise DatabaseError(f"Error getting recent exercise topics: {str(e)}")
 
 
-def create_feedback_summary(exercises: List[Dict], answers: Dict[str, str], evaluation: Dict) -> Dict[str, Any]:
+def create_feedback_summary(exercises: ExerciseList, answers: ExerciseAnswers, evaluation: Dict) -> FeedbackData:
     """
     Create a comprehensive feedback summary.
 

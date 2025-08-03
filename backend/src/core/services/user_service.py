@@ -14,10 +14,11 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Optional
 from core.database.connection import select_one, fetch_one, select_rows
 from core.authentication import user_exists
 from shared.exceptions import ValidationError
+from shared.types import AnalyticsData
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class UserService:
             return 1
 
     @staticmethod
-    def calculate_skill_level(game_stats: Dict[str, Any], vocabulary_count: int, lessons_completed: int) -> int:
+    def calculate_skill_level(game_stats: AnalyticsData, vocabulary_count: int, lessons_completed: int) -> int:
         """
         Calculate user's skill level based on performance metrics.
 
@@ -107,7 +108,7 @@ class UserService:
             return 1
 
     @staticmethod
-    def get_user_statistics(username: str) -> Dict[str, Any]:
+    def get_user_statistics(username: str) -> AnalyticsData:
         """
         Get comprehensive user statistics.
 
@@ -115,7 +116,7 @@ class UserService:
             username: The username to get statistics for
 
         Returns:
-            Dict[str, Any]: User statistics
+            AnalyticsData: User statistics
 
         Raises:
             ValueError: If username is invalid
@@ -190,7 +191,7 @@ class UserService:
             }
 
     @staticmethod
-    def _get_game_statistics(username: str) -> Dict[str, Any]:
+    def _get_game_statistics(username: str) -> AnalyticsData:
         """Get user's game performance statistics."""
         try:
             # Get game results

@@ -13,14 +13,15 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import Dict, Any, List
 
 from core.database.connection import select_rows
+from shared.exceptions import DatabaseError
+from shared.types import GameList
 
 logger = logging.getLogger(__name__)
 
 
-def get_all_game_results() -> List[Dict[str, Any]]:
+def get_all_game_results() -> GameList:
     """
     Retrieve all game results for admin review.
 
@@ -44,10 +45,10 @@ def get_all_game_results() -> List[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Error retrieving game results: {e}")
-        raise
+        raise DatabaseError(f"Error retrieving game results: {str(e)}")
 
 
-def get_admin_user_game_results(username: str) -> List[Dict[str, Any]]:
+def get_admin_user_game_results(username: str) -> GameList:
     """
     Get game results for a specific user.
 
@@ -96,4 +97,4 @@ def get_admin_user_game_results(username: str) -> List[Dict[str, Any]]:
         raise
     except Exception as e:
         logger.error(f"Error getting game results for user {username}: {e}")
-        raise
+        raise DatabaseError(f"Error getting game results for user {username}: {str(e)}")

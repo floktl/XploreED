@@ -16,6 +16,7 @@ import json
 import logging
 import re
 from typing import Optional, Any
+from shared.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 

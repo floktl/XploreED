@@ -28,7 +28,7 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 import sys
 import traceback
-from typing import Dict, Any, Optional, List
+from typing import Optional, List
 from datetime import datetime
 import os
 
@@ -43,6 +43,7 @@ from features.debug import (
     get_database_schema,
     get_user_statistics,
 )
+from shared.exceptions import DatabaseError
 
 
 # === Logging Configuration ===
@@ -145,11 +146,7 @@ def get_system_health_route():
 
     except Exception as e:
         logger.error(f"Error getting system health: {e}")
-        return jsonify({
-            "status": "error",
-            "timestamp": datetime.now().isoformat(),
-            "error": str(e)
-        }), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/status", methods=["GET"])
@@ -235,18 +232,15 @@ def get_debug_system_status_route():
             test_connection = select_one("users", columns="COUNT(*) as count", where="1=1")
             status_info["database_connected"] = test_connection is not None
         except Exception as e:
+            logger.error(f"Error getting system status: {e}")
             status_info["database_connected"] = False
-            status_info["database_error"] = str(e)
+            status_info["database_error"] = "Database connection failed"
 
         return jsonify(status_info)
 
     except Exception as e:
         logger.error(f"Error getting system status: {e}")
-        return jsonify({
-            "status": "error",
-            "timestamp": datetime.now().isoformat(),
-            "error": str(e)
-        }), 500
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # === Debug Information Routes ===
@@ -349,8 +343,8 @@ def get_debug_info_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting debug info: {e}")
-        return jsonify({"error": "Failed to retrieve debug information"}), 500
+        logger.error(f"Error getting system info: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/config", methods=["GET"])
@@ -454,8 +448,8 @@ def get_config_info_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting config info: {e}")
-        return jsonify({"error": "Failed to retrieve configuration information"}), 500
+        logger.error(f"Error getting system config: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # === Development Tools Routes ===
@@ -551,7 +545,8 @@ def test_database_connection_route():
             test_results["connection_test"] = True
             test_results["read_test"] = True
         except Exception as e:
-            test_results["errors"].append(f"Database read test failed: {str(e)}")
+            logger.error(f"Error testing database connection: {e}")
+            test_results["errors"].append("Database read test failed: Connection or query failed")
 
         # Test write operation (create temporary test record)
         try:
@@ -571,7 +566,8 @@ def test_database_connection_route():
             else:
                 test_results["errors"].append("Database write test failed: No ID returned")
         except Exception as e:
-            test_results["errors"].append(f"Database write test failed: {str(e)}")
+            logger.error(f"Error testing database write: {e}")
+            test_results["errors"].append("Database write test failed: Connection or insert failed")
 
         return jsonify({
             "database_test": test_results,
@@ -579,8 +575,8 @@ def test_database_connection_route():
         })
 
     except Exception as e:
-        logger.error(f"Error testing database: {e}")
-        return jsonify({"error": "Failed to test database"}), 500
+        logger.error(f"Error testing database connection: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/clear-cache", methods=["POST"])
@@ -666,7 +662,8 @@ def clear_cache_route():
 
         try:
             data = request.get_json() or {}
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error getting cache clear data: {e}")
             data = {}
         cache_type = data.get("cache_type", "all")
 
@@ -686,8 +683,8 @@ def clear_cache_route():
         })
 
     except Exception as e:
-        logger.error(f"Error clearing cache: {e}")
-        return jsonify({"error": "Failed to clear cache"}), 500
+        logger.error(f"Error clearing system cache: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # === Performance Monitoring Routes ===
@@ -819,8 +816,8 @@ def get_performance_metrics_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting performance metrics: {e}")
-        return jsonify({"error": "Failed to retrieve performance metrics"}), 500
+        logger.error(f"Error getting system performance: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/performance/slow-queries", methods=["GET"])
@@ -932,8 +929,8 @@ def get_slow_queries_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting slow queries: {e}")
-        return jsonify({"error": "Failed to retrieve slow query information"}), 500
+        logger.error(f"Error getting system slow queries: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # === Error Tracking Routes ===
@@ -1050,8 +1047,8 @@ def get_error_logs_route():
         })
 
     except Exception as e:
-        logger.error(f"Error getting error logs: {e}")
-        return jsonify({"error": "Failed to retrieve error logs"}), 500
+        logger.error(f"Error getting system logs: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/errors/clear", methods=["POST"])
@@ -1139,7 +1136,8 @@ def clear_error_logs_route():
 
         try:
             data = request.get_json() or {}
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error getting error clear data: {e}")
             data = {}
         older_than = data.get("older_than", 7)  # Default to 7 days
         level = data.get("level", "all")
@@ -1164,8 +1162,8 @@ def clear_error_logs_route():
         })
 
     except Exception as e:
-        logger.error(f"Error clearing error logs: {e}")
-        return jsonify({"error": "Failed to clear error logs"}), 500
+        logger.error(f"Error clearing system errors: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # === Development Testing Routes ===
@@ -1264,13 +1262,8 @@ def test_exception_handling_route():
         return jsonify({"message": "Exception test completed"})
 
     except Exception as e:
-        logger.error(f"Test exception raised: {e}")
-        return jsonify({
-            "test_result": "exception_raised",
-            "exception_type": type(e).__name__,
-            "message": str(e),
-            "timestamp": datetime.now().isoformat()
-        }), 500
+        logger.error(f"Error testing exception handling: {e}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 @debug_bp.route("/test/performance", methods=["POST"])
@@ -1397,5 +1390,5 @@ def test_performance_route():
         })
 
     except Exception as e:
-        logger.error(f"Error in performance test: {e}")
-        return jsonify({"error": "Failed to complete performance test"}), 500
+        logger.error(f"Error testing performance: {e}")
+        return jsonify({"error": "Internal server error"}), 500
