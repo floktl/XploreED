@@ -16,6 +16,8 @@ services:
       - ./backend:/app
       - ./backend/secrets/.env:/app/secrets/.env
       - ./backend/database:/app/database
+    environment:
+      - LIMITER_STORAGE_URI=redis://redis:6379/0
     command: >-
       sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
       pip install -r requirements/requirements.txt &&
