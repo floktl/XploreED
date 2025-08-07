@@ -15866,3 +15866,18 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-07 11:02:28 - external.redis.client - INFO - Redis client initialized with REDIS_URL
 2025-08-07 11:02:28 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
 2025-08-07 11:02:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 11:47:06 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 11:47:06 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 11:47:06 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 11:47:06 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 11:47:07 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 11:47:28 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 11:47:28 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 11:47:28 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 11:47:28 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 11:47:29 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 11:47:37 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 11:47:37 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 11:47:37 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 11:47:37 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 11:47:37 - external.tts.client - INFO - TTS client initialized with ElevenLabs

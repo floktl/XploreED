@@ -25,13 +25,15 @@ from shared.types import AnalyticsData
 logger = logging.getLogger(__name__)
 
 
-def create_user_account(username: str, password: str) -> Tuple[bool, Optional[str]]:
+def create_user_account(username: str, password: str, email: Optional[str] = None, skill_level: int = 1) -> Tuple[bool, Optional[str]]:
     """
     Create a new user account with proper initialization.
 
     Args:
         username: The username for the new account
         password: The password for the new account
+        email: The email address for the account (optional)
+        skill_level: The initial skill level (default: 1)
 
     Returns:
         Tuple of (success, error_message)
@@ -69,11 +71,19 @@ def create_user_account(username: str, password: str) -> Tuple[bool, Optional[st
         if not _ensure_users_table():
             return False, "Database initialization failed"
 
-        # Insert new user
-        success = insert_row("users", {
+        # Prepare user data
+        user_data = {
             "username": username,
-            "password": hashed_password
-        })
+            "password": hashed_password,
+            "skill_level": skill_level
+        }
+        
+        # Add email if provided
+        if email:
+            user_data["email"] = email.strip()
+
+        # Insert new user
+        success = insert_row("users", user_data)
 
         if not success:
             logger.error(f"Failed to insert user {username} into database")
@@ -81,7 +91,7 @@ def create_user_account(username: str, password: str) -> Tuple[bool, Optional[st
 
         # Initialize topic memory for new user
         try:
-            initialize_topic_memory_for_level(username, 0)
+            initialize_topic_memory_for_level(username, skill_level)
             logger.info(f"Initialized topic memory for user {username}")
         except Exception as e:
             logger.warning(f"Failed to initialize topic memory for user {username}: {e}")

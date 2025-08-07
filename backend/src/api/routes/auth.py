@@ -120,7 +120,11 @@ def login_route():
         )
 
         if not user_data:
-            return jsonify({"error": "User data not found"}), 500
+            logger.error(f"User data not found for username: {username}")
+            return jsonify({
+                "error": "Invalid credentials",
+                "message": "Username or password is incorrect"
+            }), 401
 
         # Session is already created in authenticate_user function
         session_result = {"success": True, "session_id": session_id}
@@ -325,7 +329,12 @@ def register_route():
             return jsonify({"error": "Email already exists"}), 409
 
         # Create user account
-        success, error_message = create_user_account(registration_data.username, registration_data.password)
+        success, error_message = create_user_account(
+            registration_data.username, 
+            registration_data.password,
+            email=registration_data.email,
+            skill_level=registration_data.skill_level
+        )
 
         if not success:
             return jsonify({"error": "Failed to create account", "message": error_message}), 500
