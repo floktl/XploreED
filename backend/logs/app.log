@@ -14689,3 +14689,713 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeder' for user 'asdf'
 2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'jeder'
 2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Successfully created new vocabulary entry for 'jeden'
+2025-08-07 10:24:15 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'work' for user 'asdf'
+2025-08-07 10:24:15 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'work'
+2025-08-07 10:24:20 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'go' for user 'asdf'
+2025-08-07 10:24:20 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'go'
+2025-08-07 10:24:24 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'Deutsch' for user 'asdf'
+2025-08-07 10:24:24 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'Deutsch'
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - User asdf submitting exercise block blk1754561726362
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Raw submission data: {'answers': {'ex1': 'gelernt', 'ex3': 'eth', 'ex2': 'f'}, 'exercise_block': {'instructions': '', 'exercises': [{'correctAnswer': 'lerne', 'id': 'ex1', 'options': ['lerne', 'lernt', 'lernen', 'gelernt'], 'question': 'Ich _____ Deutsch.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich gehe zur Arbeit.', 'id': 'ex2', 'question': 'I go to work.', 'type': 'translation'}, {'correctAnswer': 'arbeitet', 'id': 'ex3', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet'], 'question': 'Er _____ jeden Tag.', 'type': 'grammar'}], 'vocabHelp': [], 'topic': 'general'}}
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Data keys: ['answers', 'exercise_block']
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Successfully parsed 3 exercises with 3 answers for user: asdf
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Evaluating first exercise ex1
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - First exercise submitted for AI evaluation
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Starting background thread
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Starting background task for full evaluation and topic memory updates
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Exercise block from data: topic='general'
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Calling evaluate_remaining_exercises_async for user asdf, block blk1754561726362
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Starting async evaluation for block blk1754561726362
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Background thread started
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:24:32 - api.routes.ai.exercise - INFO - Returning immediate response, background processing started
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Evaluating all exercises for block blk1754561726362
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Calling evaluate_exercises with 3 exercises and 3 answers
+2025-08-07 10:24:32 - features.ai.generation.exercise_processing - INFO - Evaluating 3 exercises
+2025-08-07 10:24:32 - features.ai.generation.exercise_processing - INFO - Calling evaluate_answers_with_ai with 3 exercises
+2025-08-07 10:24:32 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in strict mode
+2025-08-07 10:24:32 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:24:32 - features.ai.generation.exercise_processing - INFO - AI evaluation result: {'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'lerne'.", 'explanation': "The correct answer is 'lerne'. Your answer was 'gelernt'.", 'alternatives': ['Lerne'], 'user_answer': 'gelernt', 'correct_answer': 'lerne'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich gehe zur Arbeit.'.", 'explanation': "The correct answer is 'Ich gehe zur Arbeit.'. Your answer was 'f'.", 'alternatives': ['Ich gehe zur Arbeit', 'ich gehe zur arbeit.'], 'user_answer': 'f', 'correct_answer': 'Ich gehe zur Arbeit.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'arbeitet'.", 'explanation': "The correct answer is 'arbeitet'. Your answer was 'eth'.", 'alternatives': ['Arbeitet'], 'user_answer': 'eth', 'correct_answer': 'arbeitet'}}
+2025-08-07 10:24:32 - features.ai.generation.exercise_processing - INFO - Score summary: {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Ich _____ Deutsch.', 'your_answer': 'gelernt', 'correct_answer': 'lerne'}, {'question': 'I go to work.', 'your_answer': 'f', 'correct_answer': 'Ich gehe zur Arbeit.'}, {'question': 'Er _____ jeden Tag.', 'your_answer': 'eth', 'correct_answer': 'arbeitet'}]}
+2025-08-07 10:24:32 - features.ai.generation.exercise_processing - INFO - Successfully evaluated exercises
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Evaluation result: ({'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'lerne'.", 'explanation': "The correct answer is 'lerne'. Your answer was 'gelernt'.", 'alternatives': ['Lerne'], 'user_answer': 'gelernt', 'correct_answer': 'lerne'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich gehe zur Arbeit.'.", 'explanation': "The correct answer is 'Ich gehe zur Arbeit.'. Your answer was 'f'.", 'alternatives': ['Ich gehe zur Arbeit', 'ich gehe zur arbeit.'], 'user_answer': 'f', 'correct_answer': 'Ich gehe zur Arbeit.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'arbeitet'.", 'explanation': "The correct answer is 'arbeitet'. Your answer was 'eth'.", 'alternatives': ['Arbeitet'], 'user_answer': 'eth', 'correct_answer': 'arbeitet'}}, {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Ich _____ Deutsch.', 'your_answer': 'gelernt', 'correct_answer': 'lerne'}, {'question': 'I go to work.', 'your_answer': 'f', 'correct_answer': 'Ich gehe zur Arbeit.'}, {'question': 'Er _____ jeden Tag.', 'your_answer': 'eth', 'correct_answer': 'arbeitet'}]})
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Processing evaluation results for block blk1754561726362
+2025-08-07 10:24:32 - features.exercise.exercise_evaluation - INFO - Stored new results for block blk1754561726362
+2025-08-07 10:24:32 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in feedback mode
+2025-08-07 10:24:32 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:24:34 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:24:34 - api.routes.ai.exercise - INFO - Payload received: {'answers': {'ex1': 'gelernt', 'ex3': 'eth', 'ex2': 'f'}}
+2025-08-07 10:24:34 - features.ai.generation.exercise_processing - INFO - Generating new exercises for user: asdf
+2025-08-07 10:24:34 - features.ai.generation.exercise_processing - INFO - Generated new exercise block for user: asdf
+2025-08-07 10:24:34 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Family & Home', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Meine Familie _____ in Berlin.', 'correctAnswer': 'wohnt', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I have a sister.', 'correctAnswer': 'Ich habe eine Schwester.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Haus _____ groß.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754562095699'}
+2025-08-07 10:24:34 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:24:35 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754561726362
+2025-08-07 10:24:37 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:24:37 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:24:37 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:24:37 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Family & Home', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Meine Familie _____ in Berlin.', 'correctAnswer': 'wohnt', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I have a sister.', 'correctAnswer': 'Ich habe eine Schwester.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Haus _____ groß.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754562095699'}
+2025-08-07 10:24:37 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:24:40 - features.exercise.exercise_evaluation - INFO - Successfully processed evaluation results for block blk1754561726362
+2025-08-07 10:24:40 - features.exercise.exercise_evaluation - INFO - Processing AI answers for topic memory and vocabulary updates
+2025-08-07 10:24:40 - features.exercise.exercise_evaluation - INFO - Calling process_ai_answers with exercise_block: {'exercises': [{'correctAnswer': 'lerne', 'id': 'ex1', 'options': ['lerne', 'lernt', 'lernen', 'gelernt'], 'question': 'Ich _____ Deutsch.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich gehe zur Arbeit.', 'id': 'ex2', 'question': 'I go to work.', 'type': 'translation'}, {'correctAnswer': 'arbeitet', 'id': 'ex3', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet'], 'question': 'Er _____ jeden Tag.', 'type': 'grammar'}], 'topic': 'general'}
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Processing AI answers for user: asdf, block: blk1754561726362, answers_count: 3
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Using block topic: 'general' for all exercises
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Created exercise map with 3 exercises
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex1 with answer: 'gelernt'
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Using AI topic evaluation for gap-fill exercise
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Calling evaluate_topic_qualities_ai for gap-fill exercise
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Reference sentence: 'Ich lerne_ Deutsch.'
+2025-08-07 10:24:40 - features.ai.evaluation.exercise_processing - INFO - Student sentence: 'Ich gelernt_ Deutsch.'
+2025-08-07 10:24:43 - features.ai.evaluation.exercise_processing - INFO - AI topic evaluation quality score: 2.00
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - User asdf submitting exercise block blk1754562095699
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Raw submission data: {'answers': {'ex1': 'wohnen', 'ex2': 'fgd', 'ex3': 'dfg'}, 'exercise_block': {'instructions': '', 'exercises': [{'correctAnswer': 'wohnt', 'id': 'ex1', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt'], 'question': 'Meine Familie _____ in Berlin.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich habe eine Schwester.', 'id': 'ex2', 'question': 'I have a sister.', 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'sind', 'war', 'waren'], 'question': 'Das Haus _____ groß.', 'type': 'grammar'}], 'vocabHelp': [], 'topic': 'general'}}
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Data keys: ['answers', 'exercise_block']
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Successfully parsed 3 exercises with 3 answers for user: asdf
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Evaluating first exercise ex1
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - First exercise submitted for AI evaluation
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Starting background thread
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Starting background task for full evaluation and topic memory updates
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Exercise block from data: topic='general'
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Calling evaluate_remaining_exercises_async for user asdf, block blk1754562095699
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Starting async evaluation for block blk1754562095699
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Background thread started
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:24:48 - api.routes.ai.exercise - INFO - Returning immediate response, background processing started
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Evaluating all exercises for block blk1754562095699
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Calling evaluate_exercises with 3 exercises and 3 answers
+2025-08-07 10:24:48 - features.ai.generation.exercise_processing - INFO - Evaluating 3 exercises
+2025-08-07 10:24:48 - features.ai.generation.exercise_processing - INFO - Calling evaluate_answers_with_ai with 3 exercises
+2025-08-07 10:24:48 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in strict mode
+2025-08-07 10:24:48 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:24:48 - features.ai.generation.exercise_processing - INFO - AI evaluation result: {'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'wohnt'.", 'explanation': "The correct answer is 'wohnt'. Your answer was 'wohnen'.", 'alternatives': ['Wohnt'], 'user_answer': 'wohnen', 'correct_answer': 'wohnt'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich habe eine Schwester.'.", 'explanation': "The correct answer is 'Ich habe eine Schwester.'. Your answer was 'fgd'.", 'alternatives': ['Ich habe eine Schwester', 'ich habe eine schwester.'], 'user_answer': 'fgd', 'correct_answer': 'Ich habe eine Schwester.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'dfg'.", 'alternatives': ['Ist'], 'user_answer': 'dfg', 'correct_answer': 'ist'}}
+2025-08-07 10:24:48 - features.ai.generation.exercise_processing - INFO - Score summary: {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Meine Familie _____ in Berlin.', 'your_answer': 'wohnen', 'correct_answer': 'wohnt'}, {'question': 'I have a sister.', 'your_answer': 'fgd', 'correct_answer': 'Ich habe eine Schwester.'}, {'question': 'Das Haus _____ groß.', 'your_answer': 'dfg', 'correct_answer': 'ist'}]}
+2025-08-07 10:24:48 - features.ai.generation.exercise_processing - INFO - Successfully evaluated exercises
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Evaluation result: ({'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'wohnt'.", 'explanation': "The correct answer is 'wohnt'. Your answer was 'wohnen'.", 'alternatives': ['Wohnt'], 'user_answer': 'wohnen', 'correct_answer': 'wohnt'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich habe eine Schwester.'.", 'explanation': "The correct answer is 'Ich habe eine Schwester.'. Your answer was 'fgd'.", 'alternatives': ['Ich habe eine Schwester', 'ich habe eine schwester.'], 'user_answer': 'fgd', 'correct_answer': 'Ich habe eine Schwester.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'dfg'.", 'alternatives': ['Ist'], 'user_answer': 'dfg', 'correct_answer': 'ist'}}, {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Meine Familie _____ in Berlin.', 'your_answer': 'wohnen', 'correct_answer': 'wohnt'}, {'question': 'I have a sister.', 'your_answer': 'fgd', 'correct_answer': 'Ich habe eine Schwester.'}, {'question': 'Das Haus _____ groß.', 'your_answer': 'dfg', 'correct_answer': 'ist'}]})
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Processing evaluation results for block blk1754562095699
+2025-08-07 10:24:48 - features.exercise.exercise_evaluation - INFO - Stored new results for block blk1754562095699
+2025-08-07 10:24:48 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in feedback mode
+2025-08-07 10:24:48 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:24:48 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex1: correct=False, quality=2.0
+2025-08-07 10:24:48 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex3 with answer: 'eth'
+2025-08-07 10:24:48 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for grammar exercise
+2025-08-07 10:24:49 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:24:49 - api.routes.ai.exercise - INFO - Payload received: {'answers': {'ex1': 'wohnen', 'ex2': 'fgd', 'ex3': 'dfg'}}
+2025-08-07 10:24:49 - features.ai.generation.exercise_processing - INFO - Generating new exercises for user: asdf
+2025-08-07 10:24:49 - features.ai.generation.exercise_processing - INFO - Generated new exercise block for user: asdf
+2025-08-07 10:24:49 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Weather & Seasons', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Es _____ heute.', 'correctAnswer': 'regnet', 'options': ['regnete', 'regnen', 'regnet', 'geregnet']}, {'id': 'ex2', 'type': 'translation', 'question': "It's cold today.", 'correctAnswer': 'Es ist kalt heute.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Der Winter _____ kalt.', 'correctAnswer': 'ist', 'options': ['ist', 'war', 'sind', 'waren']}], 'id': 'blk1754562095701'}
+2025-08-07 10:24:49 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:24:50 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754562095699
+2025-08-07 10:24:50 - features.exercise.exercise_evaluation - INFO - Successfully processed evaluation results for block blk1754562095699
+2025-08-07 10:24:50 - features.exercise.exercise_evaluation - INFO - Processing AI answers for topic memory and vocabulary updates
+2025-08-07 10:24:50 - features.exercise.exercise_evaluation - INFO - Calling process_ai_answers with exercise_block: {'exercises': [{'correctAnswer': 'wohnt', 'id': 'ex1', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt'], 'question': 'Meine Familie _____ in Berlin.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich habe eine Schwester.', 'id': 'ex2', 'question': 'I have a sister.', 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'sind', 'war', 'waren'], 'question': 'Das Haus _____ groß.', 'type': 'grammar'}], 'topic': 'general'}
+2025-08-07 10:24:50 - features.ai.evaluation.exercise_processing - INFO - Processing AI answers for user: asdf, block: blk1754562095699, answers_count: 3
+2025-08-07 10:24:50 - features.ai.evaluation.exercise_processing - INFO - Using block topic: 'general' for all exercises
+2025-08-07 10:24:50 - features.ai.evaluation.exercise_processing - INFO - Created exercise map with 3 exercises
+2025-08-07 10:24:50 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex1 with answer: 'wohnen'
+2025-08-07 10:24:51 - features.ai.evaluation.exercise_processing - INFO - Using AI topic evaluation for gap-fill exercise
+2025-08-07 10:24:51 - features.ai.evaluation.exercise_processing - INFO - Calling evaluate_topic_qualities_ai for gap-fill exercise
+2025-08-07 10:24:51 - features.ai.evaluation.exercise_processing - INFO - Reference sentence: 'Meine Familie wohnt_ in Berlin.'
+2025-08-07 10:24:51 - features.ai.evaluation.exercise_processing - INFO - Student sentence: 'Meine Familie wohnen_ in Berlin.'
+2025-08-07 10:24:53 - features.ai.evaluation.exercise_processing - INFO - AI topic evaluation quality score: 3.75
+2025-08-07 10:24:55 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
+2025-08-07 10:24:55 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex2 with answer: 'f'
+2025-08-07 10:24:55 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for translation exercise
+2025-08-07 10:24:56 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:24:56 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:24:56 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:24:56 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Weather & Seasons', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Es _____ heute.', 'correctAnswer': 'regnet', 'options': ['regnete', 'regnen', 'regnet', 'geregnet']}, {'id': 'ex2', 'type': 'translation', 'question': "It's cold today.", 'correctAnswer': 'Es ist kalt heute.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Der Winter _____ kalt.', 'correctAnswer': 'ist', 'options': ['ist', 'war', 'sind', 'waren']}], 'id': 'blk1754562095701'}
+2025-08-07 10:24:56 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:25:02 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex1: correct=False, quality=3.75
+2025-08-07 10:25:02 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex2 with answer: 'fgd'
+2025-08-07 10:25:02 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for translation exercise
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - User asdf submitting exercise block blk1754562095701
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Raw submission data: {'answers': {'ex1': 'regnet', 'ex2': 'cbf', 'ex3': 'dfg'}, 'exercise_block': {'instructions': '', 'exercises': [{'correctAnswer': 'regnet', 'id': 'ex1', 'options': ['regnete', 'regnen', 'regnet', 'geregnet'], 'question': 'Es _____ heute.', 'type': 'gap-fill'}, {'correctAnswer': 'Es ist kalt heute.', 'id': 'ex2', 'question': "It's cold today.", 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'war', 'sind', 'waren'], 'question': 'Der Winter _____ kalt.', 'type': 'grammar'}], 'vocabHelp': [], 'topic': 'general'}}
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Data keys: ['answers', 'exercise_block']
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Successfully parsed 3 exercises with 3 answers for user: asdf
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Evaluating first exercise ex1
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - First exercise submitted for AI evaluation
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Starting background thread
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Starting background task for full evaluation and topic memory updates
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Exercise block from data: topic='general'
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Calling evaluate_remaining_exercises_async for user asdf, block blk1754562095701
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Starting async evaluation for block blk1754562095701
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Background thread started
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:25:05 - api.routes.ai.exercise - INFO - Returning immediate response, background processing started
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Evaluating all exercises for block blk1754562095701
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Calling evaluate_exercises with 3 exercises and 3 answers
+2025-08-07 10:25:05 - features.ai.generation.exercise_processing - INFO - Evaluating 3 exercises
+2025-08-07 10:25:05 - features.ai.generation.exercise_processing - INFO - Calling evaluate_answers_with_ai with 3 exercises
+2025-08-07 10:25:05 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in strict mode
+2025-08-07 10:25:05 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:25:05 - features.ai.generation.exercise_processing - INFO - AI evaluation result: {'ex1': {'correct': True, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'regnet', 'correct_answer': 'regnet'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Es ist kalt heute.'.", 'explanation': "The correct answer is 'Es ist kalt heute.'. Your answer was 'cbf'.", 'alternatives': ['Es ist kalt heute', 'es ist kalt heute.'], 'user_answer': 'cbf', 'correct_answer': 'Es ist kalt heute.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'dfg'.", 'alternatives': ['Ist'], 'user_answer': 'dfg', 'correct_answer': 'ist'}}
+2025-08-07 10:25:05 - features.ai.generation.exercise_processing - INFO - Score summary: {'total': 3, 'correct': 1, 'incorrect': 2, 'skipped': 0, 'accuracy': 33.33, 'mistakes': [{'question': "It's cold today.", 'your_answer': 'cbf', 'correct_answer': 'Es ist kalt heute.'}, {'question': 'Der Winter _____ kalt.', 'your_answer': 'dfg', 'correct_answer': 'ist'}]}
+2025-08-07 10:25:05 - features.ai.generation.exercise_processing - INFO - Successfully evaluated exercises
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Evaluation result: ({'ex1': {'correct': True, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'regnet', 'correct_answer': 'regnet'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Es ist kalt heute.'.", 'explanation': "The correct answer is 'Es ist kalt heute.'. Your answer was 'cbf'.", 'alternatives': ['Es ist kalt heute', 'es ist kalt heute.'], 'user_answer': 'cbf', 'correct_answer': 'Es ist kalt heute.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'dfg'.", 'alternatives': ['Ist'], 'user_answer': 'dfg', 'correct_answer': 'ist'}}, {'total': 3, 'correct': 1, 'incorrect': 2, 'skipped': 0, 'accuracy': 33.33, 'mistakes': [{'question': "It's cold today.", 'your_answer': 'cbf', 'correct_answer': 'Es ist kalt heute.'}, {'question': 'Der Winter _____ kalt.', 'your_answer': 'dfg', 'correct_answer': 'ist'}]})
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Processing evaluation results for block blk1754562095701
+2025-08-07 10:25:05 - features.exercise.exercise_evaluation - INFO - Stored new results for block blk1754562095701
+2025-08-07 10:25:05 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in feedback mode
+2025-08-07 10:25:05 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:25:06 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:25:06 - api.routes.ai.exercise - INFO - Payload received: {'answers': {'ex1': 'regnet', 'ex2': 'cbf', 'ex3': 'dfg'}}
+2025-08-07 10:25:06 - features.ai.generation.exercise_processing - INFO - Generating new exercises for user: asdf
+2025-08-07 10:25:06 - features.ai.generation.exercise_processing - INFO - Generated new exercise block for user: asdf
+2025-08-07 10:25:06 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Shopping & Money', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ ein Buch.', 'correctAnswer': 'kaufe', 'options': ['kaufe', 'kaufen', 'kaufte', 'gekauft']}, {'id': 'ex2', 'type': 'translation', 'question': 'How much does it cost?', 'correctAnswer': 'Wie viel kostet es?'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Buch _____ teuer.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754562095703'}
+2025-08-07 10:25:06 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:25:07 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754562095701
+2025-08-07 10:25:07 - features.exercise.exercise_evaluation - INFO - Successfully processed evaluation results for block blk1754562095701
+2025-08-07 10:25:07 - features.exercise.exercise_evaluation - INFO - Processing AI answers for topic memory and vocabulary updates
+2025-08-07 10:25:07 - features.exercise.exercise_evaluation - INFO - Calling process_ai_answers with exercise_block: {'exercises': [{'correctAnswer': 'regnet', 'id': 'ex1', 'options': ['regnete', 'regnen', 'regnet', 'geregnet'], 'question': 'Es _____ heute.', 'type': 'gap-fill'}, {'correctAnswer': 'Es ist kalt heute.', 'id': 'ex2', 'question': "It's cold today.", 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'war', 'sind', 'waren'], 'question': 'Der Winter _____ kalt.', 'type': 'grammar'}], 'topic': 'general'}
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Processing AI answers for user: asdf, block: blk1754562095701, answers_count: 3
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Using block topic: 'general' for all exercises
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Created exercise map with 3 exercises
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex1 with answer: 'regnet'
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Using AI topic evaluation for gap-fill exercise
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Calling evaluate_topic_qualities_ai for gap-fill exercise
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Reference sentence: 'Es regnet_ heute.'
+2025-08-07 10:25:07 - features.ai.evaluation.exercise_processing - INFO - Student sentence: 'Es regnet_ heute.'
+2025-08-07 10:25:08 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex2: correct=False, quality=2
+2025-08-07 10:25:08 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user asdf
+2025-08-07 10:25:08 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'gelernt', 'correct_answer': 'lerne', 'is_correct': False, 'quality': 2.0, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'eth', 'correct_answer': 'arbeitet', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'f', 'correct_answer': 'Ich gehe zur Arbeit.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}]
+2025-08-07 10:25:09 - features.ai.evaluation.exercise_processing - INFO - AI topic evaluation quality score: 5.00
+2025-08-07 10:25:13 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex2: correct=False, quality=2
+2025-08-07 10:25:13 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex3 with answer: 'dfg'
+2025-08-07 10:25:13 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for grammar exercise
+2025-08-07 10:25:14 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex1: correct=True, quality=5.0
+2025-08-07 10:25:14 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex2 with answer: 'cbf'
+2025-08-07 10:25:14 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for translation exercise
+2025-08-07 10:25:16 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
+2025-08-07 10:25:16 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user asdf
+2025-08-07 10:25:16 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'wohnen', 'correct_answer': 'wohnt', 'is_correct': False, 'quality': 3.75, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'fgd', 'correct_answer': 'Ich habe eine Schwester.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'dfg', 'correct_answer': 'ist', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}]
+2025-08-07 10:25:24 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex2: correct=False, quality=2
+2025-08-07 10:25:24 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex3 with answer: 'dfg'
+2025-08-07 10:25:24 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for grammar exercise
+2025-08-07 10:25:25 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
+2025-08-07 10:25:25 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user asdf
+2025-08-07 10:25:25 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'regnet', 'correct_answer': 'regnet', 'is_correct': True, 'quality': 5.0, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'cbf', 'correct_answer': 'Es ist kalt heute.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'dfg', 'correct_answer': 'ist', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}]
+2025-08-07 10:25:40 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'kalt' for user 'asdf'
+2025-08-07 10:25:40 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'kalt'
+2025-08-07 10:25:43 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:25:43 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:25:43 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:25:43 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Shopping & Money', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ ein Buch.', 'correctAnswer': 'kaufe', 'options': ['kaufe', 'kaufen', 'kaufte', 'gekauft']}, {'id': 'ex2', 'type': 'translation', 'question': 'How much does it cost?', 'correctAnswer': 'Wie viel kostet es?'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Buch _____ teuer.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754562095703'}
+2025-08-07 10:25:43 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:25:44 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'Buch' for user 'asdf'
+2025-08-07 10:25:44 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'Buch'
+2025-08-07 10:25:47 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'teuer' for user 'asdf'
+2025-08-07 10:25:47 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'teuer'
+2025-08-07 10:25:51 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'Das' for user 'asdf'
+2025-08-07 10:25:51 - core.services.vocabulary_service - INFO - Creating new vocabulary entry for 'Das' using AI
+2025-08-07 10:25:53 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'das' for user 'asdf'
+2025-08-07 10:25:53 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'das'
+2025-08-07 10:25:53 - core.services.vocabulary_service - INFO - Successfully created new vocabulary entry for 'Das'
+2025-08-07 10:25:58 - core.services.vocabulary_service - INFO - Getting vocabulary entries for user 'asdf'
+2025-08-07 10:25:58 - core.services.vocabulary_service - INFO - Retrieved 35 vocabulary entries for user 'asdf'
+2025-08-07 10:32:22 - api.routes.ai.lesson - INFO - User asdf requesting weakness lesson
+2025-08-07 10:32:55 - features.ai.generation.helpers - INFO - Storing AI data for user asdf, data keys: ['weakness_lesson', 'weakness_topic', 'lesson_updated_at']
+2025-08-07 10:32:55 - features.ai.generation.helpers - INFO - User asdf exists in ai_user_data: True
+2025-08-07 10:32:55 - features.ai.generation.helpers - INFO - Updating existing row for user asdf
+2025-08-07 10:32:55 - features.ai.generation.helpers - INFO - Successfully stored AI data for user asdf
+2025-08-07 10:32:55 - features.ai.generation.helpers - INFO - Verification after storing - row for user asdf: {'exercises': '{"title": "German A1 - Shopping & Money", "level": "A1", "topic": "general", "exercises": [{"id": "ex1", "type": "gap-fill", "question": "Ich _____ ein Buch.", "correctAnswer": "kaufe", "options": ["kaufe", "kaufen", "kaufte", "gekauft"]}, {"id": "ex2", "type": "translation", "question": "How much does it cost?", "correctAnswer": "Wie viel kostet es?"}, {"id": "ex3", "type": "grammar", "question": "Das Buch _____ teuer.", "correctAnswer": "ist", "options": ["ist", "sind", "war", "waren"]}], "id": "blk1754562095703"}', 'next_exercises': '{"title": "German A1 - Daily Activities", "level": "A1", "topic": "general", "exercises": [], "id": "blk1754562095704"}'}
+2025-08-07 10:32:55 - api.routes.ai.lesson - INFO - Successfully generated weakness lesson for user asdf
+2025-08-07 10:33:14 - api.routes.ai.lesson - INFO - User asdf requesting weakness lesson
+2025-08-07 10:33:14 - api.routes.ai.lesson - INFO - Returning cached weakness lesson for user asdf
+2025-08-07 10:33:24 - api.routes.ai.reading - INFO - User asdf requesting reading exercise
+2025-08-07 10:34:53 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:34:53 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:34:53 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:34:53 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:34:54 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:35:15 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:35:15 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:35:15 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:35:15 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:35:16 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:35:27 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:35:27 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:35:27 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:35:27 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:35:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:35:31 - api.routes.translate - INFO - Starting translation stream for user asdf
+2025-08-07 10:36:04 - api.routes.translate - INFO - Starting translation stream for user asdf
+2025-08-07 10:36:56 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:36:57 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:36:57 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:36:57 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:36:57 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:37:19 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:37:20 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:37:20 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:37:20 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:37:20 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:37:49 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:37:50 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:37:50 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:37:50 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:37:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:38:15 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:38:15 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:38:15 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:38:15 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:38:16 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:38:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:38:35 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-07 10:38:35 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-07 10:38:35 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-07 10:38:35 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-07 10:38:35 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-07 10:38:35 - __main__ - INFO - ✅ Database connection established
+2025-08-07 10:38:35 - __main__ - INFO - Results table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - Topic memory table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - Sessions table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - User progress table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - User settings table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - Support requests table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - AI user data table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - Exercise history table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - AI exercise results table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - Topic memory status table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-07 10:38:35 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-07 10:38:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:38:35 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:38:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:38:35 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:38:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:41:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:41:13 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-07 10:41:13 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-07 10:41:13 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-07 10:41:13 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-07 10:41:13 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-07 10:41:13 - __main__ - INFO - ✅ Database connection established
+2025-08-07 10:41:13 - __main__ - INFO - Results table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - Topic memory table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - Sessions table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - User progress table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - User settings table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - Support requests table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - AI user data table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - Exercise history table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - AI exercise results table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - Topic memory status table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-07 10:41:13 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-07 10:41:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:41:13 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:41:13 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:41:13 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:41:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:41:14 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:41:14 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:41:14 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:41:14 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:41:15 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:41:33 - features.auth.authentication - INFO - Attempting authentication for user test8
+2025-08-07 10:41:33 - core.session.session_manager - INFO - Created session for user test8
+2025-08-07 10:41:33 - features.auth.authentication - INFO - Authentication successful for user test8
+2025-08-07 10:41:42 - api.routes.translate - INFO - Starting translation stream for user test8
+2025-08-07 10:41:42 - api.routes.translate - INFO - Starting translation for: 't' -> 'htrn'
+2025-08-07 10:41:42 - api.routes.translate - INFO - Calling translate_to_german...
+2025-08-07 10:42:49 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:42:49 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:42:49 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:42:49 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:42:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:43:04 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:43:04 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:43:04 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:43:04 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:43:05 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:43:21 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:43:21 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:43:21 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:43:21 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:43:22 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:43:38 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:43:38 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:43:38 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:43:38 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:43:39 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:43:51 - api.routes.translate - INFO - Starting translation stream for user test8
+2025-08-07 10:43:51 - api.routes.translate - INFO - Starting translation for: 't' -> 'htrn'
+2025-08-07 10:43:51 - api.routes.translate - INFO - Calling translate_to_german...
+2025-08-07 10:43:51 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Starting translation for: 't'
+2025-08-07 10:43:51 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Created prompt: {'role': 'user', 'content': 'Translate this sentence to German:\nt'}
+2025-08-07 10:43:51 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] About to call send_prompt with Mistral...
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German translator....
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Translate this sentence to German:\nt'}
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:43:51 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:43:52 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] send_prompt returned with status: 200
+2025-08-07 10:43:52 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Parsing response JSON...
+2025-08-07 10:43:52 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Got German translation: 'Der bestimmte Artikel "the" kann im Deutschen als "der", "die" oder "das" übersetzt werden, abhängig vom Genus des Substantivs, auf das es sich bezieht. Ohne weitere Informationen kann ich "t" nicht übersetzen. Könntest du bitte den vollständigen Satz oder mehr Kontext angeben?'
+2025-08-07 10:43:52 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Extracting words for vocabulary...
+2025-08-07 10:43:52 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'bestimmte' with article: 'der'
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "bestimmte"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:43:52 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:43:55 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Artikel' with article: 'None'
+2025-08-07 10:43:55 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'the' with article: 'None'
+2025-08-07 10:43:55 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'kann' with article: 'None'
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "kann"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:43:55 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:43:57 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'im' with article: 'None'
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "im"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:43:57 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:43:59 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Deutschen' with article: 'None'
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Deutschen"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:43:59 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:01 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'als' with article: 'None'
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "als"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:01 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:04 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'die' with article: 'der'
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "die"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:04 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:06 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'oder' with article: 'None'
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "oder"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:06 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:10 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'übersetzt' with article: 'das'
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "übersetzt"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:10 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:13 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'werden' with article: 'None'
+2025-08-07 10:44:13 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'abhängig' with article: 'None'
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "abhängig"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:13 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:17 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'vom' with article: 'None'
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "vom"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:17 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:19 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Genus' with article: 'None'
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Genus"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:19 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:22 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Substantivs' with article: 'des'
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Substantivs"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:22 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:25 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'auf' with article: 'None'
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "auf"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:25 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:29 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'es' with article: 'das'
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "es"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:29 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:31 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'sich' with article: 'None'
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "sich"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:31 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:33 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'bezieht' with article: 'None'
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "bezieht"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:33 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:36 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Ohne' with article: 'None'
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Ohne"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:36 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:38 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'weitere' with article: 'None'
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "weitere"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:38 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:40 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'Informationen' with article: 'None'
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Informationen"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:40 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:43 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'kann' with article: 'None'
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "kann"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:43 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:44 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'ich' with article: 'None'
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "ich"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:44 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:46 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 't' with article: 'None'
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "t"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:46 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:44:48 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Saving vocab word: 'nicht' with article: 'None'
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "nicht"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:44:48 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:44:50 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:44:50 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:44:50 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:44:50 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:44:51 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:45:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:45:08 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:45:08 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:45:08 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:45:08 - external.tts.client - INFO - TTS client initialized with ElevenLabs

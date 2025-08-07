@@ -62,16 +62,16 @@ export default function Translator() {
             student_input: String(studentInput),
         };
 
+        // Add background activity for topic memory update
+        const topicActivityId = `topic-${Date.now()}`;
+        addBackgroundActivity({
+            id: topicActivityId,
+            label: "Updating topic memory...",
+            status: "In progress"
+        });
+
         try {
             setLoading(true);
-
-            // Add background activity for topic memory update
-            const topicActivityId = `topic-${Date.now()}`;
-            addBackgroundActivity({
-                id: topicActivityId,
-                label: "Updating topic memory...",
-                status: "In progress"
-            });
 
             await translateSentenceStream(payload, (chunk) => {
                 // Parse the JSON chunk to get feedbackBlock

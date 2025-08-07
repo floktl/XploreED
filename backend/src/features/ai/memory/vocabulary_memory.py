@@ -284,32 +284,73 @@ def save_vocab(
 def translate_to_german(english_sentence: str, username: Optional[str] = None) -> str:
     """Translate an English sentence using Mistral AI and optionally store vocab."""
 
+    import logging
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"🔤 [TRANSLATE] Starting translation for: '{english_sentence}'")
+
     user_prompt = translate_sentence_prompt(english_sentence)
+    logger.info(f"🔤 [TRANSLATE] Created prompt: {user_prompt}")
 
     try:
+        logger.info(f"🔤 [TRANSLATE] About to call send_prompt with Mistral...")
         resp = send_prompt(
             "You are a helpful German translator.",
             user_prompt,
             temperature=0.3,
         )
+        logger.info(f"🔤 [TRANSLATE] send_prompt returned with status: {resp.status_code}")
+
         if resp.status_code == 200:
+            logger.info(f"🔤 [TRANSLATE] Parsing response JSON...")
             german_text = resp.json()["choices"][0]["message"]["content"].strip()
+            logger.info(f"🔤 [TRANSLATE] Got German translation: '{german_text}'")
+
             if username:
-                for word, art in extract_words(german_text):
-                    save_vocab(
-                        username,
-                        word,
-                        context=german_text,
-                        exercise="translation",
-                        article=art,
-                    )
+                # Skip vocabulary saving for very short inputs or explanatory responses
+                if len(english_sentence.strip()) <= 2:
+                    logger.info(f"🔤 [TRANSLATE] Skipping vocabulary saving for very short input: '{english_sentence}'")
+                elif "kann" in german_text.lower() and "übersetzt" in german_text.lower():
+                    logger.info(f"🔤 [TRANSLATE] Skipping vocabulary saving for explanatory response")
+                else:
+                    logger.info(f"🔤 [TRANSLATE] Extracting words for vocabulary...")
+                    word_count = 0
+                    max_words = 5  # Limit to prevent hanging on long responses
+                    
+                    for word, art in extract_words(german_text):
+                        if word_count >= max_words:
+                            logger.info(f"🔤 [TRANSLATE] Reached max word limit ({max_words}), stopping vocabulary extraction")
+                            break
+                            
+                        logger.info(f"🔤 [TRANSLATE] Saving vocab word: '{word}' with article: '{art}'")
+                        save_vocab(
+                            username,
+                            word,
+                            context=german_text,
+                            exercise="translation",
+                            article=art,
+                        )
+                        word_count += 1
+                        
+                    logger.info(f"🔤 [TRANSLATE] Finished saving vocabulary words (saved {word_count} words)")
+
+            logger.info(f"🔤 [TRANSLATE] Returning translation: '{german_text}'")
             return german_text
+        else:
+            logger.error(f"🔤 [TRANSLATE] Mistral API returned non-200 status: {resp.status_code}")
+            return "❌ API failure - non-200 status"
+
     except AIEvaluationError:
+        logger.error(f"🔤 [TRANSLATE] AIEvaluationError caught")
         raise
     except Exception as e:
+        logger.error(f"🔤 [TRANSLATE] Exception caught: {e}")
+        import traceback
+        logger.error(f"🔤 [TRANSLATE] Full traceback: {traceback.format_exc()}")
         print("❌ Error calling Mistral:", e)
         raise AIEvaluationError(f"Error calling Mistral: {str(e)}")
 
+    logger.error(f"🔤 [TRANSLATE] Reached end of function, returning API failure")
     return "❌ API failure"
 
 

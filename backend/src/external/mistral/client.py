@@ -81,9 +81,16 @@ def send_request(
     Raises:
         AIEvaluationError: When API request fails
     """
+    logger.info(f"🌐 [MISTRAL] Starting send_request")
+    logger.info(f"🌐 [MISTRAL] API URL: {MISTRAL_API_URL}")
+    logger.info(f"🌐 [MISTRAL] Messages count: {len(messages)}")
+    logger.info(f"🌐 [MISTRAL] Temperature: {temperature}, Stream: {stream}")
+
     try:
         payload = build_payload(messages, temperature, stream)
+        logger.info(f"🌐 [MISTRAL] Built payload with model: {payload.get('model')}")
 
+        logger.info(f"🌐 [MISTRAL] About to make HTTP POST request to Mistral API...")
         # Send request to Mistral API
         response = requests.post(
             MISTRAL_API_URL,
@@ -92,21 +99,26 @@ def send_request(
             timeout=60,
             stream=stream
         )
+        logger.info(f"🌐 [MISTRAL] HTTP request completed with status: {response.status_code}")
 
         # Handle non-200 responses
         if response.status_code != 200:
             error_msg = f"Mistral API error: {response.status_code} - {response.text}"
+            logger.error(f"🌐 [MISTRAL] {error_msg}")
             raise AIEvaluationError(error_msg)
 
+        logger.info(f"🌐 [MISTRAL] Request successful, returning response")
         return response
 
     except requests.exceptions.Timeout:
+        logger.error(f"🌐 [MISTRAL] Request timed out after 60 seconds")
         raise AIEvaluationError("Mistral API request timed out after 60 seconds")
     except requests.exceptions.RequestException as e:
+        logger.error(f"🌐 [MISTRAL] Request exception: {e}")
         raise AIEvaluationError(f"Mistral API request failed: {str(e)}")
     except Exception as e:
         error_msg = f"Mistral API error: {str(e)}"
-        logger.error(error_msg)
+        logger.error(f"🌐 [MISTRAL] {error_msg}")
         raise AIEvaluationError(error_msg)
 
 
@@ -132,6 +144,11 @@ def send_prompt(
     Returns:
         requests.Response: Raw API response
     """
+    logger.info(f"🌐 [MISTRAL] Starting send_prompt call")
+    logger.info(f"🌐 [MISTRAL] System message: {system_message[:100]}...")
+    logger.info(f"🌐 [MISTRAL] User prompt: {user_prompt}")
+    logger.info(f"🌐 [MISTRAL] Temperature: {temperature}, Stream: {stream}")
+
     # Enhance system message for chat/feedback endpoints
     if "chat" in system_message.lower() or "teacher" in system_message.lower():
         system_message += " Always use Markdown for tables, lists, and formatting."
@@ -141,7 +158,14 @@ def send_prompt(
         user_prompt,
     ]
 
-    return send_request(messages, temperature, stream)
+    logger.info(f"🌐 [MISTRAL] About to call send_request...")
+    try:
+        response = send_request(messages, temperature, stream)
+        logger.info(f"🌐 [MISTRAL] send_request completed successfully")
+        return response
+    except Exception as e:
+        logger.error(f"🌐 [MISTRAL] send_request failed: {e}")
+        raise
 
 
 # === Export Configuration ===
