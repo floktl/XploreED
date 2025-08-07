@@ -61,7 +61,7 @@ log_level = os.getenv("LOG_LEVEL", "INFO")
 setup_logging(log_level=log_level)
 
 # === Import Flask and Core Dependencies ===
-from flask import Flask, jsonify, render_template  # type: ignore
+from flask import Flask, jsonify, render_template, request  # type: ignore
 from flask_cors import CORS  # type: ignore
 
 # === Import Application Configuration ===
@@ -72,6 +72,8 @@ from config.app import create_app_config
 # === Import API Routes (Features Layer) ===
 # These imports register the blueprints with the application
 import api.routes.auth  # noqa: F401
+import api.routes.auth_password  # noqa: F401
+import api.routes.auth_2fa  # noqa: F401
 import api.routes.admin  # noqa: F401
 import api.routes.debug  # noqa: F401
 import api.routes.game  # noqa: F401
@@ -117,6 +119,17 @@ def create_app() -> Flask:
     # === Register Error Handlers ===
     register_error_handlers(app)
 
+    # === Security Headers ===
+    @app.after_request
+    def add_security_headers(response):  # type: ignore
+        # Basic secure defaults; tune CSP as needed
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        if os.getenv("FLASK_ENV", "development") != "development":
+            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        return response
+
     # === Debug Information ===
     if app.debug:
         print_debug_info(app)
@@ -124,17 +137,74 @@ def create_app() -> Flask:
     return app
 
 def register_error_handlers(app: Flask) -> None:
-    """Register custom error handlers for the application."""
+    """Register custom error handlers for the application.
 
-    @app.errorhandler(500)
-    def server_error(_):  # noqa: F841
-        """Return custom 500 error page."""
-        return render_template("500.html"), 500
+    Provides JSON responses for API routes and HTML for others.
+    """
+    from shared.exceptions import (
+        XplorEDException,
+        AuthenticationError,
+        DatabaseError,
+        ValidationError,
+        ProcessingError,
+    )
+
+    def wants_json() -> bool:
+        return request.path.startswith("/api") or request.accept_mimetypes.best == "application/json"
 
     @app.errorhandler(404)
-    def not_found(_):  # noqa: F841
-        """Return custom 404 error page."""
+    def handle_404(_):  # noqa: F841
+        if wants_json():
+            return jsonify({
+                "error": "not_found",
+                "message": "The requested resource was not found.",
+            }), 404
         return render_template("404.html"), 404
+
+    @app.errorhandler(500)
+    def handle_500(e):  # noqa: F841
+        if wants_json():
+            return jsonify({
+                "error": "internal_error",
+                "message": "An unexpected error occurred.",
+            }), 500
+        return render_template("500.html"), 500
+
+    # Map custom exceptions to structured JSON
+    @app.errorhandler(AuthenticationError)
+    def handle_auth_error(e):  # noqa: F841
+        return jsonify({
+            "error": "authentication_error",
+            "message": str(e) or "Authentication failed",
+        }), 401
+
+    @app.errorhandler(DatabaseError)
+    def handle_db_error(e):  # noqa: F841
+        return jsonify({
+            "error": "database_error",
+            "message": str(e) or "A database error occurred",
+        }), 500
+
+    @app.errorhandler(ValidationError)
+    def handle_validation_error(e):  # noqa: F841
+        return jsonify({
+            "error": "validation_error",
+            "message": str(e) or "Invalid input",
+        }), 400
+
+    @app.errorhandler(ProcessingError)
+    def handle_processing_error(e):  # noqa: F841
+        return jsonify({
+            "error": "processing_error",
+            "message": str(e) or "Processing failed",
+        }), 422
+
+    @app.errorhandler(XplorEDException)
+    def handle_generic_app_error(e):  # noqa: F841
+        return jsonify({
+            "error": "application_error",
+            "message": str(e) or "Application error",
+        }), 400
 
 def print_debug_info(app: Flask) -> None:
     """Print debug information about registered blueprints and routes."""

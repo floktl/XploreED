@@ -64,18 +64,18 @@ def create_app_config() -> dict:
         # Relaxed security for local development and testing
         config.update({
             "SESSION_COOKIE_SAMESITE": "Lax",
-                            "SESSION_COOKIE_SECURE": ["False"],
-                "JWT_COOKIE_SECURE": ["False"],
-                "JWT_COOKIE_CSRF_PROTECT": ["False"],
+            "SESSION_COOKIE_SECURE": False,
+            "JWT_COOKIE_SECURE": False,
+            "JWT_COOKIE_CSRF_PROTECT": False,
         })
     else:
         # === Production Mode Configuration ===
         # Strict security settings for production deployment
         config.update({
             "SESSION_COOKIE_SAMESITE": "None",
-                            "SESSION_COOKIE_SECURE": ["True"],
-            "JWT_COOKIE_SECURE": ["True"],
-            "JWT_COOKIE_CSRF_PROTECT": ["True"],
+            "SESSION_COOKIE_SECURE": True,
+            "JWT_COOKIE_SECURE": True,
+            "JWT_COOKIE_CSRF_PROTECT": True,
         })
 
     return config
