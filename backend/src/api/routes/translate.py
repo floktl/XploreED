@@ -311,7 +311,11 @@ def stream_translation_route():
                     )
                     yield f"data: {json.dumps({'feedbackBlock': error_feedback})}\n\n"
 
-            return Response(stream_with_context(event_stream()), mimetype="text/event-stream")
+            try:
+                return Response(stream_with_context(event_stream()), mimetype="text/event-stream")
+            except Exception as stream_error:
+                logger.error(f"Streaming response failed: {stream_error}")
+                raise stream_error
 
         except Exception as e:
             logger.error(f"Streaming failed, falling back to simple response: {e}")
