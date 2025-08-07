@@ -1286,7 +1286,289 @@ export default function AIExerciseBlock({
                                     {submitted &&
                                      (currentExerciseIndex === 0 ? evaluation[ex.id] !== undefined : allPreviousFeedbackLoaded(currentExerciseIndex)) &&
                                      evaluation[ex.id] !== undefined && (
-                                        <div className="mt-2">
+                                        index-b02c9f4f.js:84  POST https://exploreed.de/api/login 500 (Internal Server Error)
+                                        Tb @ index-b02c9f4f.js:84
+                                        $ @ index-b02c9f4f.js:123
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: User data not found
+                                            at $ (index-b02c9f4f.js:123:24876)
+                                        $ @ index-b02c9f4f.js:123
+                                        await in $
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:84  POST https://exploreed.de/api/register 400 (Bad Request)
+                                        jS @ index-b02c9f4f.js:84
+                                        $ @ index-b02c9f4f.js:123
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Validation error
+                                            at $ (index-b02c9f4f.js:123:24508)
+                                        $ @ index-b02c9f4f.js:123
+                                        await in $
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:84  POST https://exploreed.de/api/register 409 (Conflict)
+                                        jS @ index-b02c9f4f.js:84
+                                        $ @ index-b02c9f4f.js:123
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Username already exists
+                                            at $ (index-b02c9f4f.js:123:24508)
+                                        $ @ index-b02c9f4f.js:123
+                                        await in $
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:84  POST https://exploreed.de/api/register 400 (Bad Request)
+                                        jS @ index-b02c9f4f.js:84
+                                        $ @ index-b02c9f4f.js:123
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Validation error
+                                            at $ (index-b02c9f4f.js:123:24508)
+                                        $ @ index-b02c9f4f.js:123
+                                        await in $
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:84  POST https://exploreed.de/api/login 500 (Internal Server Error)
+                                        Tb @ index-b02c9f4f.js:84
+                                        $ @ index-b02c9f4f.js:123
+                                        await in $
+                                        onSubmit @ index-b02c9f4f.js:123
+                                        JM @ index-b02c9f4f.js:37
+                                        XM @ index-b02c9f4f.js:37
+                                        QM @ index-b02c9f4f.js:37
+                                        xx @ index-b02c9f4f.js:37
+                                        Qk @ index-b02c9f4f.js:37
+                                        (anonymous) @ index-b02c9f4f.js:37
+                                        Ey @ index-b02c9f4f.js:40
+                                        kk @ index-b02c9f4f.js:37
+                                        Ah @ index-b02c9f4f.js:37
+                                        Xg @ index-b02c9f4f.js:37
+                                        pA @ index-b02c9f4f.js:37Understand this error
+                                        index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: User data not found
+                                            at $ (index-b02c9f4f.js:123:24560)index-b02c9f4f.js:84  POST https://exploreed.de/api/login 500 (Internal Server Error)
+                                            Tb @ index-b02c9f4f.js:84
+                                            $ @ index-b02c9f4f.js:123
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: User data not found
+                                                at $ (index-b02c9f4f.js:123:24876)
+                                            $ @ index-b02c9f4f.js:123
+                                            await in $
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:84  POST https://exploreed.de/api/register 400 (Bad Request)
+                                            jS @ index-b02c9f4f.js:84
+                                            $ @ index-b02c9f4f.js:123
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Validation error
+                                                at $ (index-b02c9f4f.js:123:24508)
+                                            $ @ index-b02c9f4f.js:123
+                                            await in $
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:84  POST https://exploreed.de/api/register 409 (Conflict)
+                                            jS @ index-b02c9f4f.js:84
+                                            $ @ index-b02c9f4f.js:123
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Username already exists
+                                                at $ (index-b02c9f4f.js:123:24508)
+                                            $ @ index-b02c9f4f.js:123
+                                            await in $
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:84  POST https://exploreed.de/api/register 400 (Bad Request)
+                                            jS @ index-b02c9f4f.js:84
+                                            $ @ index-b02c9f4f.js:123
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: Validation error
+                                                at $ (index-b02c9f4f.js:123:24508)
+                                            $ @ index-b02c9f4f.js:123
+                                            await in $
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:84  POST https://exploreed.de/api/login 500 (Internal Server Error)
+                                            Tb @ index-b02c9f4f.js:84
+                                            $ @ index-b02c9f4f.js:123
+                                            await in $
+                                            onSubmit @ index-b02c9f4f.js:123
+                                            JM @ index-b02c9f4f.js:37
+                                            XM @ index-b02c9f4f.js:37
+                                            QM @ index-b02c9f4f.js:37
+                                            xx @ index-b02c9f4f.js:37
+                                            Qk @ index-b02c9f4f.js:37
+                                            (anonymous) @ index-b02c9f4f.js:37
+                                            Ey @ index-b02c9f4f.js:40
+                                            kk @ index-b02c9f4f.js:37
+                                            Ah @ index-b02c9f4f.js:37
+                                            Xg @ index-b02c9f4f.js:37
+                                            pA @ index-b02c9f4f.js:37Understand this error
+                                            index-b02c9f4f.js:123 [CLIENT] Auth failed: Error: User data not found
+                                                at $ (index-b02c9f4f.js:123:24560)                                        <div className="mt-2">
                                             <FeedbackBlock
                                                 status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
                                                 {...(!evaluation[ex.id]?.is_correct && { correct: evaluation[ex.id]?.correct })}
