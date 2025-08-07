@@ -14563,3 +14563,129 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-07 10:15:09 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
 2025-08-07 10:15:09 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Family & Home', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Meine Familie _____ in Berlin.', 'correctAnswer': 'wohnt', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I have a sister.', 'correctAnswer': 'Ich habe eine Schwester.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Haus _____ groß.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754560976278'}
 2025-08-07 10:15:09 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:15:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:15:25 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:15:25 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:15:25 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:15:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:17:20 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:17:20 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:17:20 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:17:20 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Family & Home', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Meine Familie _____ in Berlin.', 'correctAnswer': 'wohnt', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I have a sister.', 'correctAnswer': 'Ich habe eine Schwester.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Haus _____ groß.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754560976278'}
+2025-08-07 10:17:20 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:17:31 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:17:31 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:17:31 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:17:31 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Family & Home', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Meine Familie _____ in Berlin.', 'correctAnswer': 'wohnt', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I have a sister.', 'correctAnswer': 'Ich habe eine Schwester.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Haus _____ groß.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754560976278'}
+2025-08-07 10:17:31 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - User asdf submitting exercise block blk1754560976278
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Raw submission data: {'answers': {'ex1': 'wohnen', 'ex2': 'sf', 'ex3': 'sfd'}, 'exercise_block': {'instructions': '', 'exercises': [{'correctAnswer': 'wohnt', 'id': 'ex1', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt'], 'question': 'Meine Familie _____ in Berlin.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich habe eine Schwester.', 'id': 'ex2', 'question': 'I have a sister.', 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'sind', 'war', 'waren'], 'question': 'Das Haus _____ groß.', 'type': 'grammar'}], 'vocabHelp': [], 'topic': 'general'}}
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Data keys: ['answers', 'exercise_block']
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Successfully parsed 3 exercises with 3 answers for user: asdf
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Evaluating first exercise ex1
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - First exercise submitted for AI evaluation
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Starting background thread
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Starting background task for full evaluation and topic memory updates
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Exercise block from data: topic='general'
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Calling evaluate_remaining_exercises_async for user asdf, block blk1754560976278
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Starting async evaluation for block blk1754560976278
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Background thread started
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-07 10:17:53 - api.routes.ai.exercise - INFO - Returning immediate response, background processing started
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Evaluating all exercises for block blk1754560976278
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Calling evaluate_exercises with 3 exercises and 3 answers
+2025-08-07 10:17:53 - features.ai.generation.exercise_processing - INFO - Evaluating 3 exercises
+2025-08-07 10:17:53 - features.ai.generation.exercise_processing - INFO - Calling evaluate_answers_with_ai with 3 exercises
+2025-08-07 10:17:53 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in strict mode
+2025-08-07 10:17:53 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:17:53 - features.ai.generation.exercise_processing - INFO - AI evaluation result: {'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'wohnt'.", 'explanation': "The correct answer is 'wohnt'. Your answer was 'wohnen'.", 'alternatives': ['Wohnt'], 'user_answer': 'wohnen', 'correct_answer': 'wohnt'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich habe eine Schwester.'.", 'explanation': "The correct answer is 'Ich habe eine Schwester.'. Your answer was 'sf'.", 'alternatives': ['Ich habe eine Schwester', 'ich habe eine schwester.'], 'user_answer': 'sf', 'correct_answer': 'Ich habe eine Schwester.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'sfd'.", 'alternatives': ['Ist'], 'user_answer': 'sfd', 'correct_answer': 'ist'}}
+2025-08-07 10:17:53 - features.ai.generation.exercise_processing - INFO - Score summary: {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Meine Familie _____ in Berlin.', 'your_answer': 'wohnen', 'correct_answer': 'wohnt'}, {'question': 'I have a sister.', 'your_answer': 'sf', 'correct_answer': 'Ich habe eine Schwester.'}, {'question': 'Das Haus _____ groß.', 'your_answer': 'sfd', 'correct_answer': 'ist'}]}
+2025-08-07 10:17:53 - features.ai.generation.exercise_processing - INFO - Successfully evaluated exercises
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Evaluation result: ({'ex1': {'correct': False, 'feedback': "Try again. The correct answer is 'wohnt'.", 'explanation': "The correct answer is 'wohnt'. Your answer was 'wohnen'.", 'alternatives': ['Wohnt'], 'user_answer': 'wohnen', 'correct_answer': 'wohnt'}, 'ex2': {'correct': False, 'feedback': "Not quite right. The correct answer is 'Ich habe eine Schwester.'.", 'explanation': "The correct answer is 'Ich habe eine Schwester.'. Your answer was 'sf'.", 'alternatives': ['Ich habe eine Schwester', 'ich habe eine schwester.'], 'user_answer': 'sf', 'correct_answer': 'Ich habe eine Schwester.'}, 'ex3': {'correct': False, 'feedback': "Not quite right. The correct answer is 'ist'.", 'explanation': "The correct answer is 'ist'. Your answer was 'sfd'.", 'alternatives': ['Ist'], 'user_answer': 'sfd', 'correct_answer': 'ist'}}, {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Meine Familie _____ in Berlin.', 'your_answer': 'wohnen', 'correct_answer': 'wohnt'}, {'question': 'I have a sister.', 'your_answer': 'sf', 'correct_answer': 'Ich habe eine Schwester.'}, {'question': 'Das Haus _____ groß.', 'your_answer': 'sfd', 'correct_answer': 'ist'}]})
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Processing evaluation results for block blk1754560976278
+2025-08-07 10:17:53 - features.exercise.exercise_evaluation - INFO - Stored new results for block blk1754560976278
+2025-08-07 10:17:53 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in feedback mode
+2025-08-07 10:17:53 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-07 10:17:54 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:17:54 - api.routes.ai.exercise - INFO - Payload received: {'answers': {'ex1': 'wohnen', 'ex2': 'sf', 'ex3': 'sfd'}}
+2025-08-07 10:17:54 - features.ai.generation.exercise_processing - INFO - Generating new exercises for user: asdf
+2025-08-07 10:17:54 - features.ai.generation.exercise_processing - INFO - Generated new exercise block for user: asdf
+2025-08-07 10:17:54 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Daily Activities', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lerne', 'lernt', 'lernen', 'gelernt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet']}], 'id': 'blk1754561726362'}
+2025-08-07 10:17:54 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:17:55 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754560976278
+2025-08-07 10:17:56 - features.exercise.exercise_evaluation - INFO - Successfully processed evaluation results for block blk1754560976278
+2025-08-07 10:17:56 - features.exercise.exercise_evaluation - INFO - Processing AI answers for topic memory and vocabulary updates
+2025-08-07 10:17:56 - features.exercise.exercise_evaluation - INFO - Calling process_ai_answers with exercise_block: {'exercises': [{'correctAnswer': 'wohnt', 'id': 'ex1', 'options': ['wohnt', 'wohnen', 'wohnte', 'gewohnt'], 'question': 'Meine Familie _____ in Berlin.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich habe eine Schwester.', 'id': 'ex2', 'question': 'I have a sister.', 'type': 'translation'}, {'correctAnswer': 'ist', 'id': 'ex3', 'options': ['ist', 'sind', 'war', 'waren'], 'question': 'Das Haus _____ groß.', 'type': 'grammar'}], 'topic': 'general'}
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Processing AI answers for user: asdf, block: blk1754560976278, answers_count: 3
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Using block topic: 'general' for all exercises
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Created exercise map with 3 exercises
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex1 with answer: 'wohnen'
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Using AI topic evaluation for gap-fill exercise
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Calling evaluate_topic_qualities_ai for gap-fill exercise
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Reference sentence: 'Meine Familie wohnt_ in Berlin.'
+2025-08-07 10:17:56 - features.ai.evaluation.exercise_processing - INFO - Student sentence: 'Meine Familie wohnen_ in Berlin.'
+2025-08-07 10:17:59 - features.ai.evaluation.exercise_processing - INFO - AI topic evaluation quality score: 4.00
+2025-08-07 10:18:00 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:18:00 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:18:00 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:18:00 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Daily Activities', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lerne', 'lernt', 'lernen', 'gelernt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet']}], 'id': 'blk1754561726362'}
+2025-08-07 10:18:00 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:18:09 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex1: correct=False, quality=4.0
+2025-08-07 10:18:09 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex2 with answer: 'sf'
+2025-08-07 10:18:09 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for translation exercise
+2025-08-07 10:18:21 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex2: correct=False, quality=2
+2025-08-07 10:18:21 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex3 with answer: 'sfd'
+2025-08-07 10:18:21 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for grammar exercise
+2025-08-07 10:18:25 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
+2025-08-07 10:18:25 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user asdf
+2025-08-07 10:18:25 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'wohnen', 'correct_answer': 'wohnt', 'is_correct': False, 'quality': 4.0, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'sf', 'correct_answer': 'Ich habe eine Schwester.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'sfd', 'correct_answer': 'ist', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}]
+2025-08-07 10:18:34 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:18:34 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:18:34 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:18:34 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Daily Activities', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lerne', 'lernt', 'lernen', 'gelernt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet']}], 'id': 'blk1754561726362'}
+2025-08-07 10:18:34 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:18:36 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:18:36 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:18:36 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:18:36 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Daily Activities', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lerne', 'lernt', 'lernen', 'gelernt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet']}], 'id': 'blk1754561726362'}
+2025-08-07 10:18:36 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:18:37 - api.routes.ai.exercise - INFO - User asdf requesting AI exercises
+2025-08-07 10:18:37 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-07 10:18:37 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: asdf
+2025-08-07 10:18:37 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A1 - Daily Activities', 'level': 'A1', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lerne', 'lernt', 'lernen', 'gelernt']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeitet', 'arbeiten', 'arbeitete', 'gearbeitet']}], 'id': 'blk1754561726362'}
+2025-08-07 10:18:37 - api.routes.ai.exercise - INFO - Returning 3 exercises for user asdf
+2025-08-07 10:19:00 - core.services.vocabulary_service - ERROR - Error looking up vocabulary word 'en' for user 'Tag': User Tag does not exist
+2025-08-07 10:19:02 - core.services.vocabulary_service - ERROR - Error looking up vocabulary word 'en' for user 'Tag': User Tag does not exist
+2025-08-07 10:20:09 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:20:09 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:20:09 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:20:09 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:20:10 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:20:19 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'Tag' for user 'asdf'
+2025-08-07 10:20:19 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'Tag'
+2025-08-07 10:20:19 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:20:20 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:20:20 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:20:20 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:20:20 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:20:24 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'Er' for user 'asdf'
+2025-08-07 10:20:24 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'Er'
+2025-08-07 10:20:27 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeden' for user 'asdf'
+2025-08-07 10:20:31 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeden' for user 'asdf'
+2025-08-07 10:20:33 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeden' for user 'asdf'
+2025-08-07 10:21:26 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:21:26 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:21:26 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:21:26 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:21:27 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:21:34 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-07 10:21:35 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-07 10:21:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-07 10:21:35 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-07 10:21:35 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:21:57 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeden' for user 'asdf'
+2025-08-07 10:21:57 - core.services.vocabulary_service - INFO - Creating new vocabulary entry for 'jeden' using AI
+2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Looking up vocabulary word 'jeder' for user 'asdf'
+2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Found existing vocabulary entry for 'jeder'
+2025-08-07 10:21:59 - core.services.vocabulary_service - INFO - Successfully created new vocabulary entry for 'jeden'
