@@ -15774,3 +15774,90 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-07 10:55:01 - external.redis.client - INFO - Redis client initialized with REDIS_URL
 2025-08-07 10:55:01 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
 2025-08-07 10:55:02 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-07 10:56:29 - api.routes.translate - INFO - Starting translation stream for user test8
+2025-08-07 10:56:29 - api.routes.translate - INFO - Starting translation for: 'This is a test' -> 'Dase ist eine Test'
+2025-08-07 10:56:29 - api.routes.translate - INFO - Calling translate_to_german...
+2025-08-07 10:56:29 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Starting translation for: 'This is a test'
+2025-08-07 10:56:29 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Created prompt: {'role': 'user', 'content': 'Translate this sentence to German:\nThis is a test'}
+2025-08-07 10:56:29 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] About to call send_prompt with Mistral...
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German translator. Provide clear, concise translations. For incomplete inputs, giv...
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Translate this sentence to German:\nThis is a test'}
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:56:29 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:56:30 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] send_prompt returned with status: 200
+2025-08-07 10:56:30 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Parsing response JSON...
+2025-08-07 10:56:30 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Got German translation: 'Das ist ein Test.'
+2025-08-07 10:56:30 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Skipping vocabulary saving for speed
+2025-08-07 10:56:30 - features.ai.memory.vocabulary_memory - INFO - 🔤 [TRANSLATE] Returning translation: 'Das ist ein Test.'
+2025-08-07 10:56:30 - api.routes.translate - INFO - Got German translation: 'Das ist ein Test.'
+2025-08-07 10:56:30 - api.routes.translate - INFO - Calling evaluate_translation_ai...
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nEvaluate this German translation:\n\nEnglish: "This is a test"\nStudent\'s German: "Dase ist eine Test"\n\nReturn JSON with:\n- "correct": true/false\n- "reason": brief explanation in English\n'}
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:56:30 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:56:32 - api.routes.translate - INFO - Evaluation result: correct=False, reason=The student used incorrect articles and a wrong verb form. The correct translation should be 'Das ist ein Test'. 'Das' is the correct demonstrative pronoun for 'this' in this context, and 'ein' is the correct indefinite article for 'a'. Additionally, 'Test' is a masculine noun in German, so it should be 'ein Test' not 'eine Test'.
+2025-08-07 10:56:32 - api.routes.translate - INFO - Streaming feedback block...
+2025-08-07 10:56:32 - api.routes.translate - INFO - Feedback block streamed successfully
+2025-08-07 10:56:32 - api.routes.translate - INFO - Background memory update started
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nDas ist ein Test.\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:56:32 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nDase ist eine Test\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:56:33 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'You are a helpful German teacher grading a student\'s translation.\n\nEnglish sentence: \'This is a test\'\nReference answer: \'Das ist ein Test.\'\nStudent answer: \'Dase ist eine Test\'\n\nIMPORTANT: For gap-fill exercises, if the gap tests related grammar concepts (like personal pronoun + verb conjugation), evaluate them together in the context since they must agree, but still evaluate them individually.\nFor translation exercises, evaluate each grammar topic individually.\n\nReturn a JSON object where each grammar topic is a key (all lowercase, spaces only), and its value is an integer from 0 to 5 representing the SM2 quality scale:\n\nEVALUATION RULES:\n- Use the FULL 0-5 scale for nuanced evaluation:\n  * 5 = Perfect usage of the grammar element\n  * 4 = Correct but with slight hesitation or minor error\n  * 3 = Correct but with difficulty or noticeable error\n  * 2 = Incorrect but the student seemed to know the concept\n  * 1 = Incorrect but some knowledge was shown\n  * 0 = Complete blackout or completely wrong usage\n- For translation: Evaluate each grammar element independently\n- Consider the student\'s apparent understanding level\n\nFor example:\n{\n  "adjective": 5,\n  "nominative case": 4,\n  "modal verb": 3,\n  "verb conjugation": 2,\n  "article": 1,\n  "preposition": 0\n}\n\nTopics: articles, present tense, pronouns, word order'}
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-07 10:56:34 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-07 10:56:35 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-07 10:56:35 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-07 10:56:35 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
