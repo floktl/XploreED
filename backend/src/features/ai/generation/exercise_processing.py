@@ -178,7 +178,7 @@ def compile_score_summary(exercises: list, answers: dict, id_map: dict) -> dict:
         mistakes = []
 
         for i, exercise in enumerate(exercises):
-            exercise_id = str(i + 1)
+            exercise_id = str(exercise.get("id", i + 1))  # Use actual exercise ID or fallback to index
             user_answer = answers.get(exercise_id, "").strip()
             correct_answer = exercise.get("correctAnswer", "")
 
@@ -330,9 +330,14 @@ def fetch_vocab_and_topic_data(username: str) -> tuple[list, list]:
         raise DatabaseError(f"Error fetching vocab and topic data: {str(e)}")
 
 
-def get_ai_exercises():
+def get_ai_exercises(payload=None):
     """
     Get AI-generated exercises.
+
+    Args:
+        payload (dict, optional): Additional parameters for exercise generation
+            - answers (dict, optional): Previous answers to consider for next block
+            - force_new (bool, optional): Force generation of new block
 
     Returns:
         List of AI exercises
@@ -341,33 +346,50 @@ def get_ai_exercises():
         # Get current user
         username = require_user()
 
-        # Get user's current exercise block
-        current_block = fetch_one(
-            "ai_exercise_blocks",
-            "WHERE username = ? AND status = 'current'",
-            (username,)
-        )
+        # Check if we should force generation of new block
+        force_new = payload and payload.get('force_new', False)
+        previous_answers = payload.get('answers', {}) if payload else {}
 
-        if current_block:
-            logger.info(f"Retrieved current exercise block for user: {username}")
-            return current_block
+        # If answers are provided, we want a new block (user is continuing)
+        if previous_answers:
+            force_new = True
 
-        # Generate new exercises if no current block
-        logger.info(f"No current block found, generating new exercises for user: {username}")
-
-        from .exercise_creation import generate_training_exercises
-        new_block = generate_training_exercises(username)
-
-        if new_block:
-            # Mark as current
-            update_row(
-                "ai_exercise_blocks",
-                {"status": "current"},
-                "id = ?",
-                (new_block["id"],)
+        if not force_new:
+            # Get user's current exercise block from ai_user_data table
+            current_block = fetch_one(
+                "ai_user_data",
+                "WHERE username = ?",
+                (username,)
             )
 
-            logger.info(f"Generated and set new current block for user: {username}")
+            if current_block and current_block.get("exercises"):
+                try:
+                    import json
+                    exercises_data = json.loads(current_block["exercises"])
+                    if exercises_data and exercises_data.get("exercises"):
+                        logger.info(f"Retrieved current exercise block for user: {username}")
+                        return exercises_data
+                except (json.JSONDecodeError, TypeError):
+                    logger.error(f"Error parsing exercises JSON for user {username}")
+
+        # Generate new exercises if no current block exists or force_new is True
+        logger.info(f"Generating new exercises for user: {username}")
+
+        # Generate new exercises using the existing function
+        from .exercise_creation import _generate_blocks_for_existing_user, _generate_blocks_for_new_user
+
+        # Check if user is new or existing
+        user_row = fetch_one("users", "WHERE username = ?", (username,))
+
+        if user_row:
+            # Existing user
+            new_block = _generate_blocks_for_existing_user(username)
+        else:
+            # New user
+            new_block = _generate_blocks_for_new_user(username)
+
+        if new_block:
+            logger.info(f"Generated new exercise block for user: {username}")
             return new_block
         else:
             logger.warning(f"Failed to generate new exercises for user: {username}")

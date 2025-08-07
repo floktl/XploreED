@@ -6,7 +6,7 @@ import Footer from "./UI/Footer";
 import { Container, Title } from "./UI/UI";
 import useAppStore from "../store/useAppStore";
 import AIExerciseBlock from "./AIExerciseBlock";
-import { getTrainingExercises } from "../api";
+import { getAiExercises } from "../api";
 
 export default function AIFeedback() {
     const navigate = useNavigate();
@@ -35,8 +35,7 @@ export default function AIFeedback() {
             <main className="flex-1 pb-20">
                 <Container>
                     <AIExerciseBlock
-                        blockId="training"
-                        fetchExercisesFn={getTrainingExercises}
+                        fetchExercisesFn={getAiExercises}
                         setFooterActions={setActions}
                         onSubmissionChange={setIsSubmitted}
                         onExerciseDataChange={handleExerciseDataChange}

@@ -9,14 +9,16 @@ Author: XplorED Team
 Date: 2025
 """
 
+import json
 import logging
 from typing import Any
 from datetime import datetime
 
 from flask import request, jsonify # type: ignore
 from api.middleware.auth import require_user
-from core.database.connection import select_one, insert_row
+from core.database.connection import select_one, insert_row, select_rows
 from config.blueprint import ai_bp
+from config.extensions import limiter
 from features.exercise import (
     check_gap_fill_correctness,
     parse_submission_data,
@@ -29,6 +31,90 @@ from shared.exceptions import DatabaseError, AIEvaluationError
 
 
 logger = logging.getLogger(__name__)
+
+
+@ai_bp.route("/ai-exercises", methods=["POST"])
+def get_ai_exercises_route():
+    """
+    Get AI-generated exercises for the current user.
+
+    This endpoint retrieves or generates AI exercises for the user.
+    If no current exercises exist, new ones are generated automatically.
+
+    Request Body:
+        - payload (object, optional): Additional parameters for exercise generation
+
+    JSON Response Structure:
+        {
+            "id": str,                           # Exercise block ID
+            "username": str,                     # Username
+            "title": str,                        # Exercise block title
+            "level": str,                        # Difficulty level
+            "topic": str,                        # Topic covered
+            "exercises": [                       # Array of exercises
+                {
+                    "id": str,                   # Exercise identifier
+                    "type": str,                 # Exercise type
+                    "question": str,             # Exercise question
+                    "options": [str],            # Answer options (if applicable)
+                    "correct_answer": str        # Correct answer
+                }
+            ],
+            "instructions": str,                 # Exercise instructions
+            "vocabHelp": [str],                  # Vocabulary help
+            "created_at": str                    # Creation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 500: Internal server error
+    """
+    try:
+        username = require_user()
+        logger.info(f"User {username} requesting AI exercises")
+
+        from features.ai.generation.exercise_processing import get_ai_exercises
+
+        # Get payload from request
+        payload = request.get_json() or {}
+        logger.info(f"Payload received: {payload}")
+        exercise_block = get_ai_exercises(payload)
+        logger.info(f"Exercise block returned: {exercise_block}")
+
+        if not exercise_block:
+            return jsonify({"error": "Failed to generate exercises"}), 500
+
+        # Parse exercises JSON string back to list if it's a string
+        exercises_field = exercise_block.get("exercises")
+        if exercises_field is None:
+            logger.error(f"No exercises field found for block {exercise_block.get('id')}")
+            return jsonify({"error": "No exercise data found"}), 500
+
+        if isinstance(exercises_field, str):
+            try:
+                exercises_data = json.loads(exercises_field)
+                exercise_block["exercises"] = exercises_data
+            except (json.JSONDecodeError, TypeError) as e:
+                logger.error(f"Error parsing exercises JSON for block {exercise_block.get('id')}: {e}")
+                return jsonify({"error": "Invalid exercise data"}), 500
+        elif isinstance(exercises_field, list):
+            # Already parsed
+            exercises_data = exercises_field
+        else:
+            logger.error(f"Unexpected exercises field type for block {exercise_block.get('id')}: {type(exercises_field)}")
+            return jsonify({"error": "Invalid exercise data format"}), 500
+
+        logger.info(f"Returning {len(exercises_data)} exercises for user {username}")
+        return jsonify(exercise_block)
+
+    except Exception as e:
+        logger.error(f"Error getting AI exercises: {e}")
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Error details: {str(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({"error": "Server error"}), 500
 
 
 @ai_bp.route("/ai-exercise/<block_id>/submit", methods=["POST"])
@@ -90,11 +176,19 @@ def submit_ai_exercise(block_id, data=None):
 
         if data is None:
             data = request.get_json() or {}
-        exercises, answers, error = parse_submission_data(data)
 
-        if error:
-            logger.error(f"Parse submission data error for user {username}: {error}")
-            return jsonify({"error": error}), 400
+        logger.info(f"Raw submission data: {data}")
+        logger.info(f"Data keys: {list(data.keys()) if data else 'None'}")
+
+        exercises, answers, parsed_block_id = parse_submission_data(data)
+
+        if not exercises:
+            logger.error(f"No exercises found in submission data for user {username}")
+            return jsonify({"error": "No exercises found"}), 400
+
+        if not answers:
+            logger.error(f"No answers found in submission data for user {username}")
+            return jsonify({"error": "No answers found"}), 400
 
         logger.info(f"Successfully parsed {len(exercises)} exercises with {len(answers)} answers for user: {username}")
 
@@ -145,6 +239,8 @@ def submit_ai_exercise(block_id, data=None):
     except Exception as e:
         logger.error(f"Error submitting AI exercise: {e}")
         logger.error(f"Exception type: {type(e)}")
+        import traceback
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         return jsonify({"error": "Server error"}), 500
 
 
@@ -196,7 +292,72 @@ def get_ai_exercise_results(block_id):
     try:
         username = require_user()
 
-        # Get exercise results from database
+        # First try to get results from Redis
+        from external.redis import redis_client
+        result_key = f"exercise_result:{username}:{block_id}"
+        redis_results = redis_client.get_json(result_key)
+
+        if redis_results:
+            logger.info(f"Found results in Redis for block {block_id}")
+
+            # Convert the evaluation results to the expected format
+            if isinstance(redis_results, tuple) and len(redis_results) == 2:
+                evaluation_results, summary = redis_results
+            else:
+                evaluation_results = redis_results
+                summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
+
+            # Ensure summary is a dictionary
+            if not isinstance(summary, dict):
+                summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
+
+            # Convert evaluation results to the expected format
+            formatted_results = []
+
+            # Handle both dictionary and list formats
+            if isinstance(evaluation_results, dict):
+                for exercise_id, result in evaluation_results.items():
+                    formatted_results.append({
+                        "id": exercise_id,
+                        "is_correct": result.get("correct", False),
+                        "correct_answer": result.get("correct_answer", ""),
+                        "alternatives": result.get("alternatives", []),
+                        "explanation": result.get("explanation", ""),
+                        "user_answer": result.get("user_answer", ""),
+                        "feedback": result.get("feedback", "")
+                    })
+            elif isinstance(evaluation_results, list):
+                # If it's a list, check if it contains the evaluation results
+                if len(evaluation_results) == 2 and isinstance(evaluation_results[0], dict):
+                    # This is likely the format [evaluation_dict, summary_dict]
+                    evaluation_dict = evaluation_results[0]
+                    for exercise_id, result in evaluation_dict.items():
+                        formatted_results.append({
+                            "id": exercise_id,
+                            "is_correct": result.get("correct", False),
+                            "correct_answer": result.get("correct_answer", ""),
+                            "alternatives": result.get("alternatives", []),
+                            "explanation": result.get("explanation", ""),
+                            "user_answer": result.get("user_answer", ""),
+                            "feedback": result.get("feedback", "")
+                        })
+                else:
+                    # If it's already a list of formatted results, use it directly
+                    formatted_results = evaluation_results
+            else:
+                logger.warning(f"Unexpected evaluation_results format: {type(evaluation_results)}")
+                formatted_results = []
+
+            return jsonify({
+                "status": "complete",
+                "block_id": block_id,
+                "results": formatted_results,
+                "summary": summary,
+                "pass": summary.get("correct", 0) >= len(formatted_results) * 0.7 if formatted_results else False,
+                "source": "redis"
+            })
+
+        # Fallback to database
         results = select_one(
             "ai_exercise_results",
             columns="*",
@@ -207,7 +368,35 @@ def get_ai_exercise_results(block_id):
         if not results:
             return jsonify({"error": "Exercise results not found"}), 404
 
-        return jsonify(results)
+        # Parse the stored results from database
+        try:
+            stored_results = json.loads(results.get("results", "{}"))
+            stored_summary = json.loads(results.get("summary", "{}"))
+
+            # Convert to the expected format
+            formatted_results = []
+            for exercise_id, result in stored_results.items():
+                formatted_results.append({
+                    "id": exercise_id,
+                    "is_correct": result.get("correct", False),
+                    "correct_answer": result.get("correct_answer", ""),
+                    "alternatives": result.get("alternatives", []),
+                    "explanation": result.get("explanation", ""),
+                    "user_answer": result.get("user_answer", ""),
+                    "feedback": result.get("feedback", "")
+                })
+
+            return jsonify({
+                "status": "complete",
+                "block_id": block_id,
+                "results": formatted_results,
+                "summary": stored_summary,
+                "pass": stored_summary.get("correct", 0) >= len(formatted_results) * 0.7 if formatted_results else False,
+                "source": "database"
+            })
+        except json.JSONDecodeError as e:
+            logger.error(f"Error parsing stored results: {e}")
+            return jsonify({"error": "Invalid stored results format"}), 500
 
     except Exception as e:
         logger.error(f"Error getting AI exercise results: {e}")
@@ -292,7 +481,44 @@ def argue_ai_exercise(block_id):
         return jsonify({"error": "Failed to submit argument"}), 500
 
 
+@ai_bp.route("/ai-exercise/debug/topic-memory", methods=["GET"])
+def debug_topic_memory_route():
+    """
+    Debug endpoint to check topic memory functionality.
+    """
+    try:
+        username = require_user()
+
+        # Check if topic_memory table exists and has data
+        topic_memory_count = select_rows(
+            "topic_memory",
+            columns="COUNT(*) as count",
+            where="username = ?",
+            params=(username,)
+        )
+
+        # Check if vocab_log table exists and has data
+        vocab_count = select_rows(
+            "vocab_log",
+            columns="COUNT(*) as count",
+            where="username = ?",
+            params=(username,)
+        )
+
+        return jsonify({
+            "username": username,
+            "topic_memory_count": topic_memory_count[0].get("count", 0) if topic_memory_count else 0,
+            "vocab_count": vocab_count[0].get("count", 0) if vocab_count else 0,
+            "status": "ok"
+        })
+
+    except Exception as e:
+        logger.error(f"Error in debug topic memory endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @ai_bp.route("/ai-exercise/<block_id>/topic-memory-status", methods=["GET"])
+@limiter.limit("100/minute") # Apply rate limit to this specific endpoint
 def get_topic_memory_status_route(block_id):
     """
     Get topic memory status for an exercise block.
@@ -325,15 +551,10 @@ def get_topic_memory_status_route(block_id):
     try:
         username = require_user()
 
-        # Get topic memory status
-        status = select_one(
-            "topic_memory_status",
-            columns="*",
-            where="block_id = ? AND username = ?",
-            params=(block_id, username)
-        )
+        # Check if the exercise block exists and has been processed
+        block = select_one("ai_exercise_results", columns="*", where="block_id = ? AND username = ?", params=(block_id, username))
 
-        if not status:
+        if not block:
             return jsonify({
                 "block_id": block_id,
                 "topic_memory_updated": False,
@@ -346,7 +567,48 @@ def get_topic_memory_status_route(block_id):
                 }
             })
 
-        return jsonify(status)
+        # Check if topic memory has recent entries for this user
+        from datetime import datetime, timedelta
+        recent_time = (datetime.now() - timedelta(minutes=5)).isoformat()
+
+        recent_topic_memory = select_rows(
+            "topic_memory",
+            columns="COUNT(*) as count",
+            where="username = ? AND last_review >= ?",
+            params=(username, recent_time)
+        )
+
+        topic_memory_updated = recent_topic_memory and recent_topic_memory[0].get("count", 0) > 0
+
+        # Get recent vocabulary entries
+        recent_vocab = select_rows(
+            "vocab_log",
+            columns="COUNT(*) as count",
+            where="username = ? AND created_at >= ?",
+            params=(username, recent_time)
+        )
+
+        vocab_updated = recent_vocab and recent_vocab[0].get("count", 0) > 0
+
+        # Determine overall status
+        if topic_memory_updated or vocab_updated:
+            update_status = "completed"
+            topic_memory_updated = True
+        else:
+            update_status = "pending"
+            topic_memory_updated = False
+
+        return jsonify({
+            "block_id": block_id,
+            "topic_memory_updated": topic_memory_updated,
+            "update_status": update_status,
+            "last_update": block.get("created_at") if block else None,
+            "memory_impact": {
+                "strengthened_concepts": [],
+                "weak_areas": [],
+                "recommendations": []
+            }
+        })
 
     except Exception as e:
         logger.error(f"Error getting topic memory status: {e}")

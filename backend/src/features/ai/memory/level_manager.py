@@ -41,12 +41,12 @@ def initialize_topic_memory_for_level(username: str, level: int) -> None:
         return
 
     now = datetime.datetime.now().isoformat()
-    for grammar in topics:
+    for topic in topics:
         existing = select_rows(
             "topic_memory",
             columns="id",
             where="username = ? AND grammar = ?",
-            params=(username, grammar),
+            params=(username, topic),
         )
         if existing:
             continue
@@ -54,18 +54,17 @@ def initialize_topic_memory_for_level(username: str, level: int) -> None:
             "topic_memory",
             {
                 "username": username,
-                "grammar": grammar,
-                "skill_type": "initial",
-                "context": "signup",
-                "lesson_content_id": None,
+                "grammar": topic,
+                "skill_type": "level-up",
+                "context": f"auto-level-up-{level}",
                 "ease_factor": 2.5,
-                "intervall": 0,
+                "interval": 0,
                 "next_repeat": now,
                 "repetitions": 0,
-                "last_review": None,
+                "last_review": now,
                 "correct": 0,
-                "quality": 0,
-            },
+                "quality": 3
+            }
         )
 
 

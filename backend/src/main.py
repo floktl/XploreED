@@ -22,6 +22,10 @@ from typing import List
 # === Environment Configuration ===
 def load_environment() -> None:
     """Load environment variables from .env file."""
+    # Skip loading .env file if SKIP_DOTENV is set
+    if os.getenv('SKIP_DOTENV', 'false').lower() == 'true':
+        return
+
     try:
         from dotenv import load_dotenv  # type: ignore
     except ImportError:

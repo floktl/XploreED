@@ -21,6 +21,8 @@ from typing import List, Optional
 from shared.constants import MISTRAL_API_URL, MISTRAL_MODEL
 from shared.exceptions import AIEvaluationError
 
+logger = logging.getLogger(__name__)
+
 # === Configuration ===
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 

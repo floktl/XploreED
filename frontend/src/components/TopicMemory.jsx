@@ -49,9 +49,20 @@ export default function TopicMemory() {
     useEffect(() => {
         if (!isAdmin) {
             getTopicMemory()
-                .then(setTopics)
+                .then((data) => {
+                    // Ensure data is always an array
+                    if (Array.isArray(data)) {
+                        setTopics(data);
+                    } else if (data && Array.isArray(data.topics)) {
+                        setTopics(data.topics);
+                    } else {
+                        console.warn("Unexpected topic memory data format:", data);
+                        setTopics([]);
+                    }
+                })
                 .catch((err) => {
                     console.error("Failed to load topic memory:", err);
+                    setTopics([]);
                 });
         }
     }, [username, isAdmin]);
@@ -59,9 +70,20 @@ export default function TopicMemory() {
     useEffect(() => {
         if (isAdmin) return;
         getTopicWeaknesses()
-            .then(setWeaknesses)
+            .then((data) => {
+                // Ensure data is always an array
+                if (Array.isArray(data)) {
+                    setWeaknesses(data);
+                } else if (data && Array.isArray(data.weaknesses)) {
+                    setWeaknesses(data.weaknesses);
+                } else {
+                    console.warn("Unexpected weaknesses data format:", data);
+                    setWeaknesses([]);
+                }
+            })
             .catch((err) => {
                 console.error("Failed to load weaknesses:", err);
+                setWeaknesses([]);
             });
     }, [isAdmin]);
 
@@ -88,13 +110,13 @@ export default function TopicMemory() {
     };
 
     // Compute unique filter options
-    const grammarOptions = ["", ...Array.from(new Set(topics.map(t => t.grammar).filter(Boolean)))];
-    const topicOptions = ["", ...Array.from(new Set(topics.map(t => t.topic).filter(Boolean)))];
-    const skillOptions = ["", ...Array.from(new Set(topics.map(t => t.skill_type).filter(Boolean)))];
-    const contextOptions = ["", ...Array.from(new Set(topics.map(t => t.context).filter(Boolean)))];
+    const grammarOptions = ["", ...Array.from(new Set((topics || []).map(t => t.grammar).filter(Boolean)))];
+    const topicOptions = ["", ...Array.from(new Set((topics || []).map(t => t.topic).filter(Boolean)))];
+    const skillOptions = ["", ...Array.from(new Set((topics || []).map(t => t.skill_type).filter(Boolean)))];
+    const contextOptions = ["", ...Array.from(new Set((topics || []).map(t => t.context).filter(Boolean)))];
 
     // Filter logic: exact match or 'All'
-    const filteredTopics = topics.filter((t) =>
+    const filteredTopics = (topics || []).filter((t) =>
         (filters.grammar === "" || t.grammar === filters.grammar) &&
         (filters.topic === "" || t.topic === filters.topic) &&
         (filters.skill === "" || t.skill_type === filters.skill) &&
@@ -142,11 +164,11 @@ export default function TopicMemory() {
                         Topic Memory
                     </div>
                 </Title>
-                {weaknesses.length > 0 && (
+                {(weaknesses || []).length > 0 && (
                     <div className="mb-6 flex flex-col items-center gap-4">
                         <p className="text-sm">Biggest weaknesses</p>
                         <div className="flex gap-4">
-                            {weaknesses.map((w) => (
+                            {(weaknesses || []).map((w) => (
                                 <div key={w.grammar} className="flex flex-col items-center">
                                     <ProgressRing percentage={w.percent} size={70} color={getUrgencyColor(w.percent)} />
                                     <p className="mt-1 text-xs">{w.grammar}</p>
@@ -156,7 +178,7 @@ export default function TopicMemory() {
                     </div>
                 )}
 
-                {topics.length === 0 ? (
+                {(topics || []).length === 0 ? (
                     <Alert type="info">No topic memory saved yet.</Alert>
                 ) : (
                     <>

@@ -42,7 +42,7 @@ from config.blueprint import (
 # Import specific functions that are still available in features
 
 # Individual feature imports for specific functions
-from features.ai.generation.exercise_creation import generate_training_exercises
+
 from features.ai.evaluation import evaluate_answers_with_ai
 from features.ai.generation.reading_helpers import generate_reading_exercise
 from features.ai.generation.lesson_generator import update_reading_memory_async
@@ -215,7 +215,7 @@ __all__ = [
     "profile_bp", "translate_bp", "user_bp", "ai_bp", "support_bp", "settings_bp",
 
     # Feature imports
-    "generate_training_exercises", "evaluate_answers_with_ai", "generate_reading_exercise",
+    "evaluate_answers_with_ai", "generate_reading_exercise",
     "update_reading_memory_async", "stream_ai_answer", "update_memory_async",
 
     # Vocabulary feature imports

@@ -43,6 +43,12 @@ from features.debug import (
     get_database_schema,
     get_user_statistics,
 )
+from features.debug.cache_management import (
+    clear_user_cache,
+    clear_system_cache,
+    get_cache_statistics,
+    clear_in_memory_caches
+)
 from shared.exceptions import DatabaseError
 
 
@@ -1391,4 +1397,103 @@ def test_performance_route():
 
     except Exception as e:
         logger.error(f"Error testing performance: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@debug_bp.route("/cache-stats", methods=["GET"])
+def get_cache_stats_route():
+    """
+    Get cache statistics and health information.
+
+    This endpoint provides detailed information about the current
+    cache usage, memory consumption, and health status.
+
+    JSON Response Structure:
+        {
+            "redis_connected": bool,                    # Redis connection status
+            "total_keys": int,                          # Total number of cache keys
+            "key_patterns": {                           # Key pattern distribution
+                "pattern": int,                         # Pattern name and count
+            },
+            "memory_used": str,                         # Memory usage (human readable)
+            "memory_peak": str,                         # Peak memory usage
+            "timestamp": str                            # Statistics timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 500: Internal server error
+    """
+    try:
+        # Check admin privileges
+        if not is_admin():
+            return jsonify({"error": "Unauthorized - Admin access required"}), 401
+
+        stats = get_cache_statistics()
+        return jsonify(stats)
+
+    except Exception as e:
+        logger.error(f"Error getting cache statistics: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@debug_bp.route("/clear-user-cache/<username>", methods=["POST"])
+def clear_user_cache_route(username: str):
+    """
+    Clear all cache data for a specific user.
+
+    This endpoint clears all Redis cache entries and in-memory caches
+    associated with the specified user.
+
+    Path Parameters:
+        - username (str, required): The username to clear cache for
+
+    JSON Response Structure:
+        {
+            "message": str,                             # Success message
+            "cache_stats": {                            # Cache clearing statistics
+                "exercise_results": int,                # Exercise result cache entries cleared
+                "feedback_progress": int,               # Feedback progress cache entries cleared
+                "translation_jobs": int,                # Translation job cache entries cleared
+                "other_keys": int,                      # Other cache entries cleared
+                "total_cleared": int                    # Total cache entries cleared
+            },
+            "in_memory_stats": {                        # In-memory cache clearing statistics
+                "reading_exercise_cache": bool,         # Reading exercise cache cleared
+                "other_caches": int,                    # Other in-memory caches cleared
+                "timestamp": str                        # Clear timestamp
+            },
+            "timestamp": str                            # Operation timestamp
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized (admin access required)
+        - 400: Bad request (invalid username)
+        - 500: Internal server error
+    """
+    try:
+        # Check admin privileges
+        if not is_admin():
+            return jsonify({"error": "Unauthorized - Admin access required"}), 401
+
+        if not username:
+            return jsonify({"error": "Username is required"}), 400
+
+        # Clear Redis cache
+        cache_stats = clear_user_cache(username)
+
+        # Clear in-memory caches
+        in_memory_stats = clear_in_memory_caches()
+
+        return jsonify({
+            "message": f"Cache cleared successfully for user {username}",
+            "cache_stats": cache_stats,
+            "in_memory_stats": in_memory_stats,
+            "timestamp": datetime.now().isoformat()
+        })
+
+    except Exception as e:
+        logger.error(f"Error clearing cache for user {username}: {e}")
         return jsonify({"error": "Internal server error"}), 500

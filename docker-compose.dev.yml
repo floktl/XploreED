@@ -16,8 +16,6 @@ services:
       - ./backend:/app
       - ./backend/secrets/.env:/app/secrets/.env
       - ./backend/database:/app/database
-    env_file:
-      - ./backend/secrets/.env
     command: >-
       sh -c "export PYTHONDONTWRITEBYTECODE=1 &&
       pip install -r requirements/requirements.txt &&
@@ -27,9 +25,8 @@ services:
 
     ports:
       - "5050:5050"
-    environment:
-      - REDIS_HOST=redis
-      - DB_FILE=/app/database/user_data.db
+    env_file:
+      - ./backend/secrets/.env
     depends_on:
       - redis
 

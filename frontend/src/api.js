@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const BASE_URL = "";
 
 // ---------- Auth ----------
 export const signup = async (username, password) => {
@@ -301,8 +301,7 @@ export async function translateSentence(payload) {
 }
 
 export async function translateSentenceStream(payload, onChunk) {
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-  const res = await fetch(`${BASE_URL}/api/translate/stream`, {
+  const res = await fetch(`/api/translate/stream`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -589,16 +588,7 @@ export const getAiExercises = async (payload = {}) => {
   return res.json();
 };
 
-export const getTrainingExercises = async (payload = {}) => {
-  const res = await fetch(`${BASE_URL}/api/training-exercises`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error("Failed to fetch training exercises");
-  return res.json();
-};
+
 
 export const sendSupportFeedback = async (message) => {
   const res = await fetch(`${BASE_URL}/api/support/feedback`, {
@@ -699,27 +689,8 @@ export const submitExerciseAnswers = async (
   return res.json();
 };
 
-export const submitTrainingExercise = async (
-  answers = {},
-  exerciseBlock = null,
-) => {
-  const startTime = Date.now();
 
-  const res = await fetch(`${BASE_URL}/api/ai-exercise/training/submit`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({
-      answers,
-      exercise_block: exerciseBlock || { exercises: [] },
-    }),
-  });
 
-  const endTime = Date.now();
-
-  if (!res.ok) throw new Error("Failed to submit training answers");
-  return res.json();
-};
 
 export const argueExerciseAnswers = async (
   blockId,

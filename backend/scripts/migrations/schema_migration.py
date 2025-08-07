@@ -27,7 +27,12 @@ import sys
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from src.core.database.connection import get_connection
+try:
+    from src.core.database.connection import get_connection
+except ImportError:
+    # Try alternative import path
+    sys.path.append(str(Path(__file__).resolve().parents[2] / "src"))
+    from core.database.connection import get_connection
 
 
 with get_connection() as conn:
@@ -162,6 +167,12 @@ with get_connection() as conn:
         print("✅ 'last_review' column added.")
     else:
         print("ℹ️ 'last_review' column already exists.")
+
+    if "quality" not in vocab_cols:
+        cursor.execute("ALTER TABLE vocab_log ADD COLUMN quality INTEGER DEFAULT 0;")
+        print("✅ 'quality' column added.")
+    else:
+        print("ℹ️ 'quality' column already exists.")
 
     # ✅ Remove duplicate vocab entries before enforcing uniqueness
     cursor.execute(
@@ -341,7 +352,6 @@ with get_connection() as conn:
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS topic_memory (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             grammar TEXT,
             topic TEXT,
@@ -349,7 +359,7 @@ with get_connection() as conn:
             context TEXT,
             lesson_content_id TEXT,
             ease_factor REAL,
-            intervall INTEGER,
+            interval INTEGER,
             next_repeat DATETIME,
             repetitions INTEGER,
             last_review DATETIME,
@@ -405,6 +415,80 @@ topic_cols = [col[1] for col in cursor.fetchall()]
 if "quality" not in topic_cols:
     cursor.execute("ALTER TABLE topic_memory ADD COLUMN quality INTEGER DEFAULT 0;")
     print("✅ 'quality' column added to 'topic_memory'.")
+
+# ✅ Add id column if missing (for existing tables that might not have it)
+if "id" not in topic_cols:
+    try:
+        # SQLite doesn't support adding PRIMARY KEY columns, so we need to recreate the table
+        print("⚠️ 'id' column missing from topic_memory table. Attempting to add it...")
+
+        # Get existing data
+        existing_data = cursor.execute("SELECT * FROM topic_memory").fetchall()
+
+        # Drop the table
+        cursor.execute("DROP TABLE topic_memory")
+
+        # Recreate with proper schema
+        cursor.execute(
+            """
+            CREATE TABLE topic_memory (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                grammar TEXT,
+                topic TEXT,
+                skill_type TEXT,
+                context TEXT,
+                lesson_content_id TEXT,
+                ease_factor REAL,
+                interval INTEGER,
+                next_repeat DATETIME,
+                repetitions INTEGER,
+                last_review DATETIME,
+                correct INTEGER DEFAULT 0,
+                quality INTEGER DEFAULT 0
+            );
+            """
+        )
+
+        # Restore data if any existed
+        if existing_data:
+            for row in existing_data:
+                cursor.execute(
+                    """
+                    INSERT INTO topic_memory (
+                        username, grammar, topic, skill_type, context,
+                        lesson_content_id, ease_factor, interval, next_repeat,
+                        repetitions, last_review, correct, quality
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    row
+                )
+
+        print("✅ 'id' column added to 'topic_memory' table.")
+    except Exception as e:
+        print(f"⚠️ Failed to add 'id' column to topic_memory table: {e}")
+        # If we can't add the id column, at least ensure the table exists with basic structure
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS topic_memory (
+                username TEXT NOT NULL,
+                grammar TEXT,
+                topic TEXT,
+                skill_type TEXT,
+                context TEXT,
+                lesson_content_id TEXT,
+                ease_factor REAL,
+                interval INTEGER,
+                next_repeat DATETIME,
+                repetitions INTEGER,
+                last_review DATETIME,
+                correct INTEGER DEFAULT 0,
+                quality INTEGER DEFAULT 0
+            );
+            """
+        )
+else:
+    print("ℹ️ 'id' column already exists in 'topic_memory'.")
 
 
 # ✅ Add num_blocks column if missing

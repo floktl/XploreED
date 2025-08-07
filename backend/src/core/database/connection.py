@@ -111,6 +111,11 @@ def execute_query(query: str, params: Tuple = (), fetch: bool = False, many: boo
                 raise
 
     except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Database execute_query error: {e}")
+        logger.error(f"Query: {query}")
+        logger.error(f"Params: {params}")
         if fetch:
             return []
         return None
@@ -189,18 +194,15 @@ def fetch_topic_memory(username: str, include_correct: bool = False) -> Union[Da
     Args:
         username: Username to fetch memory for
         include_correct: Whether to include correct answers (default: False)
+                        Note: Topic memory entries use quality scores, not correct field
 
     Returns:
         Union[DatabaseList, bool]: Memory entries or False on error
     """
     try:
-        where_clause = "WHERE username = ?"
-        params = (username,)
-
-        if not include_correct:
-            where_clause += " AND correct = 0"
-
-        return fetch_all("topic_memory", where_clause, params)
+        # Topic memory entries use quality scores, not correct field
+        # So we don't filter by correct field
+        return fetch_all("topic_memory", "WHERE username = ?", (username,))
     except Exception as e:
         return False
 
@@ -238,7 +240,7 @@ def update_row(table: str, updates: DatabaseRow, where_clause: str, params: Tupl
         bool: Success status
     """
     set_clause = ", ".join([f"{k} = ?" for k in updates.keys()])
-    query = f"UPDATE {table} SET {set_clause} {where_clause}"
+    query = f"UPDATE {table} SET {set_clause} WHERE {where_clause}"
 
     return execute_query(query, tuple(updates.values()) + params) is True
 

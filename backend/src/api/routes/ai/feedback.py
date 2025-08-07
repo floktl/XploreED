@@ -355,9 +355,30 @@ def generate_ai_feedback_route():
         data = request.get_json() or {}
         answers = data.get("answers", {})
         exercise_block = data.get("exercise_block")
+        block_id = data.get("block_id")
 
         if not answers:
             return jsonify({"error": "No answers provided"}), 400
+
+        # If block_id is provided but no exercise_block, fetch it from database
+        if block_id and not exercise_block:
+            from core.database.connection import select_one
+            exercise_block = select_one(
+                "ai_exercise_blocks",
+                columns="*",
+                where="id = ?",
+                params=(block_id,)
+            )
+
+            if exercise_block and exercise_block.get("exercises"):
+                # Parse the exercises JSON string back to a list
+                import json
+                try:
+                    exercises_data = json.loads(exercise_block["exercises"])
+                    exercise_block["exercises"] = exercises_data
+                except (json.JSONDecodeError, TypeError):
+                    logger.error(f"Error parsing exercises JSON for block {block_id}")
+                    return jsonify({"error": "Invalid exercise data"}), 500
 
         # Generate AI feedback
         from features.ai.feedback.feedback_generation import generate_ai_feedback_simple

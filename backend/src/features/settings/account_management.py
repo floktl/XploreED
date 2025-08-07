@@ -14,13 +14,13 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import logging
-from typing import List, Optional, Tuple
-
-from core.database.connection import select_one, select_rows, insert_row, update_row, delete_rows, fetch_one, fetch_all, fetch_custom, execute_query, get_connection
-from werkzeug.security import generate_password_hash, check_password_hash
+from typing import Tuple, Optional, List, Dict
 from datetime import datetime
-from shared.exceptions import ValidationError, DatabaseError
+
+from core.database.connection import delete_rows, fetch_one
+from shared.exceptions import DatabaseError
 from shared.types import AnalyticsData
+from features.debug.cache_management import clear_user_cache, clear_in_memory_caches
 
 logger = logging.getLogger(__name__)
 
@@ -222,25 +222,34 @@ def debug_delete_user_data(username: str) -> Tuple[bool, Optional[str], List[str
 
         logger.warning(f"DEBUG: Deleting all data for user {username}")
 
+        # First, clear all cache data for the user
+        cache_stats = clear_user_cache(username)
+        logger.info(f"DEBUG: Cleared {cache_stats['total_cleared']} cache entries for user {username}")
+
         deleted_tables = []
         tables_to_delete = [
-            "lesson_progress",
-            "activity_progress",
-            "vocabulary_progress",
-            "game_progress",
-            "support_feedback",
-            "support_requests",
-            "user_sessions",
-            "user_preferences",
-            "users"
+            "results",
+            "vocab_log",
+            "topic_memory",
+            "ai_user_data",
+            "exercise_history",
+            "ai_exercise_results",
+            "topic_memory_status",
+            "ai_exercise_blocks",
+            "user_progress",
+            "user_settings",
+            "support_requests"
+            # Note: "users" and "sessions" tables are intentionally excluded to preserve the user account and session
         ]
 
         for table in tables_to_delete:
             try:
-                if table == "users":
-                    success = delete_rows(table, "WHERE username = ?", (username,))
-                else:
-                    success = delete_rows(table, "WHERE username = ?", (username,))
+                # Skip users and sessions tables - we don't want to delete the user account or session
+                if table in ["users", "sessions"]:
+                    logger.debug(f"DEBUG: Skipping {table} table for user {username}")
+                    continue
+
+                success = delete_rows(table, "WHERE username = ?", (username,))
 
                 if success:
                     deleted_tables.append(table)
@@ -249,13 +258,21 @@ def debug_delete_user_data(username: str) -> Tuple[bool, Optional[str], List[str
                     logger.debug(f"DEBUG: No data found in {table} for user {username}")
             except Exception as e:
                 logger.error(f"DEBUG: Error deleting from {table} for user {username}: {e}")
+                # Continue with other tables even if one fails
+
+        # Clear in-memory reading exercise cache if it exists
+        try:
+            in_memory_cache_stats = clear_in_memory_caches()
+            logger.debug(f"DEBUG: Cleared in-memory caches for user {username}: {in_memory_cache_stats}")
+        except Exception as e:
+            logger.debug(f"DEBUG: Could not clear in-memory caches: {e}")
 
         if deleted_tables:
-            logger.warning(f"DEBUG: Successfully deleted data from {len(deleted_tables)} tables for user {username}")
-            return True, f"Deleted data from {len(deleted_tables)} tables", deleted_tables
+            logger.warning(f"DEBUG: Successfully deleted data from {len(deleted_tables)} tables and cleared {cache_stats['total_cleared']} cache entries for user {username}")
+            return True, f"Deleted data from {len(deleted_tables)} tables and cleared {cache_stats['total_cleared']} cache entries", deleted_tables
         else:
-            logger.warning(f"DEBUG: No data found to delete for user {username}")
-            return True, "No data found to delete", []
+            logger.warning(f"DEBUG: No data found to delete for user {username}, but cleared {cache_stats['total_cleared']} cache entries")
+            return True, f"No data found to delete, but cleared {cache_stats['total_cleared']} cache entries", []
 
     except ValueError as e:
         logger.error(f"Validation error in debug delete: {e}")

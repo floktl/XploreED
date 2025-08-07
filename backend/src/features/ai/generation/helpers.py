@@ -83,10 +83,23 @@ def store_user_ai_data(username: str, data: dict, parent_function=None):
         else:
             logger.info(f"Inserting new row for user {username}")
             data_with_user = {"username": username, **data}
-            insert_row("ai_user_data", data_with_user)
+            logger.info(f"Data to insert: {data_with_user}")
+            logger.info(f"Data keys: {list(data_with_user.keys())}")
+            result = insert_row("ai_user_data", data_with_user)
+            logger.info(f"Insert result: {result}")
             # print_db_exercise_blocks(username, "store_user_ai_data: insert_row", parent_function)
 
         logger.info(f"Successfully stored AI data for user {username}")
+
+        # Verify the data was actually stored
+        verify_row = select_one(
+            "ai_user_data",
+            columns="exercises, next_exercises",
+            where="username = ?",
+            params=(username,),
+        )
+        logger.info(f"Verification after storing - row for user {username}: {verify_row}")
+
     except Exception as e:
         logger.error(f"Error storing user AI data for {username}: {e}")
         raise DatabaseError(f"Error storing user AI data: {str(e)}")

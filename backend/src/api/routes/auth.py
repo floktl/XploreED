@@ -238,8 +238,8 @@ def get_session_route():
         if session_id:
             session_info = select_one(
                 "sessions",
-                columns="session_id, created_at, expires_at, active, last_activity",
-                where="session_id = ? AND active = 1",
+                columns="session_id, username, created_at",
+                where="session_id = ?",
                 params=(session_id,)
             )
 
@@ -250,9 +250,7 @@ def get_session_route():
             "user": user,
             "session_id": session_info.get("session_id"),
             "created_at": session_info.get("created_at"),
-            "expires_at": session_info.get("expires_at"),
-            "is_active": session_info.get("active", False),
-            "last_activity": session_info.get("last_activity")
+            "is_active": True  # Sessions are active if they exist
         })
 
     except Exception as e:

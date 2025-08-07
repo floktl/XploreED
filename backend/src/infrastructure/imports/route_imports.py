@@ -111,7 +111,7 @@ from features.ai.generation.exercise_processing import (
 )
 from features.ai.generation.exercise_creation import (
     generate_new_exercises,
-    generate_training_exercises,
+
     prefetch_next_exercises,
 )
 from api.routes.ai.exercise import get_ai_exercise_results
@@ -207,7 +207,7 @@ class Imports:
     # === AI Features Routes ===
     ai = [
         "ai_bp", "request", "jsonify", "require_user",
-        "evaluate_answers_with_ai", "generate_training_exercises", "compile_score_summary",
+        "evaluate_answers_with_ai", "compile_score_summary",
         "save_exercise_submission_async", "evaluate_exercises", "generate_new_exercises"
     ]
 

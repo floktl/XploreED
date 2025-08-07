@@ -56,7 +56,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
             # Update existing topic
             old_ef = existing.get("ease_factor", 2.5)
             old_reps = existing.get("repetitions", 0)
-            old_interval = existing.get("intervall", 1)
+            old_interval = existing.get("interval", 1)
 
             # Apply SM2 algorithm
             new_ef, new_reps, new_interval = sm2(quality, old_ef, old_reps, old_interval)
@@ -70,7 +70,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                 {
                     "ease_factor": new_ef,
                     "repetitions": new_reps,
-                    "intervall": new_interval,
+                    "interval": new_interval,
                     "next_repeat": next_review,
                     "last_review": now,
                     "correct": existing.get("correct", 0) + (1 if quality >= 3 else 0),
@@ -90,12 +90,12 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                 old_values={
                     "ease_factor": old_ef,
                     "repetitions": old_reps,
-                    "intervall": old_interval
+                    "interval": old_interval
                 },
                 new_values={
                     "ease_factor": new_ef,
                     "repetitions": new_reps,
-                    "intervall": new_interval,
+                    "interval": new_interval,
                     "topic": topic or "general"
                 },
                 row_id=existing.get("id")
@@ -115,9 +115,8 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                     "grammar": grammar,
                     "skill_type": skill,
                     "context": context,
-                    "lesson_content_id": None,
                     "ease_factor": new_ef,
-                    "intervall": new_interval,
+                    "interval": new_interval,
                     "next_repeat": next_review,
                     "repetitions": new_reps,
                     "last_review": now,
@@ -136,7 +135,7 @@ def _update_single_topic(username: str, grammar: str, skill: str, context: str, 
                 new_values={
                     "ease_factor": new_ef,
                     "repetitions": new_reps,
-                    "intervall": new_interval,
+                    "interval": new_interval,
                     "topic": topic or "general",
                     "context": context
                 }

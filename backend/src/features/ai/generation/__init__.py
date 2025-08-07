@@ -18,17 +18,18 @@ For detailed architecture information, see: docs/backend_structure.md
 # Import exercise creation functions
 from .exercise_creation import (
     generate_new_exercises,
-    _create_ai_block_with_variation,
+    _create_ai_block,
     _generate_blocks_for_new_user,
     _generate_blocks_for_existing_user,
     generate_training_exercises,
+
     get_next_block_id,
-    ensure_unique_block_title,
     get_recent_exercise_questions,
     update_exercise_history,
     prefetch_next_exercises,
-    log_generated_sentences,
-    print_exercise_block_sentences
+    store_user_ai_data,
+    fetch_vocab_and_topic_data,
+    EXERCISE_TEMPLATE
 )
 
 # Import exercise processing functions
@@ -66,9 +67,7 @@ from .feedback_helpers import (
 # Import existing helper functions
 from .helpers import (
     _fix_exercise,
-    _ensure_schema,
-    store_user_ai_data,
-    _create_ai_block
+    _ensure_schema
 )
 
 # Import reading generation functions
@@ -96,17 +95,18 @@ from .misc_helpers import (
 __all__ = [
     # Exercise Creation
     'generate_new_exercises',
-    '_create_ai_block_with_variation',
+    '_create_ai_block',
     '_generate_blocks_for_new_user',
     '_generate_blocks_for_existing_user',
     'generate_training_exercises',
+
     'get_next_block_id',
-    'ensure_unique_block_title',
     'get_recent_exercise_questions',
     'update_exercise_history',
     'prefetch_next_exercises',
-    'log_generated_sentences',
-    'print_exercise_block_sentences',
+    'store_user_ai_data',
+    'fetch_vocab_and_topic_data',
+    'EXERCISE_TEMPLATE',
 
     # Exercise Processing
     'save_exercise_submission_async',
@@ -137,8 +137,6 @@ __all__ = [
     # Existing Helpers
     '_fix_exercise',
     '_ensure_schema',
-    'store_user_ai_data',
-    '_create_ai_block',
 
     # Reading Generation
     'generate_reading_exercise',

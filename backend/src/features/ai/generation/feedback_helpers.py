@@ -43,18 +43,18 @@ def generate_feedback_prompt(
     try:
         logger.debug(f"Generating feedback prompt with summary: {summary}")
 
-        correct = summary.get("correct", 0)
-        total = summary.get("total", 0)
-        mistakes = summary.get("mistakes", [])
+        correct = summary.get("correct_answers", 0)
+        total = summary.get("total_exercises", 0)
+        exercise_details = summary.get("exercise_details", [])
 
         if total == 0:
             return "No answers were submitted."
 
-        # Format top mistakes
-        top_mistakes = [
-            f"Q: {m['question']} | Your: {m['your_answer']} | Correct: {m['correct_answer']}"
-            for m in mistakes[:2]
-        ]
+        # Format top mistakes from exercise_details
+        top_mistakes = []
+        for detail in exercise_details[:2]:
+            if detail.get("status") in ["incorrect", "skipped"]:
+                top_mistakes.append(f"Q: {detail.get('exercise_id', 'Unknown')} | Your: {detail.get('user_answer', '')} | Correct: {detail.get('correct_answer', '')}")
         mistakes_text = "\n".join(top_mistakes)
 
         # Format vocabulary examples
@@ -75,16 +75,34 @@ def generate_feedback_prompt(
         repeated_text = ", ".join(repeated_topics)
 
         # Generate feedback prompt
-        user_prompt = feedback_generation_prompt(
-            correct,
-            total,
-            mistakes_text,
-            examples_text,
-            repeated_text
-        )
+        try:
+            user_prompt = feedback_generation_prompt(
+                correct,
+                total,
+                mistakes_text,
+                repeated_text,
+                examples_text
+            )
+            logger.debug(f"Generated feedback prompt successfully")
+            return user_prompt.get("content", "")
+        except Exception as e:
+            logger.error(f"Error calling feedback_generation_prompt: {e}")
+            # Fallback to simple feedback
+            return f"""
+You are a helpful German teacher providing feedback on an exercise.
 
-        logger.debug(f"Generated feedback prompt successfully")
-        return user_prompt
+Results: {correct}/{total} correct.
+
+Mistakes made:
+{mistakes_text}
+
+Provide encouraging, constructive feedback in 2-3 sentences. Focus on:
+1. What they did well
+2. Areas for improvement
+3. Encouragement to continue learning
+
+Keep it positive and motivating.
+"""
 
     except AIEvaluationError:
         raise
