@@ -57,4 +57,4 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 # Start Gunicorn and Nginx
-CMD sh -c "cd /app/backend && DB_FILE=/app/database/user_data.db python3 scripts/migration_script.py && gunicorn --chdir backend/src --bind 0.0.0.0:5050 main:app & nginx -g 'daemon off;'"
+CMD sh -c "cd /app/backend && DB_FILE=/app/database/user_data.db python3 scripts/migration_script.py && gunicorn --chdir /app/backend/src --bind 0.0.0.0:5050 main:app & nginx -g 'daemon off;'"
