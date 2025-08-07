@@ -295,7 +295,7 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
     try:
         logger.info(f"🔤 [TRANSLATE] About to call send_prompt with Mistral...")
         resp = send_prompt(
-            "You are a helpful German translator.",
+            "You are a helpful German translator. Provide clear, concise translations. For incomplete inputs, give brief explanations. Avoid overly verbose responses.",
             user_prompt,
             temperature=0.3,
         )
@@ -316,12 +316,12 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
                     logger.info(f"🔤 [TRANSLATE] Extracting words for vocabulary...")
                     word_count = 0
                     max_words = 5  # Limit to prevent hanging on long responses
-                    
+
                     for word, art in extract_words(german_text):
                         if word_count >= max_words:
                             logger.info(f"🔤 [TRANSLATE] Reached max word limit ({max_words}), stopping vocabulary extraction")
                             break
-                            
+
                         logger.info(f"🔤 [TRANSLATE] Saving vocab word: '{word}' with article: '{art}'")
                         save_vocab(
                             username,
@@ -331,7 +331,7 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
                             article=art,
                         )
                         word_count += 1
-                        
+
                     logger.info(f"🔤 [TRANSLATE] Finished saving vocabulary words (saved {word_count} words)")
 
             logger.info(f"🔤 [TRANSLATE] Returning translation: '{german_text}'")
