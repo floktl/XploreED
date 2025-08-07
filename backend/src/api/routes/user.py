@@ -1060,7 +1060,7 @@ def lookup_vocab_word():
             return jsonify({"error": "Word parameter is required"}), 400
 
         # Look up vocabulary word
-        word_info = lookup_vocabulary_word(word, language)
+        word_info = lookup_vocabulary_word(user, word)
 
         if not word_info:
             return jsonify({"error": "Word not found"}), 404

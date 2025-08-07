@@ -423,10 +423,32 @@ class VocabularyService:
     def _create_vocabulary_entry(user: str, word: str, norm_word: str) -> LookupResult:
         """Create a new vocabulary entry using AI."""
         try:
-            # TODO: Implement AI vocabulary creation
-            # For now, return None to indicate word not found
-            logger.debug(f"Would create AI vocabulary entry for word '{word}'")
-            return None
+            logger.info(f"Creating new vocabulary entry for '{word}' using AI")
+
+            # Import the proper implementation from features layer
+            from features.ai.memory.vocabulary_memory import vocab_exists, save_vocab
+
+            # Check if word already exists in user's vocabulary
+            if vocab_exists(user, norm_word):
+                logger.info(f"Vocabulary entry already exists for '{word}'")
+                return VocabularyService.lookup_vocabulary_word(user, word)
+
+            # Create new entry using AI
+            vocab_word = save_vocab(user, word)
+            if vocab_word:
+                # Get the created vocabulary entry
+                vocab_data = VocabularyService.lookup_vocabulary_word(user, vocab_word)
+                if vocab_data:
+                    vocab_data["is_new"] = True
+                    logger.info(f"Successfully created new vocabulary entry for '{word}'")
+                    return vocab_data
+                else:
+                    logger.error(f"Failed to retrieve created vocabulary entry for '{word}'")
+                    return None
+            else:
+                logger.error(f"Failed to create vocabulary entry for '{word}'")
+                return None
+
         except Exception as e:
             logger.error(f"Error creating vocabulary entry: {e}")
             return None

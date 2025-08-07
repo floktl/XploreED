@@ -1178,7 +1178,7 @@ export default function AIExerciseBlock({
             )}
             <Card className="space-y-4 pb-20">
 
-                {stage === 1 && current.title && (
+                {current.title && (
                     <>
                         <h3 className="text-xl font-semibold">{current.title}</h3>
                     </>
