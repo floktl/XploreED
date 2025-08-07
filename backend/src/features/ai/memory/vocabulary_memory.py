@@ -263,7 +263,7 @@ def save_vocab(
                 "translation": english_word,
                 "word_type": word_type,
                 "article": article,
-                "details": details,
+                "details": json.dumps(details) if details else None,
                 "context": context,
                 "exercise": exercise,
                 "next_review": now,
@@ -382,7 +382,7 @@ def review_vocab_word(
             new_values={
                 "ease_factor": ef,
                 "repetitions": reps,
-                "intervall": interval
+                "interval": interval
             }
         )
         # print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_vocabulary_update for new entry successfully", flush=True)
@@ -396,7 +396,7 @@ def review_vocab_word(
         old_values = {
             "ease_factor": ef,
             "repetitions": reps,
-            "intervall": interval
+            "interval": interval
         }
 
     # print("\033[96m🧮 [TOPIC MEMORY FLOW] 🧮 Applying SM2 algorithm with quality: {}\033[0m".format(quality), flush=True)
@@ -435,7 +435,7 @@ def review_vocab_word(
             new_values={
                 "ease_factor": ef,
                 "repetitions": reps,
-                "intervall": interval
+                "interval": interval
             }
         )
         # print(f"🔧 [LOGGER DEBUG] 🔧 Called topic_memory_logger.log_vocabulary_update for existing entry successfully", flush=True)

@@ -1,773 +1,0 @@
-{
-  "test_info": {
-    "timestamp": "2025-08-02T07:13:08Z",
-    "backend_url": "http://localhost:5050",
-    "test_user": "testuser",
-    "admin_user": "admin"
-  },
-  "endpoints": {
-  "/": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Root endpoint (should return 404)",
-    "category": "Public",
-    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
-  },
-  "/api": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "API prefix endpoint",
-    "category": "Public",
-    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
-  },
-  "/api/register": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "User registration",
-    "category": "Authentication",
-    "response": "{   \"error\": \"Username already exists\" } "
-  },
-  "/api/login": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "User login",
-    "category": "Authentication",
-    "response": "{   \"error\": \"Invalid credentials\",   \"message\": \"Invalid username or password\" } "
-  },
-  "/api/login": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Admin login",
-    "category": "Authentication",
-    "response": "{   \"message\": \"Login successful\",   \"session_id\": \"80735ead-c905-49fc-a270-99d65e8612d8\",   \"user\": {     \"is_admin\": 1,     \"skill_level\": 0,     \"username\": \"admin\"   } } "
-  },
-  "/api/logout": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "User logout",
-    "category": "Authentication",
-    "response": "{   \"message\": \"Logout successful\" } "
-  },
-  "/api/session": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Session validation",
-    "category": "Authentication",
-    "response": "{   \"error\": \"Invalid session\" } "
-  },
-  "/api/password/reset": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Password reset request",
-    "category": "Authentication",
-    "response": "{   \"error\": \"Email not found\" } "
-  },
-  "/api/2fa/enable": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "2FA enable",
-    "category": "Authentication",
-    "response": "{   \"error\": \"Failed to enable 2FA\" } "
-  },
-  "/api/profile": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get user profile",
-    "category": "User Management",
-    "response": "{   \"average_score\": 91.5,   \"best_score\": 95,   \"recent_results\": [     {       \"accuracy\": 98.5,       \"completed_at\": \"2023-10-27T10:00:00Z\",       \"game_type\": \"Typing\",       \"id\": 1,       \"score\": 95,       \"time_spent\": 120     },     {       \"accuracy\": 92.0,       \"completed_at\": \"2023-10-26T14:30:00Z\",       \"game_type\": \"Grammar\",       \"id\": 2,       \"score\": 88,       \"time_spent\": 90     }   ],   \"total_results\": 2,   \"total_time\": 3,   \"username\": \"admin\" } "
-  },
-  "/api/me": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get current user info",
-    "category": "User Management",
-    "response": "{   \"username\": \"admin\" } "
-  },
-  "/api/role": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get user role",
-    "category": "User Management",
-    "response": "{   \"is_admin\": true } "
-  },
-  "/api/vocabulary": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get user vocabulary",
-    "category": "User Management",
-    "response": "{   \"error\": \"Failed to retrieve vocabulary\" } "
-  },
-  "/api/vocab-train": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get vocabulary training",
-    "category": "User Management",
-    "response": "{   \"error\": \"Failed to process vocabulary training\" } "
-  },
-  "/api/save-vocab": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Save vocabulary",
-    "category": "User Management",
-    "response": "{   \"error\": \"No words provided\" } "
-  },
-  "/api/topic-memory": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get topic memory",
-    "category": "User Management",
-    "response": "{   \"last_updated\": \"2025-08-02T07:13:09.118912\",   \"topic_memory\": [     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"personal pronouns\",       \"id\": 138,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     },     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"sein\",       \"id\": 139,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     },     {       \"context\": \"signup\",       \"correct\": 0,       \"ease_factor\": 2.5,       \"grammar\": \"haben\",       \"id\": 140,       \"intervall\": 0,       \"last_review\": null,       \"lesson_content_id\": null,       \"next_repeat\": \"2025-08-02T05:07:27.273390\",       \"quality\": 0,       \"repetitions\": 0,       \"skill_type\": \"initial\",       \"topic\": null,       \"username\": \"admin\"     }   ] } "
-  },
-  "/api/topic-weaknesses": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get topic weaknesses",
-    "category": "User Management",
-    "response": "{   \"improvement_plan\": {     \"estimated_time\": \"0 weeks\",     \"recommended_actions\": [       \"Review weak topics daily\",       \"Focus on high-priority topics first\",       \"Increase review frequency for weak areas\"     ],     \"success_metrics\": [       \"Increase average topic strength to 0.8\",       \"Reduce number of weak topics by 50%\",       \"Maintain consistent review schedule\"     ]   },   \"overall_weakness_score\": 0.0,   \"priority_topics\": [],   \"weaknesses\": [] } "
-  },
-  "/api/user-level": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get user level",
-    "category": "User Management",
-    "response": "{   \"level\": 0,   \"level_history\": [     {       \"achieved_at\": \"2025-08-02 05:07:27\",       \"level\": \"beginner\",       \"performance_score\": 0.8     }   ],   \"level_progress\": {     \"points_earned\": 150,     \"points_required\": 200,     \"progress_percentage\": 75.0,     \"time_at_level\": 30   },   \"next_level_requirements\": {     \"level\": \"intermediate\",     \"required_accuracy\": 0.8,     \"required_exercises\": 50,     \"required_points\": 200   } } "
-  },
-  "/api/info": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get profile info",
-    "category": "Profile",
-    "response": "{   \"error\": \"User profile not found\" } "
-  },
-  "/api/statistics": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get profile statistics",
-    "category": "Profile",
-    "response": "{   \"error\": \"Failed to retrieve learning statistics\" } "
-  },
-  "/api/statistics/detailed": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get detailed statistics",
-    "category": "Profile",
-    "response": "{   \"error\": \"Failed to retrieve detailed statistics\" } "
-  },
-  "/api/achievements": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get achievements",
-    "category": "Profile",
-    "response": "{   \"error\": \"Failed to retrieve achievements\" } "
-  },
-  "/api/analytics": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get profile analytics",
-    "category": "Profile",
-    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T07:13:09.237130\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
-  },
-  "/api/analytics/strengths": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get strengths analytics",
-    "category": "Profile",
-    "response": "{   \"error\": \"Failed to retrieve learning strengths\" } "
-  },
-  "/api/analytics/weaknesses": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get weaknesses analytics",
-    "category": "Profile",
-    "response": "{   \"error\": \"Failed to retrieve learning weaknesses\" } "
-  },
-  "/api/settings/preferences": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get user preferences",
-    "category": "Settings",
-    "response": "{   \"last_updated\": null,   \"preferences\": {     \"account_info\": {       \"created_at\": \"2025-08-02 05:07:27\",       \"is_active\": true,       \"last_login\": null     },     \"preferences\": {       \"auto_play_audio\": false,       \"daily_goal\": 30,       \"difficulty_level\": \"beginner\",       \"email_notifications\": false,       \"language\": \"en\",       \"notifications_enabled\": true,       \"sound_enabled\": true,       \"study_reminders\": true,       \"theme\": \"light\"     },     \"retrieved_at\": \"2025-08-02T07:13:09.279833\",     \"statistics\": {       \"account_age_days\": 0,       \"average_exercise_score\": 0.0,       \"favorite_activity\": \"none\",       \"last_activity\": null,       \"learning_streak_days\": 0,       \"total_exercises_completed\": 0,       \"total_games_played\": 0,       \"total_lessons_completed\": 0,       \"total_study_time_minutes\": 0,       \"total_vocabulary_reviews\": 0,       \"username\": \"admin\",       \"weakest_area\": \"none\"     },     \"username\": \"admin\"   } } "
-  },
-  "/api/settings/learning": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get learning settings",
-    "category": "Settings",
-    "response": "{   \"error\": \"Failed to retrieve learning settings\" } "
-  },
-  "/api/settings/notifications": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get notification settings",
-    "category": "Settings",
-    "response": "{   \"error\": \"Failed to retrieve notification settings\" } "
-  },
-  "/api/settings/privacy": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get privacy settings",
-    "category": "Settings",
-    "response": "{   \"error\": \"Failed to retrieve privacy settings\" } "
-  },
-  "/api/settings/account": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get account settings",
-    "category": "Settings",
-    "response": "{   \"error\": \"Failed to retrieve account settings\" } "
-  },
-  "/api/settings/export": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Export user data",
-    "category": "Settings",
-    "response": "{   \"error\": \"Failed to export user data\" } "
-  },
-  "/api/lessons": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get lessons list",
-    "category": "Lessons",
-    "response": "{   \"lessons\": [],   \"limit\": 20,   \"offset\": 0,   \"total\": 0 } "
-  },
-  "/api/lessons/1": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get specific lesson",
-    "category": "Lessons",
-    "response": "{   \"error\": \"Lesson not found\" } "
-  },
-  "/api/lessons/1/progress": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get lesson progress",
-    "category": "Lessons",
-    "response": "{   \"error\": \"Lesson not found\" } "
-  },
-  "/api/lessons/1/analytics": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get lesson analytics",
-    "category": "Lessons",
-    "response": "{   \"error\": \"Lesson not found\" } "
-  },
-  "/api/progress": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get progress summary",
-    "category": "Progress",
-    "response": "{   \"generated_at\": \"2025-08-02T07:13:09.400853\",   \"progress\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"completion_rate\": 0.0,     \"lessons_started\": 0,     \"recent_activity\": [],     \"streak_days\": 0,     \"total_activities\": 0,     \"total_completed_blocks\": 0,     \"total_lessons\": 0,     \"user\": \"admin\"   },   \"timeframe\": \"all\" } "
-  },
-  "/api/progress/summary": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get progress summary",
-    "category": "Progress",
-    "response": "{   \"generated_at\": \"2025-08-02T07:13:09.413230\",   \"progress_summary\": {     \"activity_breakdown\": {       \"games\": {}     },     \"areas_for_improvement\": [],     \"average_score\": 0.0,     \"end_date\": \"2025-08-02T07:13:09.411188\",     \"exercises_completed\": 0,     \"games_played\": 0,     \"improvement_rate\": 0.0,     \"lessons_completed\": 0,     \"period_days\": 30,     \"recent_activity\": [],     \"start_date\": \"2025-07-03T07:13:09.411188\",     \"streak_days\": 0,     \"top_performing_areas\": [],     \"total_activities\": 0,     \"total_time_spent\": 0,     \"username\": \"admin\",     \"vocabulary_reviews\": 0   },   \"user\": \"admin\" } "
-  },
-  "/api/track/exercise": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Track exercise progress",
-    "category": "Progress",
-    "response": "{   \"error\": \"Block ID is required\" } "
-  },
-  "/api/track/vocabulary": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "Track vocabulary progress",
-    "category": "Progress",
-    "response": "{   \"error\": \"Failed to track vocabulary progress\" } "
-  },
-  "/api/track/game": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Track game progress",
-    "category": "Progress",
-    "response": "{   \"error\": \"Game type is required\" } "
-  },
-  "/api/reset": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "Reset progress",
-    "category": "Progress",
-    "response": "{   \"error\": \"Failed to reset progress\" } "
-  },
-  "/api/analytics": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get progress analytics",
-    "category": "Progress",
-    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T07:13:09.511765\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
-  },
-  "/api/analytics/trends": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get progress trends",
-    "category": "Progress",
-    "response": "{   \"daily_activity\": {     \"2025-08-02\": {       \"exercises\": 0,       \"games\": 0,       \"lessons\": 0,       \"total\": 0,       \"vocabulary\": 0     }   },   \"generated_at\": \"2025-08-02T07:13:09.552511\",   \"learning_patterns\": {     \"activity_distribution\": {},     \"most_active_hour\": null,     \"preferred_time\": \"unknown\"   },   \"performance_trends\": {     \"average_score\": 0,     \"performance_change\": 0,     \"total_exercises\": 0,     \"trend_direction\": \"stable\"   },   \"recommendations\": [     \"Try to complete at least 3 activities per day to maintain consistent progress\",     \"Start with a simple lesson or vocabulary review to get back into learning\"   ],   \"trends\": {     \"data_points\": [],     \"metric\": \"completion_rate\",     \"overall_trend\": \"stable\",     \"period\": \"month\"   },   \"user\": \"admin\" } "
-  },
-  "/api/sync": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Sync progress",
-    "category": "Progress",
-    "response": "{   \"error\": \"Progress data is required\" } "
-  },
-  "/api/sync/status": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get sync status",
-    "category": "Progress",
-    "response": "{   \"device_count\": 0,   \"last_sync\": null,   \"sync_status\": \"never_synced\",   \"user\": \"admin\" } "
-  },
-  "/api/export": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Export progress data",
-    "category": "Progress",
-    "response": "{   \"data\": {     \"exported_at\": \"2025-08-02T07:13:09.584633\",     \"format\": \"json\",     \"include_details\": false,     \"user\": \"admin\"   },   \"exported_at\": \"2025-08-02T07:13:09.584638\",   \"format\": \"json\",   \"message\": \"Progress data exported successfully\" } "
-  },
-  "/api/games": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get games list",
-    "category": "Games",
-    "response": "{   \"games\": [],   \"recommended_games\": [],   \"total\": 0,   \"user_level\": 0 } "
-  },
-  "/api/games/1": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get specific game",
-    "category": "Games",
-    "response": "{   \"error\": \"Game not found\" } "
-  },
-  "/api/games/1/start": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Start game session",
-    "category": "Games",
-    "response": "{   \"error\": \"Game not found\" } "
-  },
-  "/api/results": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get game results",
-    "category": "Games",
-    "response": "{   \"achievements\": [],   \"limit\": 20,   \"offset\": 0,   \"results\": [],   \"summary\": {     \"accuracy_rate\": 0.0,     \"average_score\": 0.0,     \"best_streak\": 0,     \"correct_answers\": 0,     \"current_streak\": 0,     \"favorite_level\": null,     \"highest_level\": 0,     \"improvement_rate\": 0.0,     \"last_played\": null,     \"level_progress\": {},     \"recent_performance\": [],     \"total_answers\": 0,     \"total_games\": 0,     \"total_play_time\": 0,     \"total_rounds\": 0,     \"username\": \"admin\"   },   \"total\": 0 } "
-  },
-  "/api/results/1": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get specific result",
-    "category": "Games",
-    "response": "{   \"error\": \"Game result not found\" } "
-  },
-  "/api/analytics": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get game analytics",
-    "category": "Games",
-    "response": "{   \"analytics\": {     \"activity_breakdown\": {       \"games\": {}     },     \"average_score\": 0.0,     \"learning_patterns\": {       \"activity_distribution\": {},       \"most_active_hour\": null,       \"preferred_time\": \"unknown\"     },     \"performance_trends\": {       \"average_score\": 0,       \"performance_change\": 0,       \"total_exercises\": 0,       \"trend_direction\": \"stable\"     },     \"recent_activity\": [],     \"streak_days\": 0,     \"timeframe\": \"month\",     \"total_activities\": 0,     \"total_lessons_completed\": 0,     \"trends\": {       \"activity_consistency\": \"low\",       \"average_daily_activities\": 0.0,       \"least_active_day\": \"2025-08-02\",       \"most_active_day\": \"2025-08-02\",       \"total_activities\": 0     }   },   \"generated_at\": \"2025-08-02T07:13:09.687912\",   \"timeframe\": \"month\",   \"user\": \"admin\" } "
-  },
-  "/api/analytics/performance": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get performance analytics",
-    "category": "Games",
-    "response": "{   \"error\": \"Failed to retrieve performance analytics\" } "
-  },
-  "/api/ai-exercise/1/submit": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Submit AI exercise",
-    "category": "AI",
-    "response": "{   \"pass\": false,   \"results\": [],   \"streaming\": true,   \"summary\": {     \"correct\": 0,     \"mistakes\": [],     \"total\": 0   } } "
-  },
-  "/api/ai-exercise/1/results": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get AI exercise results",
-    "category": "AI",
-    "response": "{   \"error\": \"Exercise results not found\" } "
-  },
-  "/api/ai-exercise/1/argue": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Argue AI exercise",
-    "category": "AI",
-    "response": "{   \"error\": \"Exercise ID is required\" } "
-  },
-  "/api/ai-exercise/1/topic-memory-status": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get topic memory status",
-    "category": "AI",
-    "response": "{   \"block_id\": \"1\",   \"last_update\": null,   \"memory_impact\": {     \"recommendations\": [],     \"strengthened_concepts\": [],     \"weak_areas\": []   },   \"topic_memory_updated\": false,   \"update_status\": \"not_started\" } "
-  },
-  "/api/ai-feedback/progress/1": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get AI feedback progress",
-    "category": "AI",
-    "response": "{   \"error\": \"Session not found\" } "
-  },
-  "/api/ai-feedback/generate-with-progress": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Generate feedback with progress",
-    "category": "AI",
-    "response": "{   \"error\": \"No answers provided\" } "
-  },
-  "/api/ai-feedback/result/1": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Get AI feedback result",
-    "category": "AI",
-    "response": "{   \"error\": \"Result not found\" } "
-  },
-  "/api/ai-feedback": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get AI feedback list",
-    "category": "AI",
-    "response": "{   \"error\": \"Server error\" } "
-  },
-  "/api/ai-feedback/1": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get specific AI feedback",
-    "category": "AI",
-    "response": "{   \"error\": \"Server error\" } "
-  },
-  "/api/ai-feedback": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Create AI feedback",
-    "category": "AI",
-    "response": "{   \"error\": \"No answers provided\" } "
-  },
-  "/api/reading-exercise": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Create reading exercise",
-    "category": "AI",
-    "response": "{   \"exercise_id\": \"80f49003-0d7a-44b7-abc3-531ab76eec01\",   \"questions\": [     {       \"id\": 1,       \"options\": [         \"Er ist ein Mann.\",         \"Er ist ein Junge.\",         \"Er ist ein Baby.\"       ],       \"question\": \"Wer ist Hans?\\n\\n- Er ist ein Mann.\\n- Er ist ein Junge.\\n- Er ist ein Baby.\"     },     {       \"id\": 2,       \"options\": [         \"Er hat ein Auto.\",         \"Er hat eine kleine Schwester.\",         \"Er hat ein Flugzeug.\"       ],       \"question\": \"Was hat Hans?\\n\\n- Er hat ein Auto.\\n- Er hat eine kleine Schwester.\\n- Er hat ein Flugzeug.\"     },     {       \"id\": 3,       \"options\": [         \"Sie ist zehn Jahre alt.\",         \"Sie ist sieben Jahre alt.\",         \"Sie ist f\\u00fcnf Jahre alt.\"       ],       \"question\": \"Wie alt ist Anna?\\n\\n- Sie ist zehn Jahre alt.\\n- Sie ist sieben Jahre alt.\\n- Sie ist f\\u00fcnf Jahre alt.\"     },     {       \"id\": 4,       \"options\": [         \"Sie haben ein Buch.\",         \"Sie haben ein Eis.\",         \"Sie haben ein Spielzeug.\"       ],       \"question\": \"Was haben Hans und Anna im Park?\\n\\n- Sie haben ein Buch.\\n- Sie haben ein Eis.\\n- Sie haben ein Spielzeug.\"     },     {       \"id\": 5,       \"options\": [         \"Es ist schlecht.\",         \"Es ist lecker.\",         \"Es ist teuer.\"       ],       \"question\": \"Wie ist das Eis?\\n\\n- Es ist schlecht.\\n- Es ist lecker.\\n- Es ist teuer.\"     },     {       \"id\": 6,       \"options\": [         \"Sie haben ein Fahrrad.\",         \"Sie haben ein Buch.\",         \"Sie haben ein Eis.\"       ],       \"question\": \"Was haben Hans und Anna am Abend?\\n\\n- Sie haben ein Fahrrad.\\n- Sie haben ein Buch.\\n- Sie haben ein Eis.\"     },     {       \"id\": 7,       \"options\": [         \"Anna liest das Buch.\",         \"Hans liest das Buch.\",         \"Beide lesen das Buch.\"       ],       \"question\": \"Wer liest das Buch?\\n\\n- Anna liest das Buch.\\n- Hans liest das Buch.\\n- Beide lesen das Buch.\"     },     {       \"id\": 8,       \"options\": [         \"Sie sind traurig.\",         \"Sie sind gl\\u00fccklich.\",         \"Sie sind aufgeregt.\"       ],       \"question\": \"Wie sind Hans und Anna am Ende der Geschichte?\\n\\n- Sie sind traurig.\\n- Sie sind gl\\u00fccklich.\\n- Sie sind aufgeregt.\"     }   ],   \"text\": \"Hans ist ein Junge. Er wohnt in Berlin. Er ist zehn Jahre alt. Er hat eine kleine Schwester. Ihr Name ist Anna. Sie ist sieben Jahre alt.\\n\\nEines Tages, Hans und Anna sind im Park. Sie haben ein Eis. Das Eis ist lecker. Hans hat ein blaues Fahrrad. Anna hat ein rotes Fahrrad. Sie sind gl\\u00fccklich.\\n\\nAm Abend, sie sind zu Hause. Sie haben ein Buch. Hans liest das Buch. Anna h\\u00f6rt zu. Sie sind m\\u00fcde, aber sie sind gl\\u00fccklich.\" } "
-  },
-  "/api/reading-exercise/submit": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Submit reading exercise",
-    "category": "AI",
-    "response": "{   \"error\": \"Exercise not found or expired\" } "
-  },
-  "/api/weakness-lesson": {
-    "method": "GET",
-    "status": "ERROR",
-    "description": "Get weakness lesson",
-    "category": "AI",
-    "response": "{   \"details\": \"Mistral API request timed out after 60 seconds\",   \"error\": \"AI service error\" } "
-  },
-  "/api/training-exercises": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Generate training exercises",
-    "category": "AI",
-    "response": "{   \"created_at\": \"2025-08-02T07:15:08.742974\",   \"exercises\": [     {       \"correctAnswer\": \"habe\",       \"id\": \"ex1\",       \"options\": [         \"haben\",         \"habe\",         \"hat\",         \"habt\"       ],       \"question\": \"Ich ____ ein Auto.\",       \"type\": \"gap-fill\"     },     {       \"correctAnswer\": \"Du bist gl\\u00fccklich.\",       \"id\": \"ex2\",       \"question\": \"You are happy.\",       \"type\": \"translation\"     },     {       \"correctAnswer\": \"sind\",       \"id\": \"ex3\",       \"options\": [         \"sind\",         \"bin\",         \"bist\",         \"ist\"       ],       \"question\": \"Sie ____ m\\u00fcde.\",       \"type\": \"gap-fill\"     }   ],   \"feedbackPrompt\": \"Great job! You are making progress in using 'haben', personal pronouns, and 'sein' in the context of living.\",   \"id\": \"blk0001\",   \"lessonId\": \"A1_Living_1\",   \"level\": 0,   \"title\": \"Building confidence in haben, personal pronouns, and sein in the context of Living\",   \"topic\": \"living\",   \"username\": \"admin\" } "
-  },
-  "/api/ai-exercise/training/submit": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Submit training exercise",
-    "category": "AI",
-    "response": "{   \"error\": \"No current exercises found\" } "
-  },
-  "/api/tts": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Text-to-speech",
-    "category": "AI",
-    "response": "ID3#TSSELavf60.16.100ÿûÄT¤ö§ŒĞš²µ Iƒ$ù ¬ƒñ‘¬·—3L¹š‚‚'»;õc#Êhˆ’š~îB#ÿÇ&L˜@Â÷ÿŞì™4á¡îÉ“&‡øzm“…“&»ba#Ùäîíï0š~öîùéÿq‡§¹ï´^îYˆ^²ÉÑ	MÏNx A‡'§…¶Mr€ƒi'±—yÌ2¿Äuà#7üwÚàñÏ²“Š^àÆ\\—v‚”É,$%@¦´åÌ»¯Øƒ ÷,Iñ;ÙŒĞ¬Á–0ó&„¯W/f¶LJ)ÖŠ\\…\\‡„a©4¶M]\\^L¬¬äÊ­äÕ/³.Êgí7£bJGôõ¶ZZ2ëDˆÉ£é£&*¢æ—<s™HòÏ:NŠ- 	ÍL(Ø uceDêØÑ´¨Ù›IŒ„Tƒ²ìò„¡×ÛXwEJÚÚîÃ÷Å(ô²b>ıÍ;˜pİªMç,ĞNÊåõŸÌO’vÌ‰ü­ÕE!í]9;=]v5­åö™In;æ[LÀø¸÷ÿû’Ä‘Ï3Êñ9à	ƒ$ùPi”ÉÜ¬€äñ†\\&7T’V™ĞÎ°ô»ÔëKb$lÄW“B2+lvHÔˆêÈ› y'P~S#dy¶Ä†I‹ˆĞ ¦`Œ0#`x€dÛQ I‘E¸/5h†å½Û¦æOÆj´ë³ŸMu/µd@&ıŠ hìf¤<ç…å¾  ’ËF6ÊcÏ •ÉQNÒ¬]Ÿ_ sÉ“	>&f² PëDs£U$¦˜C«/ç#>’£’ËWc;;ò%LØ„HQ ‘»y9r.Ö°Bas±>³D‘6UR³)j ›Œ	‹iİJĞªiBVÉŠ<UfT!×x­æ‰D]@¸ÄÇ0N66¾°\\Ğ^Äj²ÚjNÚ©Ê]¶iœw1=Ã­Tw01Ÿò¤mm=ïÅ+ö×à€.Âcx†ë{˜¬ ŸEGªvÄ$§rOKE$£Á]#*¢ÈVhÜÅXçÌ¦46 X#UÜªu©!,f$ì±´ëÙ¼·¹·Qd8ÿû’Ä-şL%…µa%ƒ' èyä×È›Xê3v‰MÍÍn˜K@²§à5*”É–ˆä6#a¹Ücòƒ!(ÁoU²%‡â1X¤½¹ $Ûy˜”d]ÑñÆƒ€Tö†ÄµH’rp^\\IĞ’Èi\"¯º±be´ú:Úo“Wkö±Z‘å)?|k>m^É½ñêß·nÔĞ0…¿ğh°ğĞÊAÂà²ÿ¬…ª]°¡‘!	eØb€Ğ¤Q¨ÃD¶Ì÷'Z”9ü?1°¥@ƒLş¤;Äò¼ğ$9”9+¹3j1vÍ?î‚)ÓQE&í`EfLÄ™Â¦ñU²\\Q‡ÃøDÅ•Ê&]§5ê¡!¨ÛöV*«²réAĞ©\\4’/õ,M#{ƒjš ©1äÓÒ§qÑ9Õ—’ÃæU,Ã¾3´Ó„˜¤˜zIŠ…\\KÙkÓ$RÕ)8å’KbHƒœ€ïÌLOÌ“Ì{&Cƒ p`(˜b€Œ6¦i Í¼–$> NŒhÉp¸(bYvÿû’Ä%€ìÿ/®é˜Rş§µ¼'eHBbf`  ` n	‚ ÓÅSÆSCÃƒÉEN3%F3	Ãã.	£	ÃÎ“7ÀSƒcYHÙ.40@MÛqãÆ«Ì B$uŸ\"7(‡¡¬`Q?7-L#ÄàDàİ^/^¿éG'O?ÊNtŞû*/¹ÚûŞhÄtìXä¶¾éßÅ‹<@O¸'Ñ?#.š‚ÚROu/XÛm¶Ûm•j8h„,xò˜©‡€©©0Ñ›œ@ÉF(\"2äSm8î!*¬f ˜£‘–˜yY@3&!1‘LFŒŒÑ ÅŒWyˆÅ„F¦Z nÓÏ	‰‚‹Í<$ÁßTK4xâĞH¥\"™‰–“0rC'0V¥Ÿ0§€C%g!¡ÀØ¸­%VSa4œõŠ˜¤TºõÇñUx0(@H:ˆ`F.D0]Am:ì¼fAû)BjÒ€‘ØÙ2€ä÷O§ñ©«2[EñN$TX	q“B<”ÿû’Ä—IŸ;->Ã4°ç½ùÈ.”‹4CR®eVz: D*• ¥ˆ´ÎÜtRfÍÒ´¬ÂÃ‹à¿Ñ¥zbñHYFãátğé›0Å˜½y–W©7ozıwù Y÷s©L2‹2YÁéÆ•„ç¾öÿvóõ4!ÈJc¯\"ãò³N7öê^¸Âì^ÊÍíÊÕEòºZ•“Ø%s·\"6šà‚Œ£@XÊ—‰ˆ™Ù)˜™yyš#TƒLLLÇÆŒÊ€È<ÓwD:Ô¨xM2Äµ —oËìêHŞ!Å‚Æ+b[5—ù–¬tû“Ã»øéA,NDµÄÓöî—aÒE	˜M3ø‹€ãÒD»Ÿÿó)y?[ i–ÓÀe’Óİ,…§¬ÖˆÄî™Xï5ùPŸgÑĞÑË!`f!)£üb6dÉ˜Dòw¦ˆ4”[{´Òƒïı©MĞ³QÇzĞïú—ÿU/¡²÷©Mü,ÅË„$hã'1g*†fz4q³*U2q³šÿû’Ä×åu<ˆŞ‹3/§AÍ!ø%5=ÄC†'0¡0 eUšI€ƒDDf\"0‚Œ± YfŒü)ñRµŠÄİ–Z¤ßtsck]¹½Ğû[ƒ&_Wj İ« .Â«‡Ö4×àe‡ÁœQ?^¿ÿùw¦£ZIˆåºf›dW•FS6ÿ•geƒ vK»æî6Wé8Ã±‰›ˆ$~e‘pàctõ›‹Çæ´æŞÖj˜e~Xbg@€8bs‚†×\"š6htĞi Q@è€ø 3yHÀkÃªÌ®ç7·O*C@x`zÔdêöÒB“›ğf0ğY«Íù‡ ¨¡WS¦UÓÁÌU‡@+ı€E™CÖ¿c,¢RÓGYª™4UNa‰š²Üï,–vÎV9‡ZWqĞÚ¡©7N'˜—M”»˜U¢ıÿÿëçXBû$µ4V©_&jà{PË(m´a£I¢p¨‚˜’,r%±¹°›/Ô,Õ2ÆëÌ°Í‘# fà&gäG”b!c(($Te&œŠ=ÿû’Ä¥s>-äÑ‚½³i]¦&‘såÆîfãZz®–ŠÑQ@GG  U5%3aétÊl.C./;',	vÚTi× {ª<ï´î/cë3KøĞšsäü×½Kgœî\\üb¢^~{·f¢ŸvrÙêLğJŒsÚ>¶ÿ÷ı2ê!k2'bŒÄŒ§¿ããü=âty']ÄEÛ!dÅàñÀ`˜ˆ¹vô@1¹#„2øQáP-óÅØ”!Lm)›´ŒdÇ6ã#(S+u)cTÓµffBá(Œx}eÏ@ÊÏ\"FCñ`ª¼úŠ’z¼Õ!Uu‘F6Ë+*Å¶Qê’KØ¾£êŸã6:¶§­¸ÖáV†Ï†‰\"uãå•_?”¡k|•a¢=6R¨ùWÏØFòw&¢®½W(OÙ’±¦äÓĞÉğ«º~ÔòéÌŠ:DÃÁOÖ0˜ÈĞ\"ÍL®P¢ÀÉæ\"	AˆS(G^‰ˆ¯É4}/iÔYtÃa„ƒÿû’Ä‚›™¡6e‘ƒ0§eİ1xÌ˜FLîÄªµ¦QBúIF…q(CŒõEyq}çrÆ¤¸Œ.~®C?gyãwŒu@”Y:H$‚Vq¬³ÖŠk,Fuî<÷[›qî%P¾ÑÌrtL6^E}tÖrw¦f=ê³	Š»Î>õ}Ï´ßë´Ş­˜ç±ì?‚$#‹ÃZÄsE.¤-Mâ¬1CÎ²İ‚Ùh·ÇT;¤RXF›˜Ú(‚L~FæË<8\" ‘RÂ“æ	¨½„¯r×a¾t¡¸vãòò´ØË^v›éTÆ«cŠ>-2Uë4@™	ÁÛfC<v øùéûº¸¬¥7µòîSDˆ|@^Pr—Ù¥Ø†kúÌüÖ³,º¾%Èı „ó®3Š¿Yùœùœœ¡-ònÃûÛû93³Ù4úá†²npXHêE0(8P‡7Y1×ë‘Ú1ì	IQW¾Œ@)L,ON*Œ;ÍYdA Êj‚€¡`L¼ÊƒÈˆ	8Jÿû’Ä€1y7.é‹Ë4-¦Aİ=yAÃ›–šêAı·O#ƒ 8iUŞôå‹ÌÛ–×©i+ÒÂ–·5jR‚„Á…Ò•pĞçâ•zeÆ[Ê¯¦ÓY«[2r6Ì‡Üšà,tû62ÇoóªuÔOMo]Ù–¼Èª$² ÌQ-Ğ£™™™Ù™lòç¶J€v¾õôq[fv~`ÙæXrTÑ‘X}2J\\.U¨KÑÄ”³T¹s}·}jpPb¡ zP¾b‘ŠsD.hYNcša8 YwĞB1#F…8ˆW„î9éÌ¸UÈ–‚ÉWÎf‘ìR³6<8z‹'\"j5–AH‡4eê`Ê´ „`;öè£ƒ@n0D±Û•/wš½j9õW1Ô øÊ@a8êƒİeó#.sMíë#ÌÃŸêÒ+1—ñíyŸÿÿÿÿõóH©ùUL$ñPĞh/jIÔ\"Ú|Ò—Ì}ãVÆ©¼E“m°ãÒ>_^-‹Ğ\"ê|á—ùuª1¸1ÚØ5nøÔåƒ14Œ*…F‚h P6V(Q#ÿû’ÄƒM™<N=6Ã3ç	Ü%ğ’ZÁƒHà!±}Ñ¥ÈWùKsj•\\¼ªæ=bî¬3Æ‡PÀ ”'ìmPÆš3Œ« ¶x¬(×gïX#ßZÇşX¬ øäÈ(Ï°†9<BÏ÷	sn¥+÷:-T´ ìÿÿÿÿÿÕU¬DB„ƒˆÊä‹d	Û©lÙŒ½ßÿ?»ÍIè%Ä÷©GR*)*í¼»óí)’ „ ¡Xß8™Y¤¤ q Äƒô(‹î0®ã ¤ú H•@DYæ)›ám°NJª:U»\\kN³u£PªåÏh2†?9–ŸíÍi£­ØúÆTÂÔEOEv¿\"µG‡‰UØªŠBa axQ¥·ÿÿÿÔ6_Æyt@@…Æ$ÍhıÿÿÿÏ\"Ê0Œ€Ğ¨È ñ@u)E’ª(‰dh‘öîbü%›#í†‹#.…VTääVˆü½šP™ª#ÊÔ¯s)]Ü*¥0BX4®pÂ¡3 ¹Ì4!‡‚àq ĞTjeÑC€“I«ù¸6ÿû’Ä‘o:.<Ê1§Ç¡ğyS?=ğe‰,S%l›dRè*´›P™¶Å\"Â[œîQœàVÇ,n,Ä·“<ŞR‹U‹Ë–wè£Î#0ÜFsÿõV«ÜÙ¨E}?æ˜îaPÀÜZ#@ÀŒLBŠŞ¶­÷!//[<©îúƒ®Âq…NÖÀÀ¿F\"x:c\"aØ¨f*°ü$‘ÔØTBŠ¦Ğ±UË½ ªÉ@ä£UAJ÷}†¯š	ÅYìŞÊNÇéşx¼¶+ãzÊ{Ã „]Êèm‘±¹-‰ÅÆBÿÖ¤5?>ÿÿª=øá¹ZŸH–ÿÿÿçjBSqÆ`‡€pñBt48;…Ú~¹KfQ¦¡‡âKbÇ@Òsc$l¹¡Ê&lğÊb1ĞŞ¼Æ¢g›A ¢£BĞÂk3Ó•XYClÖ\"±:iˆí™«q~êÒ<ÕIn[İ—­y–×¤Çÿ.ïYS;/óHnRœõ‡?–»íZ!¿ıÁ­Ö®tB¥YJ“iÿİÌ( ¨Çÿû’Ä;M8.	<Úƒ³gY¼¬øÓ'ĞÁ¢#&…öï\"g<ÿ×ºñÏÊµÏıön7ŸP2ùõ¾ó¾¢=#s1œ“í:2YsÍ,Š ,PAá‚¸•nO¢afT”¹‹_ŠÓÅ¦¦láSîRijU)¿³…Ã¨İ'ïï÷Añ†Á2‡¯,ˆ‹ØË¯ş\"Ñ¡ÒN%Ä¹[ãş2LŞ y“³4VnéqÖ}ÿÿüùÛ>ôÖ20H˜VO=T„\"ˆ‡T_ÿ5+qì@¼Àk§Ü*I>VuÌùËB”ÛJ¤UcHŠ*F šd;1¹H€,2p\"{~#C+dòw^vÍØzå˜ü;.¥:ït•©¨º°ÌE=í·Ûöïª!˜©ıÿß»ÿÛ½¯|ÒÚ†U=Ün{ÊÎ¥»énÜ›·ıÿÿğ}S‰ÌlĞĞv‡Àl’<*l:D3£Â§Ør8¿ÿæ?@¹¥ÊY\\1æèåk[ÅXÑïõ€C‰jW™Òf†´ÌP ¬ßAJ¦â·$A{ã×ÿû’ÄcƒTE6.ek‚^°çÌ!8å.‘NÕ¿v}ş˜iúš»±çö¬–æ~q×ûÔ°¹ ÔQ«ûûÓÿV­ª^(wüoy&BNDÅî˜mT¼Qoû½òğãAºè	3Ä0P!ãD4ÉCx‰ÿé hØÑæ2Éx4©¹ç¥ĞğÃ;Ì:$H¡ÙãFÙ[úä¦l‰”·Í4ä÷%ó2‰úI_®[$ÅÉÜw¾w£ÚOå\\ZŠg2ó33ÙyÉíŸ¼-zÕÆ1¿Î!¡Æ©DŸÓz#7œZùPÜ®ØÖÑxqÑœUITı÷úÀıÛß`ÌÆïô­0h;‘åèW™NMúy¹g‘¹9Ç¼¸;™£¡úw8€Â\"“$ÎÌ$ $ağÚ«LAı›z wz%Á*3%*#-ÇiÇ¹J÷é4^÷Ïúõ±İÆ¥Õ”·Îñ¯/ïÿó¡@ÚÛ1z©\"ƒfÃáa!8„BX>(6a\"ƒ¤f®gq :\"ÎàÀ]Bâ¥†I²ˆ…ìi4:ä_“*Ò8ÿû’ÄİA-0uÊ¹³¦Ú¸Çj;{µéx4èSk7”¤òP–T™«ZlN96eˆòik4%RBéo´‘îÕ8÷Æ¸ÄhøpĞ!tóÇŒÈ!„x„-p	e¢ù‡‚’Ó	Æææ‚B‚1Ta@K™³šJ™´æ‡,°ÿ:Î«²ï3Fëj3!z¥ğz'&~«Êéf&í¾Ï×yºz'şrÇ.ÏK¹V­‰[à¾‘ë²ÆäjÆ«¡Kh¾ö*Ò õmqU‘îZ&¨œ„(d˜Íy/ÈŒ‚€e·(ÒÜ¨Ş3ÖK8å/•Ã$kmë´Á˜)[šÃ@R‰KÅ°ÑMÑy^ä¼€m5È%ÙW,ÅÉ€aùØ ¬AŸFàŞ‡£õ«ĞÄœ©WË`&|ìÃ\\7…%ºX&Obr‚%bÎıÛÓrÖ©“Ç_jh´Mk¸ÿ÷ÿÿÿÿÿÿÿşsQ‹1š~ó»çÿÿÿÿÿÿÿÿÇY55k²Üer‚1@J²ÄcJÍ1Ãà08hÃ pÿû’Ä°€'Â%ÜÁ§w9€Ã¶aĞJI8íˆƒ€‰P(ˆ(`‚ô×{Ô)´¢fŒQ(v ÃÜs*ĞXññ^JÍá”‡V4èb:J‡>peîB÷¬Í#P#;hñ¨TõŠmÉ‡n~îÜìE¯ÜVÂğ3G&øCÉ\"•N¼©Éê;]é”/¬Û[‘µ…„iŒõb\"ú¥“<ª`ªÉòïQ»­ü8ØŞhJ:Cöé¶wZb¾pÃ°Š®²ìğÒV iŠX×ÔÕÅˆ¢şÚn-uââmw¼ì²Ïcq»tœÁü‡%ïbRweøfÎt%§HY+ïK(a´ÓTÒ™dj#,pŸØÌ¦ŸS›Ï»Ï¿ÿÿÿÿÿÿÿÿøÏSv¦Yw¸sÿÿÿÿÿÿÿşÚXÜ¸ ¨ÄŞg€™Œ`&%˜­l‘µ>ÊdûÏ=g>ğƒ†	à¬ Ñ8 g‚‡ÄdÀç8Š¤+pıÆ8¨Šˆºœ¾^\"£Œ¤y&B‚JV£G˜-%PUFTjR™™uZ‹Qt”‘ÿû’Ä7”…c>½ÉÍ3gñÅ›`å;¤¥£EÎ¢ŠH$‚”ÊH ]rÊ)¢^QÕRëZI½î‡­ŞêûzjQÅsş) KtÓ{’€à2S’FÓ|ÔÌ!c‘ˆ ë‘>`‡¹÷}^½¿·[ÉæË(y`%rÈAÁÀ:\"p`Xfü¨ ğÂ	ß…y hë•´Ïp ·ÖŠ_‡1w#¶¬¥÷Ş™»Ò”`³ºş®MÚâ²y1¬âø¿:VP!“ÌK˜æ½oşwÎúBO•,=ƒYAY9!Ğn÷>öjjªßÿï’Ù‡Ã¡1Ø,ÃÎ¢ÙæĞ£,ãïD&rk-8Âµ>™À0%=•eæa5äw­„J¦:dÓ”šU1kS¯ìóÅ¨Ô{<¡×FZ‰®ˆX„ˆÃI…E€!Işî¾Pšú¸ÉØß«dŠ©GŒ½pä6/İh­ƒ§!bjùÿê§™6µ?%ÿÿç‡@“&˜YV’Í–N¶RÊJ”IùÌ(ÊH\"VØGî	ÿû³Nä3ìvtD85dUg:±hø$ÿû’ÄQ€Õ1?¤[h\"§Ñ²§P:¨E]îŸÀ¬’Œºx‹Lá4×	™Á*é}\\–¿3Ó3M³1Ø&ÍËìùõ,°\\,¡ @°@öìD6ô±'zXÕi!Šî“ß¿ô×ïë(LÌ \"2,è(~íÒêÆTåtL„©¦ŒÔ=3U—ÿJÒJ‘ëÊeâ¤…(b²4>x Ïm(°h„TÉáé¤İy$,¢ÚÖ#Ğ…Ñ`‚Œ?(eiO„LX{é ê>ğ˜'Ô~C*–J»VíŠí&l@©å@K(aĞ’?&rÂÊÚK»1‹PÃ­„WIf.-ŒÈP‰È`UÂ­%¹J¥·øÇç\"¸Ê>ëÿ{‹È4¸¥Ñ¨¯ ÈÔkb¢ Dá¨(L!0DØ…AJ†ºq”¬òîwËØÌëB Ô”HcuEäX…/¼rÿ‹®úŠ'­ò›°ÂecÙ\"1¡Td’§áæ|ÚË²şÎSU³fS)¦™Á‘\"±“1Î±â±Œ0v%ßŞåLíK¡˜­ÿû’ÄvÔ½_:$yJ„¤%aÌ™y»Ù‰ul²8q\\ĞM#‡$ı¦_ùœÿÿÿ®Úó¶I^Q\"Vi-|oUY¼Š,I\"TJœ‰AD´ ­å€H‘5ÿ0¨Çš(#’Š)P.(²za¤Áeÿl^F›ÿú€ 1P£`å½2_óğ³0530(ÆZesWâº‡oÕu©I¢á VLâDe‚ÉC„RPè„/$@IÔÍ™2h.YÓ¥C*gæEóu¢êw¢ªLt©;õ7²Ñ®#TMR¤ÖZ=})5¢’WMI\"´y’ç(Lq±¥@ÁyF39KµEn5ök*ø6´eI¯La¼‚DaÇ*b`H‚jb‚'”aéÌ`St`€`2DùÜI€|9*&®‚0ÀWp 9¨Ê3uÈ7©‡»ÈX!Q]½e¯«Ÿƒ¥Àå,)€)<	Éav€,Ù²<Ô²Û\\¿OMK–UÜG]r4Æ¹…šzn5c¬ãv‚zÿû’Ä™}%é€óD Ã?µ;ÿ~ÊY<O	<®+,¹ZÕ¼£+VÂd88\"ô~ãğ©!–OwmCĞÌÅhh+Ûå»—]h{Ê¢±ÎWlìApE_e,-ãÃIÖ‘\\ŒîSI£~f¬YÎw´×i)©kÍı.¿—‡rB°j^l.r‡â—|íêÿ†ñçç†{Ã,9ÿÿÿÿøeSÙ~ùßÇ½ËŸÿÿÿÿb/ûd›±Îê÷®RP8€À@kä8aÄ„Nx89ÀB â/‘)kæœ”$`À+@	4˜é°o @çF‘IŸ`Ã[qa	PÖ4í\\¿gÁ%6£@3Œ8×5Áœ~hj ìâØôğºæ\"é‚Ê“9P&rÌeÉzqØí€Q=9İ«±˜©$Ó©r‹Gú^'D|¿é¤B1I6Ö[³Z‡â¶wUô‘@¹ïÂ˜\"£Ø‰ĞVû¬ï6Yçı©Œê+X­—Há2g±‰ »¯Ú7Ñørá÷}¨.wÑâqŸVD¼ÚSüëÿû’Äs(-×;¹¬€®¨²ğ)K»eÆdñ¹rÖ±¨{ÏT’?Œ±gµŠ)EÁÒ÷íú~]W¶z™‡O?’	tîU‚ßI·Úów3nş6şßóÿÿÿÿÿÿÿÿÿüÆuàlÿ†½àb(‰ôR4ørnsjñØtS•»0tJhW˜£;bW@CJá7&)¦Âæg\"|&J64ƒ‘.Chğí3\\\"Í¹›`êD2¶GíqâVØÏ×ÿÇÿüoÅ¡>·ğuñOë,ÚğŞæ5±{ÇZnë¨»Ä/˜MT¿§¼X¿8mÔ¬»y¯ãO†úÿ:q®-ÿ¾Á“;ù¬]nâ÷Û²Êh€„P  Åã/L,4Œ&£-¡u¼½×ŒÀ‰,å›÷ñäÜªTÔ•ŒÅƒ4ƒè 0ã'Fè³²·áòlêîXDùQêˆ‹`÷~µ‰Å™,ôód¥Xt—–œ?ş1ÿïS¯Ùæ}†%±a{9%ã±íJKªtK0¡²-´€‘÷ b$…‘ÎM{‚P³+¹Ü4ÿû’ÄH€•1u=a+Ê‡-¨aÌ¡yš˜®”Îé7ŒvZU¬Å±Srn·ĞP èƒR‘’ñÄHf#İÅh¸ïËày˜¥ÈİyŞÁøÈ7'­GLÈD!ØÔsD%^Ğsy[Å,€]TÅ[ìônQLuVñÊ×TbYĞz£Óÿÿæ†cG—õìk¦aØ8@¹ò÷h·Ù¨Ø„8pˆ8’€ÔğéÅ¬w˜’½¹‰Ø×ÚLu3Æ¹DÑÖ@˜ˆ,C†4ƒ¤¥jÑ¢æ#œ4aP8şÁ6£&•Ã›öífãënŠ/—8F2¦0â2ìùa‹€4ŠUÂädo[‰4ç%EXED_ëÎ)»>QUd§Ih‰n9ÿùú]wüÛ¼¯ÓÔÔLé<\\y\"È£õ¿äîFj^’ŠNéh™B'ÓÕ(%’ñÏÿ–f)ÕâF(WgQ¬Ôİ×u5q›õ~”\"ê9”U0#|ATt!	0HúuKûËÈ_^o%ÙÏí[nCp]®Q¼«ÿû’ÄiÔáy@®e+Òh­¨a¼!yt$ã59­T]®\\B%?f+%PùšcTPwo½RûË!ÈÆÄ0àÉ™ÚWgÕCÿıM‘C†”a#F×ÿ}=vsªiUÃµ½…¼OßS÷öü¤$Œ¢8ÑYB™c€ZAVÏdÏ­ï­U€‡sx!e=a/Cß2{¾;b_¸_‡à'EÈ‹ =ğF¸U-×¤2ÎˆBıõí!šD¶ekîÂ½Ó·Ü{tS¢€j\"Y¤?)üãö[3Ûÿç£	4l|hßŸÿß?Ïóµâxé6ÑNQEÚõ›³n¼}WÂ;ÁÑpáé94¤X•(ŸÅ¾¥¿íò;ú”¿Úè0	…Ó›úÑ-àx0tÃÆ*Ví'¸³òÃ–ë1µ¥UàèÑji¡Å‡N°KŠÈÒ¶j;b#96şÌÎÌ»°anš”}åÄ”¿ÿğ•”Hp*$µÎûÊ&¬œÏşÎ?vº \\‘4$İmŸş¶ß¿¬ª§„«™ÿû’Ä‚ı¡B®dËÂ²gI¼ys--ç7úÿö|¹Uy4ËF‰Z '–¨ÉË0’ÈÕÁ³êµá,ºkª8ïŞÕÀ²ÃÍIsCá@h`	‹,2ßyØl¶q‡6HùºÂ‘XÁq`4æb*¡£ÁÉ]±7VjÜÖUqËİäFP×ŸYeI0XZ×¯†©¥8æ±‡AaÌwlÒ•ÿ^‡k-MÄ×QÇüÿ·±[<\\²ô»súÖÒ¥2±#šŠ•	aA° H7ï›|;üR–`ÒwÉ2cÆd8!É@\"ÜœéÈ`ˆjÁÊ`D¡2Ôˆõ23ô-pk’RB\\Y×“Yp®c­gqÌ­lªØ´yzA¤(¹÷ûŞ¿·ŸÍï4¿Ô_ŒçZ·Ç×ù×Ş³=b×R|çT§×øÏö¯ùÆilÛxŞ­MÏY\"â©‹Úù¾-«Úl}fô­£ÀÌMÀõ¶-4:Ú™¾w.,òÉµã:[ËÉú¨ÙXpÆp¸ÁêìÁaÜÕGøË±±®	ÿû’Ä±µY#.áÊ¡0bVºğtT20©ZtÂ ÇÀòôi×}M2É9½í¸¿N;¶îcq”‡Q›Ö%ÏÃ’ÉßÀ€)ŠM¦]˜\\9+ŠÏÕi—³éŒìp2@ÉbSHÄ`ıcúÏ–êX±Ó*àÀ2Í2@xÀd\\w9e®^ç÷ôeq€ ’U æñË,«sXËò©V%›ÌÉcÒ±8 aÁ!Š ”0‚b10—ïœŞ«|üğÂÇòÅÓ(LF˜xò4Ã	, d¡ëç;¬ğË™şùûû|Ã]¿N[Ãl¶ƒA3—‡È®Æ¶ZëöDH¼5]×ÿÿÿÿ¿ÿÿÿÿÿ¯ïØÿÿÿÿÿÿÿÿÿÿÿ÷LÙ<­z5ˆ’1wÿì$œ‘ À)Æän2’‘PÈ«cí2Dˆ+‰I˜ûqawµƒ‰ VETÄÏÌ|[x¶ñ$HÚzõëÈ[”ª­9¨çm$jBCTiÒx…²¼V¦Ú<œ®êõr¥°àºH§Ñæçÿû’ÄÔ€(F%ÙŞN3ëwğ7gâ½Yú… hOÀrz afBWqêd;mARMâIÓ8Ü¬.¹yH<'êfU)|BL£é@Æz5æœ•…ıTùJÌ®„-ŠÕÑ‡šÃN–C¡yaÛÄ¾zr2êÕl%<ùi£¯v?ù‘!ë¾¡0¤‡B…ŒAÀ;ePÏÍÆlc²xmñMÓ„ÉËÆ;k†â¬‚ö‡Tj·ÇTÄ9[\\Sæa $ãPz-„‡Âµë„bk-ÂRKn°´IeşX«ıÜ€é>Iï‘O•®‰i£'ÍUå¦n§Blê/ƒæÚì'Œ¥,W…dDãÆJqU2’ ¢I¡Ù´‘ƒ£ş‘Åjùp“A&Êîøn£†Fµ­#²’ÛLÃLYÓ’¤Æ5€‰wc‚÷Ò¿òª*æ.yPIáÃè^säeÄW~ìdåû¿ğ.VT%ˆö¡X{<vÂ9d’½W¶è’PH.	GË’•Ñåªv¹bI İ-CÎG¢á*l9)Q-Â€–;“kÌaÿûÄÕYwH‡°Ûa¨¨‘¦ù9½)­—uT”õ1ëkœèı]Ü™ n1å÷¿º÷êòª%GFWƒÿcæ ĞÄöÓ{$i3Õn/b;VœÏ5nmfåró2±Ÿ%‡[B¾•`€İÖƒ qœ‡J·ˆÉ&´äëÖ†Ì¤Z<¡«b!úÛxÜv¶³Ÿ|ÎaÅU$gøûÛæoÉƒüU^vgÙşïˆSİ‰w*Ç4wf%ûîÇé[DMé!q`ÌÊÑï…™ e{Í+3,\\íB#Lî,ğE£rCét†9ƒl/CPg†Ù xZ•:V›Ä–\"=<àæñ?2¹†@´õZêıªCfYän€)X¸á´V³ö^pGµ[P½ H°Ç ²xåÖ·µgZ@TO(Îs(AÑ¶’‘BD±‹za2;TØ‰œƒÔv.Ü#ñuß]ª™=:Ó¸«Ü›Ûƒó¹ãdXËÕ3ãi ÑD€¨ğH6Ë³~™“Êá˜N×up`U‹Iÿû’Ä´Ó!_@<ÏÂ·¯'Á§¥¸Ó•˜îÒKj«Ş+Ê>¢Ä[æxªErhCW“]]Á­pm%ÒOÆP¤2´´EÚìª¤¦í¹®‘æäH†J#Ğ¼È;z¤\"ù¡My¸ŒÑ\"FÈ|¤ÈÏl	&-‘EÍ‰RŞ«(ùÉwÁt±ñ—°Ÿ`hz$êsÄÖÿİlõĞ-(ú­PÀ­~I-¢˜€'g+á5j“#mÎ‰¬¥­ôªvátüÁQ²¡ƒ”xšr£S‘€!êĞøI+§2Q·G³7Ç>Z9Ô Y†ÑÀ­Q›GÒyd”Ro F¸ãÏ²h75¡ÃkÅg¢’d [jHOgT %51Ïê²c©%¿ÒÅİ%-¸Ú>Ü›LN\\¹jF‡qxM×G—ŞLâÃºáèj\"×£qIGgT\\¤°÷Ló–sßnE¤íû•bÁÌ)ºĞ&9‘® ÈŒ—Š€8éŒŒGºÙ@	„xÅCÖÓÄ‘D«Ijÿû’Ä×ÕyoF=-Êª±©Ñ†%ø\\u<e¥bŒÓ-«–(gcéÉ1@J”ë%Õ–)’æ´æùCu^Y^Ãa^P®æ]ğâ(#Ãõ3T¹±X‹<K«\\İ/kº¶ÓV¬¥~>4§Õ™Rh­¢ˆÊy,'Ù²Èú:¨ëK³Õ©Q	q#~­zƒv5~¡MqÈƒAE¶äìì$È•w @hdJ‹~åS>¯­ZHœÆ±x3M±ê ,ímËlÖl×Á™æğ§Ü°•®®¸[–•1û\\ésRú?“nßaĞÄÌºY~&¢NˆãÑ¶Oø–^ƒ´Fb¢Zâ±’‡}íÃL‰Äú@E6ŒT£ƒ•†W>D¾ƒº€]x‚$!&9šSÏ¶KË™«ª5´’OÓ™Å¨æûG9£Ï/±Î»Üì¾ä'—Òºg‹·w@ 9C¨P+‹òO	rÒe•:º‚N^IëCŒ¬Ş÷ËÏMæ¾^Åí6[µVåneP¥’OSë«+Y '™:vHCˆ¼æÿû’Äò[a™KÌ1íÂş2ª9‡±øI…uğ?ÒÖ•*h´Ò<CñéÅâ	@²z|ÏİöZ…’k§OBÁÜ[[yQÖÏGÄ60ø†ø„»×GaóhK…ÆB0õÅ¢JÓâ¹ŠîŸ¨^¤$åè–“b²Ô¯=ìZE‘\"U-Ş³à’j¢æã²¶S™lm§t	æeÀ2#¬¸1åÆŒŠäõÏÓ%•‰¹ 3²Ò­Q Á­1—³5ÕÏŞ1(£2¡±N˜N‡©6Ö[†È½Û4f´6XmÈãDÉ˜ê7Fèr€ì±q'Ài$ÒBJb=9Sª”'m4„Ú®aT¸Å^™•F©fvÛ½Qî¡GeU7;€ù…ˆ¹;t®|–b|{š*§2sïÙU§(â:•O¤CN˜ö~ÂÚöfe3”Z¬¡Ï°ö&2Ú„¯fj#´D*kE,\"ĞÔİ[™sB†+K7Å’'½„»ª¶¬`CBˆYö¬Õ»S¹e«ó1Ú“ó±™dõéF„û^³^µ{Z¡N²ÅÕYjºU)œ¢¾7Oe:©» ¦ñSÉÓ¤ÉCWÿû’ÄëØ•MÇ±>ËB4g¸÷¦øé,Ôu`s	’íBv—œÒj7Œ¦m¾ZzÛ35ğbf:$‰$Ò‘9RSI“ÖøŒ„¡*>©É5IÈ‚$˜’„#ê²U¢IÔ­”Ë¬¹I=v¶\\|<S©„£'š+:ddò¦Tı	&§ÒÕ]dÆÖjëjî¥lILbµ—4î=±eˆŠÎ£e€3£Ç:ÌŞØjEIfw<5–SS$T°|Õcj¶¼Uéujd¦6[²VXõWQÒ¬UÈ;(]DNªc¨Î´ü%(&ª!„°ĞÌzT°¬<Àt‚ˆ¦x—?âRúÔfÍ;«iWµttzW==mÑ*Öv°¨*±µ–L–±¸„}ÊÕ°œ¦Nµèİ\\…{UBó×7]uêí­+bÎôqÖ•Ÿ>ÜÕ¹µûQ¦‚‡–€®3‚€ÏÚs‰©™DÁ™dA¥›£Çã×ŠháèMLÑŞ¶+8a3›©£øI[Ê€jsÓ‰²OÅ]èôj6ófpHÄ†ÆÌèiB•´éYä7’&@ÿû’Äè€Ù*Œ=‘ÂÖ´bâ²ÀmÍF¬e£¢ËR^ûÄ–3”¼i#.œQ0÷8ìÎELllÂÀE,Â!·ñK`9J©m,êËëI!øÑ±Ağ±A‚‚™à…˜øùK› …G÷•ÿ‰Â&r†\"—`ÛŠf#Sb à 0pÀ@	ˆ‰¥ÜÒ¦ßY×‰S@²Ê{RŠ7-ß“ËŸKÔØğ˜P!ƒÀ (d  òë¨]4N)÷z½5+áF¯D«ÎC•©§²ŠCjÔÚä†P)?ÁBh¦Ü –œE¤AiûùÚü/_Çóî¿æÿÿÿÿkß‡/sş÷¼æ÷–ÿÿÿş_·™‚DÒáëiú~#uî`¬ÕBĞT€ #ØaLl(¨#ºaPT”|)ÄB‡!úÔhÆ<PbË@•¸©Ì‹HK·¹ì&LÏQ½G F’­‘‰ ´®ÕN †<í0£Lvœ%ƒiŒ„Õ*7–0Œ£.;”Î™Ò¸@ö¸‚E‘†Ì»M JIHàÿû’Äğ,#­€Ã¦ï3Ë[¾[;¸9õ´€µ_+AÄËVå”ZÎiô±ZRÿVû~¸Y;.gë±\\1 RXÇITèfP!púÿÒH#”0š¶¢—U†5ŞÒ_øÓğé¿è>m L Rø u6Ä>ÔŠü¦½1·…ÌêŞ}ãĞä²fb­IA3~–¦Nû~Vë®ˆĞ ğ§~!—jf:ğej¿p±ÿÿÿÿÿÿÿÿÿÿÿIô™ó=ÿÿÿÿÿÿÿÿÿÿûñnM«ô;§·Åj¦Wˆ„@4I@‡/˜%»İ‡çê<	SN š=¼Hs,?qˆ±‰<tÎÿùoS%²Ë â¨W%AÍ\"“\"ÉD#B|ISeX}Ó*ú×ªÚ×—Ö7VD’õĞˆ¥Õ!¢\\Ù•é¥œrW'8UeÒq.¨ºMi+Í2lz¤­/Yn2é)Uö{[ë;:8zôíœÆ•U—@Ud¼—ıßÖ†c11(§£‰,ìö­U2œÍ·†İ&I?‘Èrcÿû’Äe€Õ1cMİ† «è9§™ù&&‰ÚÔc\\àÈ%	ÂLàö]9F´	±r±¨Ks·#™Ø“Ç)ÂÌ‰TªR'³§ì±”ï-ãÚK¬½š›Ï2RN‹WbNBµx)nª÷(Ã²[æeÈ¨9ÁTÔÌmscNIªşaß+uæf®[bQ5úı.å2&–QüÿkYøÕ@H”ÑñNÈ¼à9M,$T8ÅCÀÇq:;Ğ–yÿÂFa¹M=×êWJ¹)a‚¬Rõ!¢ÀÜzwç'ÒøbÖİøÔNí¸À¼Å\"*¦–~¬ÔÉa£kBU¾¯†Jmu«æÿmaR2SğÅsÏgü¯ÚŠ%’¶—\"jdó¶ß5-)¥È‰	¯œòn9î=‹ˆ€NJø³½‚Æf¿¼:ë8¨	0„<Á!!ÉÄˆ ÅÛ¬ë“¿Ï£ÍÜ7ÉM©eØB7¹ğ0˜°½Ú[´ã—™É`™6wõúj@¯KA îËæ/çWÇş ,Z%Ô±#¥£Æ­·ı÷5*lÿû’Ä…ÕA}:¤{ /g¡Ã#HÏıü0Ë:(´^ïÿ¤U¾!4`$€ø:`ú¤ÔÕSw¿ÿÿ].³#äyL¨:EŠÍØÖ†Ï40HJHWë0/qª( a€C¨2ÅÛ§ßx~¹3ÔwUk´óJ(<˜3‰¬Æ“5½n®D•Æ‚§§ï8,í³‰tÜ¶¶œı]XÏ@X`Ì\\îJ†ƒùû0M–ò^ã‰\"UîÊ6ŒR…v\\X»wğŒêŞÂü/v®óe•Í—?Î¤f–† ª •²y¶×ßÿ@€@”Ëo	M¾ ÀÈÅíâÿtë?ñ2ï	6»» HË Æb2¹Œá?R˜Å„=—Æ‡(×à\"qÚB qôÔÛ\\R˜»ÿÛ1 ¢YßiÌÔYR–·ÿ_»ú=Ë«cû;7ı¿ÿî/kC*:ËD‘ğr““5Ëf„ùN÷{òa•æ^ê”aæ¦­=Ãn‹äÏfF…qWE¯¥ yLÖ4šoÿû’Ä¤€“muA:Êy²h!·™x(6ğ1ÀIÆoœØ¦_©\\»!­ Îä!¨bË)UW]AVšV>ÿê7B©~[m)Î”_Ë—¨ô¡Äº‹>¡Q—ÖEcŒB³~¬®‡4ÌÎ…vÿj¿ñò5e8³+rÉÁãtbêÖ„»åWÖÖ—zi…aæFœjjŠ;®HÊË¿rÎêŞ&êşØsÍXü¬ ·0”3Á1°:&Y“èóÈY¤FıÕoòWÚ@BÀhÕ…GiÒ‘h	ºP¸Š¼êLtò‘´™©ê½ô_²1€ZEkæİÂZŠ™Ï¾îµ	]vÿÿÛşñ]ÑŒóÛÿŸÿş=êãG±B0ÈYr¥&”L—9½şõÂ7Ùæ&ÊìÑÌ,øı†#Â,ö§LÅ-‰†,ØRšKÔ*bÿÂ0ĞA0WlÙÙPpT1]w®–0Ş­ ÉâİzYé~ÅAÉ.@(hjõ!à€2x—éUØ³Yi­İá_Ìş.\\ÅEPHf ©kùî'<ÿû’ÄÎSñ—C”ÚÂ²(m·šÈÙu„DSÆ‰ƒRéL¼Pµÿü4Å{ZC5u×ÿ_Ô\\½QS½‘0u«	æâ¶õ\\FÙ.&µÆ,¢êá{ö[>&	ˆnÚ¡À#ı­ƒpä#ˆ O^÷ÜPÖµÔ—–{³Œ`&xH,3· 9¾ç‰6‹ˆ™Y„‘›Ùá…¶|Á+:©° ¾Üq„D ÌP`b‚ÅËLÆ„ÒÕ–PÈƒFCV²VÈI€–E#Ê–îÃAP4µwÔŒN1	‡ W»¿Î¦UnÔæz©Ú-å¢	ãÖyïÿºş?Ó™çŞï¯ïşªÙÚØPÂâFBwWeÏ|Íu4OşEL«9i¤ÿö×kN*g-ûak3Wí\"L“)uÄ©wY¶´lÔôVôíÜ/JIù·¬ïÎ3ñ½çüúúïÍ$xò`¤€â 2±£¼U@H¼Ø’½}ÁlA;¢€ ”O(qê‹1&r»nS´xp” *„†É5æ”½fh`E€‰$K_`¯ÿû’Äô™­<Í¡›L»'E´?šå™šµ®HáV éÊkwjãV~T@ˆĞpµªóĞ$8»ÿéT¡­³<gÿ¬qG‹\\’ŠI'k<n¾òKßüG]Ìßf¬zR“ªØÑ”Çj‹”•m8lì@›±í}¯Ô«–Fì^›%bD–*È>“”’s¨`!µ®	†•ŒiÛ?°ÁÃ ’ÔÀÍ²hd­üL¿FJ\"ˆF\\6àóXˆÏ4yÅ¯wájÅ¨dmÎ2ã·íCdÏ-k·âv)ä¡@^(Ààø.\\;K	Izºæ¨¥¤Jÿÿÿÿá6º²11(|e_ÿüşPÅ*ÎÔŠ!DÍ{÷ŞiG 9º¤³Wê&D…èÕ²µ‚ñŒZ5X`u‹†ãÂ¨Lè•Ôÿ+£Ğ~=@œ~àÁÍ&çÄ)U™ÀöœÀqfMiz¤‚pY%Í-_lñÅvRÜh™¢#4dA¡Åı©CÒ*\\aØÛCP÷Ê h+%»ZBû¿N•VúK7ÛoÕ§ €ŸzñŞRÿû’Äí˜¡§>MüÃ´çÉ´3aW”X¾ÃcF£·úÉÅ=»ÿèëfª5‘O/®Í'óé“ùmë0Éœ’˜£¨Õ2n…jİö*Û8–î7”¯Ÿª[T…ˆÒ¬¬“ŒÓ$%£ÉG†gEÃbÑI4–é/#«7p]ı‰€n‰/eèÀAÊAJ+ŒH¼dHãJ¥dÂ¡Á {˜¨0V|8œfb|Kh-´;‹C3/ãı‘%íØ9âšo¨mH£üxà¨ƒÃE?o¹÷:•h­8Jÿ-ËcQ°ÈŠxŠ-?Gf ˆLd5?ÇÊ>¯››İÙ¬0V.š!²%J™´ıÄ°‚5–„·Rª`†Q}b4¯®]èŒªL.G7ÌR©6+2jB^>•—“Ybèšf$Öş˜—!âxÙï­é£û\"™²L¬•ÏDTR\\|@ª[q‹3D÷IÇU@Ä¦)A¥P†šzÔ»‘WÅéqæw©´y¾ˆOˆl|†ÇçL^ +m³B	E…FÌÿû’Äğƒ˜!§>-œ›'5ç‰´3™,\\®g¦frpíeNXÛäìÌÍeËÖîõåë4éÖ}g¨eªL±™9mk53é–cÑ ËÎAd`ÉÃ£•†'rXmxàP+ [0$ªR*˜Hâo!Yµ¡²¯6ª[*’Ëc“·+â}:1Ãˆú2™êÚ€`² Ğ…t8<ÇT[ İ88hh9-òD%’¦†nDr|daÀ“N#¥×Ê–¾Ï»]fò©øwf§S6q…§ïóÖß«J†—_æ½õc²*O®tïOd6•¹Ø-S¶^e´8¿.ÍW,yn6’b¡ÚÕRçSÇ¾ñºıÿ¹±ˆ,,fXû å2ùŞ™¥ıÅÅ3TºüV%~×LJX‰%A´¤ˆéPºoTµF³IŸÿûÏÿV–ŒQ^}Á’4F¬jµÎç–V3Òj°d‹ áC:35Ñ ¤–6ğ‡±]¢a}L¼ÆMPe_˜bSA	‘Ë,GoEe1zhänSnvš9u¥VˆB[ßøqÄH$Ğÿû’Äñ‚!§:Í±7Ë,7g¶>éƒ{ÿŒÿøß¯FêÿÖ\\!3‰@t-[' YÈ\\$œñı7õõÿÇÆ1 Ìt—½QDy.®é}^Å;vÕÓF´¸?V&×¦®¢¡Ip­ $gÿÿûÆq_ÖZ:–\\v7Œ/¢ï:Åmñ<jXò2„h ¦È¤³2 ¨‚¥Y	t«¬ÂCKòl%Æh4ª*|%M»c|[õzÖè÷Ã³±¸ş	E§×OÍ†¤,‹9í°ˆ­yÏ›¹?¾AHESµ0pÚI\"ÕXp§¨·FR-Îï©LÛV¼s!LL(Öé#¸ÏÄ§şºøƒLUêxÿ,%´'D8MÉ©@ªË™ìõÆi‘Æ¢ ¶ãõUÉr/0N§ÙÒéH¥Æ?ÿïëÿş~~ëŠ.˜˜VÕ²C‰µõœî=6öJÚ2\\(oÚ9„f›Ô§-Ò½[3|„ÒQÉ€¸ÍĞ¬ò-î†,Á—4IŞnO;mÜ–€ü­\\F¡ñÙYb X~?F¬ísİ6Î‹5ÿû’Äî×ÉÁ:­™ùE¹&³?“{Û6¹›;35êÙ¸±P”rYd¦ÎÆ¾g‹òÕao%2põz4‹WôKRÑ•ã±	”©eíÈ¦wç-“–ií”c²Aè·Bsb	HùêKp*Tc;øĞÜ”dôÎB×%vfgóó²ff‚ÿO®skÜªÖ@#F@$!lÁã¤³#ˆŒ84(CHÒ!3ğĞ”¨Sy¡÷bâ^”Ä–0±ÈdÀ? ) †&‰\"läˆ¼kz2šç!åÑ¬P¹~ºqe‹rfff|º*Ö‘›FëNâ¢ü-bÕ™ÅĞ—ÌØÓÈ€8œ]}gößõ½f‘×ÖÎÓæffffk\\Ç¾C9úK‰k5<‹şËQªRœ).ºWf>}ÿî™—iŸ}û6ÜCkê EÂƒ¯TLø618l ŠAÁÀ`FºS!cŠ¢ fg ÈLÊ-’È]LuşZÈ¼b$kçCÏ[w[‹¦'1|PjY£aÂ'vœMŞÿû’Äìy©*®e…Êú4eqÌ0¸+&RÑ“Múé™™œó¸îQ[=Fp»Wÿ2ìÌËs[6I\"˜DÃ£X, î‡»G[;¹ŒuqÕ®ŞY§ÌÌÌÌÌäí¾Y¼P;	ßŠhWµ8º°Û\".¼CY\\¥‹%*<bº‡í%Š•oU±d´¾A2, @`ôÁóÌÀbšÄ\"ä*AVPç#IzVê¶ˆ@)Za± Äbao!‰Áò)4˜e©Šs%'±o;UÊÚ¡24*S2Ó5+Ú•Ê†·3]ãYÖ¿úƒë2¡XÆÜ”}>æ|ÂÅµ›|ê^ı…œî2Ú³š8¤˜…ºµ:™å!^BvJÒ;{gÿÿßşÒùŞYµolExJ•Š(•’@qf‘D¬zCQ5:Y£å‰EV~|4°39@ )9’S#2¤Ó<=-9Jä«Ktü@ÀÈí0åU³³~#´L1 ÖšQ0 3,cN(¢y-–Ç4¹yeÃç TL‘åÉ¡ÈæK(ô;ÿû’Äñ£%.e‡Ã3ãåÇš±ñ¥†MÅwg=ı=­óiJÒEe5x”ôş-¤ÓìË„¤ä2¡L£Y\\Œ>š<”ğI,æ¬lôñ¦[N¥gnÿÍı]áêu×¢uóKŒãFÕàÃÏM¡ªZtíbÆ­;W;«›ïï}Ÿ–ãïßŠ“{Íæ/BÕ¬fØÌ ÎfÑ9ÌhJ %YKöD`›™Aˆ^‡Z9¦kÍŒt­BñO‡MD\\e*şilµ·. À0âLYõgO¨åà€d¨’8T£İ³9çüÛùt Ø&©&®¼õ¥Ù£uÆ²6Ê¤„5ã©uáwL:š–Û—ÏŞŠ£ëˆŠK¶”ÎùÜ™™éİÖ&ò¼€H ²¨ãñÕ»B§–È±—qyñûÆ²òÚtùuCs) ld(=÷YN*4OËƒÂ«ŠU!Uagjr¤×J‡•.8a \"ªgCEŒiı;«¢e¬b`ÅÔY›?1˜ôÌãÎB!$%aÒØe„.ÿû’Äó9¯Íå‰Ã!³bA¦)X NeC¯i„SúÄ·Âä´¶õ¦N’”#ß–×ò«÷yîM\"”ÓaÔLt*i~ˆÉõzÛ1‡óZLßÏXU¤PN#ñT‹g}’I’Ï$Ş[ËÚù¶î•å¢¦SßŠš„Un8Ìõ˜)Ùcµë“f¾ª|Ïà@,JXî1Áóó€(I Ñ„@¾ãXSH&6$t˜£ 4Ğ9‚Æ•¥Ş€ßòòƒB&4–-¹fmÑõM(Z{0w²¢ŸÃ@pÀ$JWä[6Á­‘©ÚìÇ#’j$M<ŠBÂ)ŸzE\"Ò«œİúÓah XT&`‘)âŠEıQKÇÜ~ƒQ{‡ÕØ…¦©Ù8”Ÿ‹(ˆÍ*Õ+ M÷SQQp­Hû‹9“jtƒĞ`‡6ŒCHÛÿ˜‹æ€dê/ªy¾\"˜!Š€4üæ]c\\‡hÜ&àÂd$°‹Š5Hìº®Ì–Ä*v€BÉ•Ç²i1P¢ú^j¥Ÿ¼‹˜•Å_<fó¶¬ÿû’Äì5«e)Ë·a™¤› Ó{â›jÒÚ^â¼ …˜Rì·-(DMsk^“ÁåœäøºäÈÎ\"pBbHİ'ªNşCG‚’9h\"W!yıXP!k¡^Do(±?®*zB&Œˆ#QHÅQˆ4’í”afM¡†Fl©öö²RÖòãåkÇÙ~{îŒÅd6äFÙDf€ãë'ÕÑQ[±œ”AyX&((¥Ø*	‰—šdP aBšÿlQ?	ô³¦]A¶£Æ—AŸí6vë„L9ãÅm2O«ÎÖí®\\­mS.m×\\­OR@ª(tˆ€r_)E¡qlüyJrK'…Ã“)¢ªÏ“æ­ k§&eòë¨ PDXT#t/šœŠåoÕŠL[»0PôÕ„–Xº‹ 5»/[ã½¯t­Ïík(½¦¼X'©Æü”å0Ø IAxŞY?š16%uZ5\"Æ!d Ân_x[i¨ÓjlÔ±ñf,.¾²ÕoF¢*…œÉ¹Ibl!T3YÚYÈËKÚÎÆkm(‚º£,ÿû’ÄïÙ9Ï½%Ë(¼`£29¢¢›f qĞH‚×X¨¥4ƒâr#ÄèÅc¥ƒBB€‚ãÔ%&B4 &L¸øÓd ñêM£6€1!bæZ£DÈF6ØL(¢@H”€ ª#Ì˜Rõu“QIOmºx”W?½‡ß¹i±µL?âóê@¨±¤MŒ¢º•ÂÛÎôêËİ÷Ğ²û!®Ùeqååòó±Â¨üñƒã×\"®¬mAU¯¸ôv¤vÊuvËen¡ºóm¶¿_5,\\¹rõõË¾Óuu	È,˜Š<½ÓFÉ•;WUg 9'‡ñTÍöKg¬•ÈCáæ. İB…„Ãøõ“ÁÕëÛ/‘””ÄÂÁÁZ+‰™–Î×°±ƒ†Iç¯£n8Ö­0eNJÒõNµ¯øæÜ¯ë{TÔ‘….r	†¡HºM!C+M†ä¢ñîU¨·•ym=·ßµ°áéCr{èÕİ9KèõCø©Ïe	¨y<ÙU^ú‡X£üÚœ¾í4ïôşÿû’ÄëƒX	É™%Ë9 „°qq¬LòóíYıoŒb~Ø„Æ¬»‰\"€´HC›’‡ã»À°åãããÒIW,Ppp^-&78xğ’-0A3;/Ê´iŠUV.3¶X¡0”êø‰ä¢ÑÛnQl8NZéLx—/±óşTc—^¸Ş´‚ÜóßıÙhæşí-i´µO‹b­(`FT41<Ü»V­5¹üéòåì·EÂåú–&ybñ-N}e‰Jå¶–9Ô®JhKœvŠÜÆ)‹y=nw6ÊŸë0ß¿'j(Í=ˆ×lÿ½ ñøój1-¨s¹U0¢êÇË¨—pzéíPª)!Ä)ì­•ê-…Fã1òŸpzÆ[,¹ÅZ)XÕñ:¢Eõ&à\"QeıPÊŞÔj6«OÈ)E.’d™±@ıé×9vPôêMJ«Š§³„LÌˆÛÙ(âúyõ.- .Ù³ï{MÚÖ¾q[cıâğ>i¼ïz“m*áÑˆaf*'èë»Å‹Õı\\®l}Vê}Ò¶îm§Û© I˜9yeõUÅ®ÉUg:atáÿû’ÄïY¹úş¬%ËmÀßÙ†>yTµNW'6½F ÊeM¿PÖ¢VÍ(ÚwêdNI¸–n &~YÑQ*dG&İ‰,Zc,(Xy%˜Á*¤J•´hÎî.‰!B¡~RÄâ¨íŠ±sCNm`ÄÉÈS@«l4»i¥ÖaÔØ@Ÿ ° åŠyî É®$@‡O‘tAHètÈ\"I(ÙWZú­~:•‰‡‹DôMCC&¯7äTœÅ«:anáæb—Ú´¢Xr×BÖZ†´dâ‡:õ‘¯~ìİ2·æ$pnÜ£7_¤1œ6Òæ’6~ÁA‡ +&AUeêËéI†‡ªÂb0ÁÍ¢µÊfkD‘YšrxYtÉ¡ğø¾¸wl œJáú‘±P˜˜”@#“–È0„Ë/iYšÀ¹ÅïIé­6Š³²íš²÷®³?¿vµéËlôŞo=o¥g»œ²Ub;bÍô	)ÂĞŒ:ï“5xêà’ê©ı…—İo÷İËf´öÊí}»/\\ı4å“¾~>ÛùıG[K¯Qc×÷¾¯ìZ)…Ÿÿû’Äà€Uµ!ËGÁÙƒ08§eUëÈW­ÖG‘¯Ø/ÿkmªÊÈÒy…:5ænÆi ¨JeæNŠGcãÇ©TX:1hœ’ ÀÀÈº#+/ ^ÉdjÊ+0=—‰^fWtØ‰qøü§s5©ÑéhÕ«®.¡(è~zcv	ÍÉšV™4êV»œß_Üë«.¶%¹UJÎÌÎ÷s<9Û²şTÊ·O`SÏ‰2m‹„mwkTª1IiÙ´›ËÜº±‹Å“ nâÓJH¬à„ß—ƒ¤ëÀÛË.@¿Ë+Pße1lìóIV©È®Zq£ÊB òô)@~É}Õ)HfÇi0”üd‰2í8p·æSR¡q|Ÿö7J**“°¶25‰ƒáÉ0t|x\\FAˆG/ HbQHXGAB-ËPİ)¾ÂË![Ÿ8éÙ£OGùşiÏ}GÈæè`˜ÌHUy¿¢‚åŸsõfÍé}ìl‹^£ïNBÏ¥˜IH™^IÒ4½]JGçµ“ŸWD#‹-*9d?‚œÄĞş®2ÅXj÷SIƒÿûÄéƒX=õ,…Ë;Áƒ29¬#TªPõæÕr”!:”>^•)ş6`Uz\"É©©tbi$ÌíaAQ²Ñ²âòD|(»O–¼„i<ä¾t``-($€Ì‚vC-Éñ4sÈÔ–H«¡ 	Œ{šD`Ù‹m1O®¥\\¼1ÿ³h÷­¶n»-Ú±K™î¼}sò¬`\"µ:Ïqö–±½¬T›Öù‘;hûîÃM$ó1.Ó»ÜÔú;Ğ½«»ÑE^n”®4Í_üÇmœÍÚÚå9÷>±Õ—·»4æ‘Ùr›×˜8]‘®~æ4oZÛ°°¦|•r¤JÉOÀuârtÖbfDSõf\"\\:‹¦¶JgG“‡…ÕgJK}•é„ãÒ‰Ê >‹éƒªHôRÏ6áXÍ}WÄüYtöA›JuØ¿&ùŞ…Š¬ƒC®xBê]gê†qş†$rÚ˜âaà€³=˜_,aËZm‚éwq<n¶Ô7Åg±\\:Ä³´¢>å•ye«¼ó7c¢rZøi	·²“;TêØªÿû’ÄëY:şÊú» 	ƒ09²Û+°ù¤^Ş%Ë”FíW°vóİayZHTW¦(R˜¤|GÆ†æJÉEšU8ò üğ¶š·R©’C!À®ZJp°ˆgä§îà˜­¹€ì~ÓSRPıŠg’:¥,¡cÏ¡Gƒ3·2…H{§>úÍ,ÃjR³LÎ›9xã¢´kNt99…ÿ.±/ÖÕM–€Yˆl¦€í–v÷%@($˜ğpøTÀb½™ë^ÍñVš5	aÈÕ0Ò]ŸPØóQ¤Ö·¦ìy±è/¤ñNoG4ÍXî(‘è°.C”B©†˜#Ai’EA8†(“'‘\"Ñ:L*£*O4I‡‰æ=¤èÁ¡£8J‰îÂ€ hT8`mÏQ‘G#ŠtÓªåÂw·9ùıf‚hdU‚>!ZsõjSÃ8>ÒªKØKîbØ².ŒÛ)hI‰'\"‘9#1FäY8´<Î{rsn»…fı~½K±Şä<¶ğşÕ_f*¦s+*î¬?iÿû’ÄíY…üş…Ë¼`ƒ%¹²~ÒğÑ-êfW=90„ñÂÁû¼¹KÆ‹Ğ4Ñ	Ü1LËO‰ÏšEqBßçÔ]BQ‘èÉ`Ê‘²N1èPJë€]…)OKn® µ&dAërÆ1e÷OÙ£m=W÷§µ–9ú­®şÒz³ŸÓ9ô¼Åäğo‰èğšØFÇtÂ Ü¢Ã#M~œ¥%*İÉ 6pF¡¤b”´T™¡e†¨œ 2nQ43¨‘¸(–@æ^ÔznmäJe\"]s:µŠ’Ù\"‚d O™Åˆ‹’ñ Pºdm’²Ì‘!ÅÄG@•[+–trË!hàY{‚ì¨èºhp™fHTjÁ£d ‰aHÊØ©¬ˆ„	2D)Q#ÿ	›!—Œ%®”ÒZp÷X´V•ÿöéÖï¹Z¸Äj5Ÿ„Õv·:\")+Q^_èVP28‘L™1=Eg[<3mm’8¹ÓÌJl#a2P‘ˆDŞóPÁaT°ªÂ’8³Ğ­8¢U«E–ZÈTN9¹9ÿû’ÄíXaóËAŸ…†$Å–‰jVâYEWlÈÅeY¨ªø‘a©²µ'â®2¹B…Ô]j±E	Õ.#]l0ôœm)6J©e±¨£*kÒnº\"šÄ[pš‘4µ¤ZÏIDßL5¾.qX\\©ê÷ÕEM7+a¢v âT1“½h$R¡š?× Z8¸ê,ÜCN2ø¥BÏÅÀ_ÑICtšC×ÑÇBMhè;Ğä` éô¬æáêëQ7£I’r^‚Ø#Y‚ë¬|Ptø l˜	9d › D`Vq”j2ÚòËØ^çtFÖ0FTÑíşÒz¨Œ#S*¬Âë2E³f“-*xVQ	ô´ô	Ÿ$.L$i×¾¨È Ÿ$.òBèM Š2Š¶hFGó”–ò2ITêÕºVÿfËULAME3.100UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUÿû’Äî‚ ıŒ1!‹?4^É‡¥9UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU2êÌŞDÁ†d¦)sJhÍAYóRXWa“0' ªfªÔtöµ–Èó®–dã´× …;1YÁ€6ºé ªD)>1©²ˆê0Tlt˜†…Å#FÁ¡p ‰ (R0X¸°$28*Á)dbQ3$G[CM+¯#ZD¥£W²ÔøÚ‰°‘­²ÔÛ'Z'Z3”øHµLi\"Ô“äÅ\"UìúøÚih$l$l$u¨éŠ¡”’\\‚ÑLTD¤’Ò–W}h¦KoæŠªLAME3.100ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªÿû’Ä¡ƒÚ”à¤Ù4€ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª "
-  },
-  "/api/translate": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Translate text",
-    "category": "Translation",
-    "response": "{   \"job_id\": \"trans_20250802_071511\",   \"message\": \"Translation job started successfully\",   \"status\": \"processing\" } "
-  },
-  "/api/translate/status/1": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get translation status",
-    "category": "Translation",
-    "response": "{   \"error\": \"Job not found or expired\",   \"job_id\": \"1\",   \"progress\": 0,   \"result\": null,   \"status\": \"not_found\" } "
-  },
-  "/api/translate/stream": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Stream translation",
-    "category": "Translation",
-    "response": "{   \"message\": \"Streaming translation not implemented\",   \"source_lang\": \"auto\",   \"stream_type\": \"sentence\",   \"target_lang\": \"de\",   \"text\": \"Hello world\" } "
-  },
-  "/api/support/feedback": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "Submit support feedback",
-    "category": "Support",
-    "response": "{   \"error\": \"Failed to save feedback\" } "
-  },
-  "/api/support/feedback": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get support feedback",
-    "category": "Support",
-    "response": "{   \"feedback\": [],   \"limit\": 20,   \"offset\": 0,   \"total\": 0 } "
-  },
-  "/api/support/support-request": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Create support request",
-    "category": "Support",
-    "response": "{   \"created_at\": \"2025-08-02T07:15:11.751457\",   \"message\": \"Support request created successfully\",   \"request_id\": 3,   \"status\": \"open\" } "
-  },
-  "/api/support/support-request/1": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get specific support request",
-    "category": "Support",
-    "response": "{   \"attachments\": null,   \"contact_method\": \"email\",   \"created_at\": \"2025-08-02T07:10:48.711944\",   \"description\": \"This is a test support request\",   \"id\": 1,   \"status\": \"pending\",   \"subject\": \"Test support request\",   \"updated_at\": \"2025-08-02T07:10:48.711949\",   \"urgency\": \"medium\",   \"username\": \"admin\" } "
-  },
-  "/api/support/status": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get support status",
-    "category": "Support",
-    "response": "{   \"application\": {     \"active_sessions\": 0,     \"process_cpu_percent\": 0,     \"process_memory_mb\": 0.0,     \"recent_activities\": 0   },   \"services\": {     \"application\": \"running\",     \"database\": \"connected\",     \"redis\": \"disconnected\"   },   \"status\": \"healthy\",   \"system\": {     \"boot_time\": null,     \"cpu_usage\": 0,     \"disk_free\": 0.0,     \"disk_usage\": 0,     \"memory_available\": 0.0,     \"memory_usage\": 0,     \"uptime\": \"0:00:00\"   },   \"timestamp\": \"2025-08-02T07:15:11.797607\" } "
-  },
-  "/api/support/help": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get support help",
-    "category": "Support",
-    "response": "[   {     \"category\": \"basics\",     \"description\": \"Learn how to get started with XplorED\",     \"id\": \"getting_started\",     \"popularity\": 100,     \"title\": \"Getting Started\"   },   {     \"category\": \"learning\",     \"description\": \"How to use and complete lessons\",     \"id\": \"lessons\",     \"popularity\": 85,     \"title\": \"Using Lessons\"   },   {     \"category\": \"learning\",     \"description\": \"Different types of exercises available\",     \"id\": \"exercises\",     \"popularity\": 75,     \"title\": \"Exercise Types\"   },   {     \"category\": \"learning\",     \"description\": \"How to learn and practice vocabulary\",     \"id\": \"vocabulary\",     \"popularity\": 70,     \"title\": \"Vocabulary Learning\"   } ] "
-  },
-  "/api/support/help/topics": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get help topics",
-    "category": "Support",
-    "response": "[   {     \"category\": \"basics\",     \"description\": \"Learn how to get started with XplorED\",     \"id\": \"getting_started\",     \"popularity\": 100,     \"title\": \"Getting Started\"   },   {     \"category\": \"learning\",     \"description\": \"How to use and complete lessons\",     \"id\": \"lessons\",     \"popularity\": 85,     \"title\": \"Using Lessons\"   },   {     \"category\": \"learning\",     \"description\": \"Different types of exercises available\",     \"id\": \"exercises\",     \"popularity\": 75,     \"title\": \"Exercise Types\"   },   {     \"category\": \"learning\",     \"description\": \"How to learn and practice vocabulary\",     \"id\": \"vocabulary\",     \"popularity\": 70,     \"title\": \"Vocabulary Learning\"   } ] "
-  },
-  "/api/admin/users": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get admin users list",
-    "category": "Admin",
-    "response": "{   \"limit\": 50,   \"offset\": 0,   \"total\": 9,   \"users\": [] } "
-  },
-  "/api/admin/users/testuser": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get specific admin user",
-    "category": "Admin",
-    "response": "{   \"activity\": {},   \"progress\": {},   \"user\": {     \"created_at\": \"2025-08-01 19:37:50\",     \"email\": null,     \"is_admin\": 0,     \"password\": \"scrypt:32768:8:1$jrG4psHbqn7Vi4nD$6245f794e512d9092c88c10961de820128edc635e1c5764b359e9fb9d2d4c5d55693600c7ad8efd193074d826af9a4f1a18fea31c15eac0d35562773518e5a41\",     \"skill_level\": 0,     \"username\": \"testuser\"   } } "
-  },
-  "/api/admin/users/testuser/status": {
-    "method": "PUT",
-    "status": "CLIENT_ERROR",
-    "description": "Update user status",
-    "category": "Admin",
-    "response": "{   \"error\": \"User not found\" } "
-  },
-  "/api/admin/users/testuser/delete": {
-    "method": "DELETE",
-    "status": "CLIENT_ERROR",
-    "description": "Delete user",
-    "category": "Admin",
-    "response": "<!doctype html> <html lang=en> <title>405 Method Not Allowed</title> <h1>Method Not Allowed</h1> <p>The method is not allowed for the requested URL.</p> "
-  },
-  "/api/admin/system/analytics": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get system analytics",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.894013\",   \"system_analytics\": {     \"active_users\": 0,     \"timeframe\": \"month\",     \"total_exercises\": 0,     \"total_users\": 0   },   \"timeframe\": \"month\" } "
-  },
-  "/api/admin/system/settings": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get system settings",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.906172\",   \"system_settings\": [],   \"total_settings\": 0 } "
-  },
-  "/api/admin/system/settings": {
-    "method": "PUT",
-    "status": "CLIENT_ERROR",
-    "description": "Update system settings",
-    "category": "Admin",
-    "response": "{   \"error\": \"Settings data is required\" } "
-  },
-  "/api/admin/content/lessons": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get content lessons",
-    "category": "Admin",
-    "response": "{   \"lessons\": [],   \"limit\": 50,   \"total\": 0 } "
-  },
-  "/api/admin/content/lessons/1": {
-    "method": "PUT",
-    "status": "CLIENT_ERROR",
-    "description": "Update content lesson",
-    "category": "Admin",
-    "response": "{   \"error\": \"Lesson not found\" } "
-  },
-  "/api/admin/reports/user-activity": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get user activity reports",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.954578\",   \"user_activity_report\": {     \"activity_data\": {},     \"date_range\": {       \"end_date\": \"2025-08-02\",       \"start_date\": \"2025-07-03\"     },     \"group_by\": \"day\",     \"total_users\": 0   } } "
-  },
-  "/api/admin/reports/performance": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get performance reports",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.966994\",   \"performance_report\": {     \"date_range\": {       \"end_date\": \"2025-08-02T07:15:11.965644\",       \"start_date\": \"2025-07-26T07:15:11.965644\"     },     \"metrics\": {       \"active_users\": 0,       \"average_exercises_per_user\": 0.0,       \"total_exercises\": 0,       \"total_users\": 6     },     \"timeframe\": \"week\"   } } "
-  },
-  "/api/admin/security/reports": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get security reports",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.977591\",   \"security_report\": {     \"data\": {       \"failed_logins\": 0,       \"suspicious_activity\": 0,       \"total_events\": 0     },     \"timeframe\": \"week\",     \"type\": \"logins\"   } } "
-  },
-  "/api/admin/security/settings": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Get security settings",
-    "category": "Admin",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:11.990101\",   \"security_settings\": [],   \"total_settings\": 0 } "
-  },
-  "/api/admin/security/settings": {
-    "method": "PUT",
-    "status": "CLIENT_ERROR",
-    "description": "Update security settings",
-    "category": "Admin",
-    "response": "{   \"error\": \"Settings data is required\" } "
-  },
-  "/api/debug/health": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Health check",
-    "category": "Debug",
-    "response": "{   \"environment\": \"development\",   \"health_info\": {     \"database\": \"connected\",     \"external_services\": \"available\",     \"overall_status\": true,     \"performance\": \"normal\"   },   \"status\": \"healthy\",   \"timestamp\": \"2025-08-02T07:15:12.014052\",   \"version\": \"unknown\" } "
-  },
-  "/api/debug/test-db": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Database test",
-    "category": "Debug",
-    "response": "{   \"database_test\": {     \"connection_test\": true,     \"errors\": [],     \"read_test\": true,     \"write_test\": true   },   \"timestamp\": \"2025-08-02T07:15:12.027858\" } "
-  },
-  "/api/debug/status": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "System status",
-    "category": "Debug",
-    "response": "{   \"database_connected\": true,   \"environment\": \"development\",   \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",   \"status\": \"operational\",   \"timestamp\": \"2025-08-02T07:15:12.040918\",   \"uptime\": \"unknown\",   \"version\": \"unknown\" } "
-  },
-  "/api/debug/info": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "System info",
-    "category": "Debug",
-    "response": "{   \"debug_info\": {     \"environment\": \"development\",     \"logs_included\": false,     \"sensitive_data_included\": false,     \"system_info\": {       \"platform\": \"linux\",       \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",       \"working_directory\": \"/app\"     }   },   \"generated_at\": \"2025-08-02T07:15:12.053715\",   \"request_id\": \"debug_info_request\" } "
-  },
-  "/api/debug/config": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Configuration info",
-    "category": "Debug",
-    "response": "{   \"config_info\": {     \"app_version\": \"unknown\",     \"database_url\": \"sqlite:///database/user_data.db\",     \"debug_mode\": true,     \"environment\": \"development\",     \"environment_variables\": {       \"DB_FILE\": \"/app/database/user_data.db\",       \"FLASK_DEBUG\": \"true\",       \"FLASK_ENV\": \"development\",       \"FRONTEND_URL\": \"http://localhost:5173,http://localhost:8080\",       \"HOME\": \"/root\",       \"HOSTNAME\": \"01c349a695bb\",       \"JWT_COOKIE_CSRF_PROTECT\": \"True\",       \"JWT_COOKIE_SECURE\": \"false\",       \"LANG\": \"C.UTF-8\",       \"LC_ALL\": \"C.UTF-8\",       \"PATH\": \"/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\",       \"PORT\": \"5050\",       \"PWD\": \"/app\",       \"PYTHONDONTWRITEBYTECODE\": \"1\",       \"PYTHONPATH\": \"src\",       \"PYTHON_SHA256\": \"8fb5f9fbc7609fa822cb31549884575db7fd9657cbffb89510b5d7975963a83a\",       \"PYTHON_VERSION\": \"3.11.13\",       \"REDIS_HOST\": \"redis\",       \"REDIS_URL\": \"redis://localhost:6379\",       \"WERKZEUG_RUN_MAIN\": \"true\",       \"WERKZEUG_SERVER_FD\": \"7\"     },     \"python_version\": \"3.11.13 (main, Jul 23 2025, 18:09:53) [GCC 12.2.0]\",     \"secret_key_configured\": false,     \"working_directory\": \"/app\"   },   \"generated_at\": \"2025-08-02T07:15:12.067512\" } "
-  },
-  "/api/debug/performance": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Performance metrics",
-    "category": "Debug",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:12.078689\",   \"performance_metrics\": {     \"include_details\": false,     \"memory_usage\": \"stable\",     \"response_time\": \"normal\",     \"timeframe\": \"hour\"   },   \"timeframe\": \"hour\" } "
-  },
-  "/api/debug/performance/slow-queries": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Slow queries",
-    "category": "Debug",
-    "response": "{   \"generated_at\": \"2025-08-02T07:15:12.090475\",   \"slow_queries\": [     {       \"execution_time\": 2.5,       \"explanation\": \"Missing index on username column\",       \"query\": \"SELECT * FROM users WHERE username = ?\",       \"timestamp\": \"2025-08-02T07:15:12.090469\",       \"user_id\": \"admin\"     }   ],   \"threshold_seconds\": 1.0,   \"total_queries\": 1 } "
-  },
-  "/api/debug/errors": {
-    "method": "GET",
-    "status": "SUCCESS",
-    "description": "Error logs",
-    "category": "Debug",
-    "response": "{   \"error_logs\": [     {       \"level\": \"error\",       \"message\": \"Sample error log\",       \"stack_trace\": null,       \"timestamp\": \"2025-08-02T07:15:12.103167\"     }   ],   \"generated_at\": \"2025-08-02T07:15:12.103172\",   \"level\": \"error\",   \"total_errors\": 1 } "
-  },
-  "/api/debug/clear-cache": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Clear cache",
-    "category": "Debug",
-    "response": "{   \"cache_type\": \"all\",   \"cleared_items\": {     \"cache_type\": \"all\",     \"status\": \"cleared\"   },   \"message\": \"Cache cleared successfully\",   \"timestamp\": \"2025-08-02T07:15:12.121762\" } "
-  },
-  "/api/debug/errors/clear": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Clear error logs",
-    "category": "Debug",
-    "response": "{   \"cleared_count\": 0,   \"level\": \"all\",   \"message\": \"Error logs cleared successfully\",   \"older_than_days\": 7,   \"timestamp\": \"2025-08-02T07:15:12.137133\" } "
-  },
-  "/api/debug/test/exception": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "Test exception handling",
-    "category": "Debug",
-    "response": "{   \"exception_type\": \"ValueError\",   \"message\": \"Test exception\",   \"test_result\": \"exception_raised\",   \"timestamp\": \"2025-08-02T07:15:12.150192\" } "
-  },
-  "/api/debug/test/performance": {
-    "method": "POST",
-    "status": "SUCCESS",
-    "description": "Test performance",
-    "category": "Debug",
-    "response": "{   \"actual_duration\": 5.005666,   \"load_type\": \"cpu\",   \"requested_duration\": 10,   \"test_result\": \"completed\",   \"timestamp\": \"2025-08-02T07:15:17.167638\" } "
-  },
-  "/api/debug/health": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Unauthorized admin access (should fail)",
-    "category": "Security",
-    "response": "{   \"error\": \"Unauthorized - Admin access required\" } "
-  },
-  "/api/login": {
-    "method": "POST",
-    "status": "CLIENT_ERROR",
-    "description": "Invalid login attempt",
-    "category": "Security",
-    "response": "{   \"error\": \"Invalid credentials\",   \"message\": \"Invalid username or password\" } "
-  },
-  "/api/register": {
-    "method": "POST",
-    "status": "ERROR",
-    "description": "Malformed JSON (should fail)",
-    "category": "Security",
-    "response": "{   \"error\": \"Registration failed\" } "
-  },
-  "/api/nonexistent": {
-    "method": "GET",
-    "status": "CLIENT_ERROR",
-    "description": "Non-existent endpoint (should fail)",
-    "category": "Security",
-    "response": "<!DOCTYPE html> <html lang=\"en\"> <head>     <meta charset=\"UTF-8\">     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">     <title>404 - Page Not Found</title>     <style>         body {             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);             margin: 0;             padding: 0;             min-height: 100vh;             display: flex;             align-items: center;             justify-content: center;             color: white;         }         .container {             text-align: center;             max-width: 600px;             padding: 2rem;         }         .error-code {             font-size: 8rem;             font-weight: bold;             margin: 0;             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);         }         .error-message {             font-size: 1.5rem;             margin: 1rem 0 2rem 0;             opacity: 0.9;         }         .description {             font-size: 1.1rem;             margin-bottom: 2rem;             opacity: 0.8;             line-height: 1.6;         }         .back-button {             background: rgba(255,255,255,0.2);             border: 2px solid rgba(255,255,255,0.3);             color: white;             padding: 12px 24px;             border-radius: 8px;             text-decoration: none;             font-weight: 500;             transition: all 0.3s ease;             display: inline-block;         }         .back-button:hover {             background: rgba(255,255,255,0.3);             border-color: rgba(255,255,255,0.5);             transform: translateY(-2px);         }     </style> </head> <body>     <div class=\"container\">         <h1 class=\"error-code\">404</h1>         <h2 class=\"error-message\">Page Not Found</h2>         <p class=\"description\">             The page you're looking for doesn't exist or has been moved.             Please check the URL and try again.         </p>         <a href=\"/\" class=\"back-button\">Go Back Home</a>     </div> </body> </html> "
-  },
-  }
-}

@@ -47,7 +47,7 @@ class ExerciseService:
             overall_feedback = []
 
             for i, exercise in enumerate(exercises):
-                exercise_id = str(i + 1)
+                exercise_id = str(exercise.get("id", i + 1))  # Use actual exercise ID or fallback to index
                 user_answer = answers.get(exercise_id, "").strip()
                 exercise_type = exercise.get("type", "unknown")
 

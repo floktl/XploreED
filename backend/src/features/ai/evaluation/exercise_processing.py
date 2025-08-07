@@ -24,6 +24,7 @@ from features.ai.evaluation.topic_memory import _update_single_topic
 from features.ai.memory.logger import topic_memory_logger
 from shared.exceptions import DatabaseError, AIEvaluationError
 from shared.types import ExerciseAnswers, AnalyticsData
+from shared.text_utils import _normalize_umlauts
 
 logger = logging.getLogger(__name__)
 
@@ -141,14 +142,42 @@ def process_ai_answers(
                     # Update topic memory for each detected topic
                     for topic, topic_quality in topic_qualities.items():
                         if topic != "unknown":
-                            _update_single_topic(
-                                username=username,
-                                grammar=topic,
-                                skill=skill,
-                                context=f"gap-fill-exercise-{ex_id}",
-                                quality=int(topic_quality),
-                                topic=block_topic
-                            )
+                            try:
+                                _update_single_topic(
+                                    username=username,
+                                    grammar=topic,
+                                    skill=skill,
+                                    context=f"gap-fill-exercise-{ex_id}",
+                                    quality=int(topic_quality),
+                                    topic=block_topic
+                                )
+                            except Exception as e:
+                                logger.error(f"Error updating topic memory for topic {topic}: {e}")
+                                # Continue with other topics even if one fails
+        else:
+            # For non-gap-fill exercises, use simple topic detection
+            logger.info(f"Using simple topic detection for {exercise_type} exercise")
+
+            # Detect topics from the exercise content
+            from features.grammar import detect_language_topics
+            exercise_content = f"{ex.get('question', '')} {correct_ans}"
+            detected_topics = detect_language_topics(exercise_content) or []
+
+            # Update topic memory for detected topics
+            for topic in detected_topics:
+                if topic != "unknown":
+                    try:
+                        _update_single_topic(
+                            username=username,
+                            grammar=topic,
+                            skill=skill,
+                            context=f"{exercise_type}-exercise-{ex_id}",
+                            quality=quality,
+                            topic=block_topic
+                        )
+                    except Exception as e:
+                        logger.error(f"Error updating topic memory for topic {topic}: {e}")
+                        # Continue with other topics even if one fails
 
         # Update vocabulary memory for words in the exercise
         try:
@@ -161,13 +190,17 @@ def process_ai_answers(
             for word_tuple in all_words:
                 word = word_tuple[0] if isinstance(word_tuple, tuple) else word_tuple
                 if word and word not in reviewed:
-                    review_vocab_word(username, word, int(quality))
-                    reviewed.add(word)
-                    logger.debug(f"Reviewed vocabulary word: {word}")
+                    try:
+                        review_vocab_word(username, word, int(quality))
+                        reviewed.add(word)
+                        logger.debug(f"Reviewed vocabulary word: {word}")
+                    except Exception as e:
+                        logger.error(f"Error reviewing vocabulary word {word}: {e}")
+                        # Continue with other words even if one fails
 
         except Exception as e:
             logger.error(f"Error updating vocabulary memory for exercise {ex_id}: {e}")
-            raise DatabaseError(f"Error updating vocabulary memory for exercise {ex_id}: {str(e)}")
+            # Don't raise the error, just log it and continue
 
         # Store the result
         result = {

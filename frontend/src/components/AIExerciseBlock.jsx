@@ -9,7 +9,6 @@ import {
     getAiExercises,
     saveVocabWords,
     submitExerciseAnswers,
-    submitTrainingExercise,
     argueExerciseAnswers,
     sendSupportFeedback,
     getEnhancedResults,
@@ -155,6 +154,7 @@ export default function AIExerciseBlock({
     useEffect(() => {
         if (current && Array.isArray(current.exercises) && current.exercises.length > 0) {
             currentBlockRef.current = current;
+            console.log('Current exercise block updated:', current.id, current.exercises.map(ex => ({ id: ex.id, question: ex.question })));
         }
     }, [current]);
 
@@ -314,8 +314,8 @@ export default function AIExerciseBlock({
             try {
                 const startTime = Date.now();
                 const blockToSubmit = currentBlockRef.current || current;
-                // Use the actual block_id from the exercise data, fallback to the prop
-                const actualBlockId = blockToSubmit?.block_id || blockId;
+                // Use the actual id from the exercise data, fallback to the prop
+                const actualBlockId = blockToSubmit?.id || blockId;
 
                 // Use training-specific submission for training exercises
                 const exerciseBlockData = {
@@ -326,11 +326,7 @@ export default function AIExerciseBlock({
                 };
 
                 let result;
-                if (actualBlockId === "training") {
-                    result = await submitTrainingExercise(currentAnswers, exerciseBlockData);
-                } else {
-                    result = await submitExerciseAnswers(actualBlockId, currentAnswers, exerciseBlockData);
-                }
+                result = await submitExerciseAnswers(actualBlockId, currentAnswers, exerciseBlockData);
 
                 const endTime = Date.now();
                 apiResult = result;
@@ -393,7 +389,7 @@ export default function AIExerciseBlock({
 
                 // Start polling for enhanced results in the background
                 // Use the block_id from the API response if available, otherwise fallback
-                const responseBlockId = apiResult?.block_id || current?.block_id || blockId;
+                const responseBlockId = apiResult?.block_id || current?.id || blockId;
                 startEnhancedResultsPolling(topicMemoryActivityId, responseBlockId);
             }
 
@@ -436,7 +432,7 @@ export default function AIExerciseBlock({
             setShowTimeoutError(false);
 
             // Use the provided block_id, fallback to the exercise data, then to the prop
-            const actualBlockId = blockIdToUse || current?.block_id || blockId;
+            const actualBlockId = blockIdToUse || current?.id || blockId;
 
             const pollInterval = setInterval(async () => {
                 try {
@@ -565,8 +561,8 @@ export default function AIExerciseBlock({
                 try {
                     // Check if topic memory processing is complete by looking for the completion message
                     // We'll check the backend logs or a completion endpoint
-                    // Use the actual block_id from the exercise data, fallback to the prop
-                    const actualBlockId = current?.block_id || blockId;
+                                // Use the actual id from the exercise data, fallback to the prop
+            const actualBlockId = current?.id || blockId;
                     const response = await fetch(`/api/ai-exercise/${actualBlockId}/topic-memory-status`, {
                         credentials: "include",
                     });
@@ -574,7 +570,7 @@ export default function AIExerciseBlock({
                     if (response.ok) {
                         const statusData = await response.json();
 
-                        if (statusData.completed) {
+                        if (statusData.topic_memory_updated || statusData.update_status === "completed") {
                             isCompleted = true; // Set flag to prevent further polling
                             clearInterval(topicMemoryPollIntervalRef.current);
                             topicMemoryPollIntervalRef.current = null;
@@ -586,7 +582,7 @@ export default function AIExerciseBlock({
                     console.error("[AIExerciseBlock] Failed to check topic memory status:", error);
                     // Continue polling on error - don't stop the spinner
                 }
-            }, 1000); // Check every 1 second for completion
+            }, 3000); // Check every 3 seconds for completion
 
             // Add a fallback timeout to prevent infinite polling
             setTimeout(() => {
@@ -626,8 +622,8 @@ export default function AIExerciseBlock({
 
         try {
             const currentAnswers = answersRef.current;
-            // Use the actual block_id from the exercise data, fallback to the prop
-            const actualBlockId = current?.block_id || blockId;
+            // Use the actual id from the exercise data, fallback to the prop
+            const actualBlockId = current?.id || blockId;
             const result = await argueExerciseAnswers(actualBlockId, currentAnswers, current);
             if (result?.results) {
                 const map = {};
@@ -674,8 +670,8 @@ export default function AIExerciseBlock({
         } else {
             setLoading(true);
             try {
-                const currentAnswers = answersRef.current;
-                const newData = await fetchExercisesFn({ answers: currentAnswers });
+                // Always force generation of new block when continuing
+                const newData = await fetchExercisesFn({ force_new: true });
                 setCurrent(newData);
                 setStage((s) => s + 1);
                 answersRef.current = {};
@@ -1145,7 +1141,7 @@ export default function AIExerciseBlock({
 
                                 return (
                                     <button
-                                        key={index}
+                                        key={`${current?.id || 'unknown'}-progress-${index}`}
                                         onClick={() => {
                                             goToExercise(index);
                                             // Clear new feedback indicator when visiting
@@ -1182,7 +1178,7 @@ export default function AIExerciseBlock({
             )}
             <Card className="space-y-4 pb-20">
 
-                {stage === 1 && current.title && !submitted && (
+                {stage === 1 && current.title && (
                     <>
                         <h3 className="text-xl font-semibold">{current.title}</h3>
                     </>
@@ -1191,7 +1187,7 @@ export default function AIExerciseBlock({
                 {/* Always show block ID under instructions, even if no title */}
                 {debugEnabled && (
                     <div className="text-xs text-gray-400 font-mono mt-1">
-                        Block ID: {current?.block_id || blockId}
+                        Block ID: {current?.id || blockId}
                     </div>
                 )}
 
@@ -1226,7 +1222,7 @@ export default function AIExerciseBlock({
                             const isIncomplete = !submitted && !hasAnswer;
 
                             return (
-                                <div key={ex.id} className="mb-4">
+                                <div key={`${current?.id || 'unknown'}-${ex.id}`} className="mb-4">
                                                         {/* Exercise Counter */}
 
 
@@ -1237,7 +1233,7 @@ export default function AIExerciseBlock({
                                                     .replace(/\s*\([^)]*\)\s*$/, "") // Remove trailing ( ... )
                                                     .split("___")
                                                     .map((part, idx, arr) => (
-                                                        <React.Fragment key={idx}>
+                                                        <React.Fragment key={`${current?.id || 'unknown'}-fragment-${idx}`}>
                                                             {renderClickableText(part, handleWordClick)}
                                                             {idx < arr.length - 1 && (
                                                                 submitted ? (
@@ -1251,19 +1247,21 @@ export default function AIExerciseBlock({
                                                         </React.Fragment>
                                                     ))}
                                             </div>
-                                            <div className="flex flex-wrap gap-2">
-                                                {ex.options.map((opt, idx) => (
-                                                    <Button
-                                                        key={opt + '-' + idx}
-                                                        variant={answers[ex.id] === opt ? "primary" : "secondary"}
-                                                        type="button"
-                                                        onClick={() => handleSelect(ex.id, opt)}
-                                                        disabled={submitted}
-                                                    >
-                                                        {opt}
-                                                    </Button>
-                                                ))}
-                                            </div>
+                                            {ex.options && ex.options.length > 0 && (
+                                                <div className="flex flex-wrap gap-2">
+                                                    {ex.options.map((opt, idx) => (
+                                                        <Button
+                                                            key={opt + '-' + idx}
+                                                            variant={answers[ex.id] === opt ? "primary" : "secondary"}
+                                                            type="button"
+                                                            onClick={() => handleSelect(ex.id, opt)}
+                                                            disabled={submitted}
+                                                        >
+                                                            {opt}
+                                                        </Button>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {isIncomplete && (
                                                 null
                                             )}
@@ -1285,7 +1283,9 @@ export default function AIExerciseBlock({
                                         </>
                                     )}
 
-                                    {submitted && allPreviousFeedbackLoaded(currentExerciseIndex) && evaluation[ex.id] !== undefined && (
+                                    {submitted &&
+                                     (currentExerciseIndex === 0 ? evaluation[ex.id] !== undefined : allPreviousFeedbackLoaded(currentExerciseIndex)) &&
+                                     evaluation[ex.id] !== undefined && (
                                         <div className="mt-2">
                                             <FeedbackBlock
                                                 status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}

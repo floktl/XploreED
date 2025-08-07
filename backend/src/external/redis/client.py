@@ -41,22 +41,43 @@ class RedisClient:
     def _initialize_client(self):
         """Initialize the Redis client with environment-based configuration."""
         try:
+            # Check if we're in Docker environment and use Docker-specific Redis URL
             redis_url = os.getenv('REDIS_URL')
+            redis_host = os.getenv('REDIS_HOST', 'localhost')
+
+            # If we're in Docker and REDIS_URL is not set to the Docker service, override it
+            if redis_url and 'localhost' in redis_url and os.getenv('SKIP_DOTENV') == 'true':
+                redis_url = 'redis://redis:6379'
+                logger.info("Overriding REDIS_URL for Docker environment")
+
+            logger.info(f"Redis initialization - REDIS_URL: {redis_url}, REDIS_HOST: {redis_host}")
+
             if redis_url:
                 self._client = redis.from_url(redis_url, decode_responses=True)
                 logger.info("Redis client initialized with REDIS_URL")
+                # Test the connection
+                try:
+                    self._client.ping()
+                    logger.info("Redis client successfully connected with REDIS_URL")
+                except Exception as ping_error:
+                    logger.error(f"Redis ping failed with REDIS_URL: {ping_error}")
+                    self._client = None
             else:
-                redis_host = os.getenv('REDIS_HOST', 'localhost')
+                logger.info(f"Initializing Redis client with host: {redis_host}")
                 self._client = redis.Redis(
                     host=redis_host,
                     port=6379,
                     db=0,
-                    decode_responses=True
+                    decode_responses=True,
+                    socket_connect_timeout=5,
+                    socket_timeout=5
                 )
-                logger.info(f"Redis client initialized with host: {redis_host}")
+                # Test the connection
+                self._client.ping()
+                logger.info(f"Redis client successfully connected to {redis_host}")
         except Exception as e:
             logger.error(f"Error initializing Redis client: {e}")
-            return None
+            self._client = None
 
     @property
     def client(self) -> Optional[redis.Redis]:

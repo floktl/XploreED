@@ -44,7 +44,7 @@ def _process_evaluation_summary(exercises: ExerciseList, answers: ExerciseAnswer
         exercise_details = []
 
         for i, exercise in enumerate(exercises):
-            exercise_id = str(i + 1)
+            exercise_id = str(exercise.get("id", i + 1))  # Use actual exercise ID or fallback to index
             user_answer = answers.get(exercise_id, "")
             is_correct = evaluation.get(exercise_id, {}).get("correct", False)
 
@@ -97,9 +97,10 @@ def _fetch_user_vocabulary(username: str) -> VocabularyList:
         List of vocabulary items
     """
     try:
+        logger.debug(f"Starting _fetch_user_vocabulary for user {username}")
         vocabulary = select_rows(
             "vocab_log",
-            columns=["vocab", "created_at", "last_reviewed"],
+            columns=["vocab", "created_at", "last_review"],
             where="username = ?",
             params=(username,),
             order_by="created_at DESC",
@@ -130,10 +131,10 @@ def _fetch_user_topic_memory(username: str) -> TopicMemoryList:
     try:
         topic_memory = select_rows(
             "topic_memory",
-            columns=["topic", "strength", "last_reviewed"],
+            columns=["grammar", "ease_factor", "last_review"],
             where="username = ?",
             params=(username,),
-            order_by="last_reviewed DESC",
+            order_by="last_review DESC",
             limit=20
         )
 

@@ -691,35 +691,17 @@ def get_topic_memory():
     including learning progress and spaced repetition scheduling.
 
     JSON Response Structure:
-        {
-            "topic_memory": {                         # Topic memory data
-                "current_topics": [                   # Current learning topics
-                    {
-                        "topic": str,                 # Topic name
-                        "level": int,                 # Current level
-                        "progress": float,            # Progress percentage
-                        "next_review": str,           # Next review date
-                        "strength": float             # Topic strength (0-1)
-                    }
-                ],
-                "completed_topics": [                 # Completed topics
-                    {
-                        "topic": str,                 # Topic name
-                        "completion_date": str,       # Completion date
-                        "final_level": int,           # Final level achieved
-                        "mastery_score": float        # Mastery score
-                    }
-                ],
-                "statistics": {                       # Topic memory statistics
-                    "total_topics": int,              # Total topics
-                    "active_topics": int,             # Active learning topics
-                    "completed_topics": int,          # Completed topics
-                    "average_strength": float,        # Average topic strength
-                    "total_reviews": int              # Total reviews completed
-                }
-            },
-            "last_updated": str                       # Last update timestamp
-        }
+        Array of topic memory entries with fields:
+        - grammar: str (grammar topic)
+        - topic: str (lesson topic)
+        - skill_type: str (type of skill)
+        - context: str (context where learned)
+        - ease_factor: float (spaced repetition ease factor)
+        - interval: int (days until next review)
+        - next_repeat: str (next review date)
+        - repetitions: int (number of repetitions)
+        - last_review: str (last review date)
+        - quality: int (quality score)
 
     Status Codes:
         - 200: Success
@@ -731,13 +713,11 @@ def get_topic_memory():
         return jsonify({"msg": "Unauthorized"}), 401
 
     try:
-        # Get topic memory data
-        topic_memory = fetch_topic_memory(user)
+        # Get topic memory data - include all entries by default
+        topic_memory = fetch_topic_memory(user, include_correct=True)
 
-        return jsonify({
-            "topic_memory": topic_memory,
-            "last_updated": datetime.now().isoformat()
-        })
+        # Return the raw topic memory data
+        return jsonify(topic_memory if topic_memory else [])
 
     except Exception as e:
         logger.error(f"Error getting topic memory for user {user}: {e}")

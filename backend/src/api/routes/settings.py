@@ -935,6 +935,36 @@ def export_user_data_route():
         return jsonify({"error": "Internal server error"}), 500
 
 
+@settings_bp.route("/debug-delete-user-data", methods=["POST"])
+def debug_delete_user_data_route():
+    """
+    Debug endpoint to delete all user data for testing purposes.
+
+    This endpoint is for development/testing only and should be removed
+    in production. It deletes all user data except the user account itself.
+
+    Returns:
+        JSON response with deletion status or error details
+    """
+    try:
+        username = require_user()
+
+        # Call the debug delete function
+        success, message, deleted_tables = debug_delete_user_data(username)
+
+        if success:
+            return jsonify({
+                "status": message,
+                "deleted_tables": deleted_tables
+            })
+        else:
+            return jsonify({"error": message}), 500
+
+    except Exception as e:
+        logger.error(f"Error in debug delete user data route: {e}")
+        return jsonify({"error": "Failed to delete user data"}), 500
+
+
 @settings_bp.route("/import", methods=["POST"])
 def import_user_data_route():
     """

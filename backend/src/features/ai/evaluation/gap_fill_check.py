@@ -15,8 +15,8 @@ For detailed architecture information, see: docs/backend_structure.md
 
 import logging
 
-
 from shared.exceptions import ValidationError
+from shared.text_utils import _normalize_umlauts
 
 logger = logging.getLogger(__name__)
 

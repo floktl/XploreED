@@ -44,9 +44,20 @@ export default function Vocabulary() {
     useEffect(() => {
         if (!isAdmin) {
             getVocabulary()
-                .then(setVocab)
+                .then((data) => {
+                    // Ensure data is always an array
+                    if (Array.isArray(data)) {
+                        setVocab(data);
+                    } else if (data && Array.isArray(data.vocabulary)) {
+                        setVocab(data.vocabulary);
+                    } else {
+                        console.warn("Unexpected vocabulary data format:", data);
+                        setVocab([]);
+                    }
+                })
                 .catch((err) => {
                     console.error("Failed to load vocabulary:", err);
+                    setVocab([]);
                 });
         }
     }, [username, isAdmin]);
@@ -89,8 +100,8 @@ export default function Vocabulary() {
     };
 
     // Compute unique types for dropdown
-    const vocabTypes = Array.from(new Set(vocab.map(v => v.word_type).filter(Boolean)));
-    const filteredVocab = typeFilter ? vocab.filter(v => v.word_type === typeFilter) : vocab;
+    const vocabTypes = Array.from(new Set((vocab || []).map(v => v.word_type).filter(Boolean)));
+    const filteredVocab = typeFilter ? (vocab || []).filter(v => v.word_type === typeFilter) : (vocab || []);
 
     const typeOptions = [
         { value: "", label: "All" },
@@ -142,7 +153,7 @@ export default function Vocabulary() {
                             </div>
                         </Listbox>
                     </div>
-                    {vocab.length > 0 && (
+                    {(vocab || []).length > 0 && (
                         <Button variant="danger" onClick={() => setShowDeleteAll(true)}>
                             <Trash2 className="w-4 h-4 mr-2" /> Delete All
                         </Button>

@@ -17,6 +17,7 @@ import re
 import os
 import json
 import time
+from datetime import datetime
 from typing import List, Optional, Tuple
 
 from features.ai.generation.exercise_processing import evaluate_exercises
@@ -44,7 +45,13 @@ def parse_submission_data(data: AnalyticsData) -> Tuple[ExerciseList, ExerciseAn
         Tuple of (exercises, answers, block_id)
     """
     try:
+        # Check if exercises are in the root level or nested in exercise_block
         exercises = data.get("exercises", [])
+        if not exercises and "exercise_block" in data:
+            exercise_block = data.get("exercise_block", {})
+            exercises = exercise_block.get("exercises", [])
+            logger.debug(f"Extracted exercises from exercise_block: {len(exercises)} exercises")
+
         answers = data.get("answers", {})
         block_id = data.get("block_id")
 
@@ -209,6 +216,29 @@ def _evaluate_all_exercises(username: str, block_id: str, exercises: ExerciseLis
         # Process the evaluation results
         _process_evaluation_results(username, block_id, exercises, answers, evaluation, exercise_block)
 
+        # Process AI answers to update topic memory and vocabulary
+        try:
+            logger.info(f"Processing AI answers for topic memory and vocabulary updates")
+            from features.ai.evaluation.exercise_processing import process_ai_answers
+
+            # Create proper exercise_block structure for process_ai_answers
+            exercise_block_for_processing = {
+                "exercises": exercises,
+                "topic": exercise_block.get("topic", "general") if exercise_block else "general"
+            }
+
+            logger.info(f"Calling process_ai_answers with exercise_block: {exercise_block_for_processing}")
+            result = process_ai_answers(username, block_id, answers, exercise_block_for_processing)
+            logger.info(f"Successfully processed AI answers for topic memory and vocabulary. Result: {result}")
+        except ImportError as e:
+            logger.error(f"Import error in topic memory processing: {e}")
+            # Don't fail the whole process if there's an import error
+        except Exception as e:
+            logger.error(f"Error processing AI answers for topic memory: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+            # Don't fail the whole process if topic memory processing fails
+
     except Exception as e:
         logger.error(f"Error evaluating exercises for block {block_id}: {e}")
         raise DatabaseError(f"Error evaluating exercises for block {block_id}: {str(e)}")
@@ -235,36 +265,60 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
         result_key = f"exercise_result:{username}:{block_id}"
         redis_client.setex_json(result_key, 3600, evaluation)  # 1 hour TTL
 
-        # Store results in database if exercise block exists
-        if exercise_block:
-            # Update exercise block with results
-            update_row(
-                "exercise_blocks",
-                {"results": json.dumps(evaluation)},
-                "WHERE block_id = ?",
-                (block_id,)
-            )
-
-                # Generate AI feedback
+        # Store results in ai_exercise_results table
         try:
-            logger.info(f"Starting AI feedback generation for block {block_id}")
-            from features.ai.feedback.feedback_generation import generate_ai_feedback_simple
-            feedback_result = generate_ai_feedback_simple(username, answers, exercise_block)
+            # evaluation is a tuple (evaluation_results, summary), extract the first element
+            evaluation_results = evaluation[0] if isinstance(evaluation, tuple) else evaluation
 
-            logger.info(f"Feedback generation result for block {block_id}: {feedback_result}")
+            result_data = {
+                "block_id": block_id,
+                "username": username,
+                "results": json.dumps(evaluation_results),
+                "summary": json.dumps({"total": len(exercises), "correct": sum(1 for r in evaluation_results.values() if r.get("correct", False)), "incorrect": sum(1 for r in evaluation_results.values() if not r.get("correct", True)), "accuracy": (sum(1 for r in evaluation_results.values() if r.get("correct", False)) / len(exercises)) * 100 if exercises else 0}),
+                "ai_feedback": json.dumps({"status": "completed", "message": "Evaluation completed successfully"}),
+                "created_at": datetime.now().isoformat()
+            }
+
+            # Check if result already exists
+            existing = select_one("ai_exercise_results", columns="block_id", where="block_id = ? AND username = ?", params=(block_id, username))
+            if existing:
+                update_row("ai_exercise_results", result_data, "block_id = ? AND username = ?", (block_id, username))
+                logger.info(f"Updated existing results for block {block_id}")
+            else:
+                insert_row("ai_exercise_results", result_data)
+                logger.info(f"Stored new results for block {block_id}")
+        except Exception as e:
+            logger.error(f"Error storing results in database: {e}")
+            # Continue without failing the whole process
+
+        # Generate AI feedback
+        try:
+            print(f"🔄 Starting AI feedback generation for block {block_id}")
+            from features.ai.feedback.feedback_generation import generate_ai_feedback_simple
+
+            # Create a proper exercise_block structure for the feedback function
+            exercise_block_for_feedback = {
+                "exercises": exercises,
+                "block_id": block_id,
+                "username": username
+            }
+
+            feedback_result = generate_ai_feedback_simple(username, answers, exercise_block_for_feedback)
+
+            print(f"📊 Feedback generation result for block {block_id}: {feedback_result}")
 
             if feedback_result and "error" not in feedback_result:
                 # Store feedback in Redis
                 feedback_key = f"exercise_feedback:{username}:{block_id}"
                 redis_client.setex_json(feedback_key, 3600, feedback_result)  # 1 hour TTL
 
-                logger.info(f"Successfully generated and stored AI feedback for block {block_id}")
+                print(f"✅ Successfully generated and stored AI feedback for block {block_id}")
             else:
-                logger.warning(f"Failed to generate AI feedback for block {block_id}: {feedback_result.get('error', 'Unknown error')}")
+                print(f"⚠️ Failed to generate AI feedback for block {block_id}: {feedback_result.get('error', 'Unknown error')}")
         except Exception as e:
-            logger.error(f"Error generating AI feedback for block {block_id}: {e}")
+            print(f"❌ Error generating AI feedback for block {block_id}: {e}")
             import traceback
-            logger.error(f"Full traceback: {traceback.format_exc()}")
+            print(f"❌ Full traceback: {traceback.format_exc()}")
 
         logger.info(f"Successfully processed evaluation results for block {block_id}")
 

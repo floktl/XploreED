@@ -83,22 +83,26 @@ class TopicMemoryLogger:
 
         if is_new:
             entry.update({
-                "ef": new_values.get("ease_factor") if new_values else 2.5,
-                "reps": new_values.get("repetitions") if new_values else 0,
-                "interval": new_values.get("intervall") if new_values else 1,
-                "topic": new_values.get("topic") if new_values else "unknown",
-                "context": new_values.get("context") if new_values else ""
+                "ease_factor": new_values.get("ease_factor") if new_values else 2.5,
+                "repetitions": new_values.get("repetitions") if new_values else 0,
+                "interval": new_values.get("interval") if new_values else 1,
+                "next_repeat": new_values.get("next_repeat") if new_values else datetime.datetime.now(),
+                "last_review": new_values.get("last_review") if new_values else datetime.datetime.now(),
+                "correct": new_values.get("correct") if new_values else 0,
+                "quality": new_values.get("quality") if new_values else 0,
+                "topic": new_values.get("topic") if new_values else "general",
+                "context": new_values.get("context") if new_values else "",
             })
             self.session_data["new_entries"].append(entry)
             # print(f"🔧 [LOGGER DEBUG] Added new entry: {entry}", flush=True)
         else:
             entry.update({
-                "old_ef": old_values.get("ease_factor") if old_values else 2.5,
+                "old_ease_factor": old_values.get("ease_factor") if old_values else 2.5,
                 "new_ef": new_values.get("ease_factor") if new_values else 2.5,
-                "old_reps": old_values.get("repetitions") if old_values else 0,
+                "old_repetitions": old_values.get("repetitions") if old_values else 0,
                 "new_reps": new_values.get("repetitions") if new_values else 0,
-                "old_interval": old_values.get("intervall") if old_values else 1,
-                "new_interval": new_values.get("intervall") if new_values else 1,
+                "old_interval": old_values.get("interval") if old_values else 1,
+                "new_interval": new_values.get("interval") if new_values else 1,
                 "topic": new_values.get("topic") if new_values else "unknown",
                 "context": new_values.get("context") if new_values else ""
             })
@@ -130,7 +134,7 @@ class TopicMemoryLogger:
             entry.update({
                 "ef": new_values.get("ease_factor") if new_values else 2.5,
                 "reps": new_values.get("repetitions") if new_values else 0,
-                "interval": new_values.get("intervall") if new_values else 1
+                "interval": new_values.get("interval") if new_values else 1
             })
         else:
             entry.update({
@@ -138,8 +142,8 @@ class TopicMemoryLogger:
                 "new_ef": new_values.get("ease_factor") if new_values else 2.5,
                 "old_reps": old_values.get("repetitions") if old_values else 0,
                 "new_reps": new_values.get("repetitions") if new_values else 0,
-                "old_interval": old_values.get("intervall") if old_values else 1,
-                "new_interval": new_values.get("intervall") if new_values else 1
+                "old_interval": old_values.get("interval") if old_values else 1,
+                "new_interval": new_values.get("interval") if new_values else 1
             })
 
         self.session_data["vocabulary_updates"].append(entry)

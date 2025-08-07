@@ -85,7 +85,7 @@ def resolve_database_path() -> Path:
     # Handle relative paths in Docker environment
     if not db_path.is_absolute():
         if os.path.exists("/app"):
-            # Docker container environment
+            # Docker container environment - use the exact path from DB_FILE
             db_path = Path("/app") / db_path
         else:
             # Local development environment
@@ -195,12 +195,27 @@ def create_vocab_log_table(cursor: sqlite3.Cursor) -> None:
         else:
             logger.debug(f"'{column_name}' column already exists in vocab_log table")
 
+    # Add missing columns that were causing errors
+    missing_columns = [
+        ("last_reviewed", "DATETIME"),
+        ("quality", "INTEGER DEFAULT 0"),
+        ("last_review", "DATETIME"),
+    ]
+
+    for column_name, column_definition in missing_columns:
+        if column_name not in vocab_cols:
+            cursor.execute(f"ALTER TABLE vocab_log ADD COLUMN {column_name} {column_definition};")
+            logger.info(f"Added '{column_name}' column to vocab_log table")
+        else:
+            logger.debug(f"'{column_name}' column already exists in vocab_log table")
+
 
 def create_topic_memory_table(cursor: sqlite3.Cursor) -> None:
     """Create the topic_memory table for spaced repetition of grammar topics."""
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS topic_memory (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
             grammar TEXT,
             topic TEXT,
@@ -212,11 +227,28 @@ def create_topic_memory_table(cursor: sqlite3.Cursor) -> None:
             next_repeat DATETIME DEFAULT CURRENT_TIMESTAMP,
             last_review DATETIME DEFAULT CURRENT_TIMESTAMP,
             correct BOOLEAN DEFAULT 0,
-            quality INTEGER DEFAULT 0,
-            PRIMARY KEY (username, grammar, topic, skill_type)
+            quality INTEGER DEFAULT 0
         );
         """
     )
+
+    # Check existing columns and add missing ones
+    cursor.execute("PRAGMA table_info(topic_memory);")
+    topic_cols = [col[1] for col in cursor.fetchall()]
+
+    # Add missing columns
+    missing_columns = [
+        ("last_reviewed", "DATETIME"),
+        ("strength", "REAL DEFAULT 1.0"),
+    ]
+
+    for column_name, column_definition in missing_columns:
+        if column_name not in topic_cols:
+            cursor.execute(f"ALTER TABLE topic_memory ADD COLUMN {column_name} {column_definition};")
+            logger.info(f"Added '{column_name}' column to topic_memory table")
+        else:
+            logger.debug(f"'{column_name}' column already exists in topic_memory table")
+
     logger.info("Topic memory table created/verified")
 
 
@@ -290,6 +322,114 @@ def create_support_requests_table(cursor: sqlite3.Cursor) -> None:
     logger.info("Support requests table created/verified")
 
 
+def create_ai_user_data_table(cursor: sqlite3.Cursor) -> None:
+    """Create the ai_user_data table for storing AI exercise data."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS ai_user_data (
+            username TEXT PRIMARY KEY,
+            exercises TEXT,
+            next_exercises TEXT,
+            exercises_updated_at DATETIME,
+            weakness_lesson TEXT,
+            weakness_topic TEXT,
+            lesson_updated_at DATETIME
+        );
+        """
+    )
+
+    # Check existing columns and add missing ones
+    cursor.execute("PRAGMA table_info(ai_user_data);")
+    ai_cols = [col[1] for col in cursor.fetchall()]
+
+    # Add next_exercises column if missing
+    if "next_exercises" not in ai_cols:
+        cursor.execute("ALTER TABLE ai_user_data ADD COLUMN next_exercises TEXT;")
+        logger.info("Added 'next_exercises' column to ai_user_data table")
+    else:
+        logger.debug("'next_exercises' column already exists in ai_user_data table")
+
+    # Add exercise_history column if missing
+    if "exercise_history" not in ai_cols:
+        cursor.execute("ALTER TABLE ai_user_data ADD COLUMN exercise_history TEXT;")
+        logger.info("Added 'exercise_history' column to ai_user_data table")
+    else:
+        logger.debug("'exercise_history' column already exists in ai_user_data table")
+
+    logger.info("AI user data table created/verified")
+
+
+def create_exercise_history_table(cursor: sqlite3.Cursor) -> None:
+    """Create the exercise_history table for tracking exercise questions."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS exercise_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            question TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    logger.info("Exercise history table created/verified")
+
+
+def create_ai_exercise_results_table(cursor: sqlite3.Cursor) -> None:
+    """Create the ai_exercise_results table for storing AI exercise evaluation results."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS ai_exercise_results (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id TEXT NOT NULL,
+            username TEXT NOT NULL,
+            results TEXT NOT NULL,
+            summary TEXT NOT NULL,
+            ai_feedback TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    logger.info("AI exercise results table created/verified")
+
+
+def create_topic_memory_status_table(cursor: sqlite3.Cursor) -> None:
+    """Create the topic_memory_status table for tracking topic memory processing status."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS topic_memory_status (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_id TEXT NOT NULL,
+            username TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(block_id, username)
+        );
+        """
+    )
+    logger.info("Topic memory status table created/verified")
+
+
+def create_ai_exercise_blocks_table(cursor: sqlite3.Cursor) -> None:
+    """Create the ai_exercise_blocks table for storing AI-generated exercise blocks."""
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS ai_exercise_blocks (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL,
+            lessonId TEXT,
+            title TEXT,
+            level INTEGER,
+            topic TEXT,
+            exercises TEXT,
+            feedbackPrompt TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+    )
+    logger.info("AI exercise blocks table created/verified")
+
+
 def run_migration() -> None:
     """Execute the complete database migration process."""
     logger.info("🔄 Starting database migration...")
@@ -317,6 +457,11 @@ def run_migration() -> None:
         create_user_progress_table(cursor)
         create_user_settings_table(cursor)
         create_support_requests_table(cursor)
+        create_ai_user_data_table(cursor)
+        create_exercise_history_table(cursor)
+        create_ai_exercise_results_table(cursor)
+        create_topic_memory_status_table(cursor)
+        create_ai_exercise_blocks_table(cursor)
 
         # Commit changes and close connection
         conn.commit()

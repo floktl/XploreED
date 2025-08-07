@@ -42,7 +42,7 @@ from .feedback_processing import (
 from shared.exceptions import DatabaseError, AIEvaluationError
 from shared.types import ExerciseAnswers, FeedbackData, FeedbackList, AnalyticsData
 
-logger = logging.getLogger(__name__)
+from features.ai.memory.logger import topic_memory_logger
 
 
 def generate_feedback_with_progress(username: str, answers: ExerciseAnswers,
@@ -120,10 +120,10 @@ def generate_feedback_with_progress(username: str, answers: ExerciseAnswers,
                 update_feedback_progress(session_id, 100, "Feedback generation complete", "complete")
                 _mark_feedback_complete(session_id, result)
 
-                logger.info(f"Successfully generated feedback for user {username}")
+                print(f"✅ Successfully generated feedback for user {username}")
 
             except Exception as e:
-                logger.error(f"Error in feedback generation: {e}")
+                print(f"❌ Error in feedback generation: {e}")
                 _mark_feedback_complete(session_id, {"error": str(e)})
 
         # Run in background
@@ -132,7 +132,7 @@ def generate_feedback_with_progress(username: str, answers: ExerciseAnswers,
         return session_id
 
     except Exception as e:
-        logger.error(f"Error starting feedback generation: {e}")
+        print(f"❌ Error starting feedback generation: {e}")
         raise AIEvaluationError(f"Error starting feedback generation: {str(e)}")
 
 
@@ -150,23 +150,38 @@ def generate_ai_feedback_simple(username: str, answers: ExerciseAnswers,
         Dictionary containing feedback result
     """
     try:
-        logger.info(f"Generating simple AI feedback for user {username}")
+        print(f"🔄 Generating simple AI feedback for user {username}")
 
         # Step 1: Evaluate answers with AI
         exercises = exercise_block.get("exercises", []) if exercise_block else []
-        logger.info(f"Evaluating {len(exercises)} exercises for feedback generation")
+        print(f"📝 Evaluating {len(exercises)} exercises for feedback generation")
         evaluation = evaluate_answers_with_ai(exercises, answers, "feedback")
-        logger.info(f"Evaluation result: {evaluation}")
+        print(f"📊 Evaluation result: {evaluation}")
 
         if not evaluation:
             return {"error": "Failed to evaluate answers"}
 
         # Step 2: Process evaluation summary
+        print("🔄 About to process evaluation summary")
         summary = _process_evaluation_summary(exercises, answers, evaluation)
+        print(f"✅ Successfully processed evaluation summary: {summary}")
 
         # Step 3: Fetch user vocabulary and topic memory
-        vocabulary = _fetch_user_vocabulary(username)
-        topic_memory = _fetch_user_topic_memory(username)
+        print("📚 About to fetch vocabulary")
+        try:
+            vocabulary = _fetch_user_vocabulary(username)
+            print(f"✅ Successfully fetched vocabulary: {len(vocabulary)} items")
+        except Exception as e:
+            print(f"❌ Error fetching vocabulary: {e}")
+            vocabulary = []
+
+        print("🧠 About to fetch topic memory")
+        try:
+            topic_memory = _fetch_user_topic_memory(username)
+            print(f"✅ Successfully fetched topic memory: {len(topic_memory)} items")
+        except Exception as e:
+            print(f"❌ Error fetching topic memory: {e}")
+            topic_memory = []
 
         # Step 4: Generate feedback prompt
         feedback_prompt = generate_feedback_prompt(
@@ -179,11 +194,19 @@ def generate_ai_feedback_simple(username: str, answers: ExerciseAnswers,
         from external.mistral.client import send_prompt
         system_message = "You are a helpful German language teacher providing personalized feedback to students."
         user_prompt = {"role": "user", "content": feedback_prompt}
-        response = send_prompt(system_message, user_prompt)
-        ai_feedback = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
 
-        if not ai_feedback:
-            return {"error": "Failed to generate AI feedback"}
+        try:
+            response = send_prompt(system_message, user_prompt)
+            response_json = response.json()
+            ai_feedback = response_json.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            if not ai_feedback:
+                print(f"⚠️ Empty AI feedback response: {response_json}")
+                return {"error": "Failed to generate AI feedback - empty response"}
+
+        except Exception as e:
+            print(f"❌ Error calling Mistral API: {e}")
+            return {"error": f"Failed to generate AI feedback: {str(e)}"}
 
         # Step 6: Prepare result
         result = {
@@ -195,11 +218,11 @@ def generate_ai_feedback_simple(username: str, answers: ExerciseAnswers,
             "generated_at": "2025-01-27T12:00:00Z"
         }
 
-        logger.info(f"Successfully generated simple feedback for user {username}")
+        print(f"✅ Successfully generated simple feedback for user {username}")
         return result
 
     except Exception as e:
-        logger.error(f"Error generating simple feedback: {e}")
+        print(f"❌ Error generating simple feedback: {e}")
         return {"error": str(e)}
 
 
@@ -231,11 +254,11 @@ def get_cached_feedback_list() -> FeedbackList:
             }
         ]
 
-        logger.debug(f"Retrieved {len(feedback_list)} cached feedback items")
+        print(f"📋 Retrieved {len(feedback_list)} cached feedback items")
         return feedback_list
 
     except Exception as e:
-        logger.error(f"Error getting cached feedback list: {e}")
+        print(f"❌ Error getting cached feedback list: {e}")
         return []
 
 
@@ -254,12 +277,12 @@ def get_cached_feedback_item(feedback_id: str) -> Optional[FeedbackData]:
 
         for item in feedback_list:
             if item.get("id") == feedback_id:
-                logger.debug(f"Retrieved cached feedback item: {feedback_id}")
+                print(f"📋 Retrieved cached feedback item: {feedback_id}")
                 return item
 
-        logger.warning(f"Feedback item not found: {feedback_id}")
+        print(f"⚠️ Feedback item not found: {feedback_id}")
         return None
 
     except Exception as e:
-        logger.error(f"Error getting cached feedback item: {e}")
+        print(f"❌ Error getting cached feedback item: {e}")
         return None
