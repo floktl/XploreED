@@ -18,10 +18,24 @@ from __future__ import annotations
 
 def translate_sentence_prompt(english_sentence: str) -> dict:
     """Return prompt for translating English to German."""
-    return {
-        "role": "user",
-        "content": f"Translate this sentence to German:\n{english_sentence}",
-    }
+    # Handle different types of input
+    if len(english_sentence.strip()) <= 2:
+        # For single letters or very short inputs, give a simple response
+        return {
+            "role": "user",
+            "content": f"""Translate this to German: "{english_sentence}"
+
+If this is a single letter or very short input, provide a simple, direct translation.
+If it's not a complete word or sentence, explain briefly why it can't be translated directly.
+
+Keep your response concise and clear.""",
+        }
+    else:
+        # For longer inputs, do normal translation
+        return {
+            "role": "user",
+            "content": f"Translate this sentence to German:\n{english_sentence}",
+        }
 
 
 def translate_word_prompt(word: str) -> dict:

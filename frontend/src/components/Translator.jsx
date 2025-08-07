@@ -113,37 +113,51 @@ export default function Translator() {
     return (
         <div className={`relative min-h-screen pb-20 ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
             <Container className="pb-20">
-                <Title>
-                    <div className="flex items-center gap-2">
-                        <PenSquare className="w-6 h-6" />
-                        <span>{username ? `${username}'s` : "Your"} Translation Practice</span>
-                    </div>
-                </Title>
+                <div className="text-center mb-8">
+                    <h1 className={`text-3xl font-bold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>
+                        Translation Practice
+                    </h1>
+                    <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                        Practice translating English to German and get instant feedback
+                    </p>
+                </div>
 
                 <form
-                    className="space-y-4"
+                    className="space-y-6 max-w-2xl mx-auto"
                     onSubmit={(e) => {
                         e.preventDefault();
                         handleTranslate();
                     }}
                 >
-                    <Input
-                        autoFocus
-                        placeholder="Type your English sentence..."
-                        value={english}
-                        onChange={(e) => setEnglish(e.target.value)}
-                    />
+                    <div className="space-y-2">
+                        <label className={`block text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-700"}`}>
+                            English Text to Translate
+                        </label>
+                        <Input
+                            autoFocus
+                            placeholder="Enter English word, phrase, or sentence..."
+                            value={english}
+                            onChange={(e) => setEnglish(e.target.value)}
+                            className="w-full"
+                        />
+                    </div>
 
-                    <Input
-                        placeholder="Your German translation"
-                        value={studentInput}
-                        onChange={(e) => setStudentInput(e.target.value)}
-                    />
+                    <div className="space-y-2">
+                        <label className={`block text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-700"}`}>
+                            Your German Translation
+                        </label>
+                        <Input
+                            placeholder="Type your German translation here..."
+                            value={studentInput}
+                            onChange={(e) => setStudentInput(e.target.value)}
+                            className="w-full"
+                        />
+                    </div>
 
                     {error && <Alert type="warning">{error}</Alert>}
                     {loading && <Spinner />}
 
-                    <div className="flex flex-col sm:flex-row gap-3 mt-2">
+                    <div className="flex flex-col sm:flex-row gap-3">
                         <Button variant="primary" className="w-full gap-2" onClick={handleTranslate} disabled={loading}>
                             <Rocket className="w-4 h-4" />
                             {loading ? "Translating..." : "Get Feedback"}
@@ -153,27 +167,36 @@ export default function Translator() {
 
                 {german && (
                     <>
-                        <Card className="mt-8">
-                            <p className={`text-lg font-semibold mb-2 ${darkMode ? "text-gray-100" : "text-blue-800"}`}>
-                                🗣️ Correct German:
-                            </p>
-                            <p className={`mb-3 ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
-                            {/* Use FeedbackBlock for feedback rendering */}
-                            {feedbackBlock && (
-                                <FeedbackBlock
-                                    status={feedbackBlock.status}
-                                    correct={feedbackBlock.correct}
-                                    alternatives={feedbackBlock.alternatives}
-                                    explanation={feedbackBlock.explanation}
-                                    userAnswer={feedbackBlock.userAnswer}
-                                    diff={feedbackBlock.diff}
-                                />
-                            )}
+                        <Card className="mt-8 max-w-2xl mx-auto">
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className={`text-lg font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>
+                                        📝 Translation Result
+                                    </h3>
+                                    <div className={`p-3 rounded-lg ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}>
+                                        <p className={`${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
+                                    </div>
+                                </div>
+                                
+                                {/* Use FeedbackBlock for feedback rendering */}
+                                {feedbackBlock && (
+                                    <div className="mt-4">
+                                        <FeedbackBlock
+                                            status={feedbackBlock.status}
+                                            correct={feedbackBlock.correct}
+                                            alternatives={feedbackBlock.alternatives}
+                                            explanation={feedbackBlock.explanation}
+                                            userAnswer={feedbackBlock.userAnswer}
+                                            diff={feedbackBlock.diff}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </Card>
 
                         <div className="mt-6 text-center">
                             <Button variant="secondary" onClick={handleReset}>
-                                🆕 New Sentence
+                                🆕 New Translation
                             </Button>
                         </div>
                     </>
