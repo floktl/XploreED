@@ -15,7 +15,6 @@ import FeedbackBlock from "./FeedbackBlock";
 
 export default function Translator() {
     const [english, setEnglish] = useState("");
-    const [german, setGerman] = useState("");
     const [feedback, setFeedback] = useState("");
     const [studentInput, setStudentInput] = useState("");
     const [error, setError] = useState("");
@@ -49,7 +48,6 @@ export default function Translator() {
 
     const handleTranslate = async () => {
         setError("");
-        setGerman("");
         setFeedbackBlock(null);
 
         if (!english.trim() || !studentInput.trim()) {
@@ -79,17 +77,12 @@ export default function Translator() {
                     const data = JSON.parse(chunk);
                     if (data.feedbackBlock) {
                         setFeedbackBlock(data.feedbackBlock);
-                        // Set the German translation from the feedback block
-                        if (data.feedbackBlock.correct) {
-                            setGerman(data.feedbackBlock.correct);
-                        }
                     }
                 } catch (e) {
                     console.error("[CLIENT] Failed to parse chunk:", chunk, e);
                     // fallback: ignore
                 }
             });
-            // Remove the hardcoded "(see feedback)" since we now get it from the feedback block
 
             setTimeout(() => removeBackgroundActivity(topicActivityId), 1200);
         } catch (err) {
@@ -104,7 +97,6 @@ export default function Translator() {
     const handleReset = () => {
         setEnglish("");
         setStudentInput("");
-        setGerman("");
         setFeedback("");
         setFeedbackBlock(null);
         setError("");
@@ -165,33 +157,20 @@ export default function Translator() {
                     </div>
                 </form>
 
-                {german && (
+                {feedbackBlock && (
                     <>
                         <Card className="mt-8 max-w-2xl mx-auto">
-                            <div className="space-y-4">
-                                <div>
-                                    <h3 className={`text-lg font-semibold mb-2 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>
-                                        📝 Translation Result
-                                    </h3>
-                                    <div className={`p-3 rounded-lg ${darkMode ? "bg-gray-800" : "bg-gray-50"}`}>
-                                        <p className={`${darkMode ? "text-gray-200" : "text-gray-900"}`}>{german}</p>
-                                    </div>
-                                </div>
-                                
-                                {/* Use FeedbackBlock for feedback rendering */}
-                                {feedbackBlock && (
-                                    <div className="mt-4">
-                                        <FeedbackBlock
-                                            status={feedbackBlock.status}
-                                            correct={feedbackBlock.correct}
-                                            alternatives={feedbackBlock.alternatives}
-                                            explanation={feedbackBlock.explanation}
-                                            userAnswer={feedbackBlock.userAnswer}
-                                            diff={feedbackBlock.diff}
-                                        />
-                                    </div>
-                                )}
-                            </div>
+                            {/* Use FeedbackBlock for feedback rendering */}
+                            {feedbackBlock && (
+                                <FeedbackBlock
+                                    status={feedbackBlock.status}
+                                    correct={feedbackBlock.correct}
+                                    alternatives={feedbackBlock.alternatives}
+                                    explanation={feedbackBlock.explanation}
+                                    userAnswer={feedbackBlock.userAnswer}
+                                    diff={feedbackBlock.diff}
+                                />
+                            )}
                         </Card>
 
                         <div className="mt-6 text-center">
