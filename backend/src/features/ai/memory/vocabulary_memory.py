@@ -306,33 +306,9 @@ def translate_to_german(english_sentence: str, username: Optional[str] = None) -
             german_text = resp.json()["choices"][0]["message"]["content"].strip()
             logger.info(f"🔤 [TRANSLATE] Got German translation: '{german_text}'")
 
-            if username:
-                # Skip vocabulary saving for very short inputs or explanatory responses
-                if len(english_sentence.strip()) <= 2:
-                    logger.info(f"🔤 [TRANSLATE] Skipping vocabulary saving for very short input: '{english_sentence}'")
-                elif "kann" in german_text.lower() and "übersetzt" in german_text.lower():
-                    logger.info(f"🔤 [TRANSLATE] Skipping vocabulary saving for explanatory response")
-                else:
-                    logger.info(f"🔤 [TRANSLATE] Extracting words for vocabulary...")
-                    word_count = 0
-                    max_words = 5  # Limit to prevent hanging on long responses
-
-                    for word, art in extract_words(german_text):
-                        if word_count >= max_words:
-                            logger.info(f"🔤 [TRANSLATE] Reached max word limit ({max_words}), stopping vocabulary extraction")
-                            break
-
-                        logger.info(f"🔤 [TRANSLATE] Saving vocab word: '{word}' with article: '{art}'")
-                        save_vocab(
-                            username,
-                            word,
-                            context=german_text,
-                            exercise="translation",
-                            article=art,
-                        )
-                        word_count += 1
-
-                    logger.info(f"🔤 [TRANSLATE] Finished saving vocabulary words (saved {word_count} words)")
+            # Skip vocabulary saving during translation for speed
+            # Vocabulary will be saved in background if needed
+            logger.info(f"🔤 [TRANSLATE] Skipping vocabulary saving for speed")
 
             logger.info(f"🔤 [TRANSLATE] Returning translation: '{german_text}'")
             return german_text
