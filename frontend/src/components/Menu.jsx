@@ -17,6 +17,7 @@ export default function Menu() {
   const darkMode = useAppStore((state) => state.darkMode);
   const isAdmin = useAppStore((state) => state.isAdmin);
   const isLoading = useAppStore((state) => state.isLoading);
+  const debugEnabled = useAppStore((state) => state.debugEnabled);
   const setCurrentLevel = useAppStore((state) => state.setCurrentLevel);
   const setCurrentPageContent = useAppStore((s) => s.setCurrentPageContent);
   const clearCurrentPageContent = useAppStore((s) => s.clearCurrentPageContent);
@@ -62,7 +63,7 @@ export default function Menu() {
       description: "This is the main menu of the XplorED app. Users can access translation practice, sentence order games, AI training exercises, AI reading exercises, weakness lessons, and more. Each button navigates to a different learning module.",
       sections: [
         { label: "Translation Practice", path: "/translate", icon: "FileText" },
-        { label: "Sentence Order Game", path: "/level-game", icon: "Target" },
+        ...(debugEnabled ? [{ label: "Sentence Order Game", path: "/level-game", icon: "Target" }] : []),
         { label: "AI Training Exercises", path: "/ai-feedback", icon: "Bot" },
         { label: "AI Reading Exercise", path: "/reading-exercise", icon: "Book" },
         { label: "Weakness Lesson", path: "/weakness-lesson", icon: "Brain" },
@@ -88,15 +89,17 @@ export default function Menu() {
               <FileText className="w-5 h-5" />
               Translation Practice
             </Button>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => navigate("/level-game")}
-              className="justify-start gap-3"
-            >
-              <Target className="w-5 h-5" />
-              Sentence Order Game
-            </Button>
+            {debugEnabled && (
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => navigate("/level-game")}
+                className="justify-start gap-3"
+              >
+                <Target className="w-5 h-5" />
+                Sentence Order Game
+              </Button>
+            )}
             <Button
               type="button"
               variant="secondary"
