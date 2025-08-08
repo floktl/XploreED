@@ -417,6 +417,8 @@ if "quality" not in topic_cols:
     print("✅ 'quality' column added to 'topic_memory'.")
 
 # ✅ Add id column if missing (for existing tables that might not have it)
+cursor.execute("PRAGMA table_info(topic_memory);")
+topic_cols = [col[1] for col in cursor.fetchall()]
 if "id" not in topic_cols:
     try:
         # SQLite doesn't support adding PRIMARY KEY columns, so we need to recreate the table
@@ -523,6 +525,22 @@ cursor.execute(
     """
 )
 print("✅ 'mistral_chat_history' table created (if not exists).")
+
+# ✅ Create ai_exercise_results table used by results endpoint
+cursor.execute(
+    """
+    CREATE TABLE IF NOT EXISTS ai_exercise_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        block_id TEXT NOT NULL,
+        username TEXT NOT NULL,
+        results TEXT,
+        summary TEXT,
+        ai_feedback TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    """
+)
+print("✅ 'ai_exercise_results' table created (if not exists).")
 
 conn.commit()
 print("✅ Migration completed.")
