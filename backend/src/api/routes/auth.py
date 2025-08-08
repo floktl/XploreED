@@ -124,13 +124,25 @@ def login_route():
                 "message": error_message or "Authentication failed"
             }), 401
 
-        # Get user data
-        user_data = select_one(
-            "users",
-            columns="username, skill_level, is_admin",
-            where="username = ?",
-            params=(username,)
-        )
+        # Get user data (backward-compatible: handle older schemas without is_admin)
+        try:
+            user_data = select_one(
+                "users",
+                columns="username, skill_level, is_admin",
+                where="username = ?",
+                params=(username,)
+            )
+        except Exception as e:
+            logger.error(f"User select with is_admin failed, retrying without is_admin: {e}")
+            user_row_fallback = select_one(
+                "users",
+                columns="username, skill_level",
+                where="username = ?",
+                params=(username,)
+            )
+            if user_row_fallback:
+                user_row_fallback["is_admin"] = False
+            user_data = user_row_fallback
 
         if not user_data:
             logger.error(f"User data not found for username: {username}")

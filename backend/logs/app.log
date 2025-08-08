@@ -21076,3 +21076,13 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-08 12:31:14 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
 2025-08-08 12:31:14 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Weather & Seasons', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Es _____ heute.', 'correctAnswer': 'regnet', 'options': ['regnet', 'regnen', 'regnete', 'geregnet']}, {'id': 'ex2', 'type': 'translation', 'question': "It's cold today.", 'correctAnswer': 'Es ist kalt heute.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Der Winter _____ kalt.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754655643839'}
 2025-08-08 12:31:14 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-08 12:38:30 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 12:38:31 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 12:38:31 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 12:38:31 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 12:38:31 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 12:39:01 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 12:39:01 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 12:39:01 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 12:39:01 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 12:39:02 - external.tts.client - INFO - TTS client initialized with ElevenLabs
