@@ -15,7 +15,7 @@ For detailed architecture information, see: docs/backend_structure.md
 import logging
 from typing import Optional, Tuple
 
-from core.database.connection import insert_row, execute_query, fetch_one
+from core.database.connection import insert_row, execute_query, fetch_one, get_connection
 from core.authentication import user_exists
 from werkzeug.security import generate_password_hash  # type: ignore
 from features.ai.memory.level_manager import initialize_topic_memory_for_level
@@ -77,7 +77,7 @@ def create_user_account(username: str, password: str, email: Optional[str] = Non
             "password": hashed_password,
             "skill_level": skill_level
         }
-        
+
         # Add email if provided
         if email:
             user_data["email"] = email.strip()
@@ -116,19 +116,44 @@ def _ensure_users_table() -> bool:
         True if table exists or was created successfully, False otherwise
     """
     try:
-        success = execute_query("""
+        # 1) Ensure base table exists
+        success = execute_query(
+            """
             CREATE TABLE IF NOT EXISTS users (
                 username TEXT PRIMARY KEY,
                 password TEXT NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
-        """)
+            """
+        )
 
         if not success:
             logger.error("Failed to create users table")
             return False
 
-        logger.debug("Users table ensured")
+        # 2) Ensure required columns exist (prod-safe migrations for SQLite)
+        required_columns = {
+            "email": "TEXT",
+            "skill_level": "INTEGER DEFAULT 1",
+            "is_admin": "INTEGER DEFAULT 0",
+        }
+
+        try:
+            with get_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("PRAGMA table_info(users);")
+                existing = {row[1] for row in cur.fetchall()}  # row[1] = column name
+
+                for col, col_def in required_columns.items():
+                    if col not in existing:
+                        alter_sql = f"ALTER TABLE users ADD COLUMN {col} {col_def};"
+                        cur.execute(alter_sql)
+                conn.commit()
+        except Exception as e:
+            logger.warning(f"Could not ensure all user columns: {e}")
+            # Continue; table exists and some columns may already be there
+
+        logger.debug("Users table ensured with required columns")
         return True
 
     except Exception as e:
