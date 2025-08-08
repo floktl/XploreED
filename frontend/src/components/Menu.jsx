@@ -28,6 +28,11 @@ export default function Menu() {
   }, [setFooterVisible]);
 
   useEffect(() => {
+    // If admin, go straight to admin panel and skip student data fetches
+    if (isAdmin) {
+      navigate("/admin-panel");
+      return;
+    }
     const storedUsername = localStorage.getItem("username");
     if (!username && storedUsername) {
       setUsername(storedUsername);
@@ -54,9 +59,7 @@ export default function Menu() {
       navigate("/");
     }
 
-    if (isAdmin) {
-      navigate("/admin-panel");
-    }
+    // note: admin handling is done at the start of this effect
 
     setCurrentPageContent({
       type: "menu",

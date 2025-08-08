@@ -39,21 +39,42 @@ export default function AdminUserManagement() {
     const [users, setUsers] = useState<User[]>([]);
     const [editUser, setEditUser] = useState<User | null>(null);
     const [error, setError] = useState("");
+    const [userToDelete, setUserToDelete] = useState<string | null>(null);
     const [showCreate, setShowCreate] = useState(false);
     const [newUser, setNewUser] = useState<{username: string; password: string; skill_level?: number}>({username: "", password: "", skill_level: 0});
     const [repeatPassword, setRepeatPassword] = useState("");
     const darkMode = useAppStore((s) => s.darkMode);
 
+    // Load users and auto-refresh while the page is open
     useEffect(() => {
+        let isMounted = true;
+
         const load = async () => {
             try {
                 const data = await fetchUsers();
-                setUsers(Array.isArray(data) ? data : []);
+                const list = Array.isArray(data)
+                    ? data
+                    : Array.isArray(data?.users)
+                        ? data.users
+                        : [];
+                if (isMounted) {
+                    setUsers(list);
+                }
             } catch {
-                setError("Failed to load users");
+                if (isMounted) setError("Failed to load users");
             }
         };
+
+        // Initial load
         load();
+
+        // Poll every 5 seconds
+        const intervalId = window.setInterval(load, 5000);
+
+        return () => {
+            isMounted = false;
+            window.clearInterval(intervalId);
+        };
     }, []);
 
     const handleSave = async () => {
@@ -65,20 +86,32 @@ export default function AdminUserManagement() {
                 skill_level: editUser.skill_level,
             });
             const data = await fetchUsers();
-            setUsers(Array.isArray(data) ? data : []);
+            const list = Array.isArray(data)
+                ? data
+                : Array.isArray(data?.users)
+                    ? data.users
+                    : [];
+            setUsers(list);
             setEditUser(null);
         } catch {
             setError("Failed to update user");
         }
     };
 
-    const handleDelete = async (username: string) => {
-        if (!window.confirm("Delete this user?")) return;
+    const requestDelete = (username: string) => {
+        setUserToDelete(username);
+    };
+
+    const confirmDelete = async () => {
+        if (!userToDelete) return;
         try {
-            await deleteUserAccount(username);
-            setUsers((u) => u.filter((x) => x.username !== username));
+            await deleteUserAccount(userToDelete);
+            setUsers((u) => u.filter((x) => x.username !== userToDelete));
+            setError("");
         } catch {
             setError("Failed to delete user");
+        } finally {
+            setUserToDelete(null);
         }
     };
 
@@ -198,7 +231,7 @@ export default function AdminUserManagement() {
                                                         <Button
                                                             size="auto"
                                                             variant="danger"
-                                                            onClick={() => handleDelete(u.username)}
+                                                            onClick={() => requestDelete(u.username)}
                                                             className="gap-2"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
@@ -254,7 +287,7 @@ export default function AdminUserManagement() {
                                             <Button
                                                 size="auto"
                                                 variant="danger"
-                                                onClick={() => handleDelete(u.username)}
+                                                onClick={() => requestDelete(u.username)}
                                                 className="gap-2 flex-1"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -351,6 +384,26 @@ export default function AdminUserManagement() {
                         <Button variant="secondary" onClick={() => setShowCreate(false)} className="gap-2">
                             <X className="w-4 h-4" />
                             Cancel
+                        </Button>
+                    </div>
+                </Modal>
+            )}
+
+            {/* Confirm Delete Modal */}
+            {userToDelete && (
+                <Modal onClose={() => setUserToDelete(null)}>
+                    <div className="mb-4">
+                        <h2 className="text-xl font-bold">Delete User</h2>
+                        <p className="mt-2">Are you sure you want to delete <strong>{userToDelete}</strong>? This action cannot be undone.</p>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                        <Button variant="secondary" onClick={() => setUserToDelete(null)} className="gap-2">
+                            <X className="w-4 h-4" />
+                            Cancel
+                        </Button>
+                        <Button variant="danger" onClick={confirmDelete} className="gap-2">
+                            <Trash2 className="w-4 h-4" />
+                            Delete
                         </Button>
                     </div>
                 </Modal>

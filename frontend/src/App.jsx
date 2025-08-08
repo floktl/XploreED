@@ -32,6 +32,7 @@ import ErrorPage from "./components/ErrorPage";
 import Settings from "./components/Settings";
 import TermsOfService from "./components/TermsOfService";
 import About from "./components/About";
+import Support from "./components/Support";
 import AskAiButton from "./components/AskAiButton";
 import RootLayout from "./components/RootLayout";
 
@@ -225,6 +226,11 @@ const router = createBrowserRouter(
         {
           path: "/settings",
           element: <Settings />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "/support",
+          element: <Support />,
           errorElement: <ErrorPage />,
         },
         {

@@ -49,13 +49,22 @@ def submit_feedback(message: str, username: Optional[str] = None) -> Tuple[bool,
         logger.info(f"Submitting feedback from user {username or 'anonymous'}")
 
         feedback_data = {
-            'message': message,
-            'created_at': datetime.utcnow().isoformat()
+            "message": message,
+            "created_at": datetime.utcnow().isoformat(),
         }
 
-        # Add username if provided
+        # Only include username if the legacy DB has that column
         if username:
-            feedback_data['username'] = username
+            try:
+                with get_connection() as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("PRAGMA table_info(support_feedback)")
+                    columns = {col[1] for col in cursor.fetchall()}
+                    if "username" in columns:
+                        feedback_data["username"] = username
+            except Exception:
+                # If schema lookup fails, proceed without username for compatibility
+                pass
 
         success = insert_row('support_feedback', feedback_data)
 
@@ -137,17 +146,19 @@ def get_feedback_list(
             "support_feedback",
             columns=["COUNT(*) as total"],
             where=where_clause,
-            params=tuple(params) if params else None
+            params=tuple(params) if params else ()
         )
         total = count_result.get("total", 0) if count_result else 0
 
         # Get filtered rows
+        # Select only columns guaranteed to exist in legacy DB schema
+        # Some legacy DBs may not have a username column; select only safe columns
         rows = select_rows(
             "support_feedback",
-            columns=["id", "message", "category", "priority", "status", "user_email", "created_at", "username"],
+            columns=["rowid as id", "message", "created_at"],
             where=where_clause,
-            params=tuple(params) if params else None,
-            order_by="id DESC",
+            params=tuple(params) if params else (),
+            order_by="created_at DESC",
             limit=limit,
             offset=offset
         )
@@ -157,12 +168,7 @@ def get_feedback_list(
             feedback_list.append({
                 "id": row.get("id"),
                 "message": row.get("message"),
-                "category": row.get("category"),
-                "priority": row.get("priority"),
-                "status": row.get("status"),
-                "user_email": row.get("user_email"),
                 "created_at": row.get("created_at"),
-                "user": row.get("username")
             })
 
         logger.info(f"Retrieved {len(feedback_list)} feedback messages out of {total} total")
@@ -200,12 +206,26 @@ def get_feedback_by_id(feedback_id: int) -> Optional[FeedbackData]:
 
         logger.info(f"Getting feedback by ID {feedback_id}")
 
-        row = select_one(
-            "support_feedback",
-            columns=["id", "message", "username", "created_at"],
-            where="id = ?",
-            params=(feedback_id,)
-        )
+        # Detect schema (legacy may not have explicit id)
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA table_info(support_feedback)")
+            columns_in_table = {col[1] for col in cursor.fetchall()}
+
+        if "id" in columns_in_table:
+            row = select_one(
+                "support_feedback",
+                columns=["id", "message", "username", "created_at"],
+                where="id = ?",
+                params=(feedback_id,),
+            )
+        else:
+            row = select_one(
+                "support_feedback",
+                columns=["rowid as id", "message", "created_at"],
+                where="rowid = ?",
+                params=(feedback_id,),
+            )
 
         if row:
             feedback = {
@@ -249,13 +269,14 @@ def delete_feedback(feedback_id: int) -> Tuple[bool, Optional[str]]:
 
         logger.info(f"Deleting feedback {feedback_id}")
 
-        # Check if feedback exists
-        existing = get_feedback_by_id(feedback_id)
-        if not existing:
-            return False, "Feedback not found"
+        # Decide correct key (id or rowid)
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("PRAGMA table_info(support_feedback)")
+            columns_in_table = {col[1] for col in cursor.fetchall()}
 
-        # Delete the feedback
-        success = delete_rows("support_feedback", "WHERE id = ?", (feedback_id,))
+        where_clause = "WHERE id = ?" if "id" in columns_in_table else "WHERE rowid = ?"
+        success = delete_rows("support_feedback", where_clause, (feedback_id,))
 
         if success:
             logger.info(f"Successfully deleted feedback {feedback_id}")

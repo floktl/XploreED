@@ -54,12 +54,15 @@ def authenticate_user(username: str, password: str) -> Tuple[bool, Optional[str]
 
         if not row:
             logger.warning(f"Authentication failed: user {username} not found")
-            return False, None, "Invalid username or password"
+            # Distinguish user-not-found from wrong password for better UX on client
+            return False, None, "USER_NOT_FOUND"
 
         # Verify password
         if not check_password_hash(row["password"], password):
-            logger.warning(f"Authentication failed: invalid password for user {username}")
-            return False, None, "Invalid username or password"
+            logger.warning(
+                f"Authentication failed: invalid password for user {username}"
+            )
+            return False, None, "WRONG_PASSWORD"
 
         # Create session
         from core.session import session_manager

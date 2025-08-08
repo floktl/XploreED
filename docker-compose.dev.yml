@@ -5,9 +5,14 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
+      - ./backend/secrets/.env:/app/.env:ro
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     ports:
       - "5173:5173"
+    environment:
+      - VITE_ENV
+    env_file:
+      - ./backend/secrets/.env
 
   backend:
     image: python:3.11-slim

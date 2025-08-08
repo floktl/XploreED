@@ -58,7 +58,32 @@ export default function NameInput() {
       let res;
       if (isSignup) {
         res = await signup(trimmed, pw);
-        if (res.error) throw new Error(res.error);
+        if (res.error) {
+          // Show friendly validation messages from backend
+          if (
+            res.error === "Validation error" &&
+            Array.isArray(res.details) &&
+            res.details.length > 0
+          ) {
+            const messages = res.details
+              .map((d) => d?.msg || d?.message)
+              .filter(Boolean);
+            const combined = messages.join("; ") ||
+              "Please fix the highlighted fields.";
+            setError(combined);
+            return;
+          }
+          // Common constraints
+          if (res.error.toLowerCase().includes("username")) {
+            setError("Username must be 3-20 characters.");
+            return;
+          }
+          if (res.error.toLowerCase().includes("password")) {
+            setError("Password must be at least 6 characters.");
+            return;
+          }
+          throw new Error(res.error);
+        }
         res = await login(trimmed, pw);
         if (res.error) throw new Error(res.error);
 
@@ -76,17 +101,24 @@ export default function NameInput() {
       } else {
         res = await login(trimmed, pw);
         if (res.error) {
-          // If login fails with invalid credentials, auto-switch to signup
-          if (
-            res.error.toLowerCase().includes("invalid username or password")
-          ) {
+          const errorCode = (res.error || "").toUpperCase();
+          // If user does not exist -> switch to signup with info
+          if (errorCode === "USER_NOT_FOUND" ||
+              (res.message && res.message.toLowerCase().includes("no user"))) {
             setIsSignup(true);
             setAutoSignupPrompt(true);
             setError("");
             return;
-          } else {
-            throw new Error(res.error);
           }
+          // If wrong password -> show explicit message
+          if (errorCode === "WRONG_PASSWORD" ||
+              (res.message && res.message.toLowerCase().includes("wrong password"))) {
+            setError("Wrong password");
+            return;
+          }
+          // Fallback: show server message
+          setError(res.message || res.error || "Could not log in. Try again.");
+          return;
         }
       }
 

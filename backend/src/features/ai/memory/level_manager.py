@@ -42,13 +42,14 @@ def initialize_topic_memory_for_level(username: str, level: int) -> None:
 
     now = datetime.datetime.now().isoformat()
     for topic in topics:
+        # Legacy schema may not have an explicit id column; rely on existence check via COUNT(*)
         existing = select_rows(
             "topic_memory",
-            columns="id",
+            columns="COUNT(*) as count",
             where="username = ? AND grammar = ?",
             params=(username, topic),
         )
-        if existing:
+        if existing and existing[0].get("count", 0) > 0:
             continue
         insert_row(
             "topic_memory",

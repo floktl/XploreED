@@ -225,6 +225,33 @@ def get_feedback_route():
         return jsonify({"error": "Failed to retrieve feedback"}), 500
 
 
+@support_bp.route("/feedback/<int:feedback_id>", methods=["DELETE"])
+def delete_feedback_route(feedback_id: int):
+    """
+    Delete a feedback item by id (supports legacy DBs without explicit id via rowid).
+
+    Status Codes:
+        - 200: Success
+        - 404: Not found
+        - 403: Admin access required
+        - 500: Internal server error
+    """
+    try:
+        if not is_admin():
+            return jsonify({"error": "Admin access required"}), 403
+
+        success, error_message = delete_feedback(feedback_id)
+        if not success:
+            if error_message == "Feedback not found":
+                return jsonify({"error": "Not found"}), 404
+            return jsonify({"error": error_message or "Failed to delete"}), 500
+
+        return jsonify({"status": "deleted", "id": feedback_id})
+    except Exception as e:
+        logger.error(f"Error deleting feedback {feedback_id}: {e}")
+        return jsonify({"error": "Failed to delete feedback"}), 500
+
+
 @support_bp.route("/support-request", methods=["POST"])
 def create_support_request_route():
     """

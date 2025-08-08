@@ -72,9 +72,8 @@ export default function AdminDashboard() {
     const isAdmin = useAppStore((state) => state.isAdmin);
     const isLoading = useAppStore((state) => state.isLoading);
 
-    if (fatalError) {
-        return <ErrorPage />;
-    }
+    // Helper to normalize API response shape for feedback list
+    const toFeedbackArray = (data) => (Array.isArray(data) ? data : Array.isArray(data?.feedback) ? data.feedback : []);
 
     useEffect(() => {
         const verifyAdmin = async () => {
@@ -87,27 +86,64 @@ export default function AdminDashboard() {
                     return;
                 }
 
-                // ✅ now safe to load data
-                const [results, lessons, progress, feedback] = await Promise.all([
+                // Load data but don't crash dashboard if one fails
+                const [resResults, resLessons, resProgress, resFeedback] = await Promise.allSettled([
                     getAdminResults(),
                     getLessons(),
                     getLessonProgressSummary(),
                     fetchSupportFeedback(),
                 ]);
 
-                setResults(results);
-                setLessons(Array.isArray(lessons) ? lessons : []);
-                setLessonProgress(progress);
-                setSupportFeedback(Array.isArray(feedback) ? feedback : []);
+                if (resResults.status === "fulfilled") setResults(resResults.value);
+                if (resLessons.status === "fulfilled") setLessons(Array.isArray(resLessons.value) ? resLessons.value : []);
+                if (resProgress.status === "fulfilled") setLessonProgress(resProgress.value);
+                if (resFeedback.status === "fulfilled") setSupportFeedback(toFeedbackArray(resFeedback.value));
+
+                if (
+                    resResults.status === "rejected" ||
+                    resLessons.status === "rejected" ||
+                    resProgress.status === "rejected" ||
+                    resFeedback.status === "rejected"
+                ) {
+                    console.warn("Some admin data failed to load:", {
+                        results: resResults.status,
+                        lessons: resLessons.status,
+                        progress: resProgress.status,
+                        feedback: resFeedback.status,
+                    });
+                }
 
             } catch (err) {
                 console.error("❌ Admin verification failed:", err);
+                // Only show fatal error if role check itself fails
                 setFatalError(true);
             }
         };
 
         verifyAdmin();
     }, [navigate, setIsAdmin]);
+
+    // Live refresh: poll feedback every 5 seconds so new messages appear automatically
+    useEffect(() => {
+        let intervalId;
+        const poll = async () => {
+            try {
+                const data = await fetchSupportFeedback();
+                setSupportFeedback(toFeedbackArray(data));
+            } catch (e) {
+                // ignore transient errors; keep polling
+            }
+        };
+        // start immediately and then poll
+        poll();
+        intervalId = setInterval(poll, 5000);
+        return () => clearInterval(intervalId);
+    }, []);
+
+    // Handle fatal render after all hooks have been declared to avoid hook order changes
+    if (fatalError) {
+        return <ErrorPage />;
+    }
 
     const userSummary = results.reduce((acc, curr) => {
         const { username, timestamp, level } = curr;
@@ -185,6 +221,16 @@ export default function AdminDashboard() {
             console.error("Error saving lesson:", err);
             setFormError("Could not save lesson.");
             setFatalError(true);
+        }
+    };
+
+    const handleDeleteFeedback = async (id) => {
+        try {
+            const { deleteSupportFeedback } = await import("../api");
+            await deleteSupportFeedback(id);
+            setSupportFeedback((list) => list.filter((f) => f.id !== id));
+        } catch (e) {
+            console.error("Failed to delete feedback", e);
         }
     };
 
@@ -446,7 +492,16 @@ export default function AdminDashboard() {
                         <div className="space-y-3 max-h-64 overflow-y-auto">
                             {supportFeedback.map((fb) => (
                                 <div key={fb.id} className={`p-4 rounded-lg border ${darkMode ? "border-gray-600 bg-gray-700" : "border-gray-200 bg-gray-50"}`}>
-                                    <p className="whitespace-pre-wrap mb-2">{fb.message}</p>
+                                    <div className="flex justify-between items-start gap-3">
+                                        <p className="whitespace-pre-wrap mb-2 flex-1">{fb.message}</p>
+                                        <button
+                                            onClick={() => handleDeleteFeedback(fb.id)}
+                                            className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded ${darkMode ? "bg-red-600/20 text-red-300 hover:bg-red-600/30" : "bg-red-100 text-red-600 hover:bg-red-200"}`}
+                                            title="Delete feedback"
+                                        >
+                                            <Trash2 className="w-3 h-3" /> Delete
+                                        </button>
+                                    </div>
                                     {fb.created_at && (
                                         <div className="flex items-center gap-2 text-xs text-gray-400">
                                             <Calendar className="w-3 h-3" />

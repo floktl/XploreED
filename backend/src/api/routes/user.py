@@ -956,16 +956,46 @@ def user_level():
             if not data:
                 return jsonify({"error": "No data provided"}), 400
 
-            new_level = data.get("new_level")
+            # Accept multiple input shapes for compatibility:
+            # - { "level": number } (preferred)
+            # - { "level": "A1"|...|"C2" }
+            # - { "new_level": "beginner"|...|"expert" }
+            level_input = data.get("level")
+            new_level_label = data.get("new_level")
             performance_data = data.get("performance_data", {})
 
-            if not new_level:
-                return jsonify({"error": "new_level is required"}), 400
+            CEFR_TO_NUM = {"A1": 0, "A2": 2, "B1": 4, "B2": 6, "C1": 8, "C2": 10}
+            LABEL_TO_NUM = {
+                "beginner": 0,
+                "elementary": 2,
+                "intermediate": 4,
+                "advanced": 6,
+                "expert": 10,
+            }
 
-            # Validate level
-            valid_levels = ["beginner", "elementary", "intermediate", "advanced", "expert"]
-            if new_level not in valid_levels:
-                return jsonify({"error": f"Invalid level: {new_level}"}), 400
+            numeric_level = None
+
+            if isinstance(level_input, int):
+                numeric_level = level_input
+            elif isinstance(level_input, str) and level_input.upper() in CEFR_TO_NUM:
+                numeric_level = CEFR_TO_NUM[level_input.upper()]
+            elif isinstance(new_level_label, str) and new_level_label.lower() in LABEL_TO_NUM:
+                numeric_level = LABEL_TO_NUM[new_level_label.lower()]
+
+            if numeric_level is None:
+                return jsonify({
+                    "error": "Invalid level payload",
+                    "message": "Provide { level: number } or a valid level label (A1..C2 / beginner..expert)",
+                }), 400
+
+            # Validate range
+            try:
+                numeric_level = int(numeric_level)
+            except Exception:
+                return jsonify({"error": "Level must be an integer"}), 400
+
+            if numeric_level < 0 or numeric_level > 10:
+                return jsonify({"error": "Level out of range (0-10)"}), 400
 
             # Get current level
             current_user = select_one(
@@ -975,15 +1005,13 @@ def user_level():
                 params=(user,)
             )
 
-            previous_level = current_user.get("skill_level", "beginner")
+            previous_level = current_user.get("skill_level", 0) if current_user else 0
 
-            # Update user level
+            # Update user level (store as numeric for consistency with rest of app)
             success = update_row(
                 "users",
-                {
-                    "skill_level": new_level
-                },
-                "WHERE username = ?",
+                {"skill_level": numeric_level},
+                "username = ?",
                 (user,)
             )
 
@@ -994,10 +1022,10 @@ def user_level():
                 "message": "User level updated successfully",
                 "level_updated": {
                     "previous_level": previous_level,
-                    "new_level": new_level,
+                    "new_level": numeric_level,
                     "updated_at": datetime.now().isoformat(),
-                    "reason": "Manual update" if not performance_data else "Performance-based update"
-                }
+                    "reason": "Manual update" if not performance_data else "Performance-based update",
+                },
             })
 
     except Exception as e:
