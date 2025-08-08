@@ -18,7 +18,7 @@ import os
 import json
 import time
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 from features.ai.generation.exercise_processing import evaluate_exercises
 from shared.text_utils import _normalize_umlauts, _strip_final_punct
@@ -27,6 +27,9 @@ from core.database.connection import select_one, select_rows, insert_row, update
 from external.redis import redis_client
 from shared.exceptions import DatabaseError
 from shared.types import ExerciseList, ExerciseAnswers, EvaluationResult, AnalyticsData, BlockResult
+from features.ai.prompts import alternative_answers_prompt, explanation_prompt
+from external.mistral.client import send_prompt
+from shared.text_utils import _extract_json as extract_json
 
 logger = logging.getLogger(__name__)
 
@@ -89,32 +92,45 @@ def evaluate_first_exercise(exercises: ExerciseList, answers: ExerciseAnswers) -
 
         logger.info(f"Evaluating first exercise {exercise_id}")
 
-        # Check if it's a gap-fill exercise
-        if first_exercise.get("type") == "gap_fill":
-            correct_answer = first_exercise.get("correct_answer", "")
+        # Normalize type naming across sources (e.g., 'gap-fill' vs 'gap_fill')
+        raw_type = str(first_exercise.get("type", "unknown"))
+        normalized_type = raw_type.replace("_", "-")
+
+        # Use consistent correct answer key (API may send 'correctAnswer')
+        correct_answer = first_exercise.get("correctAnswer", first_exercise.get("correct_answer", ""))
+
+        # Determine correctness for immediate feedback
+        if normalized_type == "gap-fill":
+            # For gap-fill, use contextual correctness check
             is_correct = check_gap_fill_correctness(first_exercise, user_answer, correct_answer)
+        else:
+            # Fallback: simple normalized string comparison
+            try:
+                from shared.text_utils import _normalize_umlauts, _strip_final_punct  # lazy import
+                ua = _normalize_umlauts(_strip_final_punct(str(user_answer)).strip().lower())
+                ca = _normalize_umlauts(_strip_final_punct(str(correct_answer)).strip().lower())
+            except Exception:
+                ua = str(user_answer).strip().lower()
+                ca = str(correct_answer).strip().lower()
+            is_correct = ua == ca if ca else False
 
-            result = {
-                "exercise_id": exercise_id,
-                "type": "gap_fill",
-                "user_answer": user_answer,
-                "correct_answer": correct_answer,
-                "is_correct": is_correct,
-                "feedback": "Correct!" if is_correct else f"Incorrect. The correct answer is: {correct_answer}"
-            }
-
-            logger.info(f"First exercise evaluation complete: {'correct' if is_correct else 'incorrect'}")
-            return result
-
-        # For other exercise types, return basic info
+        # Return a result aligned with the enhanced results format
         result = {
-            "exercise_id": exercise_id,
-            "type": first_exercise.get("type", "unknown"),
+            "id": exercise_id,                 # frontend expects 'id'
+            "exercise_id": exercise_id,        # backward compatibility
+            "type": normalized_type,
             "user_answer": user_answer,
-            "status": "submitted"
+            "correct_answer": correct_answer,
+            "is_correct": is_correct,
+            # Do not hardcode textual feedback; leave it for AI-enhanced results
+            "feedback": "",
+            "alternatives": [],
+            "explanation": "",
         }
 
-        logger.info(f"First exercise submitted for AI evaluation")
+        logger.info(
+            f"First exercise evaluation complete: {'correct' if is_correct else 'incorrect'} (type={normalized_type})"
+        )
         return result
 
     except Exception as e:
@@ -140,15 +156,30 @@ def create_immediate_results(exercises: ExerciseList, first_result: Optional[Ana
             exercise_id = str(exercise.get("id", i))
 
             if i == 0 and first_result:
-                # Use the actual first result
-                results.append(first_result)
+                # Ensure the first result includes a stable 'id' field
+                normalized_first = dict(first_result)
+                if "id" not in normalized_first:
+                    normalized_first["id"] = exercise_id
+                if "exercise_id" not in normalized_first:
+                    normalized_first["exercise_id"] = exercise_id
+                # Normalize type naming
+                if "type" in normalized_first and isinstance(normalized_first["type"], str):
+                    normalized_first["type"] = normalized_first["type"].replace("_", "-")
+                results.append(normalized_first)
             else:
-                # Create placeholder for other exercises
+                # Create placeholder for other exercises (consistent shape with enhanced results)
+                placeholder_correct = exercise.get("correctAnswer", exercise.get("correct_answer", ""))
                 results.append({
+                    "id": exercise_id,
                     "exercise_id": exercise_id,
-                    "type": exercise.get("type", "unknown"),
+                    "type": str(exercise.get("type", "unknown")).replace("_", "-"),
                     "status": "pending",
-                    "message": "Evaluation in progress..."
+                    "is_correct": None,
+                    "correct_answer": placeholder_correct,
+                    "user_answer": "",
+                    "alternatives": [],
+                    "explanation": "",
+                    "message": "Evaluation in progress...",
                 })
 
         logger.info(f"Created immediate results for {len(exercises)} exercises")
@@ -181,7 +212,7 @@ def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: 
 
         # Store initial results in Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex_json(result_key, 300, initial_results)  # 5 minutes TTL
+        redis_client.setex_json(result_key, 300, initial_results)  # type: ignore[arg-type]  # 5 minutes TTL
 
         # Start background evaluation
         _evaluate_all_exercises(username, block_id, exercises, answers, initial_results, exercise_block)
@@ -245,7 +276,7 @@ def _evaluate_all_exercises(username: str, block_id: str, exercises: ExerciseLis
 
 
 def _process_evaluation_results(username: str, block_id: str, exercises: ExerciseList,
-                               answers: ExerciseAnswers, evaluation: AnalyticsData,
+                               answers: ExerciseAnswers, evaluation: Any,
                                exercise_block: Optional[BlockResult]) -> None:
     """
     Process evaluation results and update storage.
@@ -263,7 +294,58 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
 
         # Update results in Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex_json(result_key, 3600, evaluation)  # 1 hour TTL
+        redis_client.setex_json(result_key, 3600, evaluation)  # type: ignore[arg-type]  # 1 hour TTL
+
+        # Enrich results with AI-generated alternatives and explanations (non-blocking best-effort)
+        try:
+            eval_results_only = evaluation[0] if isinstance(evaluation, tuple) else evaluation
+            if isinstance(eval_results_only, dict):
+                # Map exercises by id
+                exercise_map = {str(e.get("id")): e for e in exercises}
+                for ex_id, res in eval_results_only.items():
+                    ex = exercise_map.get(str(ex_id), {})
+                    question = ex.get("question", "")
+                    correct = ex.get("correctAnswer", ex.get("correct_answer", res.get("correct_answer", "")))
+
+                    # Alternatives
+                    try:
+                        if correct:
+                            alt_resp = send_prompt(
+                                "You are a helpful German teacher.",
+                                alternative_answers_prompt(correct),
+                                temperature=0.3,
+                            )
+                            if alt_resp.status_code == 200:
+                                content = alt_resp.json()["choices"][0]["message"]["content"].strip()
+                                alts = extract_json(content)
+                                if isinstance(alts, list):
+                                    res["alternatives"] = alts[:3]
+                    except Exception:
+                        pass
+
+                    # Explanation
+                    try:
+                        if question and correct:
+                            expl_resp = send_prompt(
+                                "You are a helpful German linguist.",
+                                explanation_prompt(question, correct),
+                                temperature=0.3,
+                            )
+                            if expl_resp.status_code == 200:
+                                expl = expl_resp.json()["choices"][0]["message"]["content"].strip()
+                                res["explanation"] = expl
+                    except Exception:
+                        pass
+
+                # Write enriched version back to Redis so the frontend can pick it up on next poll
+                try:
+                    enriched = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
+                    redis_client.setex_json(result_key, 3600, enriched)  # type: ignore[arg-type]
+                except Exception:
+                    pass
+        except Exception:
+            # Safe guard: enrichment is best-effort
+            pass
 
         # Store results in ai_exercise_results table
         try:

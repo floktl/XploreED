@@ -348,8 +348,13 @@ def get_ai_exercise_results(block_id):
                 logger.warning(f"Unexpected evaluation_results format: {type(evaluation_results)}")
                 formatted_results = []
 
+            # Determine processing vs complete based on presence of AI content
+            has_enrichment = any(
+                (r.get("alternatives") or r.get("explanation")) for r in formatted_results
+            ) if isinstance(formatted_results, list) else False
+
             return jsonify({
-                "status": "complete",
+                "status": "complete" if has_enrichment else "processing",
                 "block_id": block_id,
                 "results": formatted_results,
                 "summary": summary,
