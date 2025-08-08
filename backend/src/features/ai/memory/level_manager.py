@@ -14,7 +14,13 @@ For detailed architecture information, see: docs/backend_structure.md
 """
 
 import datetime
-from core.database.connection import select_rows, insert_row, update_row, fetch_one
+from core.database.connection import (
+    select_rows,
+    insert_row,
+    update_row,
+    fetch_one,
+    execute_query,
+)
 
 
 # Mapping of numeric skill levels (0-10) to grammar topics that should be
@@ -36,6 +42,42 @@ LEVEL_TOPICS: dict[int, list[str]] = {
 
 def initialize_topic_memory_for_level(username: str, level: int) -> None:
     """Insert placeholder topic memory rows for the given level."""
+    # Defensive: ensure table and required columns exist (prod-safe)
+    try:
+        execute_query(
+            """
+            CREATE TABLE IF NOT EXISTS topic_memory (
+                username TEXT,
+                grammar TEXT,
+                topic TEXT,
+                skill_type TEXT,
+                context TEXT,
+                ease_factor REAL,
+                interval INTEGER,
+                next_repeat DATETIME,
+                repetitions INTEGER,
+                last_review DATETIME,
+                correct INTEGER DEFAULT 0,
+                quality INTEGER DEFAULT 0
+            );
+            """
+        )
+        # Add critical columns if missing (especially 'interval')
+        for col_name, col_def in (
+            ("interval", "INTEGER"),
+            ("next_repeat", "DATETIME"),
+            ("repetitions", "INTEGER"),
+            ("last_review", "DATETIME"),
+            ("correct", "INTEGER DEFAULT 0"),
+            ("quality", "INTEGER DEFAULT 0"),
+            ("skill_type", "TEXT"),
+            ("context", "TEXT"),
+            ("ease_factor", "REAL"),
+        ):
+            execute_query(f"ALTER TABLE topic_memory ADD COLUMN {col_name} {col_def};")
+    except Exception:
+        # Ignore if columns already exist; we only need best-effort
+        pass
     topics = LEVEL_TOPICS.get(level, [])
     if not topics:
         return
