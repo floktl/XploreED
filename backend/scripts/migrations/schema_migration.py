@@ -80,7 +80,9 @@ with get_connection() as conn:
             next_review DATETIME DEFAULT CURRENT_TIMESTAMP,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             context TEXT,
-            exercise TEXT
+            exercise TEXT,
+            quality INTEGER DEFAULT 0,
+            last_review DATETIME
         );
     """
     )
