@@ -21086,3 +21086,59 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-08 12:39:01 - external.redis.client - INFO - Redis client initialized with REDIS_URL
 2025-08-08 12:39:01 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
 2025-08-08 12:39:02 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 12:39:52 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 12:39:52 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 12:39:52 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 12:39:52 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 12:39:53 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 12:50:25 - features.auth.authentication - INFO - Attempting authentication for user test_signup_user
+2025-08-08 12:50:25 - features.auth.authentication - WARNING - Authentication failed: user test_signup_user not found
+2025-08-08 12:50:37 - features.auth.user_accounts - INFO - Creating new user account for test_signup_user
+2025-08-08 12:50:37 - features.auth.user_accounts - INFO - Initialized topic memory for user test_signup_user
+2025-08-08 12:50:37 - features.auth.user_accounts - INFO - Successfully created user account for test_signup_user
+2025-08-08 12:50:53 - features.auth.authentication - INFO - Attempting authentication for user test_signup_user
+2025-08-08 12:50:53 - core.session.session_manager - INFO - Created session for user test_signup_user
+2025-08-08 12:50:53 - features.auth.authentication - INFO - Authentication successful for user test_signup_user
+2025-08-08 12:51:39 - features.auth.authentication - INFO - Attempting authentication for user ggg
+2025-08-08 12:51:39 - features.auth.authentication - WARNING - Authentication failed: user ggg not found
+2025-08-08 12:51:43 - features.auth.user_accounts - INFO - Creating new user account for ggg
+2025-08-08 12:51:43 - features.auth.user_accounts - INFO - Initialized topic memory for user ggg
+2025-08-08 12:51:43 - features.auth.user_accounts - INFO - Successfully created user account for ggg
+2025-08-08 12:51:43 - features.auth.authentication - INFO - Attempting authentication for user ggg
+2025-08-08 12:51:43 - core.session.session_manager - INFO - Created session for user ggg
+2025-08-08 12:51:43 - features.auth.authentication - INFO - Authentication successful for user ggg
+2025-08-08 12:58:32 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 12:58:32 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 12:58:32 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 12:58:32 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 12:58:33 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 12:58:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 12:58:59 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 12:58:59 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 12:58:59 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 12:59:00 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 14:44:06 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 14:44:07 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 14:44:07 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 14:44:07 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 14:44:08 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 15:16:23 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 15:16:23 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 15:16:23 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 15:16:23 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 15:16:24 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 15:18:23 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 15:18:23 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 15:18:23 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 15:18:23 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 15:18:23 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 15:24:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 15:24:26 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 15:24:26 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 15:24:26 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 15:24:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 15:25:49 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 15:25:50 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 15:25:50 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 15:25:50 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 15:25:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
