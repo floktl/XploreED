@@ -334,3 +334,4 @@ def create_feedback_summary(exercises: ExerciseList, answers: ExerciseAnswers, e
     except Exception as e:
         logger.error(f"Error creating feedback summary: {e}")
         raise AIEvaluationError(f"Error creating feedback summary: {str(e)}")
+
