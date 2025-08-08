@@ -372,6 +372,26 @@ with get_connection() as conn:
     )
     print("✅ 'topic_memory' table created (if not exists).")
 
+    # ✅ Ensure required topic_memory columns exist for older DBs
+    cursor.execute("PRAGMA table_info(topic_memory);")
+    tm_cols = [col[1] for col in cursor.fetchall()]
+    topic_memory_columns = [
+        ("skill_type", "TEXT"),
+        ("context", "TEXT"),
+        ("lesson_content_id", "TEXT"),
+        ("ease_factor", "REAL"),
+        ("interval", "INTEGER"),
+        ("next_repeat", "DATETIME"),
+        ("repetitions", "INTEGER"),
+        ("last_review", "DATETIME"),
+        ("correct", "INTEGER DEFAULT 0"),
+        ("quality", "INTEGER DEFAULT 0"),
+    ]
+    for col_name, col_def in topic_memory_columns:
+        if col_name not in tm_cols:
+            cursor.execute(f"ALTER TABLE topic_memory ADD COLUMN {col_name} {col_def};")
+            print(f"✅ '{col_name}' column added to 'topic_memory'.")
+
 
 # ✅ Rename 'topic' column to 'grammar'
 cursor.execute("PRAGMA table_info(topic_memory);")
