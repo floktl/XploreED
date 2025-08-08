@@ -15881,3 +15881,1018 @@ shared.exceptions.ValidationError: Error checking gap fill correctness: name '_n
 2025-08-07 11:47:37 - external.redis.client - INFO - Redis client initialized with REDIS_URL
 2025-08-07 11:47:37 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
 2025-08-07 11:47:37 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:32:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:32:07 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-08 05:32:07 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-08 05:32:07 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-08 05:32:07 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-08 05:32:07 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-08 05:32:07 - __main__ - INFO - ✅ Database connection established
+2025-08-08 05:32:07 - __main__ - INFO - Results table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - Topic memory table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - Sessions table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - User progress table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - User settings table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - Support requests table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - AI user data table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - Exercise history table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - AI exercise results table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - Topic memory status table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-08 05:32:07 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-08 05:32:07 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:32:07 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:32:07 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:32:07 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:32:08 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:32:08 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:32:08 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:32:08 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:32:08 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:32:09 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:32:32 - features.auth.authentication - INFO - Attempting authentication for user r
+2025-08-08 05:32:32 - features.auth.authentication - WARNING - Authentication failed: user r not found
+2025-08-08 05:39:05 - features.auth.authentication - INFO - Attempting authentication for user y
+2025-08-08 05:39:05 - features.auth.authentication - WARNING - Authentication failed: user y not found
+2025-08-08 05:44:10 - features.auth.authentication - INFO - Attempting authentication for user r
+2025-08-08 05:44:10 - features.auth.authentication - WARNING - Authentication failed: user r not found
+2025-08-08 05:44:41 - features.auth.user_accounts - INFO - Creating new user account for rio
+2025-08-08 05:44:41 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:44:41 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:44:41 - core.database.connection - ERROR - Params: ('rio', 'nominative case')
+2025-08-08 05:44:41 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:44:41 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:44:41 - core.database.connection - ERROR - Params: ('rio', 'present tense')
+2025-08-08 05:44:41 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:44:41 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:44:41 - core.database.connection - ERROR - Params: ('rio', 'question words')
+2025-08-08 05:44:41 - features.auth.user_accounts - INFO - Initialized topic memory for user rio
+2025-08-08 05:44:41 - features.auth.user_accounts - INFO - Successfully created user account for rio
+2025-08-08 05:44:41 - features.auth.authentication - INFO - Attempting authentication for user rio
+2025-08-08 05:44:41 - core.session.session_manager - INFO - Created session for user rio
+2025-08-08 05:44:41 - features.auth.authentication - INFO - Authentication successful for user rio
+2025-08-08 05:47:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:47:18 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:47:18 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:47:18 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:47:19 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:47:24 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:47:24 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:47:24 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:47:24 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:47:25 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:48:17 - features.auth.authentication - INFO - Attempting authentication for user uio
+2025-08-08 05:48:17 - features.auth.authentication - WARNING - Authentication failed: user uio not found
+2025-08-08 05:48:21 - features.auth.user_accounts - INFO - Creating new user account for uio
+2025-08-08 05:48:21 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:48:21 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:48:21 - core.database.connection - ERROR - Params: ('uio', 'nominative case')
+2025-08-08 05:48:21 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:48:21 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:48:21 - core.database.connection - ERROR - Params: ('uio', 'present tense')
+2025-08-08 05:48:21 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:48:21 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:48:21 - core.database.connection - ERROR - Params: ('uio', 'question words')
+2025-08-08 05:48:21 - features.auth.user_accounts - INFO - Initialized topic memory for user uio
+2025-08-08 05:48:21 - features.auth.user_accounts - INFO - Successfully created user account for uio
+2025-08-08 05:48:22 - features.auth.authentication - INFO - Attempting authentication for user uio
+2025-08-08 05:48:22 - core.session.session_manager - INFO - Created session for user uio
+2025-08-08 05:48:22 - features.auth.authentication - INFO - Authentication successful for user uio
+2025-08-08 05:48:37 - core.database.connection - ERROR - Database execute_query error: near "WHERE": syntax error
+2025-08-08 05:48:37 - core.database.connection - ERROR - Query: UPDATE users SET skill_level = ? WHERE WHERE username = ?
+2025-08-08 05:48:37 - core.database.connection - ERROR - Params: (2, 'uio')
+2025-08-08 05:51:51 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:51:51 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:51:51 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:51:51 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:51:52 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:52:12 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:52:13 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:52:13 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:52:13 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:52:13 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:52:27 - features.auth.authentication - INFO - Attempting authentication for user ghj
+2025-08-08 05:52:27 - features.auth.authentication - WARNING - Authentication failed: user ghj not found
+2025-08-08 05:52:36 - features.auth.user_accounts - INFO - Creating new user account for ghj
+2025-08-08 05:52:36 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:52:36 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:52:36 - core.database.connection - ERROR - Params: ('ghj', 'nominative case')
+2025-08-08 05:52:36 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:52:36 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:52:36 - core.database.connection - ERROR - Params: ('ghj', 'present tense')
+2025-08-08 05:52:36 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 05:52:36 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 05:52:36 - core.database.connection - ERROR - Params: ('ghj', 'question words')
+2025-08-08 05:52:36 - features.auth.user_accounts - INFO - Initialized topic memory for user ghj
+2025-08-08 05:52:36 - features.auth.user_accounts - INFO - Successfully created user account for ghj
+2025-08-08 05:52:36 - features.auth.authentication - INFO - Attempting authentication for user ghj
+2025-08-08 05:52:36 - core.session.session_manager - INFO - Created session for user ghj
+2025-08-08 05:52:36 - features.auth.authentication - INFO - Authentication successful for user ghj
+2025-08-08 05:54:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:54:35 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:54:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:54:35 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:54:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:54:58 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:54:58 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:54:58 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:54:58 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:54:59 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:55:03 - features.settings.account_management - INFO - Deactivating account for user ghj
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: near "SELECT": syntax error
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: SELECT * FROM SELECT COUNT(*) as count FROM lesson_progress WHERE user_id = ? ('ghj',) LIMIT 1
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ()
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such table: activity_progress
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM activity_progress WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such table: vocabulary_progress
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM vocabulary_progress WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such table: game_progress
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM game_progress WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM support_feedback WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: near "SELECT": syntax error
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: SELECT * FROM SELECT COUNT(*) as count FROM support_requests WHERE username = ? ('ghj',) LIMIT 1
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ()
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such table: user_sessions
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM user_sessions WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - core.database.connection - ERROR - Database execute_query error: no such table: user_preferences
+2025-08-08 05:55:03 - core.database.connection - ERROR - Query: DELETE FROM user_preferences WHERE username = ?
+2025-08-08 05:55:03 - core.database.connection - ERROR - Params: ('ghj',)
+2025-08-08 05:55:03 - features.settings.account_management - INFO - Successfully deactivated account for user ghj. Deleted 0 records.
+2025-08-08 05:55:53 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:55:54 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:55:54 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:55:54 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:55:54 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:56:13 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:56:13 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:56:13 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:56:13 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:56:14 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:56:36 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 05:56:36 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 05:56:47 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 05:56:47 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 05:59:42 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:59:43 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:59:43 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:59:43 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:59:43 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 05:59:52 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 05:59:53 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 05:59:53 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 05:59:53 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 05:59:53 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:00:01 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 06:00:01 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 06:00:03 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:00:03 - core.database.connection - ERROR - Database execute_query error: parameters are of unsupported type
+2025-08-08 06:00:03 - core.database.connection - ERROR - Query: SELECT COUNT(*) as total FROM support_feedback  LIMIT 1
+2025-08-08 06:00:03 - core.database.connection - ERROR - Params: None
+2025-08-08 06:00:03 - core.database.connection - ERROR - Database execute_query error: no such column: category
+2025-08-08 06:00:03 - core.database.connection - ERROR - Query: SELECT id, message, category, priority, status, user_email, created_at, username FROM support_feedback  ORDER BY id DESC LIMIT 20 OFFSET 0
+2025-08-08 06:00:03 - core.database.connection - ERROR - Params: None
+2025-08-08 06:00:03 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:01:43 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:01:43 - core.database.connection - ERROR - Database execute_query error: parameters are of unsupported type
+2025-08-08 06:01:43 - core.database.connection - ERROR - Query: SELECT COUNT(*) as total FROM support_feedback  LIMIT 1
+2025-08-08 06:01:43 - core.database.connection - ERROR - Params: None
+2025-08-08 06:01:43 - core.database.connection - ERROR - Database execute_query error: no such column: category
+2025-08-08 06:01:43 - core.database.connection - ERROR - Query: SELECT id, message, category, priority, status, user_email, created_at, username FROM support_feedback  ORDER BY id DESC LIMIT 20 OFFSET 0
+2025-08-08 06:01:43 - core.database.connection - ERROR - Params: None
+2025-08-08 06:01:43 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:01:58 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 06:01:58 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 06:02:00 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:02:00 - core.database.connection - ERROR - Database execute_query error: parameters are of unsupported type
+2025-08-08 06:02:00 - core.database.connection - ERROR - Query: SELECT COUNT(*) as total FROM support_feedback  LIMIT 1
+2025-08-08 06:02:00 - core.database.connection - ERROR - Params: None
+2025-08-08 06:02:00 - core.database.connection - ERROR - Database execute_query error: no such column: category
+2025-08-08 06:02:00 - core.database.connection - ERROR - Query: SELECT id, message, category, priority, status, user_email, created_at, username FROM support_feedback  ORDER BY id DESC LIMIT 20 OFFSET 0
+2025-08-08 06:02:00 - core.database.connection - ERROR - Params: None
+2025-08-08 06:02:00 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:03:12 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:03:12 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:03:12 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:03:12 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:03:13 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:04:23 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:04:23 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-08 06:04:23 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-08 06:04:23 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-08 06:04:23 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-08 06:04:23 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-08 06:04:23 - __main__ - INFO - ✅ Database connection established
+2025-08-08 06:04:23 - __main__ - INFO - Results table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - Topic memory table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - Sessions table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - User progress table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - User settings table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - Support requests table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - AI user data table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - Exercise history table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - AI exercise results table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - Topic memory status table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-08 06:04:23 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-08 06:04:23 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:04:24 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:04:24 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:04:24 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:04:24 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:05:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:05:35 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-08 06:05:35 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-08 06:05:35 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-08 06:05:35 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-08 06:05:35 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-08 06:05:35 - __main__ - INFO - ✅ Database connection established
+2025-08-08 06:05:35 - __main__ - INFO - Results table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - Topic memory table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - Sessions table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - User progress table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - User settings table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - Support requests table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - AI user data table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - Exercise history table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - AI exercise results table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - Topic memory status table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-08 06:05:35 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-08 06:05:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:05:35 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:05:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:05:35 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:05:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:05:36 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:05:37 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:05:37 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:05:37 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:05:37 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:05:57 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 06:05:57 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 06:05:59 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:05:59 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:05:59 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:05:59 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:05:59 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:05:59 - core.database.connection - ERROR - Database execute_query error: parameters are of unsupported type
+2025-08-08 06:05:59 - core.database.connection - ERROR - Query: SELECT COUNT(*) as total FROM support_feedback  LIMIT 1
+2025-08-08 06:05:59 - core.database.connection - ERROR - Params: None
+2025-08-08 06:05:59 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:05:59 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:05:59 - core.database.connection - ERROR - Database execute_query error: no such column: category
+2025-08-08 06:05:59 - core.database.connection - ERROR - Query: SELECT id, message, category, priority, status, user_email, created_at, username FROM support_feedback  ORDER BY id DESC LIMIT 20 OFFSET 0
+2025-08-08 06:05:59 - core.database.connection - ERROR - Params: None
+2025-08-08 06:05:59 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:06:03 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:06:03 - core.database.connection - ERROR - Query: SELECT id, username, email, skill_level, status, created_at, last_login, is_admin FROM users WHERE 1=1 ORDER BY created_at DESC LIMIT 50
+2025-08-08 06:06:03 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:07:21 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:07:21 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:07:22 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:07:22 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:07:22 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:07:27 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:07:27 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:07:27 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:07:27 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:07:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:07:50 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:07:50 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:07:50 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:07:50 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:07:50 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:07:50 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:07:50 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:07:50 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:07:50 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:07:50 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:07:50 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:07:52 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:07:52 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:07:52 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:07:52 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:07:53 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:08:06 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 06:08:06 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 06:08:08 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:08:08 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:08:08 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:08:08 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:08:08 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:08:08 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:08:08 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:08:08 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:08:08 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:08:08 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:08:08 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:08:11 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:08:11 - core.database.connection - ERROR - Query: SELECT id, username, email, skill_level, status, created_at, last_login, is_admin FROM users WHERE 1=1 ORDER BY created_at DESC LIMIT 50
+2025-08-08 06:08:11 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:09:35 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:09:35 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:09:35 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:09:35 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:09:36 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:09:44 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:09:44 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:09:44 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:09:44 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:09:45 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:10:13 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:10:13 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:10:13 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:10:13 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:10:13 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:10:13 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:10:13 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:10:13 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:10:13 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:10:13 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:10:13 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:10:27 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:10:27 - __main__ - INFO - 🔄 Starting database migration...
+2025-08-08 06:10:27 - __main__ - INFO - Loaded environment from: /app/secrets/.env
+2025-08-08 06:10:27 - __main__ - INFO - Database path resolved to: /app/backend/database/user_data.db
+2025-08-08 06:10:27 - __main__ - INFO - Database path: /app/backend/database/user_data.db
+2025-08-08 06:10:27 - __main__ - INFO - Database directory: /app/backend/database
+2025-08-08 06:10:27 - __main__ - INFO - ✅ Database connection established
+2025-08-08 06:10:27 - __main__ - INFO - Results table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - Topic memory table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - Sessions table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - User progress table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - User settings table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - Support requests table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - AI user data table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - Exercise history table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - AI exercise results table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - Topic memory status table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - AI exercise blocks table created/verified
+2025-08-08 06:10:27 - __main__ - INFO - ✅ Database migration completed successfully!
+2025-08-08 06:10:27 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:10:27 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:10:27 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:10:27 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:10:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:10:29 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:10:29 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:10:29 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:10:29 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:10:30 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:11:18 - features.auth.authentication - INFO - Attempting authentication for user plo
+2025-08-08 06:11:18 - features.auth.authentication - WARNING - Authentication failed: user plo not found
+2025-08-08 06:11:22 - features.auth.user_accounts - INFO - Creating new user account for plo
+2025-08-08 06:11:22 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:11:22 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 06:11:22 - core.database.connection - ERROR - Params: ('plo', 'nominative case')
+2025-08-08 06:11:22 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:11:22 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 06:11:22 - core.database.connection - ERROR - Params: ('plo', 'present tense')
+2025-08-08 06:11:22 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:11:22 - core.database.connection - ERROR - Query: SELECT id FROM topic_memory WHERE username = ? AND grammar = ?
+2025-08-08 06:11:22 - core.database.connection - ERROR - Params: ('plo', 'question words')
+2025-08-08 06:11:22 - features.auth.user_accounts - INFO - Initialized topic memory for user plo
+2025-08-08 06:11:22 - features.auth.user_accounts - INFO - Successfully created user account for plo
+2025-08-08 06:11:22 - features.auth.authentication - INFO - Attempting authentication for user plo
+2025-08-08 06:11:22 - core.session.session_manager - INFO - Created session for user plo
+2025-08-08 06:11:22 - features.auth.authentication - INFO - Authentication successful for user plo
+2025-08-08 06:13:04 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:13:04 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:13:04 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:13:04 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:13:05 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:13:18 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:13:19 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:13:19 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:13:19 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:13:19 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:13:59 - features.auth.authentication - INFO - Attempting authentication for user lkj
+2025-08-08 06:13:59 - features.auth.authentication - WARNING - Authentication failed: user lkj not found
+2025-08-08 06:14:03 - features.auth.user_accounts - INFO - Creating new user account for lkj
+2025-08-08 06:14:03 - features.auth.user_accounts - INFO - Initialized topic memory for user lkj
+2025-08-08 06:14:03 - features.auth.user_accounts - INFO - Successfully created user account for lkj
+2025-08-08 06:14:03 - features.auth.authentication - INFO - Attempting authentication for user lkj
+2025-08-08 06:14:03 - core.session.session_manager - INFO - Created session for user lkj
+2025-08-08 06:14:03 - features.auth.authentication - INFO - Authentication successful for user lkj
+2025-08-08 06:17:15 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:17:15 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:17:15 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:17:15 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:17:16 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:17:36 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:17:36 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:17:36 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:17:36 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:17:37 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:20:03 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:20:03 - core.database.connection - ERROR - Query: SELECT id, username FROM users WHERE username = ? LIMIT 1
+2025-08-08 06:20:03 - core.database.connection - ERROR - Params: ('lkj',)
+2025-08-08 06:20:10 - core.database.connection - ERROR - Database execute_query error: no such column: id
+2025-08-08 06:20:10 - core.database.connection - ERROR - Query: SELECT id, username FROM users WHERE username = ? LIMIT 1
+2025-08-08 06:20:10 - core.database.connection - ERROR - Params: ('lkj',)
+2025-08-08 06:21:09 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:21:09 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:21:09 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:21:09 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:21:09 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:21:25 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:21:26 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:21:26 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:21:26 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:21:26 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:22:14 - features.auth.authentication - INFO - Attempting authentication for user test
+2025-08-08 06:22:14 - features.auth.authentication - WARNING - Authentication failed: user test not found
+2025-08-08 06:22:17 - features.auth.user_accounts - INFO - Creating new user account for test
+2025-08-08 06:22:17 - features.auth.user_accounts - INFO - Initialized topic memory for user test
+2025-08-08 06:22:17 - features.auth.user_accounts - INFO - Successfully created user account for test
+2025-08-08 06:22:17 - features.auth.authentication - INFO - Attempting authentication for user test
+2025-08-08 06:22:17 - core.session.session_manager - INFO - Created session for user test
+2025-08-08 06:22:17 - features.auth.authentication - INFO - Authentication successful for user test
+2025-08-08 06:24:03 - features.auth.authentication - INFO - Attempting authentication for user jkl
+2025-08-08 06:24:03 - features.auth.authentication - WARNING - Authentication failed: user jkl not found
+2025-08-08 06:24:06 - features.auth.user_accounts - INFO - Creating new user account for jkl
+2025-08-08 06:24:06 - features.auth.user_accounts - INFO - Initialized topic memory for user jkl
+2025-08-08 06:24:06 - features.auth.user_accounts - INFO - Successfully created user account for jkl
+2025-08-08 06:24:06 - features.auth.authentication - INFO - Attempting authentication for user jkl
+2025-08-08 06:24:06 - core.session.session_manager - INFO - Created session for user jkl
+2025-08-08 06:24:06 - features.auth.authentication - INFO - Authentication successful for user jkl
+2025-08-08 06:24:18 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:24:18 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:24:18 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:24:18 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:24:18 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:24:18 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:24:18 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:24:18 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:24:18 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:24:18 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:24:18 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:26:54 - core.session.session_manager - INFO - Created session for user admin
+2025-08-08 06:26:54 - features.auth.authentication - INFO - Admin authentication successful
+2025-08-08 06:26:56 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:26:56 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:26:56 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:26:56 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:26:56 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:26:56 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:26:56 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:26:56 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:26:56 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:26:56 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:26:56 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:26:57 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:26:57 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:26:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:26:57 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:26:57 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:26:57 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:26:57 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:26:57 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:26:57 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:26:57 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:26:57 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:26:58 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:26:58 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:26:58 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:26:59 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:26:59 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:26:59 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:26:59 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:26:59 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:26:59 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:26:59 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:26:59 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:00 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:00 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:00 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:00 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:00 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:00 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:00 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:00 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:00 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:00 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:00 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:03 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:03 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:03 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:03 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:03 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:03 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:03 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:03 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:03 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:03 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:03 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:06 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:06 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:06 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:06 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:06 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:06 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:06 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:06 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:06 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:06 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:06 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:08 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:08 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:08 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:08 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:08 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:08 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:08 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:08 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:08 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:08 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:08 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:10 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:10 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:10 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:10 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:10 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:10 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:10 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:10 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:10 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:10 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:10 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:27:19 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:27:19 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:27:19 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:27:19 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:27:19 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:27:19 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:27:19 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:27:19 - core.database.connection - ERROR - Database execute_query error: no such column: username
+2025-08-08 06:27:19 - core.database.connection - ERROR - Query: SELECT rowid as id, message, username, created_at FROM support_feedback  ORDER BY created_at DESC LIMIT 20 OFFSET 0
+2025-08-08 06:27:19 - core.database.connection - ERROR - Params: ()
+2025-08-08 06:27:19 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:29:02 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:29:02 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:29:02 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:29:02 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:29:03 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:29:15 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:29:15 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:29:15 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:29:15 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:29:15 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:29:20 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:29:20 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:29:20 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:29:20 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:29:20 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:29:20 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:29:20 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:29:20 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:31:07 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:31:07 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:31:07 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:31:07 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:31:07 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:31:07 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:31:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:31:07 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:31:12 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:31:12 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:31:12 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:31:12 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:31:12 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:31:12 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:31:12 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:31:12 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:31:15 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:31:15 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:31:15 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:31:15 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:31:15 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:31:15 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:31:15 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:31:15 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:31:18 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:31:18 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:31:18 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:31:18 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:31:18 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:31:18 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:31:18 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:31:18 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:35:59 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:35:59 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:35:59 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:35:59 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:35:59 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:35:59 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:35:59 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:35:59 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:36:08 - features.support.feedback_management - INFO - Submitting feedback from user admin
+2025-08-08 06:36:08 - core.database.connection - ERROR - Database execute_query error: table support_feedback has no column named username
+2025-08-08 06:36:08 - core.database.connection - ERROR - Query: INSERT INTO support_feedback (message, created_at, username) VALUES (?, ?, ?)
+2025-08-08 06:36:08 - core.database.connection - ERROR - Params: ('kkk', '2025-08-08T06:36:08.853610', 'admin')
+2025-08-08 06:36:08 - features.support.feedback_management - ERROR - Failed to submit feedback from user admin
+2025-08-08 06:42:45 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:42:45 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:42:45 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:42:45 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:42:46 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:42:53 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:42:54 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:42:54 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:42:54 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:42:54 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:43:05 - features.support.feedback_management - INFO - Submitting feedback from user admin
+2025-08-08 06:43:05 - features.support.feedback_management - INFO - Successfully submitted feedback from user admin
+2025-08-08 06:43:09 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:43:09 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:43:09 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:43:09 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:43:09 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:43:09 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:43:09 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:43:09 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:43:35 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:43:35 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:43:35 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:43:35 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:43:35 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:43:35 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:43:35 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:43:35 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:43:41 - features.support.feedback_management - INFO - Submitting feedback from user admin
+2025-08-08 06:43:41 - features.support.feedback_management - INFO - Successfully submitted feedback from user admin
+2025-08-08 06:43:44 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:43:44 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:43:44 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:43:44 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:43:44 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:43:44 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:43:44 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:43:44 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:44:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:44:52 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:44:53 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:44:53 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:44:53 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:44:53 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:44:53 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:44:53 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:44:53 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:44:53 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:44:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:44:57 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:44:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:44:57 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:44:58 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:44:58 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:44:58 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:44:58 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:44:58 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:44:58 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:44:58 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:44:58 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:02 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:07 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:12 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:12 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:17 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:17 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:22 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:22 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:27 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:27 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:32 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:32 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:37 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:37 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:42 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:42 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:47 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:47 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:52 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:45:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:45:57 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:02 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:07 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:12 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:12 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:17 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:17 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:22 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:22 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:27 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:27 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:32 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:32 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:37 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:37 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:42 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:42 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:47 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:47 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:52 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:46:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:46:57 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:02 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:07 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:12 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:12 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:17 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:17 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:22 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:22 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:27 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:27 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:32 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:32 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:37 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:37 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:42 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:42 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:42 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:47:43 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:47:43 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:47:43 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:47:43 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:47:47 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:47 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:52 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:47:57 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:47:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:47:59 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:47:59 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:47:59 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:48:00 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:48:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:02 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:07 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:18 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:18 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:19 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:19 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:19 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:19 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:20 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:20 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:20 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:20 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:20 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:20 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:20 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:20 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:24 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:24 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:24 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:24 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:25 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:25 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:25 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:25 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:25 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:25 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:25 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:25 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:29 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:29 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:34 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-08 06:48:34 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-08 06:48:34 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-08 06:48:34 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-08 06:48:35 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-08 06:48:43 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:43 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:44 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:44 - features.support.feedback_management - INFO - Retrieved 2 feedback messages out of 2 total
+2025-08-08 06:48:44 - features.support.feedback_management - INFO - Deleting feedback 2
+2025-08-08 06:48:44 - features.support.feedback_management - INFO - Successfully deleted feedback 2
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:48:45 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:45 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:45 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:45 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:45 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:45 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Deleting feedback 1
+2025-08-08 06:48:45 - features.support.feedback_management - INFO - Successfully deleted feedback 1
+2025-08-08 06:48:46 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:46 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:46 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:46 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:46 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:46 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:46 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:46 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:46 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:46 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:49 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:49 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:50 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:50 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:50 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:50 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:50 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:50 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:50 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:50 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:50 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:50 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:51 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:51 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:51 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:51 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:51 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:51 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:51 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:51 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:52 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:52 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:52 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:53 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:53 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:53 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:53 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:53 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:53 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:53 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:53 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:53 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:53 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:54 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:54 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:54 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:54 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:54 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:54 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:54 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:54 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:55 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:55 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:55 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:55 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:55 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:55 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:55 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:55 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:55 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:55 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:56 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:56 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:56 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:56 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:56 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:56 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:56 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:56 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:56 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:56 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:57 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:57 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:57 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:57 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:57 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:57 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:57 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:58 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:58 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:58 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:58 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:59 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:48:59 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:48:59 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:48:59 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:48:59 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:48:59 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:48:59 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:59 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:48:59 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:48:59 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:00 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:49:00 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:49:00 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:49:00 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:49:00 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:49:00 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:49:00 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:00 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:00 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:00 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:01 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:49:01 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:49:01 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:49:01 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:49:01 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:49:01 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:49:01 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:01 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:02 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:02 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:49:02 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:49:02 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:49:02 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:49:02 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:49:02 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:49:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:02 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:04 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:04 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:09 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:09 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:14 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:14 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:19 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:19 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:24 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:24 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:29 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:29 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:34 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:34 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:39 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:39 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:40 - features.auth.authentication - INFO - Attempting authentication for user test
+2025-08-08 06:49:40 - features.auth.authentication - WARNING - Authentication failed: user test not found
+2025-08-08 06:49:44 - features.auth.user_accounts - INFO - Creating new user account for test
+2025-08-08 06:49:44 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:44 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:44 - features.auth.user_accounts - INFO - Initialized topic memory for user test
+2025-08-08 06:49:44 - features.auth.user_accounts - INFO - Successfully created user account for test
+2025-08-08 06:49:44 - features.auth.authentication - INFO - Attempting authentication for user test
+2025-08-08 06:49:44 - core.session.session_manager - INFO - Created session for user test
+2025-08-08 06:49:44 - features.auth.authentication - INFO - Authentication successful for user test
+2025-08-08 06:49:49 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:49 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:54 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:54 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:57 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:57 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:58 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:49:58 - features.admin.lesson_management - INFO - Retrieving lesson progress summary
+2025-08-08 06:49:58 - features.admin.game_management - INFO - Retrieving all game results for admin review
+2025-08-08 06:49:58 - features.admin.lesson_management - INFO - Retrieving all lesson content for admin editing
+2025-08-08 06:49:58 - features.admin.game_management - INFO - Retrieved 0 game results
+2025-08-08 06:49:58 - features.admin.lesson_management - INFO - Retrieved progress summary for 0 lessons
+2025-08-08 06:49:58 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:49:58 - features.admin.lesson_management - INFO - Retrieved 0 lessons
+2025-08-08 06:50:02 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:02 - features.support.feedback_management - INFO - Retrieved 0 feedback messages out of 0 total
+2025-08-08 06:50:03 - features.support.feedback_management - INFO - Submitting feedback from user test
+2025-08-08 06:50:03 - features.support.feedback_management - INFO - Successfully submitted feedback from user test
+2025-08-08 06:50:07 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:07 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:12 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:12 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:17 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:17 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:18 - api.routes.ai.misc - INFO - User test asking AI question with context
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': "{'type': 'menu', 'description': 'This is the main menu of the XplorED app. Users can access translation practice, sentence order games, AI training exercises, AI reading exercises, weakness lessons, and more. Each button navigates to a different learning module.', 'sections': [{'label': 'Translation Practice', 'path': '/translate', 'icon': 'FileText'}, {'label': 'AI Training Exercises', 'path': '/ai-feedback', 'icon': 'Bot'}, {'label': 'AI Reading Exercise', 'path': '/reading-exercise', 'icon': 'Book'}, {'label': 'Weakness Lesson', 'path': '/weakness-lesson', 'icon': 'Brain'}]}\n\nQuestion: ksdjffui"}
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.7, Stream: False
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.7, Stream: False
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-08 06:50:18 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-08 06:50:21 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-08 06:50:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-08 06:50:21 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-08 06:50:21 - api.routes.ai.misc - INFO - Successfully generated contextual AI answer for user test
+2025-08-08 06:50:21 - api.routes.ai.misc - INFO - Adding chat history for user test
+2025-08-08 06:50:21 - api.routes.ai.misc - INFO - Successfully added chat history for user test
+2025-08-08 06:50:22 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:22 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:27 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:27 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:32 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:32 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:37 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:37 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:42 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:42 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total
+2025-08-08 06:50:47 - features.support.feedback_management - INFO - Getting feedback list with limit 20, offset 0
+2025-08-08 06:50:47 - features.support.feedback_management - INFO - Retrieved 1 feedback messages out of 1 total

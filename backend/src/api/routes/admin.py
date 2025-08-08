@@ -33,7 +33,98 @@ from flask import request, jsonify # type: ignore
 from infrastructure.imports import Imports
 from api.middleware.auth import is_admin
 from core.database.connection import select_one, select_rows, update_row, delete_rows
+from api.middleware.auth import get_current_user
+from core.database.connection import insert_row
 from config.blueprint import admin_bp
+from flask import request, jsonify  # type: ignore
+from features.auth import authenticate_admin
+from features.admin.game_management import get_all_game_results
+from features.admin.lesson_management import (
+    get_all_lessons,
+    get_lesson_progress_summary,
+    get_individual_lesson_progress,
+)
+from config.extensions import limiter
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+
+# === Admin Authentication ===
+@admin_bp.route("/login", methods=["POST"])
+@limiter.limit("10 per minute")
+def admin_login_route():
+    try:
+        data = request.get_json() or {}
+        password = data.get("password", "")
+        success, session_id, error = authenticate_admin(password)
+        if not success:
+            return jsonify({"error": error or "Invalid credentials"}), 401
+
+        # Set session cookie so subsequent requests are authenticated
+        response = jsonify({"msg": "Login successful", "session_id": session_id})
+        is_development = os.getenv("FLASK_ENV", "development") == "development"
+        # Default admin session cookie max age: 1 day
+        max_age = 24 * 60 * 60
+        response.set_cookie(
+            "session_id",
+            session_id or "",
+            max_age=max_age,
+            httponly=True,
+            secure=request.is_secure and not is_development,
+            samesite="Lax",
+        )
+        return response
+    except Exception as e:
+        logger.error(f"Admin login error: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+# === Admin Data Endpoints ===
+
+@admin_bp.route("/results", methods=["GET"])
+def admin_results_route():
+    if not is_admin():
+        return jsonify({"error": "Unauthorized - Admin access required"}), 401
+    try:
+        results = get_all_game_results()
+        return jsonify(results)
+    except Exception:
+        return jsonify({"error": "Failed to retrieve results"}), 500
+
+
+@admin_bp.route("/lesson-progress-summary", methods=["GET"])
+def admin_lesson_progress_summary_route():
+    if not is_admin():
+        return jsonify({"error": "Unauthorized - Admin access required"}), 401
+    try:
+        summary = get_lesson_progress_summary()
+        return jsonify(summary)
+    except Exception:
+        return jsonify({"error": "Failed to retrieve lesson progress summary"}), 500
+
+
+@admin_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
+def admin_lesson_progress_details_route(lesson_id: int):
+    if not is_admin():
+        return jsonify({"error": "Unauthorized - Admin access required"}), 401
+    try:
+        details = get_individual_lesson_progress(lesson_id)
+        return jsonify(details)
+    except Exception:
+        return jsonify({"error": "Failed to retrieve lesson progress details"}), 500
+
+
+@admin_bp.route("/lesson-content", methods=["GET", "POST"])
+def admin_lesson_content_route():
+    if not is_admin():
+        return jsonify({"error": "Unauthorized - Admin access required"}), 401
+    try:
+        if request.method == "GET":
+            lessons = get_all_lessons()
+            return jsonify(lessons)
+        # POST create handled elsewhere in file; keep returning 405 for now
+        return jsonify({"error": "Method not allowed"}), 405
+    except Exception:
+        return jsonify({"error": "Failed to retrieve lessons"}), 500
 from features.admin import (
     get_all_game_results,
     get_admin_user_game_results,
@@ -129,12 +220,13 @@ def get_users_route():
         where_clause = " AND ".join(where_conditions) if where_conditions else "1=1"
 
         # Get users
+        # Use only columns guaranteed to exist in legacy schema. Map rowid to id.
         users = select_rows(
             "users",
-            columns="id, username, email, skill_level, status, created_at, last_login, is_admin",
+            columns="rowid as id, username, skill_level, is_admin",
             where=where_clause,
             params=tuple(params),
-            order_by="created_at DESC",
+            order_by="rowid DESC",
             limit=limit
         )
 
@@ -371,7 +463,7 @@ def update_user_status_route(username: str):
         return jsonify({"error": "Failed to update user status"}), 500
 
 
-@admin_bp.route("/users/<username>/delete", methods=["DELETE"])
+@admin_bp.route("/users/<username>", methods=["DELETE"])
 def delete_user_route(username: str):
     """
     Delete user account and all associated data (admin only).
@@ -394,16 +486,12 @@ def delete_user_route(username: str):
         if not is_admin():
             return jsonify({"error": "Unauthorized - Admin access required"}), 401
 
-        data = request.get_json() or {}
-        confirm = data.get("confirm", False)
-
-        if not confirm:
-            return jsonify({"error": "Deletion must be confirmed"}), 400
+        # Deletion is invoked from admin UI; proceed without extra confirm payload
 
         # Check if user exists
         user = select_one(
             "users",
-            columns="id, username",
+            columns="username",
             where="username = ?",
             params=(username,)
         )

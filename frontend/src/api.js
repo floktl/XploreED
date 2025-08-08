@@ -608,6 +608,15 @@ export const fetchSupportFeedback = async () => {
   return res.json();
 };
 
+export const deleteSupportFeedback = async (id) => {
+  const res = await fetch(`${BASE_URL}/api/support/feedback/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to delete feedback");
+  return res.json();
+};
+
 export const getAiFeedback = async () => {
   const res = await fetch(`${BASE_URL}/api/ai-feedback`, {
     credentials: "include",

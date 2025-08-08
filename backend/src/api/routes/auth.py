@@ -108,6 +108,17 @@ def login_route():
         success, session_id, error_message = authenticate_user(username, password)
 
         if not success:
+            # Map specific errors to clearer API responses
+            if error_message == "USER_NOT_FOUND":
+                return jsonify({
+                    "error": "USER_NOT_FOUND",
+                    "message": "No user found with that name"
+                }), 404
+            if error_message == "WRONG_PASSWORD":
+                return jsonify({
+                    "error": "WRONG_PASSWORD",
+                    "message": "Wrong password"
+                }), 401
             return jsonify({
                 "error": "Invalid credentials",
                 "message": error_message or "Authentication failed"

@@ -965,6 +965,51 @@ def debug_delete_user_data_route():
         return jsonify({"error": "Failed to delete user data"}), 500
 
 
+@settings_bp.route("/deactivate", methods=["POST"])
+def deactivate_account_route():
+    """
+    Deactivate the current user's account and delete associated data.
+
+    Request Body:
+        - delete_all (bool, optional): If true, delete all user-related data (default: true)
+
+    JSON Response Structure:
+        {
+            "message": str,                # Result message
+            "deleted": object              # Deletion stats by table
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Validation or deactivation error
+        - 401: Unauthorized
+        - 404: User not found
+        - 500: Internal server error
+    """
+    try:
+        username = require_user()
+        data = request.get_json() or {}
+        # Currently, delete_all is informational; full deletion is performed.
+        _delete_all = bool(data.get("delete_all", True))  # noqa: F841
+
+        success, message, stats = deactivate_user_account(username)
+
+        if success:
+            return jsonify({
+                "message": message,
+                "deleted": stats,
+            })
+
+        # Map common error messages to appropriate codes
+        if message == "User not found":
+            return jsonify({"error": message}), 404
+
+        return jsonify({"error": message}), 400
+
+    except Exception as e:
+        logger.error(f"Error deactivating account: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
 @settings_bp.route("/import", methods=["POST"])
 def import_user_data_route():
     """
