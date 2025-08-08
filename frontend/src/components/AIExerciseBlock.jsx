@@ -373,15 +373,19 @@ export default function AIExerciseBlock({
             if (apiResult?.results) {
                 const map = {};
                 apiResult.results.forEach((r) => {
-                    map[r.id] = {
+                    const resId = r.id || r.exercise_id; // support both shapes
+                    if (!resId) return;
+                    map[resId] = {
                         is_correct: r.is_correct,
                         correct: r.correct_answer,
+                        correct_answer: r.correct_answer,
                         alternatives:
                             r.alternatives ||
                             r.other_solutions ||
                             r.other_answers ||
                             [],
                         explanation: r.explanation || "",
+                        user_answer: r.user_answer,
                         loading: true,  // Start with loading state for enhanced feedback
                     };
                 });
@@ -451,9 +455,13 @@ export default function AIExerciseBlock({
                         // Update the evaluation map with enhanced data
                         const enhancedMap = {};
                         enhancedData.results.forEach((r) => {
-                            enhancedMap[r.id] = {
+                            const resId = r.id || r.exercise_id;
+                            if (!resId) return;
+                            enhancedMap[resId] = {
                                 is_correct: r.is_correct,
                                 correct: r.correct_answer,
+                                correct_answer: r.correct_answer,
+                                user_answer: r.user_answer,
                                 alternatives: r.alternatives || [],
                                 explanation: r.explanation || "",
                                 loading: false,  // Enhanced feedback complete
@@ -478,16 +486,19 @@ export default function AIExerciseBlock({
                             const hasExplanation = result.explanation && result.explanation.length > 0;
 
                             // Always update with the latest result data
-                            if (result.id) {
-                                const existingResult = currentEvaluation[result.id];
+                            const resId = result.id || result.exercise_id;
+                            if (resId) {
+                                const existingResult = currentEvaluation[resId];
                                 const hasEnhancedContent = hasAlternatives || hasExplanation;
 
                                 // Show results as soon as they have either alternatives OR explanations
                                 // Don't wait for both - show partial results immediately
                                 if (hasEnhancedContent) {
-                                    currentEvaluation[result.id] = {
+                                    currentEvaluation[resId] = {
                                         is_correct: result.is_correct,
                                         correct: result.correct_answer,
+                                        correct_answer: result.correct_answer,
+                                        user_answer: result.user_answer,
                                         alternatives: result.alternatives || [],
                                         explanation: result.explanation || "",
                                         loading: false,  // Remove loading state
@@ -495,15 +506,17 @@ export default function AIExerciseBlock({
                                     hasUpdates = true;
 
                                     // Mark this exercise as having new feedback
-                                    const exerciseIndex = exercises.findIndex(ex => ex.id === result.id);
+                                    const exerciseIndex = exercises.findIndex(ex => ex.id === resId);
                                     if (exerciseIndex !== -1) {
                                         setExercisesWithNewFeedback(prev => new Set([...prev, exerciseIndex]));
                                     }
                                 } else if (!existingResult || existingResult.loading) {
                                     // If we have a result but no alternatives/explanation yet, show basic result
-                                    currentEvaluation[result.id] = {
+                                    currentEvaluation[resId] = {
                                         is_correct: result.is_correct,
                                         correct: result.correct_answer,
+                                        correct_answer: result.correct_answer,
+                                        user_answer: result.user_answer,
                                         alternatives: [],
                                         explanation: "",
                                         loading: true,  // Keep loading state for basic results
@@ -1289,11 +1302,12 @@ export default function AIExerciseBlock({
                                         <div className="mt-2">
                                             <FeedbackBlock
                                                 status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
-                                                {...(!evaluation[ex.id]?.is_correct && { correct: evaluation[ex.id]?.correct_answer })}
-                                                {...(evaluation[ex.id]?.alternatives && { alternatives: evaluation[ex.id]?.alternatives })}
-                                                {...(evaluation[ex.id]?.explanation && { explanation: evaluation[ex.id]?.explanation })}
-                                                {...(evaluation[ex.id]?.user_answer && { userAnswer: evaluation[ex.id]?.user_answer })}
+                                                correct={evaluation[ex.id]?.correct_answer}
+                                                alternatives={evaluation[ex.id]?.alternatives || []}
+                                                explanation={evaluation[ex.id]?.explanation || ""}
+                                                userAnswer={evaluation[ex.id]?.user_answer}
                                                 {...(evaluation[ex.id]?.diff && { diff: evaluation[ex.id]?.diff })}
+                                                loading={Boolean(evaluation[ex.id]?.loading)}
                                             />
                                         </div>
                                     )}
@@ -1315,10 +1329,6 @@ export default function AIExerciseBlock({
                         >
                             ← Previous
                         </Button>
-
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {currentExerciseIndex + 1} of {exercises.length}
-                        </span>
 
                         <Button
                             variant="secondary"

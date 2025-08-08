@@ -72,28 +72,14 @@ class ExerciseService:
                     exercise, user_answer, correct_answer, exercise_type
                 )
 
-                # Generate feedback and explanation
-                feedback = ""
-                explanation = ""
-                alternatives = []
-
-                if not is_correct:
-                    # Generate detailed feedback for incorrect answers
-                    feedback = ExerciseService._generate_feedback(
-                        question, user_answer, correct_answer, exercise_type
-                    )
-                    explanation = ExerciseService._generate_explanation(
-                        question, user_answer, correct_answer
-                    )
-                    alternatives = ExerciseService._generate_alternative_answers(correct_answer)
-
+                # Do not hardcode textual feedback/explanations. Let AI-enhanced flow fill them.
                 results[exercise_id] = {
                     "correct": is_correct,
-                    "feedback": feedback,
-                    "explanation": explanation,
-                    "alternatives": alternatives,
+                    "feedback": "",
+                    "explanation": "",
+                    "alternatives": [],
                     "user_answer": user_answer,
-                    "correct_answer": correct_answer
+                    "correct_answer": correct_answer,
                 }
 
             logger.info(f"Completed AI evaluation with {len(results)} results")

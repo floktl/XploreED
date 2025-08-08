@@ -239,10 +239,6 @@ export default function AdminDashboard() {
                                             <div className={`relative min-h-screen pb-20 overflow-hidden ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"}`}>
                     <div className="h-full overflow-y-auto px-4">
                         <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                                <Shield className={`w-8 h-8 ${darkMode ? "text-blue-400" : "text-blue-600"}`} />
-                                <Title className="mb-0">Admin Dashboard</Title>
-                            </div>
                             <Link
                                 to="/admin-users"
                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
