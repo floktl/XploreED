@@ -681,6 +681,7 @@ export default function AIExerciseBlock({
             setCurrent(nextExercise);
             setNextExercise(null);
             setStage((s) => s + 1);
+            setCurrentExerciseIndex(0); // Always start new block at first exercise
             answersRef.current = {};
             setAnswers({});
             setSubmitted(false);
@@ -695,6 +696,7 @@ export default function AIExerciseBlock({
                 const newData = await fetchExercisesFn({ force_new: true });
                 setCurrent(newData);
                 setStage((s) => s + 1);
+                setCurrentExerciseIndex(0); // Always start new block at first exercise
                 answersRef.current = {};
                 setAnswers({});
                 setSubmitted(false);
@@ -1110,9 +1112,10 @@ export default function AIExerciseBlock({
                     <button className="ml-4 underline" onClick={() => setShowTimeoutError(false)}>Dismiss</button>
                 </Alert>
             )}
-            {/* Sticky progress bar directly under header, above Card */}
+            {/* Fixed overlay under header, independent of exercise scroll */}
             {exercises.length > 0 && (
-                <div className="sticky top-[64px] z-30 w-full bg-gray-900 dark:bg-gray-900" style={{marginBottom: '1.5rem'}}>
+                <div className="fixed top-[76px] left-0 right-0 z-40 backdrop-blur-sm bg-gray-900/40 dark:bg-gray-900/40 border-b border-gray-800/40 dark:border-gray-700/30">
+                    <div className="max-w-5xl mx-auto px-4 py-1">
                     <div
                         className={`w-full rounded-full transition-all duration-300 ${
                             exercises.length > 1
@@ -1151,13 +1154,15 @@ export default function AIExerciseBlock({
 
                     {/* Exercise navigation dots - always visible when multiple exercises */}
                     {exercises.length > 1 && (
-                        <div className="flex justify-center items-center gap-2 mt-2">
+                        <div className="flex justify-center items-center gap-2 mt-1">
                             {exercises.map((_, index) => {
                                 const hasNewFeedback = exercisesWithNewFeedback.has(index);
                                 const isCurrent = index === currentExerciseIndex;
-                                const hasEval = Boolean(submitted && evaluation[exercises[index]?.id]);
-                                const isIncorrect = hasEval && !evaluation[exercises[index]?.id].is_correct;
-                                const isLoading = hasEval && evaluation[exercises[index]?.id].loading;
+                                const exId = exercises[index]?.id;
+                                const hasEval = Boolean(submitted && evaluation[exId]);
+                                const isIncorrect = hasEval && !evaluation[exId].is_correct;
+                                const isLoading = hasEval && evaluation[exId].loading;
+                                const hasAnswerPre = !submitted && Boolean(answers[exId] && answers[exId].trim && answers[exId].trim().length > 0);
 
 
 
@@ -1179,7 +1184,9 @@ export default function AIExerciseBlock({
                                             isLoading
                                                 ? 'bg-blue-500 dark:bg-blue-400'
                                                 : isCurrent
-                                                ? `border-2 border-blue-500 dark:border-blue-400 ${isIncorrect ? 'bg-red-500 dark:bg-red-400' : hasEval ? 'bg-green-500 dark:bg-green-400' : 'bg-gray-300 dark:bg-gray-600'}`
+                                                ? 'bg-blue-500 dark:bg-blue-400 border-2 border-blue-500 dark:border-blue-400'
+                                                : !submitted
+                                                ? (hasAnswerPre ? 'bg-green-500 dark:bg-green-400' : 'bg-red-500 dark:bg-red-400')
                                                 : isIncorrect
                                                 ? 'bg-red-500 dark:bg-red-400'
                                                 : hasEval
@@ -1190,14 +1197,19 @@ export default function AIExerciseBlock({
                                             transform: isLoading ? 'rotate(0deg)' : 'none',
                                             animation: isLoading ? 'spin 1s linear infinite' : 'none'
                                         }}
-                                        title={`Exercise ${index + 1}${hasNewFeedback ? ' - New feedback available!' : ''}${isIncorrect ? ' - Incorrect answer' : ''}${isLoading ? ' - Loading feedback...' : ''}`}
+                                        title={!submitted
+                                            ? `Exercise ${index + 1}${hasAnswerPre ? ' - Answered' : ' - Not answered'}`
+                                            : `Exercise ${index + 1}${hasNewFeedback ? ' - New feedback available!' : ''}${isIncorrect ? ' - Incorrect answer' : ''}${isLoading ? ' - Loading feedback...' : ''}`}
                                     />
                                 );
                             })}
                         </div>
                     )}
+                    </div>
                 </div>
             )}
+            {/* Minimal spacer to offset fixed overlay height so the card sits directly beneath */}
+            {exercises.length > 0 && <div  />}
             <Card className="space-y-4 pb-20">
 
                 {current.title && (
