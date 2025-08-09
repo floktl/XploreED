@@ -105,6 +105,9 @@ export default function FeedbackBlock({
   const [vocabModal, setVocabModal] = useState(null);
   const [vocabLoading, setVocabLoading] = useState(false);
 
+  // Trust backend as source of truth; do not render client fallback
+  const finalExplanation = explanation;
+
   const handleWordClick = async (word) => {
     setVocabLoading(true);
     try {
@@ -185,7 +188,7 @@ export default function FeedbackBlock({
       </div>
       <div>
         <strong className="text-gray-700 dark:text-gray-200">Explanation:</strong>{" "}
-        {explanation}
+        {finalExplanation}
       </div>
       {vocabLoading && <Spinner />}
       {vocabModal && (
