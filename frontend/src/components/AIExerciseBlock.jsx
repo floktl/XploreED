@@ -85,6 +85,10 @@ export default function AIExerciseBlock({
     const [enhancedResults, setEnhancedResults] = useState(null);
     const [enhancedResultsLoading, setEnhancedResultsLoading] = useState(false);
 
+    // Sequential feedback processing state
+    const [feedbackProcessingIndex, setFeedbackProcessingIndex] = useState(0);
+    const [baseResultsById, setBaseResultsById] = useState({});
+
     // Swipeable interface state
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [exercisesWithNewFeedback, setExercisesWithNewFeedback] = useState(new Set());
@@ -108,6 +112,9 @@ export default function AIExerciseBlock({
     const [showTimeoutError, setShowTimeoutError] = useState(false);
 
     const answersRef = useRef(answers);
+    const feedbackProcessingIndexRef = useRef(0);
+    const baseResultsByIdRef = useRef({});
+    const currentRef = useRef(current);
 
     // Background activity tracking
     const addBackgroundActivity = useAppStore((s) => s.addBackgroundActivity);
@@ -120,6 +127,18 @@ export default function AIExerciseBlock({
     useEffect(() => {
         answersRef.current = answers;
     }, [answers]);
+
+    useEffect(() => {
+        feedbackProcessingIndexRef.current = feedbackProcessingIndex;
+    }, [feedbackProcessingIndex]);
+
+    useEffect(() => {
+        baseResultsByIdRef.current = baseResultsById;
+    }, [baseResultsById]);
+
+    useEffect(() => {
+        currentRef.current = current;
+    }, [current]);
 
     // Cleanup function to stop topic memory polling
     const stopTopicMemoryPolling = () => {
@@ -281,6 +300,8 @@ export default function AIExerciseBlock({
         setSubmitting(true);
         setSubmitted(true);
         setCurrentExerciseIndex(0);
+        setFeedbackProcessingIndex(0);
+        setBaseResultsById({});
         if (onSubmissionChange) {
             onSubmissionChange(true);
         }
@@ -371,11 +392,12 @@ export default function AIExerciseBlock({
 
         const processResults = () => {
             if (apiResult?.results) {
-                const map = {};
+                // Store base results for all exercises
+                const baseMap = {};
                 apiResult.results.forEach((r) => {
                     const resId = r.id || r.exercise_id; // support both shapes
                     if (!resId) return;
-                    map[resId] = {
+                    baseMap[resId] = {
                         is_correct: r.is_correct,
                         correct: r.correct_answer,
                         correct_answer: r.correct_answer,
@@ -386,10 +408,19 @@ export default function AIExerciseBlock({
                             [],
                         explanation: r.explanation || "",
                         user_answer: r.user_answer,
-                        loading: true,  // Start with loading state for enhanced feedback
                     };
                 });
-                setEvaluation(map);
+                setBaseResultsById(baseMap);
+
+                // Initialize evaluation ONLY for the first exercise to enforce sequential loading
+                const firstExercise = (currentRef.current?.exercises || [])[0];
+                if (firstExercise && baseMap[firstExercise.id]) {
+                    setEvaluation({
+                        [firstExercise.id]: { ...baseMap[firstExercise.id], loading: true },
+                    });
+                } else {
+                    setEvaluation({});
+                }
 
                 // Start polling for enhanced results in the background
                 // Use the block_id from the API response if available, otherwise fallback
@@ -441,93 +472,70 @@ export default function AIExerciseBlock({
             const pollInterval = setInterval(async () => {
                 try {
                     const enhancedData = await getEnhancedResults(actualBlockId);
-                    if (enhancedData.status === "complete" && enhancedData.results) {
+                    const exList = currentRef.current?.exercises || [];
 
-                        setEnhancedResults(enhancedData.results);
-                        setEnhancedResultsLoading(false);
-                        clearInterval(pollInterval);
-                        clearTimeout(timeoutId);
-                        setFeedbackTimeout(false);
+                    const applyResultForIndex = (index, resultsArray) => {
+                        const ex = exList[index];
+                        if (!ex) return false;
+                        const exIdStr = String(ex.id);
+                        const res = (resultsArray || []).find((r) => String(r.id || r.exercise_id) === exIdStr);
+                        if (!res) return false;
+                        const hasAlternatives = Array.isArray(res.alternatives) && res.alternatives.length > 0;
+                        const hasExplanation = typeof res.explanation === "string" && res.explanation.trim().length > 0;
+                        // Consider exercise complete ONLY when an explanation is present
+                        const hasEnhancedContent = hasExplanation;
 
-                        // Don't remove topic memory background activity here - keep it active for background processing
-                        // removeBackgroundActivity(activityId);
+                        // Always update the latest fields; only flip loading to false once enhanced content is present
+                        setEvaluation((prev) => ({
+                            ...prev,
+                            [exIdStr]: {
+                                ...(prev[ex.id] || baseResultsByIdRef.current[ex.id] || {}),
+                                is_correct: res.is_correct,
+                                correct: res.correct_answer,
+                                correct_answer: res.correct_answer,
+                                user_answer: res.user_answer,
+                                alternatives: res.alternatives || [],
+                                explanation: res.explanation || "",
+                                // Keep loading until actual detailed feedback is present
+                                loading: !hasEnhancedContent,
+                            },
+                        }));
 
-                        // Update the evaluation map with enhanced data
-                        const enhancedMap = {};
-                        enhancedData.results.forEach((r) => {
-                            const resId = r.id || r.exercise_id;
-                            if (!resId) return;
-                            enhancedMap[resId] = {
-                                is_correct: r.is_correct,
-                                correct: r.correct_answer,
-                                correct_answer: r.correct_answer,
-                                user_answer: r.user_answer,
-                                alternatives: r.alternatives || [],
-                                explanation: r.explanation || "",
-                                loading: false,  // Enhanced feedback complete
-                            };
-                        });
-
-                        setEvaluation(enhancedMap);
-
-                        if (enhancedData.pass !== undefined) {
-                            setPassed(enhancedData.pass);
+                        if (hasEnhancedContent) {
+                            const exerciseIndex = exList.findIndex((e) => String(e.id) === exIdStr);
+                            if (exerciseIndex !== -1) {
+                                setExercisesWithNewFeedback((prev) => new Set([...prev, exerciseIndex]));
+                            }
                         }
 
-                        // Start polling for topic memory completion
-                        pollForTopicMemoryCompletion(activityId);
-                    } else if (enhancedData.status === "processing" && enhancedData.results) {
-                        // Progressive update: update each exercise individually as it becomes available
-                        const currentEvaluation = { ...evaluation };
-                        let hasUpdates = false;
+                        return hasEnhancedContent;
+                    };
 
-                        enhancedData.results.forEach((result) => {
-                            const hasAlternatives = result.alternatives && result.alternatives.length > 0;
-                            const hasExplanation = result.explanation && result.explanation.length > 0;
+                    if ((enhancedData.status === "complete" || enhancedData.status === "processing") && enhancedData.results) {
+                        const currentIndex = feedbackProcessingIndexRef.current;
+                        const finished = applyResultForIndex(currentIndex, enhancedData.results);
 
-                            // Always update with the latest result data
-                            const resId = result.id || result.exercise_id;
-                            if (resId) {
-                                const existingResult = currentEvaluation[resId];
-                                const hasEnhancedContent = hasAlternatives || hasExplanation;
-
-                                // Show results as soon as they have either alternatives OR explanations
-                                // Don't wait for both - show partial results immediately
-                                if (hasEnhancedContent) {
-                                    currentEvaluation[resId] = {
-                                        is_correct: result.is_correct,
-                                        correct: result.correct_answer,
-                                        correct_answer: result.correct_answer,
-                                        user_answer: result.user_answer,
-                                        alternatives: result.alternatives || [],
-                                        explanation: result.explanation || "",
-                                        loading: false,  // Remove loading state
-                                    };
-                                    hasUpdates = true;
-
-                                    // Mark this exercise as having new feedback
-                                    const exerciseIndex = exercises.findIndex(ex => ex.id === resId);
-                                    if (exerciseIndex !== -1) {
-                                        setExercisesWithNewFeedback(prev => new Set([...prev, exerciseIndex]));
-                                    }
-                                } else if (!existingResult || existingResult.loading) {
-                                    // If we have a result but no alternatives/explanation yet, show basic result
-                                    currentEvaluation[resId] = {
-                                        is_correct: result.is_correct,
-                                        correct: result.correct_answer,
-                                        correct_answer: result.correct_answer,
-                                        user_answer: result.user_answer,
-                                        alternatives: [],
-                                        explanation: "",
-                                        loading: true,  // Keep loading state for basic results
-                                    };
-                                    hasUpdates = true;
+                        if (finished) {
+                            // Advance to next exercise and initialize it with base loading state
+                            setFeedbackProcessingIndex((prevIdx) => {
+                                const nextIdx = prevIdx + 1;
+                                if (nextIdx < exList.length) {
+                                    const nextEx = exList[nextIdx];
+                                    const base = baseResultsByIdRef.current[String(nextEx.id)] || baseResultsByIdRef.current[nextEx.id] || {};
+                                    setEvaluation((prev) => ({
+                                        ...prev,
+                                        [String(nextEx.id)]: { ...base, loading: true },
+                                    }));
+                                } else if (enhancedData.status === "complete") {
+                                    // All done for this block
+                                    setEnhancedResultsLoading(false);
+                                    clearTimeout(timeoutId);
+                                    clearInterval(pollInterval);
+                                    // Start polling for topic memory completion once all enhanced results applied
+                                    pollForTopicMemoryCompletion(activityId);
                                 }
-                            }
-                        });
-
-                        if (hasUpdates) {
-                            setEvaluation(currentEvaluation);
+                                return nextIdx;
+                            });
                         }
                     }
                 } catch (error) {
@@ -543,7 +551,7 @@ export default function AIExerciseBlock({
             let timeoutId = setTimeout(() => {
                 clearInterval(pollInterval);
                 setEnhancedResultsLoading(false);
-                const allDone = Object.values(evaluation).every(res => !res?.loading ?? true);
+                const allDone = feedbackProcessingIndexRef.current >= (currentRef.current?.exercises?.length || 0);
                 if (!allDone) {
                     setFeedbackTimeout(true);
                     setShowTimeoutError(true);
@@ -901,7 +909,7 @@ export default function AIExerciseBlock({
     };
 
     // Helper: Check if all feedback is loaded
-    const allFeedbackLoaded = exercises.length > 0 && exercises.every(ex => evaluation[ex.id] && !evaluation[ex.id].loading);
+    const allFeedbackLoaded = exercises.length > 0 && feedbackProcessingIndex >= exercises.length;
 
     // Update navigation functions
     const disableNext = !isFeedbackLoaded(currentExerciseIndex);
@@ -1147,8 +1155,9 @@ export default function AIExerciseBlock({
                             {exercises.map((_, index) => {
                                 const hasNewFeedback = exercisesWithNewFeedback.has(index);
                                 const isCurrent = index === currentExerciseIndex;
-                                const isIncorrect = submitted && evaluation[exercises[index]?.id] && !evaluation[exercises[index]?.id].is_correct;
-                                const isLoading = submitted && evaluation[exercises[index]?.id] && evaluation[exercises[index]?.id].loading;
+                                const hasEval = Boolean(submitted && evaluation[exercises[index]?.id]);
+                                const isIncorrect = hasEval && !evaluation[exercises[index]?.id].is_correct;
+                                const isLoading = hasEval && evaluation[exercises[index]?.id].loading;
 
 
 
@@ -1170,10 +1179,10 @@ export default function AIExerciseBlock({
                                             isLoading
                                                 ? 'bg-blue-500 dark:bg-blue-400'
                                                 : isCurrent
-                                                ? `border-2 border-blue-500 dark:border-blue-400 ${isIncorrect ? 'bg-red-500 dark:bg-red-400' : submitted ? 'bg-green-500 dark:bg-green-400' : 'bg-gray-300 dark:bg-gray-600'}`
+                                                ? `border-2 border-blue-500 dark:border-blue-400 ${isIncorrect ? 'bg-red-500 dark:bg-red-400' : hasEval ? 'bg-green-500 dark:bg-green-400' : 'bg-gray-300 dark:bg-gray-600'}`
                                                 : isIncorrect
                                                 ? 'bg-red-500 dark:bg-red-400'
-                                                : submitted
+                                                : hasEval
                                                 ? 'bg-green-500 dark:bg-green-400'
                                                 : 'bg-gray-300 dark:bg-gray-600'
                                         }`}
@@ -1298,7 +1307,7 @@ export default function AIExerciseBlock({
 
                                     {submitted &&
                                      (currentExerciseIndex === 0 ? evaluation[ex.id] !== undefined : allPreviousFeedbackLoaded(currentExerciseIndex)) &&
-                                     evaluation[ex.id] !== undefined && (
+                                     evaluation[ex.id] !== undefined && evaluation[ex.id].loading === false && (
                                         <div className="mt-2">
                                             <FeedbackBlock
                                                 status={evaluation[ex.id]?.is_correct ? "correct" : "incorrect"}
@@ -1307,7 +1316,7 @@ export default function AIExerciseBlock({
                                                 explanation={evaluation[ex.id]?.explanation || ""}
                                                 userAnswer={evaluation[ex.id]?.user_answer}
                                                 {...(evaluation[ex.id]?.diff && { diff: evaluation[ex.id]?.diff })}
-                                                loading={Boolean(evaluation[ex.id]?.loading)}
+                                                 loading={false}
                                             />
                                         </div>
                                     )}

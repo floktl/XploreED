@@ -300,16 +300,28 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
         try:
             eval_results_only = evaluation[0] if isinstance(evaluation, tuple) else evaluation
             if isinstance(eval_results_only, dict):
-                # Map exercises by id
+                # Iterate strictly in the same order as provided exercises to ensure sequential enrichment (1 → 2 → 3)
                 exercise_map = {str(e.get("id")): e for e in exercises}
-                for ex_id, res in eval_results_only.items():
-                    ex = exercise_map.get(str(ex_id), {})
+                for ex in exercises:
+                    ex_id = str(ex.get("id"))
+                    if not ex_id:
+                        continue
+                    res = eval_results_only.get(ex_id)
+                    if not isinstance(res, dict):
+                        continue
                     question = ex.get("question", "")
                     correct = ex.get("correctAnswer", ex.get("correct_answer", res.get("correct_answer", "")))
+                    logger.info(
+                        "[enrich] start ex_id=%s has_alt=%s has_expl=%s",
+                        ex_id,
+                        bool(res.get("alternatives")),
+                        bool(str(res.get("explanation", "")).strip()),
+                    )
 
                     # Alternatives
                     try:
                         if correct:
+                            alt_t0 = time.perf_counter()
                             alt_resp = send_prompt(
                                 "You are a helpful German teacher.",
                                 alternative_answers_prompt(correct),
@@ -320,12 +332,25 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                                 alts = extract_json(content)
                                 if isinstance(alts, list):
                                     res["alternatives"] = alts[:3]
+                                    logger.info(
+                                        "[enrich] ex_id=%s alternatives_ready count=%s dt_ms=%d",
+                                        ex_id, len(res["alternatives"]), int((time.perf_counter()-alt_t0)*1000)
+                                    )
+                                    # Flush progressive enrichment for this exercise to Redis
+                                    try:
+                                        enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
+                                        redis_client.setex_json(result_key, 3600, enriched_now)  # type: ignore[arg-type]
+                                        logger.info("[enrich] ex_id=%s alternatives_flushed", ex_id)
+                                    except Exception:
+                                        pass
                     except Exception:
+                        logger.exception("[enrich] alternatives failed ex_id=%s", ex_id)
                         pass
 
                     # Explanation
                     try:
                         if question and correct:
+                            expl_t0 = time.perf_counter()
                             expl_resp = send_prompt(
                                 "You are a helpful German linguist.",
                                 explanation_prompt(question, correct),
@@ -334,6 +359,39 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                             if expl_resp.status_code == 200:
                                 expl = expl_resp.json()["choices"][0]["message"]["content"].strip()
                                 res["explanation"] = expl
+                                snippet = expl[:160].replace("\n", " ")
+                                logger.info("[enrich] ex_id=%s explanation_ready len=%s dt_ms=%d snippet=%r",
+                                            ex_id, len(expl), int((time.perf_counter()-expl_t0)*1000), snippet)
+                                # Flush progressive enrichment for this exercise to Redis
+                                try:
+                                    enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
+                                    redis_client.setex_json(result_key, 3600, enriched_now)  # type: ignore[arg-type]
+                                    logger.info("[enrich] ex_id=%s explanation_flushed", ex_id)
+                                except Exception:
+                                    pass
+                    except Exception:
+                        logger.exception("[enrich] explanation failed ex_id=%s", ex_id)
+                        pass
+
+                    # Immediate fallback explanation per exercise if still empty and answer is incorrect
+                    try:
+                        is_correct = bool(res.get("correct") if "correct" in res else res.get("is_correct"))
+                        current_expl = str(res.get("explanation", "")).strip()
+                        if not is_correct and not current_expl:
+                            user_answer = str(res.get("user_answer", "")).strip()
+                            question_text = str(question).strip()
+                            fallback = ""
+                            if question_text:
+                                fallback += f"For the sentence: '{question_text}'. "
+                            if user_answer:
+                                fallback += f"Your answer '{user_answer}' is not correct. "
+                            fallback += f"The correct answer is '{correct}'."
+                            res["explanation"] = fallback
+                            try:
+                                enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
+                                redis_client.setex_json(result_key, 3600, enriched_now)  # type: ignore[arg-type]
+                            except Exception:
+                                pass
                     except Exception:
                         pass
 
@@ -341,6 +399,7 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                 try:
                     enriched = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
                     redis_client.setex_json(result_key, 3600, enriched)  # type: ignore[arg-type]
+                    logger.info("[enrich] final_flush done for block %s", block_id)
                 except Exception:
                     pass
         except Exception:

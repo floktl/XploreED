@@ -245,6 +245,7 @@ def submit_ai_exercise(block_id, data=None):
 
 
 @ai_bp.route("/ai-exercise/<block_id>/results", methods=["GET"])
+@limiter.limit("120/minute")
 def get_ai_exercise_results(block_id):
     """
     Get results for a completed AI exercise block.
@@ -347,6 +348,33 @@ def get_ai_exercise_results(block_id):
             else:
                 logger.warning(f"Unexpected evaluation_results format: {type(evaluation_results)}")
                 formatted_results = []
+
+            # If AI explanation is missing for incorrect answers, log and signal processing state
+            try:
+                missing_ids = []
+                for r in formatted_results:
+                    is_correct = bool(r.get("is_correct"))
+                    expl = str(r.get("explanation", "") or "").strip()
+                    if not is_correct and not expl:
+                        missing_ids.append(r.get("id"))
+                        logger.warning(
+                            "AI explanation missing for exercise %s (user_answer='%s', correct_answer='%s')",
+                            r.get("id"), r.get("user_answer"), r.get("correct_answer")
+                        )
+                if missing_ids:
+                    logger.info("[results] returning processing due to missing_explanation for ids=%s", missing_ids)
+                    return jsonify({
+                        "status": "processing",
+                        "block_id": block_id,
+                        "results": formatted_results,
+                        "summary": summary,
+                        "pass": summary.get("correct", 0) >= len(formatted_results) * 0.7 if formatted_results else False,
+                        "source": "redis",
+                        "missing_explanation_ids": missing_ids,
+                    })
+            except Exception:
+                # If logging fails, still proceed to normal completion check below
+                pass
 
             # Determine processing vs complete based on presence of AI content
             has_enrichment = any(
