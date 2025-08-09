@@ -3153,3 +3153,415 @@
 2025-08-09 18:08:38 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
 2025-08-09 18:08:38 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Daily Activities', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lernt', 'lernen', 'gelernt', 'lerne']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet']}], 'id': 'blk1754760739642'}
 2025-08-09 18:08:38 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:12:01 - api.routes.ai.exercise - INFO - User test requesting AI exercises
+2025-08-09 18:12:01 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-09 18:12:01 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
+2025-08-09 18:12:01 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Daily Activities', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lernt', 'lernen', 'gelernt', 'lerne']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet']}], 'id': 'blk1754760739642'}
+2025-08-09 18:12:01 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:12:17 - api.routes.ai.exercise - INFO - User test requesting AI exercises
+2025-08-09 18:12:17 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-09 18:12:17 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
+2025-08-09 18:12:17 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Daily Activities', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lernt', 'lernen', 'gelernt', 'lerne']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet']}], 'id': 'blk1754760739642'}
+2025-08-09 18:12:17 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:12:42 - api.routes.ai.exercise - INFO - User test requesting AI exercises
+2025-08-09 18:12:42 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-09 18:12:42 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
+2025-08-09 18:12:42 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Daily Activities', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lernt', 'lernen', 'gelernt', 'lerne']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet']}], 'id': 'blk1754760739642'}
+2025-08-09 18:12:42 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:12:44 - api.routes.ai.exercise - INFO - User test requesting AI exercises
+2025-08-09 18:12:44 - api.routes.ai.exercise - INFO - Payload received: {}
+2025-08-09 18:12:44 - features.ai.generation.exercise_processing - INFO - Retrieved current exercise block for user: test
+2025-08-09 18:12:44 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Daily Activities', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ Deutsch.', 'correctAnswer': 'lerne', 'options': ['lernt', 'lernen', 'gelernt', 'lerne']}, {'id': 'ex2', 'type': 'translation', 'question': 'I go to work.', 'correctAnswer': 'Ich gehe zur Arbeit.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Er _____ jeden Tag.', 'correctAnswer': 'arbeitet', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet']}], 'id': 'blk1754760739642'}
+2025-08-09 18:12:44 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - User test submitting exercise block blk1754760739642
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Raw submission data: {'answers': {'ex1': 'lernen', 'ex2': 'i', 'ex3': 'jk'}, 'exercise_block': {'instructions': '', 'exercises': [{'correctAnswer': 'lerne', 'id': 'ex1', 'options': ['lernt', 'lernen', 'gelernt', 'lerne'], 'question': 'Ich _____ Deutsch.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich gehe zur Arbeit.', 'id': 'ex2', 'question': 'I go to work.', 'type': 'translation'}, {'correctAnswer': 'arbeitet', 'id': 'ex3', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet'], 'question': 'Er _____ jeden Tag.', 'type': 'grammar'}], 'vocabHelp': [], 'topic': 'general'}}
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Data keys: ['answers', 'exercise_block']
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Successfully parsed 3 exercises with 3 answers for user: test
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Evaluating first exercise ex1
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - First exercise evaluation complete: incorrect (type=gap-fill)
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Starting background thread
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Background thread started
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Returning immediate response, background processing started
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Starting background task for full evaluation and topic memory updates
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Exercise block from data: topic='general'
+2025-08-09 18:13:08 - api.routes.ai.exercise - INFO - Calling evaluate_remaining_exercises_async for user test, block blk1754760739642
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Starting async evaluation for block blk1754760739642
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Created immediate results for 3 exercises
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Evaluating all exercises for block blk1754760739642
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Calling evaluate_exercises with 3 exercises and 3 answers
+2025-08-09 18:13:08 - features.ai.generation.exercise_processing - INFO - Evaluating 3 exercises
+2025-08-09 18:13:08 - features.ai.generation.exercise_processing - INFO - Calling evaluate_answers_with_ai with 3 exercises
+2025-08-09 18:13:08 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in strict mode
+2025-08-09 18:13:08 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-09 18:13:08 - features.ai.generation.exercise_processing - INFO - AI evaluation result: {'ex1': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'lernen', 'correct_answer': 'lerne'}, 'ex2': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.'}, 'ex3': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'jk', 'correct_answer': 'arbeitet'}}
+2025-08-09 18:13:08 - features.ai.generation.exercise_processing - INFO - Score summary: {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Ich _____ Deutsch.', 'your_answer': 'lernen', 'correct_answer': 'lerne'}, {'question': 'I go to work.', 'your_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.'}, {'question': 'Er _____ jeden Tag.', 'your_answer': 'jk', 'correct_answer': 'arbeitet'}]}
+2025-08-09 18:13:08 - features.ai.generation.exercise_processing - INFO - Successfully evaluated exercises
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Evaluation result: ({'ex1': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'lernen', 'correct_answer': 'lerne'}, 'ex2': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.'}, 'ex3': {'correct': False, 'feedback': '', 'explanation': '', 'alternatives': [], 'user_answer': 'jk', 'correct_answer': 'arbeitet'}}, {'total': 3, 'correct': 0, 'incorrect': 3, 'skipped': 0, 'accuracy': 0.0, 'mistakes': [{'question': 'Ich _____ Deutsch.', 'your_answer': 'lernen', 'correct_answer': 'lerne'}, {'question': 'I go to work.', 'your_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.'}, {'question': 'Er _____ jeden Tag.', 'your_answer': 'jk', 'correct_answer': 'arbeitet'}]})
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - Processing evaluation results for block blk1754760739642
+2025-08-09 18:13:08 - features.exercise.exercise_evaluation - INFO - [enrich] start ex_id=ex1 has_alt=False has_expl=False
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: lerne'}
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:08 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:09 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex1 alternatives_ready count=3 dt_ms=594
+2025-08-09 18:13:09 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex1 alternatives_flushed
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': "Given the following exercise and correct answer, give a very short grammar or vocabulary explanation (1-2 sentences) for a German learner. Do NOT mention the user's answer, do NOT restate the correct answer, and do NOT say if it is correct or incorrect. Only explain the grammar or vocabulary used in the correct answer, as briefly as possible.\nExercise: Ich _____ Deutsch.\nCorrect answer: lerne\nReply in English."}
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:09 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:10 - api.routes.ai.exercise - INFO - User test requesting AI exercises
+2025-08-09 18:13:10 - api.routes.ai.exercise - INFO - Payload received: {'answers': {'ex1': 'lernen', 'ex2': 'i', 'ex3': 'jk'}}
+2025-08-09 18:13:10 - features.ai.generation.exercise_processing - INFO - Generating new exercises for user: test
+2025-08-09 18:13:10 - features.ai.generation.exercise_processing - INFO - Generated new exercise block for user: test
+2025-08-09 18:13:10 - api.routes.ai.exercise - INFO - Exercise block returned: {'title': 'German A2 - Food & Eating', 'level': 'A2', 'topic': 'general', 'exercises': [{'id': 'ex1', 'type': 'gap-fill', 'question': 'Ich _____ ein Apfel.', 'correctAnswer': 'esse', 'options': ['esse', 'trinke', 'kaufe', 'sehe']}, {'id': 'ex2', 'type': 'translation', 'question': 'I like bread.', 'correctAnswer': 'Ich mag Brot.'}, {'id': 'ex3', 'type': 'grammar', 'question': 'Das Essen _____ lecker.', 'correctAnswer': 'ist', 'options': ['ist', 'sind', 'war', 'waren']}], 'id': 'blk1754760739644'}
+2025-08-09 18:13:10 - api.routes.ai.exercise - INFO - Returning 3 exercises for user test
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:10 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex1 explanation_ready len=121 dt_ms=985 snippet='The verb "lernen" means "to learn" and is conjugated as "lerne" for the first person singular (ich) in the present tense.'
+2025-08-09 18:13:10 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex1 explanation_flushed
+2025-08-09 18:13:10 - features.exercise.exercise_evaluation - INFO - [enrich] start ex_id=ex2 has_alt=False has_expl=False
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: Ich gehe zur Arbeit.'}
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:10 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:11 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754760739642
+2025-08-09 18:13:11 - api.routes.ai.exercise - WARNING - AI explanation missing for exercise ex2 (user_answer='i', correct_answer='Ich gehe zur Arbeit.')
+2025-08-09 18:13:11 - api.routes.ai.exercise - WARNING - AI explanation missing for exercise ex3 (user_answer='jk', correct_answer='arbeitet')
+2025-08-09 18:13:11 - api.routes.ai.exercise - INFO - [results] returning processing due to missing_explanation for ids=['ex2', 'ex3']
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:11 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex2 alternatives_ready count=3 dt_ms=923
+2025-08-09 18:13:11 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex2 alternatives_flushed
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': "Given the following exercise and correct answer, give a very short grammar or vocabulary explanation (1-2 sentences) for a German learner. Do NOT mention the user's answer, do NOT restate the correct answer, and do NOT say if it is correct or incorrect. Only explain the grammar or vocabulary used in the correct answer, as briefly as possible.\nExercise: I go to work.\nCorrect answer: Ich gehe zur Arbeit.\nReply in English."}
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:11 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:12 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754760739642
+2025-08-09 18:13:12 - api.routes.ai.exercise - WARNING - AI explanation missing for exercise ex2 (user_answer='i', correct_answer='Ich gehe zur Arbeit.')
+2025-08-09 18:13:12 - api.routes.ai.exercise - WARNING - AI explanation missing for exercise ex3 (user_answer='jk', correct_answer='arbeitet')
+2025-08-09 18:13:12 - api.routes.ai.exercise - INFO - [results] returning processing due to missing_explanation for ids=['ex2', 'ex3']
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:12 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex2 explanation_ready len=158 dt_ms=1226 snippet='The verb "gehen" is a verb of motion that requires the accusative case, and "zur" is a contraction of "zu der," used here because "Arbeit" is a feminine noun.'
+2025-08-09 18:13:12 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex2 explanation_flushed
+2025-08-09 18:13:12 - features.exercise.exercise_evaluation - INFO - [enrich] start ex_id=ex3 has_alt=False has_expl=False
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: arbeitet'}
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:12 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:13 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex3 alternatives_ready count=3 dt_ms=611
+2025-08-09 18:13:13 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex3 alternatives_flushed
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': "Given the following exercise and correct answer, give a very short grammar or vocabulary explanation (1-2 sentences) for a German learner. Do NOT mention the user's answer, do NOT restate the correct answer, and do NOT say if it is correct or incorrect. Only explain the grammar or vocabulary used in the correct answer, as briefly as possible.\nExercise: Er _____ jeden Tag.\nCorrect answer: arbeitet\nReply in English."}
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:13 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:13 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754760739642
+2025-08-09 18:13:13 - api.routes.ai.exercise - WARNING - AI explanation missing for exercise ex3 (user_answer='jk', correct_answer='arbeitet')
+2025-08-09 18:13:13 - api.routes.ai.exercise - INFO - [results] returning processing due to missing_explanation for ids=['ex3']
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:14 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex3 explanation_ready len=110 dt_ms=877 snippet='The verb "arbeiten" is conjugated in the third person singular (er/sie/es) as "arbeitet" in the present tense.'
+2025-08-09 18:13:14 - features.exercise.exercise_evaluation - INFO - [enrich] ex_id=ex3 explanation_flushed
+2025-08-09 18:13:14 - features.exercise.exercise_evaluation - INFO - [enrich] final_flush done for block blk1754760739642
+2025-08-09 18:13:14 - features.exercise.exercise_evaluation - INFO - Stored new results for block blk1754760739642
+2025-08-09 18:13:14 - core.services.exercise_service - INFO - Starting AI evaluation of 3 exercises in feedback mode
+2025-08-09 18:13:14 - core.services.exercise_service - INFO - Completed AI evaluation with 3 results
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German language teacher providing personalized feedback to students....
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nYou are a helpful German teacher providing feedback on an exercise.\n\nResults: 0/3 correct.\n\nMistakes made:\nQ: ex1 | Your: lernen | Correct: \nQ: ex2 | Your: i | Correct: \n\nRepeated mistakes:\n\n\nExamples and explanations:\n\n\nProvide encouraging, constructive feedback in 2-3 sentences. Focus on:\n1. What they did well\n2. Areas for improvement\n3. Encouragement to continue learning\n\nKeep it positive and motivating.\n'}
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.7, Stream: False
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.7, Stream: False
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:14 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:14 - api.routes.ai.exercise - INFO - Found results in Redis for block blk1754760739642
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:20 - features.exercise.exercise_evaluation - INFO - Successfully processed evaluation results for block blk1754760739642
+2025-08-09 18:13:20 - features.exercise.exercise_evaluation - INFO - Processing AI answers for topic memory and vocabulary updates
+2025-08-09 18:13:20 - features.exercise.exercise_evaluation - INFO - Calling process_ai_answers with exercise_block: {'exercises': [{'correctAnswer': 'lerne', 'id': 'ex1', 'options': ['lernt', 'lernen', 'gelernt', 'lerne'], 'question': 'Ich _____ Deutsch.', 'type': 'gap-fill'}, {'correctAnswer': 'Ich gehe zur Arbeit.', 'id': 'ex2', 'question': 'I go to work.', 'type': 'translation'}, {'correctAnswer': 'arbeitet', 'id': 'ex3', 'options': ['arbeiten', 'arbeitete', 'arbeitet', 'gearbeitet'], 'question': 'Er _____ jeden Tag.', 'type': 'grammar'}], 'topic': 'general'}
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Processing AI answers for user: test, block: blk1754760739642, answers_count: 3
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Using block topic: 'general' for all exercises
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Created exercise map with 3 exercises
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex1 with answer: 'lernen'
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Using AI topic evaluation for gap-fill exercise
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Calling evaluate_topic_qualities_ai for gap-fill exercise
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Reference sentence: 'Ich lerne_ Deutsch.'
+2025-08-09 18:13:20 - features.ai.evaluation.exercise_processing - INFO - Student sentence: 'Ich lernen_ Deutsch.'
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nIch lerne_ Deutsch.\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nIch lernen_ Deutsch.\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:20 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'You are a helpful German teacher grading a student\'s gap-fill.\n\nReference answer: \'Ich lerne_ Deutsch.\'\nStudent answer: \'Ich lernen_ Deutsch.\'\n\nIMPORTANT: For gap-fill exercises, if the gap tests related grammar concepts (like personal pronoun + verb conjugation), evaluate them together in the context since they must agree, but still evaluate them individually.\nFor translation exercises, evaluate each grammar topic individually.\n\nReturn a JSON object where each grammar topic is a key (all lowercase, spaces only), and its value is an integer from 0 to 5 representing the SM2 quality scale:\n\nEVALUATION RULES:\n- Use the FULL 0-5 scale for nuanced evaluation:\n  * 5 = Perfect usage of the grammar element\n  * 4 = Correct but with slight hesitation or minor error\n  * 3 = Correct but with difficulty or noticeable error\n  * 2 = Incorrect but the student seemed to know the concept\n  * 1 = Incorrect but some knowledge was shown\n  * 0 = Complete blackout or completely wrong usage\n- For translation: Evaluate each grammar element independently\n- Consider the student\'s apparent understanding level\n\nFor example:\n{\n  "adjective": 5,\n  "nominative case": 4,\n  "modal verb": 3,\n  "verb conjugation": 2,\n  "article": 1,\n  "preposition": 0\n}\n\nTopics: present tense, verbs, word order'}
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:21 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:24 - features.ai.evaluation.exercise_processing - INFO - AI topic evaluation quality score: 3.33
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Ich"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:24 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "lerne"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:26 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:28 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex1: correct=False, quality=3.3333333333333335
+2025-08-09 18:13:28 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex2 with answer: 'i'
+2025-08-09 18:13:28 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for translation exercise
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nI go to work. Ich gehe zur Arbeit.\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "I"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:28 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "go"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:30 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:33 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:33 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:33 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "work"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:34 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "gehe"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:36 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "zur"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:37 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:39 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex2: correct=False, quality=2
+2025-08-09 18:13:39 - features.ai.evaluation.exercise_processing - INFO - Processing exercise ID: ex3 with answer: 'jk'
+2025-08-09 18:13:39 - features.ai.evaluation.exercise_processing - INFO - Using simple topic detection for grammar exercise
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German teacher....
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': 'Analyze this German text and identify the grammar topics present:\n\nEr _____ jeden Tag. arbeitet\n\nReturn a JSON array of topic strings (lowercase, no duplicates). Common topics: present tense, past tense, future tense, modal verbs, articles, adjectives, prepositions, cases (nominative, accusative, dative, genitive), pronouns, word order, subordination, coordination, etc.'}
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:39 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "Er"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:40 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "jeden"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:42 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_prompt call
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] System message: You are a helpful German linguist....
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] User prompt: {'role': 'user', 'content': '\nAnalyze this German word: "arbeitet"\n\nReturn JSON with:\n- "base_form": the base/infinitive form\n- "type": noun, verb, adjective, adverb, etc.\n- "article": der/die/das (for nouns)\n- "translation": English translation\n- "info": additional grammatical info\n'}
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] About to call send_request...
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Starting send_request
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] API URL: https://api.mistral.ai/v1/chat/completions
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Messages count: 2
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Temperature: 0.3, Stream: False
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] Built payload with model: mistral-large-latest
+2025-08-09 18:13:44 - external.mistral.client - INFO - 🌐 [MISTRAL] About to make HTTP POST request to Mistral API...
+2025-08-09 18:13:46 - external.mistral.client - INFO - 🌐 [MISTRAL] HTTP request completed with status: 200
+2025-08-09 18:13:46 - external.mistral.client - INFO - 🌐 [MISTRAL] Request successful, returning response
+2025-08-09 18:13:46 - external.mistral.client - INFO - 🌐 [MISTRAL] send_request completed successfully
+2025-08-09 18:13:46 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
+2025-08-09 18:13:46 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user test
+2025-08-09 18:13:46 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'lernen', 'correct_answer': 'lerne', 'is_correct': False, 'quality': 3.3333333333333335, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'jk', 'correct_answer': 'arbeitet', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}]

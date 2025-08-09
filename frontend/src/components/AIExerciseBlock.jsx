@@ -756,9 +756,14 @@ export default function AIExerciseBlock({
 
     // Swipeable interface navigation functions
     const goToNextExercise = () => {
-        if (currentExerciseIndex < exercises.length - 1) {
-            setCurrentExerciseIndex(currentExerciseIndex + 1);
+        if (currentExerciseIndex >= exercises.length - 1) return;
+        // Prevent going forward before submission when current answer is empty
+        if (!submitted) {
+            const curId = exercises[currentExerciseIndex]?.id;
+            const hasAns = Boolean(answers[curId] && (typeof answers[curId] === 'string' ? answers[curId].trim().length > 0 : true));
+            if (!hasAns) return;
         }
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
     };
 
     const goToPreviousExercise = () => {
@@ -768,9 +773,13 @@ export default function AIExerciseBlock({
     };
 
     const goToExercise = (index) => {
-        if (index >= 0 && index < exercises.length) {
-            setCurrentExerciseIndex(index);
+        if (index < 0 || index >= exercises.length) return;
+        if (!submitted && index > currentExerciseIndex) {
+            const curId = exercises[currentExerciseIndex]?.id;
+            const hasAns = Boolean(answers[curId] && (typeof answers[curId] === 'string' ? answers[curId].trim().length > 0 : true));
+            if (!hasAns) return;
         }
+        setCurrentExerciseIndex(index);
     };
 
                         // Progress bar click handler - segmented navigation
@@ -1355,7 +1364,7 @@ export default function AIExerciseBlock({
                             variant="secondary"
                             size="sm"
                             onClick={goToNextExercise}
-                            disabled={disableNext}
+                            disabled={disableNext || (!submitted && !(answers[exercises[currentExerciseIndex]?.id] && (typeof answers[exercises[currentExerciseIndex]?.id] === 'string' ? answers[exercises[currentExerciseIndex]?.id].trim().length > 0 : true)))}
                             className="flex items-center gap-2"
                         >
                             Next →
