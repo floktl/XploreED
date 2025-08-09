@@ -57,7 +57,9 @@ load_environment()
 from config.logging_config import setup_logging
 
 # Configure logging with environment-based settings
-log_level = os.getenv("LOG_LEVEL", "INFO")
+env = os.getenv("FLASK_ENV", os.getenv("ENV", "development")).lower()
+default_level = "DEBUG" if env == "development" else "INFO"
+log_level = os.getenv("LOG_LEVEL", default_level)
 setup_logging(log_level=log_level)
 
 # === Import Flask and Core Dependencies ===
