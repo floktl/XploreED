@@ -53,6 +53,14 @@ def setup_logging(
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
+    # Determine environment
+    env = os.getenv("FLASK_ENV", os.getenv("ENV", "development")).lower()
+    is_dev = env == "development"
+
+    # In production, elevate console to WARNING and keep file at requested level (default INFO)
+    # Errors will always be shown on console
+    console_level = numeric_level if is_dev else logging.WARNING
+
     # Create root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(numeric_level)
@@ -72,7 +80,7 @@ def setup_logging(
 
     # Create console handler
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(numeric_level)
+    console_handler.setLevel(console_level)
     console_handler.setFormatter(formatter)
 
     # Add handlers to root logger
@@ -81,7 +89,7 @@ def setup_logging(
 
     # Log the setup
     logger = logging.getLogger(__name__)
-    logger.info(f"Logging configured - Level: {log_level}, File: {log_file}")
+    logger.info(f"Logging configured - Level: {log_level}, File: {log_file}, Env: {env}, ConsoleLevel: {logging.getLevelName(console_level)}")
 
 
 def get_logger(name: str) -> logging.Logger:

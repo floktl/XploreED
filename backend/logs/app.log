@@ -3565,3 +3565,23 @@
 2025-08-09 18:13:46 - features.ai.evaluation.exercise_processing - INFO - Processed exercise ex3: correct=False, quality=2
 2025-08-09 18:13:46 - features.ai.evaluation.exercise_processing - INFO - Completed processing 3 exercises for user test
 2025-08-09 18:13:46 - features.exercise.exercise_evaluation - INFO - Successfully processed AI answers for topic memory and vocabulary. Result: [{'exercise_id': 'ex1', 'user_answer': 'lernen', 'correct_answer': 'lerne', 'is_correct': False, 'quality': 3.3333333333333335, 'skill': 'gap-fill', 'topic': 'general'}, {'exercise_id': 'ex2', 'user_answer': 'i', 'correct_answer': 'Ich gehe zur Arbeit.', 'is_correct': False, 'quality': 2, 'skill': 'translation', 'topic': 'general'}, {'exercise_id': 'ex3', 'user_answer': 'jk', 'correct_answer': 'arbeitet', 'is_correct': False, 'quality': 2, 'skill': 'grammar', 'topic': 'general'}]
+2025-08-09 18:16:59 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log
+2025-08-09 18:17:00 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-09 18:17:00 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-09 18:17:00 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-09 18:17:00 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-09 18:20:49 - config.logging_config - INFO - Logging configured - Level: INFO, File: /app/logs/app.log, Env: development, ConsoleLevel: INFO
+2025-08-09 18:20:49 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-09 18:20:49 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-09 18:20:49 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-09 18:20:50 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-09 18:21:02 - config.logging_config - INFO - Logging configured - Level: DEBUG, File: /app/logs/app.log, Env: development, ConsoleLevel: DEBUG
+2025-08-09 18:21:02 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-09 18:21:02 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-09 18:21:02 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-09 18:21:03 - external.tts.client - INFO - TTS client initialized with ElevenLabs
+2025-08-09 18:21:28 - config.logging_config - INFO - Logging configured - Level: DEBUG, File: /app/logs/app.log, Env: development, ConsoleLevel: DEBUG
+2025-08-09 18:21:28 - external.redis.client - INFO - Redis initialization - REDIS_URL: redis://redis:6379, REDIS_HOST: localhost
+2025-08-09 18:21:28 - external.redis.client - INFO - Redis client initialized with REDIS_URL
+2025-08-09 18:21:28 - external.redis.client - INFO - Redis client successfully connected with REDIS_URL
+2025-08-09 18:21:28 - external.tts.client - INFO - TTS client initialized with ElevenLabs
