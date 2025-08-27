@@ -219,6 +219,34 @@ with get_connection() as conn:
     else:
         print("ℹ️ 'published' column already exists.")
 
+    # ✅ Add skill_level column if missing
+    if "skill_level" not in columns:
+        cursor.execute("ALTER TABLE lesson_content ADD COLUMN skill_level TEXT;")
+        print("✅ 'skill_level' column added to lesson_content.")
+    else:
+        print("ℹ️ 'skill_level' column already exists in lesson_content.")
+
+    # ✅ Add num_blocks column if missing
+    if "num_blocks" not in columns:
+        cursor.execute("ALTER TABLE lesson_content ADD COLUMN num_blocks INTEGER DEFAULT 0;")
+        print("✅ 'num_blocks' column added to lesson_content.")
+    else:
+        print("ℹ️ 'num_blocks' column already exists in lesson_content.")
+
+    # ✅ Add ai_enabled column if missing
+    if "ai_enabled" not in columns:
+        cursor.execute("ALTER TABLE lesson_content ADD COLUMN ai_enabled INTEGER DEFAULT 0;")
+        print("✅ 'ai_enabled' column added to lesson_content.")
+    else:
+        print("ℹ️ 'ai_enabled' column already exists in lesson_content.")
+
+    # ✅ Add updated_at column if missing
+    if "updated_at" not in columns:
+        cursor.execute("ALTER TABLE lesson_content ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP;")
+        print("✅ 'updated_at' column added to lesson_content.")
+    else:
+        print("ℹ️ 'updated_at' column already exists in lesson_content.")
+
     # ✅ Add missing user columns
     cursor.execute("PRAGMA table_info(users);")
     user_columns = [col[1] for col in cursor.fetchall()]

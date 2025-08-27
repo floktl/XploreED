@@ -65,6 +65,7 @@ export default function AdminDashboard() {
     const [formError, setFormError] = useState("");
     const [isEditing, setIsEditing] = useState(false);
     const [fatalError, setFatalError] = useState(false);
+    const [deleteModal, setDeleteModal] = useState({ show: false, lesson: null });
     const setIsAdmin = useAppStore((state) => state.setIsAdmin);
 
     const navigate = useNavigate();
@@ -74,6 +75,20 @@ export default function AdminDashboard() {
 
     // Helper to normalize API response shape for feedback list
     const toFeedbackArray = (data) => (Array.isArray(data) ? data : Array.isArray(data?.feedback) ? data.feedback : []);
+
+    // Handle lesson deletion confirmation
+    const handleDeleteLesson = async (lesson) => {
+        try {
+            const deleted = await deleteLesson(lesson.lesson_id);
+            if (deleted.ok || deleted === true) {
+                setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
+                setDeleteModal({ show: false, lesson: null });
+            }
+        } catch (err) {
+            console.error("❌ Failed to delete lesson", err);
+            setFatalError(true);
+        }
+    };
 
     useEffect(() => {
         const verifyAdmin = async () => {
@@ -369,7 +384,7 @@ export default function AdminDashboard() {
                                                 {lesson.published ? (
                                                     lesson.num_blocks === 0 ? (
                                                         <Button
-                                                            variant="outline"
+                                                            variant="ghost"
                                                             disabled
                                                             className="opacity-60 cursor-not-allowed"
                                                         >
@@ -447,18 +462,7 @@ export default function AdminDashboard() {
                                                     <Button
                                                         variant="danger"
                                                         size="auto"
-                                                        onClick={async () => {
-                                                            if (!window.confirm("Are you sure you want to delete this lesson?")) return;
-                                                            try {
-                                                                const deleted = await deleteLesson(lesson.lesson_id);
-                                                                if (deleted.ok || deleted === true) {
-                                                                    setLessons((prev) => prev.filter((l) => l.lesson_id !== lesson.lesson_id));
-                                                                }
-                                                            } catch (err) {
-                                                                console.error("❌ Failed to delete lesson", err);
-                                                                setFatalError(true);
-                                                            }
-                                                        }}
+                                                        onClick={() => setDeleteModal({ show: true, lesson })}
                                                         className="p-2"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
@@ -602,6 +606,50 @@ export default function AdminDashboard() {
                                 ))}
                             </div>
                         )}
+                    </Modal>
+                )}
+
+                {/* Delete Confirmation Modal */}
+                {deleteModal.show && deleteModal.lesson && (
+                    <Modal onClose={() => setDeleteModal({ show: false, lesson: null })}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <Trash2 className="w-6 h-6 text-red-500" />
+                            <h2 className="text-xl font-bold">Delete Lesson</h2>
+                        </div>
+
+                        <div className="mb-6">
+                            <p className="text-gray-700 dark:text-gray-300 mb-4">
+                                Are you sure you want to delete the lesson <strong className="text-gray-900 dark:text-white">"{deleteModal.lesson.title}"</strong>?
+                            </p>
+                            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                <div className="flex items-start gap-3">
+                                    <Shield className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-red-900 dark:text-red-200 font-medium mb-1">This action cannot be undone</p>
+                                        <p className="text-red-800 dark:text-red-300 text-sm">
+                                            This will permanently delete the lesson and all associated progress data.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setDeleteModal({ show: false, lesson: null })}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="danger"
+                                onClick={() => handleDeleteLesson(deleteModal.lesson)}
+                                className="gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Delete Lesson
+                            </Button>
+                        </div>
                     </Modal>
                 )}
 

@@ -51,6 +51,537 @@ logger = logging.getLogger(__name__)
 
 # === Lesson Content Routes ===
 
+@lessons_bp.route("/lesson/<int:lesson_id>", methods=["GET"])
+def get_lesson_single_route(lesson_id: int):
+    """
+    Get detailed lesson content by ID (frontend-compatible route).
+
+    This endpoint retrieves the complete lesson content including
+    all blocks and interactive elements. This is a frontend-compatible
+    version of the /lessons/{lesson_id} route.
+
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
+
+    JSON Response Structure:
+        {
+            "title": str,                       # Lesson title
+            "content": str,                     # Lesson content (HTML)
+            "created_at": str,                  # Creation timestamp
+            "num_blocks": int,                  # Number of blocks
+            "ai_enabled": bool                  # AI features enabled
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
+    """
+    try:
+        user = get_current_user()
+        if not user:
+            return jsonify({"error": "Unauthorized"}), 401
+
+        # Get lesson details
+        lesson = select_one(
+            "lesson_content",
+            columns="title, content, created_at, num_blocks, ai_enabled",
+            where="lesson_id = ? AND (target_user IS NULL OR target_user = ?) AND published = 1",
+            params=(lesson_id, user)
+        )
+
+        if not lesson:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        return jsonify({
+            "title": lesson["title"],
+            "content": lesson["content"],
+            "created_at": lesson["created_at"],
+            "num_blocks": lesson["num_blocks"],
+            "ai_enabled": bool(lesson["ai_enabled"])
+        })
+
+    except DatabaseError as e:
+        logger.error(f"Error getting lesson content: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@lessons_bp.route("/lesson-progress/<int:lesson_id>", methods=["GET"])
+def get_lesson_progress_single_route(lesson_id: int):
+    """
+    Get user progress for a specific lesson (frontend-compatible route).
+
+    This endpoint retrieves the current user's progress through a specific lesson.
+    This is a frontend-compatible version of the /lessons/{lesson_id}/progress route.
+
+    Path Parameters:
+        - lesson_id (int, required): Unique identifier of the lesson
+
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "user": str,                        # User identifier
+            "progress": {
+                "completed_blocks": int,        # Number of completed blocks
+                "total_blocks": int,            # Total number of blocks
+                "completion_percentage": float, # Completion percentage
+                "last_activity": str,           # Last activity timestamp
+                "is_completed": bool            # Overall completion status
+            },
+            "block_progress": [                 # Individual block progress
+                {
+                    "block_id": str,            # Block identifier
+                    "completed": bool,          # Completion status
+                    "completed_at": str,        # Completion timestamp
+                    "time_spent": int,          # Time spent in seconds
+                    "score": float              # Performance score
+                }
+            ]
+        }
+
+    Status Codes:
+        - 200: Success
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
+    """
+    try:
+        user = require_user()
+
+        # Check if lesson exists
+        lesson = select_one(
+            "lesson_content",
+            columns="id, num_blocks",
+            where="lesson_id = ?",
+            params=(lesson_id,)
+        )
+
+        if not lesson:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        # Get user progress for this lesson
+        progress_rows = select_rows(
+            "lesson_progress",
+            columns="*",
+            where="user_id = ? AND lesson_id = ?",
+            params=(user, lesson_id)
+        )
+
+        # Calculate completion
+        completed_blocks = len([p for p in progress_rows if p.get("completed")])
+        total_blocks = lesson.get("num_blocks", 0)
+
+        # For lessons with no interactive blocks but AI exercises enabled, check AI exercise completion
+        if total_blocks == 0:
+            # Check if AI exercises are enabled
+            lesson_details = select_one(
+                "lesson_content",
+                columns="ai_enabled",
+                where="lesson_id = ?",
+                params=(lesson_id,)
+            )
+            ai_enabled = lesson_details.get("ai_enabled", 0) if lesson_details else 0
+
+            if ai_enabled:
+                # Check if AI exercises are completed
+                ai_progress = [p for p in progress_rows if "ai" in p.get("block_id", "")]
+                completion_percentage = 100.0 if ai_progress and all(p.get("completed") for p in ai_progress) else 0.0
+                is_completed = bool(ai_progress and all(p.get("completed") for p in ai_progress))
+            else:
+                # No blocks and no AI exercises - student must manually mark as complete
+                # Check if there's a manual completion record
+                manual_completion = select_one(
+                    "lesson_progress",
+                    columns="completed",
+                    where="user_id = ? AND lesson_id = ? AND block_id = 'manual_completion'",
+                    params=(user, lesson_id)
+                )
+                completion_percentage = 100.0 if manual_completion and manual_completion.get("completed") else 0.0
+                is_completed = bool(manual_completion and manual_completion.get("completed"))
+        else:
+            completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
+            is_completed = completed_blocks >= total_blocks
+
+        # Convert to frontend-expected format: { "block_id": completed_boolean }
+        progress_dict = {}
+        for progress_row in progress_rows:
+            block_id = progress_row.get("block_id")
+            completed = bool(progress_row.get("completed"))
+            if block_id:
+                progress_dict[block_id] = completed
+
+        return jsonify(progress_dict)
+
+    except DatabaseError as e:
+        logger.error(f"Error getting lesson progress for lesson {lesson_id}: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@lessons_bp.route("/lesson-completed", methods=["POST"])
+def check_lesson_completed_route():
+    """
+    Check if a lesson is completed by the current user (frontend-compatible route).
+
+    This endpoint checks whether the current user has completed a specific lesson.
+
+    Request Body:
+        - lesson_id (int, required): Unique identifier of the lesson
+
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "user": str,                        # User identifier
+            "is_completed": bool,               # Completion status
+            "completed_at": str,                # Completion timestamp
+            "completion_percentage": float      # Completion percentage
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid request data
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
+    """
+    try:
+        user = require_user()
+        data = request.get_json()
+
+        if not data or "lesson_id" not in data:
+            return jsonify({"error": "Lesson ID is required"}), 400
+
+        lesson_id = int(data["lesson_id"])
+
+        # Check if lesson exists
+        lesson = select_one(
+            "lesson_content",
+            columns="id, num_blocks",
+            where="lesson_id = ?",
+            params=(lesson_id,)
+        )
+
+        if not lesson:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        # Get user progress for this lesson
+        progress_rows = select_rows(
+            "lesson_progress",
+            columns="*",
+            where="user_id = ? AND lesson_id = ?",
+            params=(user, lesson_id)
+        )
+
+        # Calculate completion
+        completed_blocks = len([p for p in progress_rows if p.get("completed")])
+        total_blocks = lesson.get("num_blocks", 0)
+
+        # For lessons with no interactive blocks but AI exercises enabled, check AI exercise completion
+        if total_blocks == 0:
+            # Check if AI exercises are enabled
+            lesson_details = select_one(
+                "lesson_content",
+                columns="ai_enabled",
+                where="lesson_id = ?",
+                params=(lesson_id,)
+            )
+            ai_enabled = lesson_details.get("ai_enabled", 0) if lesson_details else 0
+
+            if ai_enabled:
+                # Check if AI exercises are completed
+                ai_progress = [p for p in progress_rows if "ai" in p.get("block_id", "")]
+                completion_percentage = 100.0 if ai_progress and all(p.get("completed") for p in ai_progress) else 0.0
+                is_completed = bool(ai_progress and all(p.get("completed") for p in ai_progress))
+            else:
+                # No blocks and no AI exercises - student must manually mark as complete
+                # Check if there's a manual completion record
+                manual_completion = select_one(
+                    "lesson_progress",
+                    columns="completed",
+                    where="user_id = ? AND lesson_id = ? AND block_id = 'manual_completion'",
+                    params=(user, lesson_id)
+                )
+                completion_percentage = 100.0 if manual_completion and manual_completion.get("completed") else 0.0
+                is_completed = bool(manual_completion and manual_completion.get("completed"))
+        else:
+            completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
+            is_completed = completed_blocks >= total_blocks
+
+        # Get completion timestamp
+        completed_at = None
+        if is_completed and progress_rows:
+            last_completed = max(progress_rows, key=lambda x: x.get("updated_at", ""))
+            completed_at = last_completed.get("updated_at")
+
+        return jsonify({
+            "lesson_id": lesson_id,
+            "user": user,
+            "is_completed": is_completed,
+            "completed_at": completed_at,
+            "completion_percentage": round(completion_percentage, 2)
+        })
+
+    except ValueError as e:
+        logger.error(f"Invalid lesson ID: {e}")
+        return jsonify({"error": "Invalid lesson ID"}), 400
+    except DatabaseError as e:
+        logger.error(f"Error checking lesson completion: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@lessons_bp.route("/mark-as-completed", methods=["POST"])
+def mark_lesson_completed_route():
+    """
+    Mark a lesson as completed by the current user (frontend-compatible route).
+
+    This endpoint marks a specific lesson as completed for the current user.
+
+    Request Body:
+        - lesson_id (int, required): Unique identifier of the lesson
+
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "user": str,                        # User identifier
+            "is_completed": bool,               # Completion status
+            "completed_at": str,                # Completion timestamp
+            "message": str                      # Success message
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid request data
+        - 401: Unauthorized
+        - 404: Lesson not found
+        - 500: Internal server error
+    """
+    try:
+        user = require_user()
+        data = request.get_json()
+
+        if not data or "lesson_id" not in data:
+            return jsonify({"error": "Lesson ID is required"}), 400
+
+        lesson_id = int(data["lesson_id"])
+
+        # Check if lesson exists
+        lesson = select_one(
+            "lesson_content",
+            columns="id, num_blocks",
+            where="lesson_id = ?",
+            params=(lesson_id,)
+        )
+
+        if not lesson:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        # Mark all blocks as completed for this lesson
+        total_blocks = lesson.get("num_blocks", 0)
+        current_time = datetime.now().isoformat()
+
+        if total_blocks == 0:
+            # For lessons with no blocks, create a manual completion record
+            existing_manual_completion = select_one(
+                "lesson_progress",
+                columns="id",
+                where="user_id = ? AND lesson_id = ? AND block_id = 'manual_completion'",
+                params=(user, lesson_id)
+            )
+
+            if existing_manual_completion:
+                # Update existing manual completion record
+                update_row(
+                    "lesson_progress",
+                    {
+                        "completed": True,
+                        "updated_at": current_time
+                    },
+                    "user_id = ? AND lesson_id = ? AND block_id = 'manual_completion'",
+                    (user, lesson_id)
+                )
+            else:
+                # Create new manual completion record
+                insert_row("lesson_progress", {
+                    "user_id": user,
+                    "lesson_id": lesson_id,
+                    "block_id": "manual_completion",
+                    "completed": True,
+                    "updated_at": current_time
+                })
+        else:
+            # Get existing blocks for this lesson
+            existing_blocks = select_rows(
+                "lesson_blocks",
+                columns="block_id",
+                where="lesson_id = ?",
+                params=(lesson_id,)
+            )
+
+            # Mark each block as completed
+            for block in existing_blocks:
+                block_id = block["block_id"]
+
+                # Check if progress record exists
+                existing_progress = select_one(
+                    "lesson_progress",
+                    columns="id",
+                    where="user_id = ? AND lesson_id = ? AND block_id = ?",
+                    params=(user, lesson_id, block_id)
+                )
+
+                if existing_progress:
+                    # Update existing progress
+                    update_row(
+                        "lesson_progress",
+                        {
+                            "completed": True,
+                            "updated_at": current_time
+                        },
+                        "user_id = ? AND lesson_id = ? AND block_id = ?",
+                        (user, lesson_id, block_id)
+                    )
+                else:
+                    # Create new progress record
+                    insert_row("lesson_progress", {
+                        "user_id": user,
+                        "lesson_id": lesson_id,
+                        "block_id": block_id,
+                        "completed": True,
+                        "updated_at": current_time
+                    })
+
+        return jsonify({
+            "lesson_id": lesson_id,
+            "user": user,
+            "is_completed": True,
+            "completed_at": current_time,
+            "message": "Lesson marked as completed successfully"
+        })
+
+    except ValueError as e:
+        logger.error(f"Invalid lesson ID: {e}")
+        return jsonify({"error": "Invalid lesson ID"}), 400
+    except DatabaseError as e:
+        logger.error(f"Error marking lesson as completed: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@lessons_bp.route("/lesson-progress", methods=["POST"])
+def update_lesson_progress_single_route():
+    """
+    Update lesson block progress for the current user (frontend-compatible route).
+
+    This endpoint updates the progress status of a specific block within a lesson.
+
+    Request Body:
+        - lesson_id (int, required): Unique identifier of the lesson
+        - block_id (str, required): Unique identifier of the block
+        - completed (bool, required): Whether the block is completed
+
+    JSON Response Structure:
+        {
+            "lesson_id": int,                   # Lesson identifier
+            "block_id": str,                    # Block identifier
+            "user": str,                        # User identifier
+            "completed": bool,                  # Completion status
+            "updated_at": str,                  # Update timestamp
+            "message": str                      # Success message
+        }
+
+    Status Codes:
+        - 200: Success
+        - 400: Invalid request data
+        - 401: Unauthorized
+        - 404: Lesson or block not found
+        - 500: Internal server error
+    """
+    try:
+        user = require_user()
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"error": "Request data is required"}), 400
+
+        lesson_id = data.get("lesson_id")
+        block_id = data.get("block_id")
+        completed = data.get("completed")
+
+        if lesson_id is None or block_id is None or completed is None:
+            return jsonify({"error": "lesson_id, block_id, and completed are required"}), 400
+
+        lesson_id = int(lesson_id)
+        completed = bool(completed)
+
+        # Check if lesson exists
+        lesson = select_one(
+            "lesson_content",
+            columns="id",
+            where="lesson_id = ?",
+            params=(lesson_id,)
+        )
+
+        if not lesson:
+            return jsonify({"error": "Lesson not found"}), 404
+
+        # Check if block exists
+        block = select_one(
+            "lesson_blocks",
+            columns="block_id",
+            where="lesson_id = ? AND block_id = ?",
+            params=(lesson_id, block_id)
+        )
+
+        if not block:
+            return jsonify({"error": "Block not found"}), 404
+
+        current_time = datetime.now().isoformat()
+
+        # Check if progress record exists
+        existing_progress = select_one(
+            "lesson_progress",
+            columns="id",
+            where="user_id = ? AND lesson_id = ? AND block_id = ?",
+            params=(user, lesson_id, block_id)
+        )
+
+        if existing_progress:
+            # Update existing progress
+            update_row(
+                "lesson_progress",
+                {
+                    "completed": completed,
+                    "updated_at": current_time
+                },
+                "user_id = ? AND lesson_id = ? AND block_id = ?",
+                (user, lesson_id, block_id)
+            )
+        else:
+            # Create new progress record
+            insert_row("lesson_progress", {
+                "user_id": user,
+                "lesson_id": lesson_id,
+                "block_id": block_id,
+                "completed": completed,
+                "updated_at": current_time
+            })
+
+        return jsonify({
+            "lesson_id": lesson_id,
+            "block_id": block_id,
+            "user": user,
+            "completed": completed,
+            "updated_at": current_time,
+            "message": f"Block progress updated successfully"
+        })
+
+    except ValueError as e:
+        logger.error(f"Invalid request data: {e}")
+        return jsonify({"error": "Invalid request data"}), 400
+    except DatabaseError as e:
+        logger.error(f"Error updating lesson progress: {e}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
 @lessons_bp.route("/lessons", methods=["GET"])
 def get_lessons_route():
     """
@@ -122,6 +653,52 @@ def get_lessons_route():
             limit=limit,
             offset=offset
         )
+
+        # Get user progress for each lesson
+        for lesson in lessons:
+            lesson_id = lesson["lesson_id"]
+
+            # Get user progress for this lesson
+            progress_rows = select_rows(
+                "lesson_progress",
+                columns="*",
+                where="user_id = ? AND lesson_id = ?",
+                params=(user, lesson_id)
+            )
+
+            # Calculate completion
+            completed_blocks = len([p for p in progress_rows if p.get("completed")])
+            total_blocks = lesson.get("num_blocks", 0)
+
+            # For lessons with no interactive blocks but AI exercises enabled, check AI exercise completion
+            if total_blocks == 0:
+                # Check if AI exercises are enabled
+                ai_enabled = lesson.get("ai_enabled", 0)
+
+                if ai_enabled:
+                    # Check if AI exercises are completed
+                    ai_progress = [p for p in progress_rows if "ai" in p.get("block_id", "")]
+                    completion_percentage = 100.0 if ai_progress and all(p.get("completed") for p in ai_progress) else 0.0
+                    is_completed = bool(ai_progress and all(p.get("completed") for p in ai_progress))
+                else:
+                    # No blocks and no AI exercises - student must manually mark as complete
+                    # Check if there's a manual completion record
+                    manual_completion = select_one(
+                        "lesson_progress",
+                        columns="completed",
+                        where="user_id = ? AND lesson_id = ? AND block_id = 'manual_completion'",
+                        params=(user, lesson_id)
+                    )
+                    completion_percentage = 100.0 if manual_completion and manual_completion.get("completed") else 0.0
+                    is_completed = bool(manual_completion and manual_completion.get("completed"))
+            else:
+                completion_percentage = (completed_blocks / total_blocks * 100) if total_blocks > 0 else 0
+                is_completed = completed_blocks >= total_blocks
+
+            # Add progress information to lesson
+            lesson["completed"] = is_completed
+            lesson["percent_complete"] = round(completion_percentage, 2)
+            lesson["last_attempt"] = progress_rows[-1].get("updated_at") if progress_rows else None
 
         # Get total count
         total_lessons = select_one(

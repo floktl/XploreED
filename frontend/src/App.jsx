@@ -6,33 +6,17 @@ import {
 } from "react-router-dom";
 
 import NameInput from "./components/NameInput";
-import Menu from "./components/Menu";
-import Translator from "./components/Translator";
-import LevelGame from "./components/LevelGame";
-import PlacementTest from "./components/PlacementTest";
-import LevelGuess from "./components/LevelGuess";
-import Profile from "./components/Profile";
-import Vocabulary from "./components/Vocabulary";
-import VocabTrainer from "./components/VocabTrainer";
+import { MenuView, LessonsView, ProfileView, VocabularyView, SettingsView, TranslatorView, VocabTrainerView, SupportView, AboutView, TermsOfServiceView, ProfileStatsView, LevelGuessView, PlacementTestView, LevelUpTestView, GrammarMapView, AIFeedbackView, AIWeaknessLessonView, AIReadingView, LevelGameView, TopicMemoryView } from "./views";
+
 import AdminLogin from "./components/AdminLogin";
 import AdminDashboard from "./components/AdminDashboard";
 import AdminUserManagement from "./components/AdminUserManagement";
-import Lessons from "./components/Lessons";
-import ProfileStats from "./components/ProfileStats";
 import LessonView from "./components/LessonView";
 import LessonEdit from "./components/LessonEdit";
-import AIFeedback from "./components/AIFeedback";
-import AIFeedbackView from "./components/AIFeedbackView";
-import TopicMemory from "./components/TopicMemory";
-import GrammarMap from "./components/GrammarMap";
-import AIWeaknessLesson from "./components/AIWeaknessLesson";
-import AIReading from "./components/AIReading";
-import LevelUpTest from "./components/LevelUpTest";
+
+
 import ErrorPage from "./components/ErrorPage";
-import Settings from "./components/Settings";
 import TermsOfService from "./components/TermsOfService";
-import About from "./components/About";
-import Support from "./components/Support";
 import AskAiButton from "./components/AskAiButton";
 import RootLayout from "./components/RootLayout";
 
@@ -172,47 +156,47 @@ const router = createBrowserRouter(
       children: [
         {
           path: "/placement-test",
-          element: <PlacementTest />,
+          element: <PlacementTestView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/select-level",
-          element: <LevelGuess />,
+          element: <LevelGuessView />,
           errorElement: <ErrorPage />,
         },
-        { path: "/menu", element: <Menu />, errorElement: <ErrorPage /> },
+        { path: "/menu", element: <MenuView />, errorElement: <ErrorPage /> },
         {
           path: "/translate",
-          element: <Translator />,
+          element: <TranslatorView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/level-game",
-          element: <LevelGame />,
+          element: <LevelGameView />,
           errorElement: <ErrorPage />,
         },
-        { path: "/profile", element: <Profile />, errorElement: <ErrorPage /> },
+        { path: "/profile", element: <ProfileView />, errorElement: <ErrorPage /> },
         {
           path: "/vocabulary",
-          element: <Vocabulary />,
+          element: <VocabularyView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/topic-memory",
-          element: <TopicMemory />,
+          element: <TopicMemoryView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/grammar-map",
-          element: <GrammarMap />,
+          element: <GrammarMapView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/vocab-trainer",
-          element: <VocabTrainer />,
+          element: <VocabTrainerView />,
           errorElement: <ErrorPage />,
         },
-        { path: "/lessons", element: <Lessons />, errorElement: <ErrorPage /> },
+        { path: "/lessons", element: <LessonsView />, errorElement: <ErrorPage /> },
         {
           path: "/lesson/:lessonId",
           element: <LessonView />,
@@ -220,17 +204,17 @@ const router = createBrowserRouter(
         },
         {
           path: "/profile-stats",
-          element: <ProfileStats />,
+          element: <ProfileStatsView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/settings",
-          element: <Settings />,
+          element: <SettingsView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/support",
-          element: <Support />,
+          element: <SupportView />,
           errorElement: <ErrorPage />,
         },
         {
@@ -240,7 +224,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/ai-feedback",
-          element: <AIFeedback />,
+          element: <AIFeedbackView />,
           errorElement: <ErrorPage />,
         },
         {
@@ -250,25 +234,25 @@ const router = createBrowserRouter(
         },
         {
           path: "/weakness-lesson",
-          element: <AIWeaknessLesson />,
+          element: <AIWeaknessLessonView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/reading-exercise",
-          element: <AIReading />,
+          element: <AIReadingView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/progress-test",
-          element: <LevelUpTest />,
+          element: <LevelUpTestView />,
           errorElement: <ErrorPage />,
         },
         {
           path: "/terms-of-service",
-          element: <TermsOfService />,
+          element: <TermsOfServiceView />,
           errorElement: <ErrorPage />,
         },
-        { path: "/about", element: <About />, errorElement: <ErrorPage /> },
+        { path: "/about", element: <AboutView />, errorElement: <ErrorPage /> },
       ],
     },
   ],

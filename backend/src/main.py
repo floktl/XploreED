@@ -118,6 +118,16 @@ def create_app() -> Flask:
     allowed_origins = os.getenv("FRONTEND_URL", "").split(",")
     CORS(app, origins=allowed_origins, supports_credentials=True)
 
+    # === Development Auto-Login Middleware ===
+    if os.getenv("FLASK_ENV") == "development":
+        from api.middleware.dev_auto_login import dev_auto_login_middleware
+
+        @app.before_request
+        def auto_login_dev():
+            response = dev_auto_login_middleware()
+            if response:
+                return response
+
     # === Register Error Handlers ===
     register_error_handlers(app)
 
@@ -235,6 +245,21 @@ app = create_app()
 
 # === Main Entry Point ===
 if __name__ == "__main__":
+    # Set up auto-login for development mode
+    if os.getenv("FLASK_ENV") == "development":
+        try:
+            from core.development_auto_login import auto_login_dev_user
+            session_id = auto_login_dev_user()
+            if session_id:
+                print(f"🔐 Development auto-login enabled")
+                print(f"   Test user: {os.getenv('TEST_USER', 'tester1234')}")
+                print(f"   Session ID: {session_id}")
+                print(f"   Level: 3")
+            else:
+                print(f"⚠️  Development auto-login failed")
+        except Exception as e:
+            print(f"❌ Development auto-login error: {e}")
+
     env_info = get_environment_info()
     port = env_info["port"]
     debug_mode = env_info["debug_mode"]

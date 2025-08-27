@@ -26,3 +26,5 @@ frontend/package-lock.json
 # Database files
 backend/database/*.db
 backend/log.txt
+
+transcence/

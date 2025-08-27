@@ -55,6 +55,7 @@ export default function LessonView() {
         const fetchProgress = async () => {
             try {
                 const data = await getLessonProgress(lessonId);
+                console.log("🔍 Initial progress data:", data);
                 setProgress(data);
             } catch (err) {
                 console.warn("Could not load progress", err);
@@ -62,19 +63,9 @@ export default function LessonView() {
             }
         };
 
-        const fetchMarkedComplete = async () => {
-            try {
-                const data = await isLessonCompleted(lessonId);
-                setMarkedComplete(data.completed);
-            } catch (err) {
-                console.warn("Could not load marked complete state", err);
-                setFatalError(true);
-            }
-        };
-
         fetchLesson();
         fetchProgress();
-        fetchMarkedComplete();
+        // Removed fetchMarkedComplete since completion status is now calculated from progress
     }, [lessonId, isAdmin, navigate]);
 
     useEffect(() => {
@@ -91,8 +82,16 @@ export default function LessonView() {
 
     useEffect(() => {
         const completed = Object.values(progress).filter(Boolean).length;
+        console.log("🔍 Progress debug:", { progress, completed, numBlocks });
         setPercentComplete(numBlocks > 0 ? (completed / numBlocks) * 100 : 0);
         setCanComplete(numBlocks === 0 || completed === numBlocks);
+
+        // Calculate completion status based on actual progress, not API response
+        const actualCompleted = completed >= numBlocks;
+        setMarkedComplete(actualCompleted);
+
+        console.log("🔍 Can complete:", numBlocks === 0 || completed === numBlocks);
+        console.log("🔍 Actual completed:", actualCompleted);
     }, [progress, numBlocks]);
 
     const handleMarkComplete = async () => {
@@ -112,20 +111,37 @@ export default function LessonView() {
         }
     };
 
+    // Refresh progress after each toggle to ensure state synchronization
+    const refreshProgress = async () => {
+        try {
+            const data = await getLessonProgress(lessonId);
+            console.log("🔍 Refreshed progress data:", data);
+            setProgress(data);
+        } catch (err) {
+            console.warn("Could not refresh progress", err);
+        }
+    };
+
+    // Refresh completion status after each toggle
+    const refreshCompletionStatus = async () => {
+        try {
+            // Calculate completion status based on actual progress
+            const completed = Object.values(progress).filter(Boolean).length;
+            const actualCompleted = completed >= numBlocks;
+            console.log("🔍 Refreshed completion status based on progress:", { completed, numBlocks, actualCompleted });
+            setMarkedComplete(actualCompleted);
+        } catch (err) {
+            console.warn("Could not refresh completion status", err);
+        }
+    };
+
     if (fatalError) {
         return <ErrorPage />;
     }
 
     return (
         <div className="relative min-h-screen pb-20 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-            <Container className="pb-20"
-                bottom={
-                    <Button size="md" variant="ghost" type="button" onClick={() => navigate("/lessons")} className="gap-2">
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to Lessons
-                    </Button>
-                }
-            >
+            <Container className="pb-20">
                 <Title className="mb-4 text-3xl font-bold">Lesson</Title>
 
                 {entries.length > 0 && (
@@ -168,12 +184,15 @@ export default function LessonView() {
                                     mode="student"
                                     setFooterActions={setActions}
                                     onToggle={async (blockId, completed) => {
+                                        console.log("🔍 Toggle debug:", { blockId, completed, lessonId });
+                                        console.log("🔍 Current progress before toggle:", progress);
+                                        console.log("🔍 Current markedComplete:", markedComplete);
                                         try {
                                             await updateLessonBlockProgress(lessonId, blockId, completed);
-                                            setProgress((prev) => ({
-                                                ...prev,
-                                                [blockId]: completed,
-                                            }));
+                                            console.log("🔍 API call successful, refreshing progress...");
+                                            await refreshProgress(); // Refresh progress after each toggle
+                                            await refreshCompletionStatus(); // Refresh completion status after each toggle
+                                            console.log("🔍 Progress and completion status refreshed");
                                         } catch (err) {
                                             console.error("❌ Failed to update progress", err);
                                             setFatalError(true);

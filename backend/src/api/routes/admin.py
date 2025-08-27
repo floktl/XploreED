@@ -121,10 +121,55 @@ def admin_lesson_content_route():
         if request.method == "GET":
             lessons = get_all_lessons()
             return jsonify(lessons)
-        # POST create handled elsewhere in file; keep returning 405 for now
-        return jsonify({"error": "Method not allowed"}), 405
-    except Exception:
-        return jsonify({"error": "Failed to retrieve lessons"}), 500
+        elif request.method == "POST":
+            # Create new lesson
+            data = request.get_json()
+            if not data:
+                return jsonify({"error": "Lesson data is required"}), 400
+
+            # Import the create_lesson_content function
+            from features.admin.lesson_management import create_lesson_content
+
+            success, error_message = create_lesson_content(data)
+            if not success:
+                return jsonify({"error": error_message or "Failed to create lesson"}), 400
+
+            return jsonify({"message": "Lesson created successfully"}), 201
+    except Exception as e:
+        logger.error(f"Admin lesson content error: {e}")
+        return jsonify({"error": "Failed to process lesson request"}), 500
+
+
+@admin_bp.route("/lesson-content/<int:lesson_id>", methods=["PUT", "DELETE"])
+def admin_lesson_content_update_route(lesson_id: int):
+    if not is_admin():
+        return jsonify({"error": "Unauthorized - Admin access required"}), 401
+    try:
+        if request.method == "DELETE":
+            # Import the delete_lesson_content function
+            from features.admin.lesson_management import delete_lesson_content
+
+            success, error_message = delete_lesson_content(lesson_id)
+            if not success:
+                return jsonify({"error": error_message or "Failed to delete lesson"}), 400
+
+            return jsonify({"message": "Lesson deleted successfully"}), 200
+        elif request.method == "PUT":
+            data = request.get_json()
+            if not data:
+                return jsonify({"error": "Lesson data is required"}), 400
+
+            # Import the update_admin_lesson_content function
+            from features.admin.lesson_management import update_admin_lesson_content
+
+            success, error_message = update_admin_lesson_content(lesson_id, data)
+            if not success:
+                return jsonify({"error": error_message or "Failed to update lesson"}), 400
+
+            return jsonify({"message": "Lesson updated successfully"}), 200
+    except Exception as e:
+        logger.error(f"Admin lesson content update/delete error: {e}")
+        return jsonify({"error": "Failed to process lesson request"}), 500
 from features.admin import (
     get_all_game_results,
     get_admin_user_game_results,
