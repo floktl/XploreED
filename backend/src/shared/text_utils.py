@@ -32,21 +32,46 @@ def _extract_json(text: str) -> Optional[Any]:
         Parsed JSON object or None if extraction fails
     """
     try:
-        # Look for JSON-like patterns
-        json_patterns = [
-            r'\{.*\}',  # Object pattern
-            r'\[.*\]',  # Array pattern
-        ]
+        if not isinstance(text, str):
+            return None
 
+        cleaned = text.strip()
+
+        # 1) Strip Markdown code fences like ```json ... ``` or ``` ... ```
+        #    Remove leading/trailing triple backticks blocks if present
+        cleaned = re.sub(r"^```[a-zA-Z0-9_\-]*\s*\n", "", cleaned, flags=re.MULTILINE)
+        cleaned = re.sub(r"\n?```\s*$", "", cleaned, flags=re.MULTILINE)
+
+        # 2) Remove JavaScript-style comments which are invalid in strict JSON
+        #    - Line comments: // ... end-of-line
+        #    - Block comments: /* ... */
+        cleaned = re.sub(r"(?m)//.*$", "", cleaned)
+        cleaned = re.sub(r"/\*.*?\*/", "", cleaned, flags=re.DOTALL)
+
+        # 3) Remove trailing commas before closing brackets/braces
+        cleaned = re.sub(r",\s*([}\]])", r"\1", cleaned)
+
+        # 4) Try direct parse of the whole cleaned text first
+        try:
+            return json.loads(cleaned.strip())
+        except json.JSONDecodeError:
+            pass
+
+        # 5) Fallback: extract the first JSON-looking object/array from the text
+        json_patterns = [
+            r"\{[^\0]*?\}",   # Non-greedy object
+            r"\[[^\0]*?\]",   # Non-greedy array
+        ]
         for pattern in json_patterns:
-            matches = re.findall(pattern, text, re.DOTALL)
+            matches = re.findall(pattern, cleaned, re.DOTALL)
             for match in matches:
+                candidate = re.sub(r",\s*([}\]])", r"\1", match)
                 try:
-                    return json.loads(match)
+                    return json.loads(candidate)
                 except json.JSONDecodeError:
                     continue
 
-        # If no JSON found in patterns, try parsing the entire text
+        # 6) Final attempt on the original text (in case it was already valid)
         return json.loads(text.strip())
 
     except json.JSONDecodeError as e:

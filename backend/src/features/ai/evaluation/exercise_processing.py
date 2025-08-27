@@ -226,4 +226,23 @@ def process_ai_answers(
         raise DatabaseError(f"Error checking auto level up for user {username}: {str(e)}")
 
     logger.info(f"Completed processing {len(results)} exercises for user {username}")
+
+    # Mark topic memory processing completion for this block in Redis so frontend can stop spinner
+    try:
+        from external.redis import redis_client
+        completed_at = datetime.datetime.now().isoformat()
+        status_key = f"topic_memory_status:{username}:{block_id}"
+        redis_client.setex_json(status_key, 600, {
+            "status": "completed",
+            "block_id": block_id,
+            "username": username,
+            "completed_at": completed_at,
+        })
+        logger.info(
+            "[topic_memory_status] set completed for user=%s block=%s at %s",
+            username, block_id, completed_at
+        )
+    except Exception as e:
+        logger.warning(f"Failed to set topic memory completion status in Redis: {e}")
+
     return results
