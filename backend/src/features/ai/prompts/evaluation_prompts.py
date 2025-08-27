@@ -115,7 +115,7 @@ def alternative_answers_prompt(correct_sentence: str) -> dict:
     return {
         "role": "user",
         "content": (
-            f"Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. "
+            f"Give up to 3 alternative ways to say the following sentence in German, with the same meaning and register. Make sure, that the alternatives are correct and make sense and people would actually say them. "
             f"Return only a JSON array of strings, no explanations, no extra text, no markdown, no labels.\nSentence: {correct_sentence}"
         ),
     }

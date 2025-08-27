@@ -584,6 +584,28 @@ def get_topic_memory_status_route(block_id):
     try:
         username = require_user()
 
+        # First, check a fast Redis completion flag set by topic-memory processing
+        try:
+            from external.redis import redis_client
+            status_key = f"topic_memory_status:{username}:{block_id}"
+            status = redis_client.get_json(status_key)
+            if isinstance(status, dict) and status.get("status") == "completed":
+                return jsonify({
+                    "block_id": block_id,
+                    "topic_memory_updated": True,
+                    "update_status": "completed",
+                    "last_update": status.get("completed_at"),
+                    "memory_impact": {
+                        "strengthened_concepts": [],
+                        "weak_areas": [],
+                        "recommendations": []
+                    },
+                    "source": "redis"
+                })
+        except Exception:
+            # fall back to DB checks below
+            pass
+
         # Check if the exercise block exists and has been processed
         block = select_one("ai_exercise_results", columns="*", where="block_id = ? AND username = ?", params=(block_id, username))
 

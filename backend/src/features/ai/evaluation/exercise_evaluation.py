@@ -62,7 +62,8 @@ def generate_alternative_answers(correct_sentence: str) -> List[str]:
     Returns:
         List of alternative correct answers
     """
-    return ExerciseService.generate_alternative_answers(correct_sentence)
+    # Use service staticmethod (available in ExerciseService)
+    return ExerciseService._generate_alternative_answers(correct_sentence)
 
 
 def generate_explanation(question: str, user_answer: str, correct_answer: str) -> str:
@@ -77,4 +78,5 @@ def generate_explanation(question: str, user_answer: str, correct_answer: str) -
     Returns:
         Explanation string
     """
-    return ExerciseService.generate_explanation(question, user_answer, correct_answer)
+    # Use service staticmethod (available in ExerciseService)
+    return ExerciseService._generate_explanation(question, user_answer, correct_answer)
