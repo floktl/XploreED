@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../store/useAppStore";
-import { getRole } from "../api";
+import { getRole } from "../services/api";
 
 export default function useRequireAdmin() {
     const setIsAdmin = useAppStore((s) => s.setIsAdmin);

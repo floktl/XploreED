@@ -19,6 +19,22 @@ const proxyTarget = (process.env.VITE_ENV || '').toLowerCase() === 'development'
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  esbuild: {
+    include: /\.(jsx?|tsx?)$/,
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.js': 'jsx',
+        '.ts': 'tsx',
+      },
+    },
+  },
   server: {
     host: true,
     port: 5173,

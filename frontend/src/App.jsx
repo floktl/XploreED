@@ -1,27 +1,25 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
   useLocation,
 } from "react-router-dom";
 
-import NameInput from "./components/NameInput";
-import { MenuView, LessonsView, ProfileView, VocabularyView, SettingsView, TranslatorView, VocabTrainerView, SupportView, AboutView, TermsOfServiceView, ProfileStatsView, LevelGuessView, PlacementTestView, LevelUpTestView, GrammarMapView, AIFeedbackView, AIWeaknessLessonView, AIReadingView, LevelGameView, TopicMemoryView } from "./views";
+import { NameInput } from "./components/features/auth";
+import { MenuView, LessonsView, LessonView, ProfileView, VocabularyView, SettingsView, TranslatorView, VocabTrainerView, SupportView, AboutView, TermsOfServiceView, ProfileStatsView, LevelGuessView, PlacementTestView, LevelUpTestView, GrammarMapView, AIFeedbackView, AIWeaknessLessonView, AIReadingView, LevelGameView, TopicMemoryView } from "./pages";
 
-import AdminLogin from "./components/AdminLogin";
-import AdminDashboard from "./components/AdminDashboard";
-import AdminUserManagement from "./components/AdminUserManagement";
-import LessonView from "./components/LessonView";
-import LessonEdit from "./components/LessonEdit";
+import AdminLoginView from "./pages/Core/AdminLoginView";
+import { AdminDashboard, AdminUserManagement } from "./components/features/admin";
+
+import LessonEditView from "./pages/Core/LessonEditView";
 
 
-import ErrorPage from "./components/ErrorPage";
-import TermsOfService from "./components/TermsOfService";
-import AskAiButton from "./components/AskAiButton";
-import RootLayout from "./components/RootLayout";
+import ErrorPageView from "./pages/Core/ErrorPageView";
+import { AskAiButton } from "./components/features/ai";
+import { RootLayout } from "./components/layout";
 
 import useAppStore from "./store/useAppStore";
-import { getMe, getRole } from "./api";
+import { getMe, getRole } from "./services/api";
 
 // ✅ Auth load on start
 function AppWrapper() {
@@ -133,22 +131,22 @@ function AskAiButtonGlobal() {
 const router = createBrowserRouter(
   [
     // Auth/admin routes outside RootLayout
-    { path: "/", element: <NameInput />, errorElement: <ErrorPage /> },
-    { path: "/admin", element: <AdminLogin />, errorElement: <ErrorPage /> },
+    { path: "/", element: <NameInput />, errorElement: <ErrorPageView /> },
+    { path: "/admin", element: <AdminLoginView />, errorElement: <ErrorPageView /> },
     {
       path: "/admin-login",
-      element: <AdminLogin />,
-      errorElement: <ErrorPage />,
+      element: <AdminLoginView />,
+      errorElement: <ErrorPageView />,
     },
     {
       path: "/admin-panel",
       element: <AdminDashboard />,
-      errorElement: <ErrorPage />,
+      errorElement: <ErrorPageView />,
     },
     {
       path: "/admin-users",
       element: <AdminUserManagement />,
-      errorElement: <ErrorPage />,
+      errorElement: <ErrorPageView />,
     },
     // Main app routes with RootLayout
     {
@@ -157,102 +155,102 @@ const router = createBrowserRouter(
         {
           path: "/placement-test",
           element: <PlacementTestView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/select-level",
           element: <LevelGuessView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
-        { path: "/menu", element: <MenuView />, errorElement: <ErrorPage /> },
+        { path: "/menu", element: <MenuView />, errorElement: <ErrorPageView /> },
         {
           path: "/translate",
           element: <TranslatorView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/level-game",
           element: <LevelGameView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
-        { path: "/profile", element: <ProfileView />, errorElement: <ErrorPage /> },
+        { path: "/profile", element: <ProfileView />, errorElement: <ErrorPageView /> },
         {
           path: "/vocabulary",
           element: <VocabularyView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/topic-memory",
           element: <TopicMemoryView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/grammar-map",
           element: <GrammarMapView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/vocab-trainer",
           element: <VocabTrainerView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
-        { path: "/lessons", element: <LessonsView />, errorElement: <ErrorPage /> },
+        { path: "/lessons", element: <LessonsView />, errorElement: <ErrorPageView /> },
         {
           path: "/lesson/:lessonId",
           element: <LessonView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/profile-stats",
           element: <ProfileStatsView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/settings",
           element: <SettingsView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/support",
           element: <SupportView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/admin/lessons/:id",
-          element: <LessonEdit />,
-          errorElement: <ErrorPage />,
+          element: <LessonEditView />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/ai-feedback",
           element: <AIFeedbackView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/ai-feedback/:feedbackId",
           element: <AIFeedbackView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/weakness-lesson",
           element: <AIWeaknessLessonView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/reading-exercise",
           element: <AIReadingView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/progress-test",
           element: <LevelUpTestView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
         {
           path: "/terms-of-service",
           element: <TermsOfServiceView />,
-          errorElement: <ErrorPage />,
+          errorElement: <ErrorPageView />,
         },
-        { path: "/about", element: <AboutView />, errorElement: <ErrorPage /> },
+        { path: "/about", element: <AboutView />, errorElement: <ErrorPageView /> },
       ],
     },
   ],
