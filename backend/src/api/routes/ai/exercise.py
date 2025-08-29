@@ -301,38 +301,107 @@ def get_ai_exercise_results(block_id):
         if redis_results:
             logger.info(f"Found results in Redis for block {block_id}")
 
-            # Convert the evaluation results to the expected format
-            if isinstance(redis_results, tuple) and len(redis_results) == 2:
-                evaluation_results, summary = redis_results
+            # Handle new sequential processing structure
+            if isinstance(redis_results, dict) and "ready_index" in redis_results:
+                # New sequential processing format
+                ready_index = redis_results.get("ready_index", 1)
+                exercise_order = redis_results.get("exercise_order", [])
+                results = redis_results.get("results", {})
+                summary = redis_results.get("summary", {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0})
+                pass_status = redis_results.get("pass", False)
+
+                # Convert results to the expected format
+                formatted_results = []
+                
+                # Handle both dictionary and list formats for results
+                if isinstance(results, dict):
+                    # Build results in exercise order
+                    for i, ex_id in enumerate(exercise_order):
+                        result = results.get(ex_id, {})
+                        is_ready = i < ready_index
+                        
+                        formatted_results.append({
+                            "id": ex_id,
+                            "is_correct": result.get("correct", False),
+                            "correct_answer": result.get("correct_answer", ""),
+                            "alternatives": result.get("alternatives", []) if is_ready else [],
+                            "explanation": result.get("explanation", "") if is_ready else "",
+                            "user_answer": result.get("user_answer", ""),
+                            "feedback": result.get("feedback", ""),
+                            "loading": not is_ready
+                        })
+                elif isinstance(results, tuple) and len(results) == 2:
+                    # Handle tuple format [evaluation_dict, summary_dict]
+                    evaluation_dict = results[0]
+                    for i, ex_id in enumerate(exercise_order):
+                        result = evaluation_dict.get(ex_id, {})
+                        is_ready = i < ready_index
+                        
+                        formatted_results.append({
+                            "id": ex_id,
+                            "is_correct": result.get("correct", False),
+                            "correct_answer": result.get("correct_answer", ""),
+                            "alternatives": result.get("alternatives", []) if is_ready else [],
+                            "explanation": result.get("explanation", "") if is_ready else "",
+                            "user_answer": result.get("user_answer", ""),
+                            "feedback": result.get("feedback", ""),
+                            "loading": not is_ready
+                        })
+                else:
+                    # Fallback to old format
+                    if isinstance(results, tuple) and len(results) == 2:
+                        evaluation_results, summary = results
+                    else:
+                        evaluation_results = results
+                        summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
+
+                    # Convert evaluation results to the expected format
+                    if isinstance(evaluation_results, dict):
+                        for exercise_id, result in evaluation_results.items():
+                            formatted_results.append({
+                                "id": exercise_id,
+                                "is_correct": result.get("correct", False),
+                                "correct_answer": result.get("correct_answer", ""),
+                                "alternatives": result.get("alternatives", []),
+                                "explanation": result.get("explanation", ""),
+                                "user_answer": result.get("user_answer", ""),
+                                "feedback": result.get("feedback", "")
+                            })
+                    elif isinstance(evaluation_results, list):
+                        formatted_results = evaluation_results
+
+                # Determine if processing is complete
+                is_complete = ready_index >= len(exercise_order)
+                
+                return jsonify({
+                    "status": "complete" if is_complete else "processing",
+                    "block_id": block_id,
+                    "results": formatted_results,
+                    "summary": summary,
+                    "pass": pass_status,
+                    "source": "redis",
+                    "ready_index": ready_index,
+                    "total_exercises": len(exercise_order)
+                })
             else:
-                evaluation_results = redis_results
-                summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
+                # Handle old format (backward compatibility)
+                # Convert the evaluation results to the expected format
+                if isinstance(redis_results, tuple) and len(redis_results) == 2:
+                    evaluation_results, summary = redis_results
+                else:
+                    evaluation_results = redis_results
+                    summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
 
-            # Ensure summary is a dictionary
-            if not isinstance(summary, dict):
-                summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
+                # Ensure summary is a dictionary
+                if not isinstance(summary, dict):
+                    summary = {"total": 0, "correct": 0, "incorrect": 0, "accuracy": 0}
 
-            # Convert evaluation results to the expected format
-            formatted_results = []
+                # Convert evaluation results to the expected format
+                formatted_results = []
 
-            # Handle both dictionary and list formats
-            if isinstance(evaluation_results, dict):
-                for exercise_id, result in evaluation_results.items():
-                    formatted_results.append({
-                        "id": exercise_id,
-                        "is_correct": result.get("correct", False),
-                        "correct_answer": result.get("correct_answer", ""),
-                        "alternatives": result.get("alternatives", []),
-                        "explanation": result.get("explanation", ""),
-                        "user_answer": result.get("user_answer", ""),
-                        "feedback": result.get("feedback", "")
-                    })
-            elif isinstance(evaluation_results, list):
-                # If it's a list, check if it contains the evaluation results
-                if len(evaluation_results) == 2 and isinstance(evaluation_results[0], dict):
-                    # This is likely the format [evaluation_dict, summary_dict]
-                    evaluation_dict = evaluation_results[0]
-                    for exercise_id, result in evaluation_dict.items():
+                # Handle both dictionary and list formats
+                if isinstance(evaluation_results, dict):
+                    for exercise_id, result in evaluation_results.items():
                         formatted_results.append({
                             "id": exercise_id,
                             "is_correct": result.get("correct", False),
@@ -342,12 +411,27 @@ def get_ai_exercise_results(block_id):
                             "user_answer": result.get("user_answer", ""),
                             "feedback": result.get("feedback", "")
                         })
+                elif isinstance(evaluation_results, list):
+                    # If it's a list, check if it contains the evaluation results
+                    if len(evaluation_results) == 2 and isinstance(evaluation_results[0], dict):
+                        # This is likely the format [evaluation_dict, summary_dict]
+                        evaluation_dict = evaluation_results[0]
+                        for exercise_id, result in evaluation_dict.items():
+                            formatted_results.append({
+                                "id": exercise_id,
+                                "is_correct": result.get("correct", False),
+                                "correct_answer": result.get("correct_answer", ""),
+                                "alternatives": result.get("alternatives", []),
+                                "explanation": result.get("explanation", ""),
+                                "user_answer": result.get("user_answer", ""),
+                                "feedback": result.get("feedback", "")
+                            })
+                    else:
+                        # If it's already a list of formatted results, use it directly
+                        formatted_results = evaluation_results
                 else:
-                    # If it's already a list of formatted results, use it directly
-                    formatted_results = evaluation_results
-            else:
-                logger.warning(f"Unexpected evaluation_results format: {type(evaluation_results)}")
-                formatted_results = []
+                    logger.warning(f"Unexpected evaluation_results format: {type(evaluation_results)}")
+                    formatted_results = []
 
             # If AI explanation is missing for incorrect answers, log and signal processing state
             try:

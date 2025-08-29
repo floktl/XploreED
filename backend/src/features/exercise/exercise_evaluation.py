@@ -210,9 +210,16 @@ def evaluate_remaining_exercises_async(username: str, block_id: str, exercises: 
         # Create initial results list
         initial_results = create_immediate_results(exercises, first_result)
 
-        # Store initial results in Redis
+        # Store initial results in Redis with ready_index for sequential processing
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex_json(result_key, 300, initial_results)  # type: ignore[arg-type]  # 5 minutes TTL
+        initial_data = {
+            "results": initial_results,
+            "ready_index": 1,  # Only first exercise is ready initially
+            "exercise_order": [str(ex.get("id")) for ex in exercises],
+            "pass": False,
+            "summary": {"correct": 0, "total": len(exercises), "mistakes": []}
+        }
+        redis_client.setex_json(result_key, 300, initial_data)  # type: ignore[arg-type]  # 5 minutes TTL
 
         # Start background evaluation
         _evaluate_all_exercises(username, block_id, exercises, answers, initial_results, exercise_block)
@@ -292,9 +299,19 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
     try:
         logger.info(f"Processing evaluation results for block {block_id}")
 
-        # Update results in Redis
+        # Get current data from Redis
         result_key = f"exercise_result:{username}:{block_id}"
-        redis_client.setex_json(result_key, 3600, evaluation)  # type: ignore[arg-type]  # 1 hour TTL
+        current_data = redis_client.get_json(result_key) or {}
+        
+        # Update results in Redis with sequential processing structure
+        updated_data = {
+            "results": evaluation,
+            "ready_index": current_data.get("ready_index", 1),
+            "exercise_order": current_data.get("exercise_order", [str(ex.get("id")) for ex in exercises]),
+            "pass": current_data.get("pass", False),
+            "summary": current_data.get("summary", {"correct": 0, "total": len(exercises), "mistakes": []})
+        }
+        redis_client.setex_json(result_key, 3600, updated_data)  # type: ignore[arg-type]  # 1 hour TTL
 
         # Enrich results with AI-generated alternatives and explanations (non-blocking best-effort)
         try:
@@ -302,7 +319,7 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
             if isinstance(eval_results_only, dict):
                 # Iterate strictly in the same order as provided exercises to ensure sequential enrichment (1 → 2 → 3)
                 exercise_map = {str(e.get("id")): e for e in exercises}
-                for ex in exercises:
+                for i, ex in enumerate(exercises):
                     ex_id = str(ex.get("id"))
                     if not ex_id:
                         continue
@@ -338,8 +355,16 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                                     )
                                     # Flush progressive enrichment for this exercise to Redis
                                     try:
+                                        current_data = redis_client.get_json(result_key) or {}
                                         enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
-                                        redis_client.setex_json(result_key, 3600, enriched_now)  # type: ignore[arg-type]
+                                        updated_data = {
+                                            "results": enriched_now,
+                                            "ready_index": current_data.get("ready_index", 1),
+                                            "exercise_order": current_data.get("exercise_order", [str(ex.get("id")) for ex in exercises]),
+                                            "pass": current_data.get("pass", False),
+                                            "summary": current_data.get("summary", {"correct": 0, "total": len(exercises), "mistakes": []})
+                                        }
+                                        redis_client.setex_json(result_key, 3600, updated_data)  # type: ignore[arg-type]
                                         logger.info("[enrich] ex_id=%s alternatives_flushed", ex_id)
                                     except Exception:
                                         pass
@@ -364,8 +389,16 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                                             ex_id, len(expl), int((time.perf_counter()-expl_t0)*1000), snippet)
                                 # Flush progressive enrichment for this exercise to Redis
                                 try:
+                                    current_data = redis_client.get_json(result_key) or {}
                                     enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
-                                    redis_client.setex_json(result_key, 3600, enriched_now)  # type: ignore[arg-type]
+                                    updated_data = {
+                                        "results": enriched_now,
+                                        "ready_index": current_data.get("ready_index", 1),
+                                        "exercise_order": current_data.get("exercise_order", [str(ex.get("id")) for ex in exercises]),
+                                        "pass": current_data.get("pass", False),
+                                        "summary": current_data.get("summary", {"correct": 0, "total": len(exercises), "mistakes": []})
+                                    }
+                                    redis_client.setex_json(result_key, 3600, updated_data)  # type: ignore[arg-type]
                                     logger.info("[enrich] ex_id=%s explanation_flushed", ex_id)
                                 except Exception:
                                     pass
@@ -394,6 +427,29 @@ def _process_evaluation_results(username: str, block_id: str, exercises: Exercis
                                 pass
                     except Exception:
                         pass
+
+                    # Increment ready_index after this exercise is fully processed
+                    try:
+                        current_data = redis_client.get_json(result_key) or {}
+                        current_ready_index = current_data.get("ready_index", 1)
+                        new_ready_index = min(current_ready_index + 1, len(exercises) + 1)  # Don't exceed total exercises
+                        
+                        enriched_now = (eval_results_only, evaluation[1]) if isinstance(evaluation, tuple) else eval_results_only
+                        updated_data = {
+                            "results": enriched_now,
+                            "ready_index": new_ready_index,
+                            "exercise_order": current_data.get("exercise_order", [str(ex.get("id")) for ex in exercises]),
+                            "pass": current_data.get("pass", False),
+                            "summary": current_data.get("summary", {"correct": 0, "total": len(exercises), "mistakes": []})
+                        }
+                        redis_client.setex_json(result_key, 3600, updated_data)  # type: ignore[arg-type]
+                        logger.info("[enrich] ex_id=%s ready_index incremented to %d", ex_id, new_ready_index)
+                        
+                        # Add a small delay to allow frontend to pick up the change
+                        import time
+                        time.sleep(0.5)
+                    except Exception as e:
+                        logger.error(f"Error incrementing ready_index for exercise {ex_id}: {e}")
 
                 # Write enriched version back to Redis so the frontend can pick it up on next poll
                 try:
