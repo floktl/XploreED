@@ -82,8 +82,6 @@ export default function AIExerciseBlock({
     // Sequential feedback processing state
     const [feedbackProcessingIndex, setFeedbackProcessingIndex] = useState(0);
     const [baseResultsById, setBaseResultsById] = useState({});
-    const [currentDetailedFeedbackIndex, setCurrentDetailedFeedbackIndex] = useState(0);
-    const [detailedFeedbackLoading, setDetailedFeedbackLoading] = useState(false);
 
     // Swipeable interface state
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -371,8 +369,89 @@ export default function AIExerciseBlock({
             setSubmissionStatus("Fetching detailed feedback...");
             setEnhancedResultsLoading(true);
 
-            // Start sequential loading of detailed feedback
-            startSequentialDetailedFeedbackLoading(newEvaluation, exercises);
+            // Poll for enhanced results (backend handles sequential processing)
+            const pollForEnhancedResults = async () => {
+                let attempts = 0;
+                const maxAttempts = 20; // More attempts for sequential processing
+                const pollInterval = 1500; // Faster polling
+
+                while (attempts < maxAttempts) {
+                    try {
+                        console.log(`Polling for enhanced results (attempt ${attempts + 1}/${maxAttempts})...`);
+                        const enhancedResults = await getEnhancedResults(blockId);
+                        console.log("Enhanced results:", enhancedResults);
+
+                        if (enhancedResults.status === "processing") {
+                            console.log("Results still processing, waiting...");
+                            setSubmissionStatus(`Generating detailed feedback... (${attempts + 1}/${maxAttempts})`);
+                            await new Promise(resolve => setTimeout(resolve, pollInterval));
+                            attempts++;
+                            continue;
+                        }
+
+                        if (enhancedResults && enhancedResults.results) {
+                            console.log("Processing enhanced results:", enhancedResults.results);
+                            let hasExplanations = false;
+
+                            enhancedResults.results.forEach(enhancedResult => {
+                                const exerciseId = enhancedResult.exercise_id || enhancedResult.exerciseId || enhancedResult.id;
+                                console.log(`Processing enhanced result for exercise ${exerciseId}:`, enhancedResult);
+
+                                if (exerciseId && newEvaluation[exerciseId]) {
+                                    const exercise = exercises.find(ex => ex.id === exerciseId);
+                                    let enhancedExplanation = enhancedResult.explanation || enhancedResult.detailed_feedback || enhancedResult.feedback || "";
+
+                                    console.log(`Enhanced explanation for ${exerciseId}: "${enhancedExplanation}"`);
+
+                                    if (enhancedExplanation) {
+                                        hasExplanations = true;
+                                    }
+
+                                    newEvaluation[exerciseId] = {
+                                        ...newEvaluation[exerciseId],
+                                        explanation: enhancedExplanation || newEvaluation[exerciseId].explanation,
+                                        alternatives: enhancedResult.alternatives || enhancedResult.suggestions || newEvaluation[exerciseId].alternatives,
+                                        score: enhancedResult.score,
+                                        detailed_feedback: enhancedResult.detailed_feedback || enhancedResult.explanation || enhancedExplanation,
+                                        loading: false
+                                    };
+                                } else {
+                                    console.log(`No matching evaluation found for exercise ${exerciseId}`);
+                                }
+                            });
+
+                            setEvaluation({...newEvaluation});
+                            console.log("Final evaluation state:", newEvaluation);
+
+                            setEnhancedResultsLoading(false);
+                            if (hasExplanations) {
+                                setSubmissionStatus("Detailed feedback loaded successfully!");
+                            } else {
+                                setSubmissionStatus("Basic feedback available (detailed explanations still processing)");
+                            }
+                            return; // Success, exit polling
+                        } else {
+                            console.log("No enhanced results found or invalid structure:", enhancedResults);
+                            break;
+                        }
+                    } catch (error) {
+                        console.error(`Failed to fetch enhanced results (attempt ${attempts + 1}):`, error);
+                        attempts++;
+                        if (attempts >= maxAttempts) {
+                            setSubmissionStatus("Failed to load detailed feedback");
+                            break;
+                        }
+                        await new Promise(resolve => setTimeout(resolve, pollInterval));
+                    }
+                }
+
+                console.log("Enhanced results polling completed without success");
+                setSubmissionStatus("Basic feedback available");
+                setEnhancedResultsLoading(false);
+            };
+
+            // Start polling for enhanced results
+            pollForEnhancedResults();
 
             // Calculate if passed (all correct or majority correct)
             const correctCount = Object.values(newEvaluation).filter(e => e.is_correct).length;
@@ -477,106 +556,6 @@ export default function AIExerciseBlock({
         return () => setExerciseNavigation(null);
     }, [exercises.length, currentExerciseIndex, disablePrev, disableNext, setExerciseNavigation]);
 
-    // Sequential detailed feedback loading function
-    const startSequentialDetailedFeedbackLoading = async (baseEvaluation, exerciseList) => {
-        console.log("Starting sequential detailed feedback loading...");
-        setCurrentDetailedFeedbackIndex(0);
-        setDetailedFeedbackLoading(true);
-
-        for (let i = 0; i < exerciseList.length; i++) {
-            const exercise = exerciseList[i];
-            const exerciseId = exercise.id;
-            
-            console.log(`Loading detailed feedback for exercise ${i + 1}/${exerciseList.length}: ${exerciseId}`);
-            setCurrentDetailedFeedbackIndex(i);
-            setSubmissionStatus(`Loading detailed feedback for question ${i + 1}...`);
-
-            try {
-                // Poll for enhanced results for this specific exercise
-                let attempts = 0;
-                const maxAttempts = 15; // More attempts for sequential loading
-                const pollInterval = 1500; // Faster polling
-
-                while (attempts < maxAttempts) {
-                    try {
-                        const enhancedResults = await getEnhancedResults(blockId);
-                        console.log(`Polling attempt ${attempts + 1} for exercise ${exerciseId}:`, enhancedResults);
-
-                        if (enhancedResults.status === "processing") {
-                            console.log(`Results still processing for exercise ${exerciseId}, waiting...`);
-                            await new Promise(resolve => setTimeout(resolve, pollInterval));
-                            attempts++;
-                            continue;
-                        }
-
-                        if (enhancedResults && enhancedResults.results) {
-                            // Find the result for this specific exercise
-                            const exerciseResult = enhancedResults.results.find(result => {
-                                const resultId = result.exercise_id || result.exerciseId || result.id;
-                                return String(resultId) === String(exerciseId);
-                            });
-
-                            if (exerciseResult) {
-                                console.log(`Found enhanced result for exercise ${exerciseId}:`, exerciseResult);
-                                
-                                const enhancedExplanation = exerciseResult.explanation || 
-                                                          exerciseResult.detailed_feedback || 
-                                                          exerciseResult.feedback || "";
-
-                                // Update the evaluation for this specific exercise
-                                setEvaluation(prevEvaluation => {
-                                    const updatedEvaluation = { ...prevEvaluation };
-                                    if (updatedEvaluation[exerciseId]) {
-                                        updatedEvaluation[exerciseId] = {
-                                            ...updatedEvaluation[exerciseId],
-                                            explanation: enhancedExplanation,
-                                            alternatives: exerciseResult.alternatives || exerciseResult.suggestions || [],
-                                            score: exerciseResult.score,
-                                            detailed_feedback: exerciseResult.detailed_feedback || exerciseResult.explanation || enhancedExplanation,
-                                            loading: false
-                                        };
-                                    }
-                                    return updatedEvaluation;
-                                });
-
-                                console.log(`Successfully loaded detailed feedback for exercise ${exerciseId}`);
-                                break; // Move to next exercise
-                            } else {
-                                console.log(`No result found for exercise ${exerciseId}, continuing to poll...`);
-                                await new Promise(resolve => setTimeout(resolve, pollInterval));
-                                attempts++;
-                            }
-                        } else {
-                            console.log("No enhanced results structure found");
-                            break;
-                        }
-                    } catch (error) {
-                        console.error(`Error polling for exercise ${exerciseId} (attempt ${attempts + 1}):`, error);
-                        attempts++;
-                        if (attempts >= maxAttempts) {
-                            console.log(`Failed to load detailed feedback for exercise ${exerciseId} after ${maxAttempts} attempts`);
-                            break;
-                        }
-                        await new Promise(resolve => setTimeout(resolve, pollInterval));
-                    }
-                }
-
-                // Small delay between exercises to allow user to read
-                if (i < exerciseList.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                }
-
-            } catch (error) {
-                console.error(`Failed to load detailed feedback for exercise ${exerciseId}:`, error);
-            }
-        }
-
-        console.log("Sequential detailed feedback loading completed");
-        setDetailedFeedbackLoading(false);
-        setEnhancedResultsLoading(false);
-        setSubmissionStatus("All detailed feedback loaded!");
-    };
-
     // Calculate completed exercises (exercises with answers)
     const completedExercisesCount = exercises.filter(ex =>
         answers[ex.id] && answers[ex.id].toString().trim().length > 0
@@ -665,7 +644,6 @@ export default function AIExerciseBlock({
                                     handleWordClick={handleWordClick}
                                     isIncomplete={false}
                                     enhancedResultsLoading={enhancedResultsLoading}
-                                    currentDetailedFeedbackIndex={currentDetailedFeedbackIndex}
                                 />
                             );
                         })()}

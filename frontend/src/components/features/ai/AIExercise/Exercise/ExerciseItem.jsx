@@ -31,8 +31,7 @@ export default function ExerciseItem({
     handleSelect,
     handleWordClick,
     isIncomplete,
-    enhancedResultsLoading,
-    currentDetailedFeedbackIndex
+    enhancedResultsLoading
 }) {
     const isMultipleChoice = exercise.options && Array.isArray(exercise.options);
     const showFeedback = submitted && evaluation[exercise.id] !== undefined;
@@ -100,14 +99,14 @@ export default function ExerciseItem({
                     </div>
                 )}
 
-                {/* Loading detailed feedback indicator - only for current exercise being processed */}
-                {submitted && enhancedResultsLoading && currentDetailedFeedbackIndex === currentExerciseIndex && (
+                {/* Loading detailed feedback indicator */}
+                {submitted && enhancedResultsLoading && (
                     <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                         <div className="flex items-center justify-center gap-3">
                             <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent"></div>
                             <div className="text-center">
                                 <div className="font-medium text-blue-700 dark:text-blue-300">Loading Detailed Explanation</div>
-                                <div className="text-sm text-blue-600 dark:text-blue-400">AI is generating detailed feedback for this question...</div>
+                                <div className="text-sm text-blue-600 dark:text-blue-400">AI is generating detailed feedback...</div>
                             </div>
                         </div>
                     </div>
