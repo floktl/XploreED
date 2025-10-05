@@ -25,6 +25,26 @@ frontend/node_modules/
 frontend/package-lock.json
 # Database files
 backend/database/*.db
+backend/backend/database/*.db
 backend/log.txt
+
+# Log files (contain sensitive data)
+*.log
+backend/logs/*.log
+backend/logs/endpoint_tests/
+
+# Session and cookie files
+cookies.txt
+new_cookies.txt
+tmp_*.txt
+*_cookies.txt
+
+# Additional sensitive files
+secrets/
+.secrets/
+*.key
+*.pem
+*.p12
+*.pfx
 
 transcence/

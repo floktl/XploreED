@@ -40,8 +40,8 @@ export default function LevelGameView() {
 	const removeBackgroundActivity = useAppStore((s) => s.removeBackgroundActivity);
 	const navigate = useNavigate();
 
-	// ElevenLabs API Key - replace with your actual key
-	const ELEVENLABS_API_KEY = "sk_7ee62fb46781e4c799b9e0e0ea2d48e2fce51b431bd3d8a8";
+	// ElevenLabs API Key from environment variable
+	const ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
 	useEffect(() => {
 		const loadLevel = async () => {

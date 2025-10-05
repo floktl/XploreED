@@ -10,10 +10,10 @@ echo "🧪 Testing all XplorED Backend endpoints..."
 # Configuration
 BACKEND_URL="http://localhost:5050"
 TEST_USERNAME="testuser"
-TEST_PASSWORD="testpass123"
+TEST_PASSWORD="${TEST_PASSWORD:-testpass123}"
 TEST_EMAIL="testuser@xplored.com"
 ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="admin123"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin123}"
 ADMIN_EMAIL="admin@xplored.com"
 REPORT_DIR="backend/logs/endpoint_tests"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")

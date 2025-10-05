@@ -9,7 +9,7 @@ echo "🔧 Setting up admin access for XplorED Backend..."
 
 # Configuration
 ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="admin123"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-admin123}"
 ADMIN_EMAIL="admin@xplored.com"
 BACKEND_URL="http://localhost:5050"
 
