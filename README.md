@@ -3,11 +3,18 @@
 A comprehensive German language learning platform powered by AI, featuring interactive exercises, spaced repetition, and personalized learning experiences.
 Please note, that this is only a prototype to showcase the functions, the frontend is obviously not production ready, this project is currently paused, will be continued soon.
 
-
-https://github.com/user-attachments/assets/378b2ae3-37ad-4ca0-bff1-2e81cfd4666a
-
-
-
+<table style="border-collapse:collapse;border-spacing:0;width:100%;margin:0;padding:0;">
+  <tr>
+    <td style="padding:0;margin:0;border:none;width:50%;">
+      <video src="https://github.com/user-attachments/assets/378b2ae3-37ad-4ca0-bff1-2e81cfd4666a?raw=1"
+             controls playsinline muted style="display:block;width:100%;height:auto;border:none;margin:0;padding:0;"></video>
+    </td>
+    <td style="padding:0;margin:0;border:none;width:50%;">
+      <video src="https://github.com/user-attachments/assets/e4779743-d622-4e94-889c-884028de8c4c?raw=1"
+             controls playsinline muted style="display:block;width:100%;height:auto;border:none;margin:0;padding:0;"></video>
+    </td>
+  </tr>
+</table>
 ## ✨ Features
 
 ### 🤖 AI-Powered Learning
