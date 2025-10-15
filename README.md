@@ -1,6 +1,7 @@
 # XploreED
 
 A comprehensive German language learning platform powered by AI, featuring interactive exercises, spaced repetition, and personalized learning experiences.
+Please note, that this is only a prototype to showcase the functions, the frontend is obviously not production ready, this project is currently paused, will be continued soon.
 
 
 https://github.com/user-attachments/assets/378b2ae3-37ad-4ca0-bff1-2e81cfd4666a
